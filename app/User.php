@@ -1,0 +1,44 @@
+<?php
+
+namespace App;
+
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
+
+class User extends Authenticatable
+{
+    use Notifiable;
+
+    protected $table = 'user';
+    protected $primaryKey = 'id_user';
+    public $incrementing = false;
+    protected $keyType = 'string';
+    public $timestamps = false;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'id_user', 'remember_token'
+    ];
+
+    /**
+     * The attributes that should be hidden for arrays.
+     *
+     * @var array
+     */
+    protected $hidden = [
+        'password', 'remember_token',
+    ];
+
+    public function dokter()
+    {
+        return $this->join('dokter', 'dokter.kd_dokter', '=', DB::raw("AES_DECRYPT(user.id_user,'nur')"))
+            ->where('user.id_user', '=', $this->id_user)
+            ->first([DB::raw("AES_DECRYPT(user.id_user,'nur') as id_user_decrypt"), 'user.id_user', 'dokter.*']);
+    }
+}
