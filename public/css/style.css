@@ -56,6 +56,14 @@ select.form-control {
 }
 
 /* Setup warna default */
+.bg-blue-light {
+    background-color: #166fca !important;
+}
+
+.bg-blue-dark1 {
+    background-color: #094889 !important;
+}
+
 .bg-dark {
     background-color: #0d0d34 !important;
 }

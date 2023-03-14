@@ -2,7 +2,20 @@
     $get_user=(new \App\Http\Traits\AuthFunction)->getUser();
 
     $menu_permission=[
-        
+        [
+            'title'=>'Manajemen User',
+            'key'=>'sub-menu',
+            'url'=>url('/')."/sub-menu?type=2",
+            'icon'=>"<i class='fa-solid fa-user-gear'></i>",
+            'key_active'=>\App::call('App\Http\Controllers\SubMenuController@listAkses',['type' => 2])->list_menu
+        ],
+        [
+            'title'=>'Setting Aplikasi',
+            'key'=>'sub-menu',
+            'url'=>url('/')."/sub-menu?type=3",
+            'icon'=>" <i class='fa-solid fa-gear'></i>",
+            'key_active'=>\App::call('App\Http\Controllers\SubMenuController@listAkses',['type' => 3])->list_menu
+        ],
     ];
 
     $menu=(new \App\Http\Traits\AuthFunction)->checkMenuAkses($menu_permission);
@@ -15,7 +28,7 @@
         padding:20px 20px 20px 20px !important;
     }
 </style>
-<div class="sidebar bg-dark">
+<div class="sidebar bg-blue-dark1">
     <div class="
     d-flex
     justify-content-center

@@ -27,12 +27,6 @@ trait AuthTraits {
             $data_user['auth']=Auth::user();
             $data_user['id_user']=$this->id_user;
 
-            $check = \App\Models\Dokter::where('kd_dokter', '=', $this->id_user)->where('status', '=', '1')->first();
-            if(!empty($check)){
-                $data_user['type_user']='dokter';
-                $data_user['nama_user']=$check->nm_dokter;
-            }
-
             if(empty($check)){
                 $check = \App\Models\Petugas::where('nip', '=', $this->id_user)->where('status', '=', '1')->first();
                 if(!empty($check)){
@@ -48,7 +42,6 @@ trait AuthTraits {
                     $data_user['nama_user']='Admin';
                 }
             }
-
 
             $get_group = collect(UxuiAuthUsers::select('alias_group')->where('id', '=', $this->id_user)->get())->map(function ($value) {
                 return $value->alias_group;

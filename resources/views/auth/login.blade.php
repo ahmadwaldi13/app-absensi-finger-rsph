@@ -31,7 +31,7 @@
 <body>
 
     <div>
-        <div class="py-4 mb-5 bg-dark text-white d-flex flex-row justify-content-center align-items-center">
+        <div class="py-4 mb-5 bg-blue-light text-white d-flex flex-row justify-content-center align-items-center">
             <span class="iconify m-0 p-0 me-3" style="font-size: 42px;" data-icon="la:hospital"></span>
             <span style="font-size: 26px;"><?= env('NAME_APP', 'RSUD'); ?></span>
         </div>

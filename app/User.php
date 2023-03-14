@@ -34,11 +34,4 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
-
-    public function dokter()
-    {
-        return $this->join('dokter', 'dokter.kd_dokter', '=', DB::raw("AES_DECRYPT(user.id_user,'nur')"))
-            ->where('user.id_user', '=', $this->id_user)
-            ->first([DB::raw("AES_DECRYPT(user.id_user,'nur') as id_user_decrypt"), 'user.id_user', 'dokter.*']);
-    }
 }
