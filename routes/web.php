@@ -71,18 +71,3 @@ Route::group(['middleware' => 'auth'], function () {
 
 Route::get('/login', 'AuthController@index')->name('login');
 Route::post('/process-login', 'AuthController@login');
-
-Route::get("/monitor/monitor_antrian_farmasi_ralan", "MonitorController@index");
-Route::get("/monitor/monitor_antrian_farmasi_ranap", "MonitorController@monitor_antrian_farmasi_ranap");
-Route::get("/monitor/monitor_jadwal_operasi", "MonitorController@monitor_jadwal_operasi");
-Route::get("/monitor/monitor_antrian_poliklinik", "MonitorController@monitor_antrian_poliklinik");
-
-// Referensi BPJS
-Route::get('/jadwal-dokter-hfis/poli', 'BpjsReferensiController@jadwalHfis');
-Route::get('/referensi-bpjs/noka', 'BpjsReferensiController@actionNoka');
-Route::get('/referensi-bpjs/nik', 'BpjsReferensiController@actionNik');
-Route::get('/referensi-bpjs/cek_rujukan', 'BpjsReferensiController@actionRujukan');
-Route::get('/referensi-bpjs/cek_rujukan_rs', 'BpjsReferensiController@actionRujukanRS');
-Route::get('/referensi-bpjs/cek_surat_kontrol', 'BpjsReferensiController@actionCekSuratKontrol');
-Route::get('/referensi-bpjs/poli_local', 'BpjsReferensiController@actionPoliLocal');
-Route::get('/referensi-bpjs/reff-poli', 'BpjsReferensiController@actionHfis');
