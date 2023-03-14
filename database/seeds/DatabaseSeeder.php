@@ -13,9 +13,6 @@ class DatabaseSeeder extends Seeder
     {
         // $this->call(UsersTableSeeder::class);
         $this->call([
-            UxuiKonterFarmasiSeeder::class,
-            BerkasDigitalSeeder::class,
-            TableBgRianSeeder::class,
             UxuiUserAksesSeeder::class,
             UxuiSettingAppVariabelSeeder::class,
             DeleteTabelSeeder::class,
