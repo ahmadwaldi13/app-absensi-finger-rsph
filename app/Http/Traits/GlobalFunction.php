@@ -47,16 +47,6 @@ trait GlobalTraits {
         return $nominal;
     }
 
-    public function cariRegistrasi($no_rawat)
-    {
-        $angka=0;
-
-        $data_billing=\App\Models\Billing::where('no_rawat', '=', $no_rawat)->count('no_rawat');
-        $data_reg_periksa=\App\Models\RegPeriksa::where('no_rawat', '=', $no_rawat)->where('stts','=','Batal')->count('no_rawat');
-        $angka=$data_billing+$data_reg_periksa;
-        return $angka;
-    }
-
     public function getSentForm($params=[])
     {
         if(empty($params)){
@@ -84,20 +74,6 @@ trait GlobalTraits {
 
     public function makeJson($data=[]){
         return json_encode($data);
-    }
-
-    public function autoNomor($rs, $tgl, $strAwal, $pnj)
-    {
-        $s = "1";
-        foreach ($rs as $item) {
-            $s = strval((int)$rs->last + 1);
-        }
-        $j = strlen($s);
-        $s1 = "";
-        for ($i = 1; $i <= $pnj - $j; $i++) {
-            $s1 = $s1 . "0";
-        }
-        return $strAwal . $s1 . $s;
     }
 
     public function check_akses($id_user)

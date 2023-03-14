@@ -24,19 +24,32 @@ class PermissionGroupAppController extends Controller
     }
 
     function actionIndex(Request $request){
-        $hasil=$this->routersAppService->generateRoutes();
-
-        if($hasil[2]!=1){
-            return redirect()->route('user_group_app', [])->with(['error'=>$hasil[1]]);
-        }
-
+        
         $id = $request->id;
         $alias = $request->alias;
+        $params_request=['id'=>$id,'alias'=>$alias];
+
+        if($request->isMethod('get')){
+            if(!empty($request->rr)){
+                $hasil=$this->routersAppService->generateRoutes();
+
+                if($hasil[2]!=1){
+                    return redirect()->route('user_group_app', [])->with(['error'=>$hasil[1]]);
+                }
+
+                $router_name = (new \App\Http\Traits\GlobalFunction)->getRouterIndex();
+
+                $link_back_param = $params_request;
+                return redirect()->route($router_name->router_name, $link_back_param)->with(['success' => 'Berhasil Pembaruan Data']);
+            }
+        }
+        
         $parameter_view = [
             'user_group' => $this->userGroupAppService->getUxuiAuthGroup(['id'=>$id])->first(),
             "lib_routes_list_system" => new ListRoutes,
             "routes_list" => $this->userGroupAppService->getAllRouters(),
-            "checked_permissions" => array_column($this->userGroupAppService->getAllUserGroupAccess($alias), "id")
+            "checked_permissions" => array_column($this->userGroupAppService->getAllUserGroupAccess($alias), "id"),
+            'params_request'=>$params_request
         ];
         return view('user-management.permission-group.index', $parameter_view);
     }
@@ -55,6 +68,8 @@ class PermissionGroupAppController extends Controller
         $auth_permission=$data_get;
         unset($auth_permission['group_alias']);
         unset($auth_permission['_token']);
+        unset($auth_permission['checkAll']);
+        unset($auth_permission['key_group_alias']);
 
         $message_default=[
             'success'=> 'User Group "'.$alias_group.'" berhasil di perbaharui',
@@ -90,16 +105,14 @@ class PermissionGroupAppController extends Controller
                     }
                 }
                 
-                $delete_data= (new \App\Models\UserManagement\UxuiAuthPermission)->where('alias_group','=',$alias_group);
-                if($delete_data->delete()){
-
-                    foreach($auth_permission as $url){
-                        $model = (new \App\Models\UserManagement\UxuiAuthPermission);
-                        $model->alias_group=$alias_group;
-                        $model->url=$url;
-                        if ($model->save()) {
-                            $jlh_save++;
-                        }
+                (new \App\Models\UserManagement\UxuiAuthPermission)->where('alias_group','=',$alias_group)->delete();
+                
+                foreach($auth_permission as $url){
+                    $model = (new \App\Models\UserManagement\UxuiAuthPermission);
+                    $model->alias_group=$alias_group;
+                    $model->url=$url;
+                    if ($model->save()) {
+                        $jlh_save++;
                     }
                 }
 
