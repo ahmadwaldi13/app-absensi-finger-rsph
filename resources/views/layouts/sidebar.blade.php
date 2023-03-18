@@ -10,6 +10,13 @@
             'key_active'=>\App::call('App\Http\Controllers\SubMenuController@listAkses',['type' => 4])->list_menu
         ],
         [
+            'title'=>'Mesin Absensi',
+            'key'=>'sub-menu',
+            'url'=>url('/')."/sub-menu?type=5",
+            'icon'=>"<i class='fa-solid fa-user-gear'></i>",
+            'key_active'=>\App::call('App\Http\Controllers\SubMenuController@listAkses',['type' => 5])->list_menu
+        ],
+        [
             'title'=>'Manajemen User',
             'key'=>'sub-menu',
             'url'=>url('/')."/sub-menu?type=2",

@@ -1014,6 +1014,10 @@ $(document).find('.money').each(function () {
     $(this).inputmask({ alias: "money" });
 });
 
+$(document).find('.format_ip_address').each(function () {
+    $(this).inputmask({ alias: "ip",greedy: false });
+});
+
 function collapse_cus($me) {
     $check = $me.attr("aria-expanded");
 

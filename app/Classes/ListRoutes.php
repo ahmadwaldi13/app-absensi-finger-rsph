@@ -179,6 +179,56 @@ class ListRoutes
 				]
 			],
 			[
+				'title' => 'Mesin Absensi | Data Mesin',
+				'item' => [
+					[
+						'type' => 'index',
+						'method' => 'get',
+						'url' => '/data-mesin-absensi',
+						'controller' => 'DataMesinAbsensiController@actionIndex',
+						'name' => 'data_mesin_absensi',
+						'middleware' => '',
+					],
+					[
+						'type' => 'create',
+						'method' => ['get', 'post'],
+						'url' => '/data-mesin-absensi/create',
+						'controller' => 'DataMesinAbsensiController@actionCreate',
+						'name' => '',
+						'middleware' => '',
+					],
+					[
+						'type' => 'update',
+						'method' => ['get', 'post'],
+						'url' => '/data-mesin-absensi/update',
+						'controller' => 'DataMesinAbsensiController@actionUpdate',
+						'name' => '',
+						'middleware' => '',
+					],
+					[
+						'type' => 'delete',
+						'method' => 'delete',
+						'url' => '/data-mesin-absensi/delete',
+						'controller' => 'DataMesinAbsensiController@actionDelete',
+						'name' => '',
+						'middleware' => '',
+					],
+				]
+			],
+			[
+				'title' => 'Mesin Absensi | User Dari Mesin',
+				'item' => [
+					[
+						'type' => 'index',
+						'method' => 'get',
+						'url' => '/data-user-mesin',
+						'controller' => 'DataUserMesinController@actionIndex',
+						'name' => 'data_user_mesin',
+						'middleware' => '',
+					],
+				]
+			],
+			[
 				'title' => 'Manajemen User | Group User',
 				'item' => [
 					[

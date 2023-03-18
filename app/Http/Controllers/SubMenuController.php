@@ -64,6 +64,21 @@ class SubMenuController extends Controller
                 ];
             }
 
+            if($type==5){
+                $menu_permission=[
+                    [
+                        'title'=>'Data Mesin Absensi',
+                        'key'=>'data-mesin-absensi',
+                        'url'=>url('/')."/data-mesin-absensi",
+                    ],
+                    [
+                        'title'=>'Data User Mesin',
+                        'key'=>'data-user-mesin',
+                        'url'=>url('/')."/data-user-mesin",
+                    ],
+                ];
+            }
+
             if($menu_permission){
                 $list_menu=[];
                 $menu=(new \App\Http\Traits\AuthFunction)->checkMenuAkses($menu_permission);
