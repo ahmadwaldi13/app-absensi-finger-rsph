@@ -31,7 +31,6 @@ class SubMenuController extends Controller
                         'key'=>'user-akses',
                         'url'=>url('/')."/user-akses",
                     ],
-
                 ];
             }
 
@@ -41,6 +40,26 @@ class SubMenuController extends Controller
                         'title'=>'Setting Variabel Aplikasi',
                         'key'=>'setting-app-variabel',
                         'url'=>url('/')."/setting-app-variabel",
+                    ],
+                ];
+            }
+
+            if($type==4){
+                $menu_permission=[
+                    [
+                        'title'=>'Referensi Departemen/Bidang',
+                        'key'=>'departemen',
+                        'url'=>url('/')."/departemen",
+                    ],
+                    [
+                        'title'=>'Referensi Jabatan Karyawan',
+                        'key'=>'jabatan',
+                        'url'=>url('/')."/jabatan",
+                    ],
+                    [
+                        'title'=>'Data Karyawan',
+                        'key'=>'data-karyawan',
+                        'url'=>url('/')."/data-karyawan",
                     ],
                 ];
             }

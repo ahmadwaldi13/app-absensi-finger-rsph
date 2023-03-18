@@ -9,10 +9,6 @@ use App\Models\UserManagement\UxuiAuthPermission;
 use App\Models\UserManagement\UxuiAuthUsers;
 use App\Services\UserManagement\UserAksesAppService;
 
-use App\User;
-use App\Models\UserManagement\UxuiUsers;
-use App\Models\UserAdmin;
-
 use App\Classes\ListRoutes;
 
 class UxuiUserAksesSeeder extends Seeder
@@ -69,7 +65,7 @@ class UxuiUserAksesSeeder extends Seeder
 
 				UxuiAuthGroup::create(['name' => 'Super Admin','alias'=>'group_super_admin']);
 				UxuiAuthGroup::create(['name' => 'Admin','alias'=>'group_admin']);
-				UxuiAuthGroup::create(['name' => 'karyawan','alias'=>'group_karyawabn']);
+				UxuiAuthGroup::create(['name' => 'karyawan','alias'=>'group_karyawan']);
 			}
 
 			$check=UxuiAuthPermission::count();
@@ -99,47 +95,19 @@ class UxuiUserAksesSeeder extends Seeder
 				}
 			}
 
-			// $check=UxuiAuthUsers::count();
-			// if($check==0){
-			// 	dd($check);
-			// 	DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-			// 	$db=UxuiAuthUsers::truncate();
-			// 	DB::statement('SET FOREIGN_KEY_CHECKS=1;');
-
-			// 	$data_user=$this->userAksesAppService->getList([]);
-			// 	if(!empty($data_user)){
-			// 		foreach($data_user as $value){
-			// 			$status=!empty($value->status) ? $value->status : null;
-			// 			if($status=='petugas'){
-			// 				$alis_group='group_petugas';
-			// 			}elseif($status=='dokter'){
-			// 				$alis_group='group_dokter';
-			// 			}else{
-			// 				$alis_group='';
-			// 			}
-
-			// 			$data_save=[
-			// 				'id'=>$value->id_user_,
-			// 				'id_user'=>$value->id_user,
-			// 				'alias_group'=>$alis_group,
-			// 			];
-
-			// 			UxuiAuthUsers::insertOrIgnore($data_save);
-			// 		}
-			// 	}
-			// }
-
-			// $user_admin=UserAdmin::select('usere as id_user',DB::raw("AES_DECRYPT(usere,'nur') as index_user "))->get();
-			// if(!empty($user_admin)){
-			// 	foreach($user_admin as $value){
-			// 		$data_save=[
-			// 			'id'=>$value->index_user,
-			// 			'id_user'=>$value->id_user,
-			// 			'alias_group'=>'group_super_admin'
-			// 		];
-			// 		UxuiAuthUsers::insertOrIgnore($data_save);
-			// 	}            
-			// }
+			$username_default='adabsensi';
+			$check_user_default=(new \App\Models\UserManagement\UxuiUsers)->select(['id'])->where('username', '=', $username_default)->first();
+			if(!empty($check_user_default)){
+				$check_group=UxuiAuthUsers::where('id', '=', $check_user_default->id)->first();
+				if(empty($check_group)){
+					$model =new UxuiAuthUsers;
+					$model->id=$check_user_default->id;
+					$model->id_user=$check_user_default->id;
+					$model->alias_group='group_super_admin';
+					$model->save();
+				}
+			}
+		
 		} catch(\Illuminate\Database\QueryException $e){
 			if($e->errorInfo[1] == '1062'){
 				dd($e);

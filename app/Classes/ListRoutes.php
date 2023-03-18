@@ -68,6 +68,117 @@ class ListRoutes
 				]
 			],
 			[
+				'title' => 'Data Karyawan | Referensi Departemen/Bidang',
+				'item' => [
+					[
+						'type' => 'index',
+						'method' => 'get',
+						'url' => '/departemen',
+						'controller' => 'DepartemenController@actionIndex',
+						'name' => 'departemen',
+						'middleware' => '',
+					],
+					[
+						'type' => 'create',
+						'method' => ['get', 'post'],
+						'url' => '/departemen/create',
+						'controller' => 'DepartemenController@actionCreate',
+						'name' => '',
+						'middleware' => '',
+					],
+					[
+						'type' => 'update',
+						'method' => ['get', 'post'],
+						'url' => '/departemen/update',
+						'controller' => 'DepartemenController@actionUpdate',
+						'name' => '',
+						'middleware' => '',
+					],
+					[
+						'type' => 'delete',
+						'method' => 'delete',
+						'url' => '/departemen/delete',
+						'controller' => 'DepartemenController@actionDelete',
+						'name' => '',
+						'middleware' => '',
+					],
+				]
+			],
+			[
+				'title' => 'Data Karyawan | Referensi Jabatan Karyawan',
+				'item' => [
+					[
+						'type' => 'index',
+						'method' => 'get',
+						'url' => '/jabatan',
+						'controller' => 'JabatanController@actionIndex',
+						'name' => 'jabatan',
+						'middleware' => '',
+					],
+					[
+						'type' => 'create',
+						'method' => ['get', 'post'],
+						'url' => '/jabatan/create',
+						'controller' => 'JabatanController@actionCreate',
+						'name' => '',
+						'middleware' => '',
+					],
+					[
+						'type' => 'update',
+						'method' => ['get', 'post'],
+						'url' => '/jabatan/update',
+						'controller' => 'JabatanController@actionUpdate',
+						'name' => '',
+						'middleware' => '',
+					],
+					[
+						'type' => 'delete',
+						'method' => 'delete',
+						'url' => '/jabatan/delete',
+						'controller' => 'JabatanController@actionDelete',
+						'name' => '',
+						'middleware' => '',
+					],
+				]
+			],
+			[
+				'title' => 'Data Karyawan | Data karyawan',
+				'item' => [
+					[
+						'type' => 'index',
+						'method' => 'get',
+						'url' => '/data-karyawan',
+						'controller' => 'DataKaryawanController@actionIndex',
+						'name' => 'data-karyawan',
+						'middleware' => '',
+					],
+					[
+						'type' => 'create',
+						'method' => ['get', 'post'],
+						'url' => '/data-karyawan/create',
+						'controller' => 'DataKaryawanController@actionCreate',
+						'name' => '',
+						'middleware' => '',
+					],
+					[
+						'type' => 'update',
+						'method' => ['get', 'post'],
+						'url' => '/data-karyawan/update',
+						'controller' => 'DataKaryawanController@actionUpdate',
+						'name' => '',
+						'middleware' => '',
+					],
+					[
+						'type' => 'delete',
+						'method' => 'delete',
+						'url' => '/data-karyawan/delete',
+						'controller' => 'DataKaryawanController@actionDelete',
+						'name' => '',
+						'middleware' => '',
+					],
+				]
+			],
+			[
 				'title' => 'Manajemen User | Group User',
 				'item' => [
 					[
