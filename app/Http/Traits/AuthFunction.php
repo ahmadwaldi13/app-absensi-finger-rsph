@@ -27,21 +27,21 @@ trait AuthTraits {
             $data_user['auth']=Auth::user();
             $data_user['id_user']=$this->id_user;
 
-            if(empty($check)){
-                $check = \App\Models\Petugas::where('nip', '=', $this->id_user)->where('status', '=', '1')->first();
-                if(!empty($check)){
-                    $data_user['type_user']='petugas';
-                    $data_user['nama_user']=$check->nama;
-                }
-            }
+            // if(empty($check)){
+            //     $check = \App\Models\Petugas::where('nip', '=', $this->id_user)->where('status', '=', '1')->first();
+            //     if(!empty($check)){
+            //         $data_user['type_user']='petugas';
+            //         $data_user['nama_user']=$check->nama;
+            //     }
+            // }
 
-            if(empty($check)){
-                $check_admin = (new \App\Models\UserAdmin)->select('usere as id_user')->whereRaw("usere = AES_ENCRYPT(?,'nur')", [$this->id_user])->first();
-                if($check_admin){
-                    $data_user['type_user']='petugas';
-                    $data_user['nama_user']='Admin';
-                }
-            }
+            // if(empty($check)){
+            //     $check_admin = (new \App\Models\UserAdmin)->select('usere as id_user')->whereRaw("usere = AES_ENCRYPT(?,'nur')", [$this->id_user])->first();
+            //     if($check_admin){
+            //         $data_user['type_user']='petugas';
+            //         $data_user['nama_user']='Admin';
+            //     }
+            // }
 
             $get_group = collect(UxuiAuthUsers::select('alias_group')->where('id', '=', $this->id_user)->get())->map(function ($value) {
                 return $value->alias_group;
@@ -53,9 +53,6 @@ trait AuthTraits {
                 $list=[];
                 foreach($get_group as $group){
                     $col=(new UxuiAuthPermission)->getPermission(['where'=>[ ['alias_group', '=', $group],['alias_group', '=', $group] ]])->select('uxui_auth_permission.url')->get();
-                    // $col = collect( $col )->map(function ($value) {
-                    //     return $value->url;
-                    // });
                     foreach($col as $value){
                         $list[$value->url]=$value->url;
                     }
@@ -64,13 +61,13 @@ trait AuthTraits {
                 $data_user['auth_user']=$list;
             }
 
-            $pegawai=(new \App\Services\PegawaiService() )->getList(['nik'=>$this->id_user],1)->first();
-            $data_user['pegawai']=!empty($pegawai) ? $pegawai->getAttributes() : [];
+            // $pegawai=(new \App\Services\PegawaiService() )->getList(['nik'=>$this->id_user],1)->first();
+            // $data_user['pegawai']=!empty($pegawai) ? $pegawai->getAttributes() : [];
         }
 
-        $data_user['type_user']=!empty($data_user['type_user']) ? $data_user['type_user'] : null;
-
-        if(empty($data_user['type_user'])){
+        // $data_user['type_user']=!empty($data_user['type_user']) ? $data_user['type_user'] : null;
+        
+        if(empty($data_user['auth']) && empty($data_user['auth_user'])){
             if (Auth::check()) {
                 Auth::logout();
                 Session::invalidate();

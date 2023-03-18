@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class CreateUxuiUsers extends Migration
 {
@@ -17,10 +18,11 @@ class CreateUxuiUsers extends Migration
             Schema::create('uxui_users', function (Blueprint $table) {
                 $table->charset = 'latin1';
                 $table->collation = 'latin1_swedish_ci';
-                $table->string('id',700);
-                $table->string('id_user',700);
-                $table->string('name',100);
-                $table->string('type_user',30);
+                $table->increments('id');
+                $table->string('username',150)->unique();
+                $table->string('password',300);
+                $table->boolean('status')->default(1);
+                $table->timestamp('created')->default(DB::raw('CURRENT_TIMESTAMP'));
                 $table->rememberToken();
             });
         }

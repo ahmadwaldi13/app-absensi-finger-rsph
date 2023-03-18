@@ -1,20 +1,16 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\UserManagement;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\DB;
 
 class UxuiUsers extends Authenticatable
 {
     use Notifiable;
 
-    protected $table = 'uxui_users';
+    public $table = 'uxui_users';
     protected $primaryKey = 'id';
-    public $incrementing = false;
-    protected $keyType = 'string';
     public $timestamps = false;
 
     /**
@@ -23,7 +19,7 @@ class UxuiUsers extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'id','id_user', 'remember_token'
+        'id','remember_token'
     ];
 
     /**

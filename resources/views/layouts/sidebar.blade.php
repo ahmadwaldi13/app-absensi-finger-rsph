@@ -37,19 +37,9 @@
     text-white text-decoration-none
     " data-bs-scroll="true" data-bs-backdrop="false">
         @php
-            $sidebar_header_1='';
-            $sidebar_header_2='';
-            $sidebar_header_3='';
-            if($get_user->type_user=='dokter'){
-                $sidebar_header_1='Dokter';
-                $sidebar_header_2='Spesialis';
-                $sidebar_header_3='DS';
-            }elseif($get_user->type_user=='petugas'){
-                $sidebar_header_1='Petugas';
-                $sidebar_header_2='RSUD';
-                $sidebar_header_3='PE';
-            }
-
+            $sidebar_header_1='Aplikasi';
+            $sidebar_header_2='Absensi';
+            $sidebar_header_3='AB';
         @endphp
         <span id="title" class="fs-4 fw-semibold text-center md-show">{{ $sidebar_header_1  }} <br> {{ $sidebar_header_2 }}</span>
         <span id="title" class="fs-4 mt-3 fw-semibold text-center sm-show">{{ $sidebar_header_3 }}</span>

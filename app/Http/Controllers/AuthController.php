@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\AuthService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
+
+use App\Services\AuthService;
 
 class AuthController extends Controller
 {
     protected $authService;
 
-    public function __construct(AuthService $authService)
-    {
-        $this->authService = $authService;
+    public function __construct(){
+        $this->authService = new AuthService;
     }
 
     public function index()
@@ -42,10 +42,15 @@ class AuthController extends Controller
             Session::put('login_error_message', 'Silahkan hubungi IT support applikasi tidak connect dengan database');
             return view('auth/login');
         }
-        // id_user dan password di encrypt pake aes dgn key 'nur'
-        // nanti dicari di table
+        
         try {
             $user = $this->authService->getUserByCredential($request->id_user, $request->password);
+            if(!empty($user[0]=='error')){
+                Session::put('login_error_message', $user[1]);
+                return view('auth/login');
+            }
+            $user=!empty($user[1]) ? $user[1] : '';
+        
             if($user){
                 Auth::loginUsingId($user->id, true);
                 Session::put('get_id_user',$user->id);

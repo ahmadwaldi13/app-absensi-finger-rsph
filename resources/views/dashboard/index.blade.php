@@ -1,6 +1,6 @@
 @extends('layouts.master')
 
-@section('title-header', 'Jadwal Operasi')
+@section('title-header', '')
 
 @section('content')
     <div>

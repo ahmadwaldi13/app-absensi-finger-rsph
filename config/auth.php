@@ -69,7 +69,7 @@ return [
         'users' => [
             'driver' => 'eloquent',
             // 'model' => App\User::class,
-            'model' => App\Models\UxuiUsers::class,
+            'model' => App\Models\UserManagement\UxuiUsers::class,
         ],
 
         // 'users' => [
