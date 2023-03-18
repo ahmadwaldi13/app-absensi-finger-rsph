@@ -6,8 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 use App\Services\GlobalService;
+use App\Services\RefKaryawanService;
 
-class JabatanController extends \App\Http\Controllers\MyAuthController
+class DataKaryawanController extends \App\Http\Controllers\MyAuthController
 {
     public function __construct()
     {
@@ -16,30 +17,36 @@ class JabatanController extends \App\Http\Controllers\MyAuthController
         $this->url_index = $router_name->uri;
         $this->url_name = $router_name->router_name;
 
-        $this->title = 'Referensi Jabatan';
+        $this->title = 'Data Karyawan';
         $this->breadcrumbs = [
             ['title' => 'Data Karyawan', 'url' => url('/') . "/sub-menu?type=4"],
             ['title' => $this->title, 'url' => url('/') . "/" . $this->url_index],
         ];
 
         $this->globalService = new GlobalService;
+        $this->refKaryawanService = new RefKaryawanService;
     }
 
     function actionIndex(Request $request)
     {
 
         $form_filter_text = !empty($request->form_filter_text) ? $request->form_filter_text : '';
+        $filter_id_jabatan = !empty($request->filter_id_jabatan) ? $request->filter_id_jabatan : '';
+        $filter_id_departemen = !empty($request->filter_id_departemen) ? $request->filter_id_departemen : '';
 
-        $paramater_where=[
+        $paramater=[
             'search' => $form_filter_text
         ];
 
-        $paramater_search=[
-            'where_or'=>['nm_jabatan'],
-        ];
+        if($filter_id_jabatan){
+            $paramater['ref_karyawan.id_jabatan']=$filter_id_jabatan;
+        }
 
-        $data_tmp_tmp=(new \App\Models\RefJabatan);
-        $list_data=$data_tmp_tmp->set_where($data_tmp_tmp,$paramater_where,$paramater_search)->paginate(!empty($request->per_page) ? $request->per_page : 15);
+        if($filter_id_departemen){
+            $paramater['ref_karyawan.id_departemen']=$filter_id_departemen;
+        }
+
+        $list_data = $this->refKaryawanService->getList($paramater, 1)->paginate(!empty($request->per_page) ? $request->per_page : 15);
 
         $parameter_view = [
             'title' => $this->title,
@@ -53,11 +60,10 @@ class JabatanController extends \App\Http\Controllers\MyAuthController
     private function form(Request $request)
     {
         $kode = !empty($request->data_sent) ? $request->data_sent : '';
-        $paramater_where = [
-            'id_jabatan' => $kode
+        $paramater = [
+            'id_karyawan' => $kode
         ];
-        $data_tmp_tmp=(new \App\Models\RefJabatan);
-        $model=$data_tmp_tmp->set_where($data_tmp_tmp,$paramater_where)->first();
+        $model = $this->refKaryawanService->getList($paramater, 1)->first();
         if ($model) {
             $action_form = $this->part_view . '/update';
         } else {
@@ -123,19 +129,19 @@ class JabatanController extends \App\Http\Controllers\MyAuthController
         ];
 
         try {
-            $model = (new \App\Models\RefJabatan)->where('id_jabatan', '=', $kode)->first();
+            $model = (new \App\Models\RefKaryawan)->where('id_karyawan', '=', $kode)->first();
             if (empty($model)) {
-                $model = (new \App\Models\RefJabatan);
+                $model = (new \App\Models\RefKaryawan);
             }
             $data_save = $req;
             $model->set_model_with_data($data_save);
-
+            
             $is_save = 0;
 
             if ($model->save()) {
                 $is_save = 1;
             }
-
+            
             if ($is_save) {
                 DB::commit();
                 $link_back_param = $this->clear_request($link_back_param, $request);
@@ -171,7 +177,7 @@ class JabatanController extends \App\Http\Controllers\MyAuthController
         $kode = !empty($request->data_sent) ? $request->data_sent : null;
 
         try {
-            $model = (new \App\Models\RefJabatan)->where('id_jabatan', '=', $kode)->first();
+            $model = (new \App\Models\RefKaryawan)->where('id_karyawan', '=', $kode)->first();
             if (empty($model)) {
                 return redirect()->route($this->url_name, $link_back_param)->with(['error', 'Data tidak ditemukan']);
             }
@@ -183,7 +189,7 @@ class JabatanController extends \App\Http\Controllers\MyAuthController
 
             if ($is_save) {
                 DB::commit();
-                DB::statement("ALTER TABLE ".( new \App\Models\RefJabatan )->table." AUTO_INCREMENT = 1");
+                DB::statement("ALTER TABLE ".( new \App\Models\RefKaryawan )->table." AUTO_INCREMENT = 1");
                 $pesan = ['success', $message_default['success'], 2];
             } else {
                 DB::rollBack();

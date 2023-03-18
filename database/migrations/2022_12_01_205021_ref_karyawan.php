@@ -26,11 +26,9 @@ class RefKaryawan extends Migration
                 $table->string('nip',20);
                 $table->smallInteger('id_jabatan');
                 $table->smallInteger('id_departemen');
-
+                $table->timestamp('created')->default(DB::raw('CURRENT_TIMESTAMP'));
                 $table->foreign(['id_jabatan'],$table_name.'_1')->references(['id_jabatan'])->on('ref_jabatan')->onUpdate('cascade')->onDelete('cascade');
                 $table->foreign(['id_departemen'],$table_name.'_2')->references(['id_departemen'])->on('ref_departemen')->onUpdate('cascade')->onDelete('cascade');
-
-                $table->timestamp('created')->default(DB::raw('CURRENT_TIMESTAMP'));
             });
         }
     }

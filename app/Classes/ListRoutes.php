@@ -149,7 +149,7 @@ class ListRoutes
 						'method' => 'get',
 						'url' => '/data-karyawan',
 						'controller' => 'DataKaryawanController@actionIndex',
-						'name' => 'data-karyawan',
+						'name' => 'data_karyawan',
 						'middleware' => '',
 					],
 					[

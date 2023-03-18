@@ -34,8 +34,12 @@ class DepartemenController extends \App\Http\Controllers\MyAuthController
             'search' => $form_filter_text
         ];
 
+        $paramater_search=[
+            'where_or'=>['nm_departemen'],
+        ];
+
         $data_tmp_tmp=(new \App\Models\RefDepartemen);
-        $list_data=$data_tmp_tmp->set_where($data_tmp_tmp,$paramater_where)->paginate(!empty($request->per_page) ? $request->per_page : 15);
+        $list_data=$data_tmp_tmp->set_where($data_tmp_tmp,$paramater_where,$paramater_search)->paginate(!empty($request->per_page) ? $request->per_page : 15);
 
         $parameter_view = [
             'title' => $this->title,
