@@ -10,6 +10,9 @@ use App\Services\RefKaryawanService;
 
 class DataKaryawanController extends \App\Http\Controllers\MyAuthController
 {
+    public $part_view, $url_index, $url_name, $title, $breadcrumbs, $globalService;
+    public $refKaryawanService;
+
     public function __construct()
     {
         $router_name = (new \App\Http\Traits\GlobalFunction)->getRouterIndex();

@@ -8,10 +8,10 @@ use App\Models\UserManagement\UxuiAuthRoutes;
 
 class RoutersAppService extends \App\Services\BaseService
 {
-    public function __construct(
-        UxuiAuthRoutes $uxuiAuthRoutes
-    ){
-        $this->uxuiAuthRoutes = $uxuiAuthRoutes;
+    public $uxuiAuthRoutes;
+    
+    public function __construct(){
+        $this->uxuiAuthRoutes = new UxuiAuthRoutes;
     }
 
     function insertRoutes($fields)

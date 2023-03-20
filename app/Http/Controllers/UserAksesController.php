@@ -11,10 +11,11 @@ use App\Services\UserManagement\UserGroupAppService;
 class UserAksesController extends Controller
 {
 
-    public function __construct(
-        UserAksesAppService $userAksesAppService,
-        UserGroupAppService $userGroupAppService
-    ) {
+    public $part_view, $url_index, $url_name,$url_name_index, $title, $breadcrumbs, $globalService;
+    public $userAksesAppService,$userGroupAppService;
+
+    public function __construct() {
+        
         $this->title='User akses';
         $this->url_name_index='user_akses';
         $this->breadcrumbs=[
@@ -22,8 +23,8 @@ class UserAksesController extends Controller
             ['title'=>$this->title,'url'=>url('/')."/user-akses"],
         ];
 
-        $this->userAksesAppService = $userAksesAppService;
-        $this->userGroupAppService = $userGroupAppService;
+        $this->userAksesAppService = new UserAksesAppService;
+        $this->userGroupAppService = new UserGroupAppService;
     }
 
     function actionIndex(Request $request, $level = null)

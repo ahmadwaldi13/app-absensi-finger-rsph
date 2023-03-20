@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Hash;
 class AuthService extends BaseService
 {
     public function __construct(){
-        
     }
 
     public function getUserByCredential(string $id_user, string $password){

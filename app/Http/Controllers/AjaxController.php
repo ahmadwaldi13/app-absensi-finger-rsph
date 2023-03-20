@@ -8,6 +8,8 @@ use App\Services\GlobalService;
 
 class AjaxController extends Controller
 {
+    public $globalService;
+    
     public function __construct() {
         $this->globalService = new GlobalService;
     }

@@ -9,10 +9,10 @@ use Illuminate\Support\Str;
 
 class PermissionGroupAppService extends \App\Services\BaseService
 {
-    public function __construct(
-        UxuiAuthPermission $uxuiAuthPermission
-    ){
-       $this->uxuiAuthPermission = $uxuiAuthPermission;
+    public $uxuiAuthPermission;
+
+    public function __construct(){
+       $this->uxuiAuthPermission = new UxuiAuthPermission;
     }
 
     function updateAuthPermission($params,$set,$type='')

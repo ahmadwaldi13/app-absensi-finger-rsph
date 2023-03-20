@@ -10,10 +10,10 @@ use App\Services\UserManagement\RoutersAppService;
 
 class RoutersAppController extends Controller
 {
-    public function __construct(
-        RoutersAppService $routersAppService
-    ) {
-        $this->routersAppService = $routersAppService;
+    public $routersAppService;
+    
+    public function __construct() {
+        $this->routersAppService = new RoutersAppService;
     }
 
     function actionIndex(Request $request)

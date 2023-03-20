@@ -9,6 +9,8 @@ use App\Services\GlobalService;
 
 class DataMesinAbsensiController extends \App\Http\Controllers\MyAuthController
 {
+    public $part_view, $url_index, $url_name, $title, $breadcrumbs, $globalService;
+
     public function __construct()
     {
         $router_name = (new \App\Http\Traits\GlobalFunction)->getRouterIndex();

@@ -12,15 +12,13 @@ use App\Classes\ListRoutes;
 
 class PermissionGroupAppController extends Controller
 {
-    public function __construct(
-        UserGroupAppService $userGroupAppService,
-        PermissionGroupAppService $permissionGroupAppService,
-        RoutersAppService $routersAppService
-    )
-    {
-        $this->permissionGroupAppService = $permissionGroupAppService;
-        $this->userGroupAppService = $userGroupAppService;
-        $this->routersAppService = $routersAppService;
+
+    public $permissionGroupAppService,$userGroupAppService,$routersAppService;
+
+    public function __construct(){
+        $this->permissionGroupAppService = new PermissionGroupAppService;
+        $this->userGroupAppService = new UserGroupAppService;
+        $this->routersAppService = new RoutersAppService;
     }
 
     function actionIndex(Request $request){

@@ -11,14 +11,12 @@ use Illuminate\Support\Str;
 
 class UserGroupAppService extends \App\Services\BaseService
 {
-    public function __construct(
-        UxuiAuthGroup $uxuiAuthGroup,
-        UxuiAuthRoutes $uxuiAuthRoutes,
-        UxuiAuthPermission $uxuiAuthPermission
-    ) {
-        $this->uxuiAuthGroup = $uxuiAuthGroup;
-        $this->uxuiAuthRoutes = $uxuiAuthRoutes;
-        $this->uxuiAuthPermission = $uxuiAuthPermission;
+    public $uxuiAuthGroup,$uxuiAuthRoutes,$uxuiAuthPermission;
+
+    public function __construct() {
+        $this->uxuiAuthGroup = new UxuiAuthGroup;
+        $this->uxuiAuthRoutes = new UxuiAuthRoutes;
+        $this->uxuiAuthPermission = new UxuiAuthPermission;
     }
 
     function getUxuiAuthGroup($params = null)

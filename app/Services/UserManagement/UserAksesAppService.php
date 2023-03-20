@@ -9,10 +9,10 @@ use App\Models\UserManagement\UxuiAuthUsers;
 
 class UserAksesAppService extends \App\Services\BaseService
 {
-    public function __construct(
-        UxuiAuthUsers $uxuiAuthUsers
-    ) {
-        $this->uxuiAuthUsers = $uxuiAuthUsers;
+    public $uxuiAuthUsers;
+    
+    public function __construct() {
+        $this->uxuiAuthUsers = new UxuiAuthUsers;
     }
 
     public function insert($data)

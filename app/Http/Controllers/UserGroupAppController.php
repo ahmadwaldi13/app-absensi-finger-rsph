@@ -10,11 +10,11 @@ use App\Services\UserManagement\PermissionGroupAppService;
 
 class UserGroupAppController extends Controller
 {
-    public function __construct(
-        UserGroupAppService $userGroupAppService,
-        PermissionGroupAppService $permissionGroupAppService,
-        GlobalFunction $globalFunction
-    ) {
+    public $part_view, $url_index, $url_name,$url_name_index, $title, $breadcrumbs, $globalService;
+    public $userGroupAppService,$permissionGroupAppService,$globalFunction;
+
+    public function __construct() {
+
         $this->title='User Group';
         $this->url_name_index='user_group_app';
         $this->breadcrumbs=[
@@ -22,9 +22,9 @@ class UserGroupAppController extends Controller
             ['title'=>$this->title,'url'=>url('/')."/user-group-app"],
         ];
 
-        $this->userGroupAppService = $userGroupAppService;
-        $this->permissionGroupAppService = $permissionGroupAppService;
-        $this->globalFunction = $globalFunction;
+        $this->userGroupAppService = new UserGroupAppService;
+        $this->permissionGroupAppService = new PermissionGroupAppService;
+        $this->globalFunction = new GlobalFunction;
     }
 
     function actionIndex(Request $request)
