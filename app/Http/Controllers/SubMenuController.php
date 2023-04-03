@@ -79,6 +79,16 @@ class SubMenuController extends Controller
                 ];
             }
 
+            if($type==6){
+                $menu_permission=[
+                    [
+                        'title'=>'Presensi',
+                        'key'=>'data-presensi',
+                        'url'=>url('/')."/data-presensi",
+                    ],
+                ];
+            }
+
             if($menu_permission){
                 $list_menu=[];
                 $menu=(new \App\Http\Traits\AuthFunction)->checkMenuAkses($menu_permission);

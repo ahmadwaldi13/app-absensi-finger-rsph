@@ -216,6 +216,27 @@ class ListRoutes
 				]
 			],
 			[
+				'title' => 'Presensi',
+				'item' => [
+					[
+						'type' => 'index',
+						'method' => 'get',
+						'url' => '/data-presensi',
+						'controller' => 'PresensiController@actionIndex',
+						'name' => 'data-presensi',
+						'middleware' => '',
+					],
+					[
+						'type' => 'Sync',
+						'method' => 'get',
+						'url' => '/data-presensi-sync',
+						'controller' => 'PresensiController@actionSync',
+						'name' => 'data-presensi-sync',
+						'middleware' => '',
+					],
+				]
+			],
+			[
 				'title' => 'Mesin Absensi | User Dari Mesin',
 				'item' => [
 					[

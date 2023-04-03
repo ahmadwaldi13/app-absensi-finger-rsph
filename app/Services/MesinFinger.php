@@ -131,4 +131,72 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
         }
         return '';
     }
+
+    public function _checkExists($pin, $datetime)
+    {
+      $userData = UserData::where('user_id', $pin)->where('datetime', $datetime)->get();
+      return $userData;
+    }
+
+    function get_presensi(){
+      $fp = ( new \App\Models\RefMesinAbsensi )->get();
+
+      if (count($fp) == 0) {
+        return "tidak ada mesin absensi!";
+      }
+
+      foreach ($fp as $key => $value) {
+        $IP = $value->ip;
+        $Key = $value->comkey;
+
+        if ($IP == "") {
+          $IP = $value->ip;
+        }
+        if ($Key == "") {
+          $Key = $value->comkey;
+        }
+
+        $connect = @fsockopen($IP, '80', $errno, $errstr, 1);
+        if($connect) {
+          $soapRequest = "<GetAttLog><ArgComKey xsi:type=\"xsd:integer\">".$Key."</ArgComKey><Arg><PIN xsi:type=\"xsd:integer\">All</PIN></Arg></GetAttLog>";
+          $newLine = "\r\n";
+          fputs($connect, "POST /iWsService HTTP/1.0".$newLine);
+          fputs($connect, "Content-Type: text/xml".$newLine);
+          fputs($connect, "Content-Length: ".strlen($soapRequest).$newLine.$newLine);
+          fputs($connect, $soapRequest.$newLine);
+          $buffer = "";
+          while ($response = fgets($connect, 1024)) {
+            $buffer = $buffer.$response;
+          }
+        } else {
+            return "Koneksi Gagal";
+        }
+        $buffer = $this->parse_data($buffer, "<GetAttLogResponse>", "</GetAttLogResponse>");
+        $buffer = explode("\r\n", $buffer);
+
+        $create = [];
+        for ($a=1; $a < count($buffer); $a++) {
+          $data = $this->parse_data($buffer[$a], "<Row>", "</Row>");
+
+          $pin = $this->parse_data($data, "<PIN>", "</PIN>");
+          
+          $datetime  = $this->parse_data($data, "<DateTime>", "</DateTime>");
+
+          if ($data != "") {
+            if (!count($this->_checkExists($pin, $datetime)) > 0) {
+              $create[] = [
+                'user_id' => $pin,
+                'datetime' => $datetime,
+                'machine_id' => $value->id,
+                'created_at' => $datetime
+            ];
+            }
+          }
+        }
+        // dd(count($create));
+        (new \App\Models\UxuiDataPresensi)::insert($create);
+    }
+        return $create;
+
+    }
 }
