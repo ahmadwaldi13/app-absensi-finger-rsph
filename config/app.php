@@ -1,7 +1,8 @@
 <?php
 
 return [
-
+    'brand' => 'Paperless Absensi',
+    
     /*
     |--------------------------------------------------------------------------
     | Application Name

@@ -1,4 +1,4 @@
-# Paperless Hospital
+# Paperless Absensi
 
 ## Requirement
 - PHP v7.3
