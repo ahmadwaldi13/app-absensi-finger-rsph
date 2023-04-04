@@ -76,6 +76,39 @@ class AjaxController extends Controller
         ];
     }
 
+    function getListMesihAbsensi($request){
+        $list_data_tmp=(new \App\Models\RefMesinAbsensi)->get();
+        
+        $list_data=[];
+        foreach($list_data_tmp as $value){
+            $list_data[]=[
+                'kode'=>[
+                    'data-item'=>$value->id_mesin_absensi.'@'.$value->ip_address.'@'.$value->comm_key.'@'.$value->nm_mesin.'@'.$value->lokasi_mesin,
+                    'value'=>$value->ip_address
+                ],
+                $value->nm_mesin,
+                $value->lokasi_mesin,
+            ];
+        }
+    
+        $table=[
+            'header'=>[
+               'title'=> ['Ip Mesin','Nama Mesin','Lokasi Mesin'],
+               'parameter'=>[' class="w-15" ',' class="w-25" ',' class="w-30" ']
+            ],
+        ];
+    
+        $parameter_view=[
+            'table'=>$table,
+            'list_data'=>!empty($list_data) ? $list_data : ''
+        ];
+    
+        return [
+            'success' => true,
+            'html'=>view('ajax.columns_ajax',$parameter_view)->render(),
+        ];
+    }
+
     function ajax(Request $request){
         $get_req = $request->all();
         $hasil='';
@@ -87,6 +120,10 @@ class AjaxController extends Controller
             
             if($get_req['action']=='get_list_departemen'){
                 $hasil=$this->getListDepartemen($request);
+            }
+
+            if($get_req['action']=='get_list_mesih_absensi'){
+                $hasil=$this->getListMesihAbsensi($request);
             }
 
             if($request->ajax()){

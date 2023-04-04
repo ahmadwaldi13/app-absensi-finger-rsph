@@ -11,6 +11,9 @@
 ?>
 
 @section('content')
+
+@include('data-user-mesin.tab_user_mesin', ["active"=>1])
+
 @if( (new \App\Http\Traits\AuthFunction)->checkAkses($router_name->uri.'/create') )
     <div class="collapse mb-2" id="bagan-form-tambah-collapse">
         <div class="card card-body" style='background:#f2f2f2'>

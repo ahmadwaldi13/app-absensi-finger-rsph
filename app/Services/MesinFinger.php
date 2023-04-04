@@ -72,6 +72,43 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
         return '';
     }
 
+    function get_user_dummy(){
+        $buffer=[
+            "",
+            "<Row><PIN>1</PIN><Name>sayuti</Name><Password></Password><Group>1</Group><Privilege>0</Privilege><Card>0</Card><PIN2>1</PIN2><TZ1>0</TZ1><TZ2>0</TZ2><TZ3>0</TZ3></Row>",
+            "<Row><PIN>2</PIN><Name>jiwana</Name><Password>123456</Password><Group>1</Group><Privilege>0</Privilege><Card>0</Card><PIN2>2</PIN2><TZ1>0</TZ1><TZ2>0</TZ2><TZ3>0</TZ3></Row>",
+            "<Row><PIN>3</PIN><Name>admin</Name><Password>123123</Password><Group>1</Group><Privilege>14</Privilege><Card>0</Card><PIN2>3</PIN2><TZ1>0</TZ1><TZ2>0</TZ2><TZ3>0</TZ3></Row>",
+            "<Row><PIN>4</PIN><Name>angga</Name><Password></Password><Group>1</Group><Privilege>0</Privilege><Card>0</Card><PIN2>4</PIN2><TZ1>0</TZ1><TZ2>0</TZ2><TZ3>0</TZ3></Row>",
+            "<Row><PIN>5</PIN><Name>Wmn</Name><Password>123</Password><Group>1</Group><Privilege>0</Privilege><Card>0</Card><PIN2>5</PIN2><TZ1>0</TZ1><TZ2>1</TZ2><TZ3>0</TZ3></Row>",
+            "",
+        ];
+        $jml=0;
+        $data_tmp=[];
+        for($a = 0; $a < count($buffer); $a++) {
+            $data = $this->parse_data($buffer[$a], "<Row>", "</Row>");
+            if($data){
+                $jml++;
+                $data_tmp[]=[
+                    'id'=>$this->parse_data($data, "<PIN>", "</PIN>"),
+                    'name'=>$this->parse_data($data, "<Name>", "</Name>"),
+                    'password'=>$this->parse_data($data, "<Password>", "</Password>"),
+                    'group'=>$this->parse_data($data, "<Group>", "</Group>"),
+                    'privilege'=>$this->parse_data($data, "<Privilege>", "</Privilege>"),
+                    'card'=>$this->parse_data($data, "<Card>", "</Card>"),
+                    'pin2'=>$this->parse_data($data, "<PIN2>", "</PIN2>"),
+                    'tz1'=>$this->parse_data($data, "<TZ1>", "</TZ1>"),
+                    'tz2'=>$this->parse_data($data, "<TZ2>", "</TZ2>"),
+                    'tz3'=>$this->parse_data($data, "<TZ3>", "</TZ3>"),
+                ];   
+            }
+        }
+
+        if($data_tmp){
+            return json_encode($data_tmp);
+        }
+        return '';
+    }
+
     function get_user_tamplate($id_user){
         $connect_ip=$this->connect_sock();
         

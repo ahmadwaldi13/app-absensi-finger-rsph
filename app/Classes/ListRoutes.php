@@ -237,7 +237,7 @@ class ListRoutes
 				]
 			],
 			[
-				'title' => 'Mesin Absensi | User Dari Mesin',
+				'title' => 'Mesin Absensi | Data User',
 				'item' => [
 					[
 						'type' => 'index',
@@ -245,6 +245,19 @@ class ListRoutes
 						'url' => '/data-user-mesin',
 						'controller' => 'DataUserMesinController@actionIndex',
 						'name' => 'data_user_mesin',
+						'middleware' => '',
+					],
+				]
+			],
+			[
+				'title' => 'Mesin Absensi | Sinkronisasi Mesin & Database',
+				'item' => [
+					[
+						'type' => 'index',
+						'method' => 'get',
+						'url' => '/data-user-mesin-sinkronisasi',
+						'controller' => 'DataUserMesinSinkronisasiController@actionIndex',
+						'name' => 'data_user_mesin_sinkronisasi',
 						'middleware' => '',
 					],
 				]

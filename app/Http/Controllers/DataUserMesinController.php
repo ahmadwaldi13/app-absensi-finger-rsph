@@ -45,20 +45,29 @@ class DataUserMesinController extends \App\Http\Controllers\MyAuthController
 
 
         $data_mesin=(new \App\Models\RefMesinAbsensi)->get();
-
         
-        foreach($data_mesin as $value){
-            $mesin=(new \App\Services\MesinFinger($value->ip_address));
-            $check_connet=$mesin->connect();
-            if($check_connet[0]=='error'){
-                dd('Tidak Konek');
-            }
-            $get_user=$mesin->get_user_with_tamplate();
-            if($get_user){
-                $get_user=json_decode($get_user);
-                dd($get_user);
-            }
-        }
+        // foreach($data_mesin as $value){
+        //     $mesin=(new \App\Services\MesinFinger($value->ip_address));
+        //     $get_user=$mesin->get_user_dummy();
+        //     dd($get_user);
+        //     if($get_user){
+        //         $get_user=json_decode($get_user);
+        //         dd($get_user);
+        //     }
+        // }
+        
+        // foreach($data_mesin as $value){
+        //     $mesin=(new \App\Services\MesinFinger($value->ip_address));
+        //     $check_connet=$mesin->connect();
+        //     if($check_connet[0]=='error'){
+        //         dd('Tidak Konek');
+        //     }
+        //     $get_user=$mesin->get_user_with_tamplate();
+        //     if($get_user){
+        //         $get_user=json_decode($get_user);
+        //         dd($get_user);
+        //     }
+        // }
 
         $parameter_view = [
             'title' => $this->title,
