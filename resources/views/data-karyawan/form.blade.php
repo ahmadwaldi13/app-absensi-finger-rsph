@@ -10,8 +10,8 @@
             <div class="row justify-content-start align-items-end">
                 <div class="col-lg-12 mb-3">
                     <div class='bagan_form'>
-                        <label for="nama" class="form-label">Nama Karyawan</label>
-                        <input type="text" class="form-control" id="nama" name='nama' required value="{{ !empty($model->nama) ? $model->nama : '' }}">
+                        <label for="nm_karyawan" class="form-label">Nama Karyawan</label>
+                        <input type="text" class="form-control" id="nm_karyawan" name='nm_karyawan' required value="{{ !empty($model->nm_karyawan) ? $model->nm_karyawan : '' }}">
                         <div class="message"></div>
                     </div>
                 </div>

@@ -66,6 +66,20 @@
 
 @if(!empty($list_data))
     @include($router_name->path_base.'.columns')
+
+    <?php $url_sinkron=$router_name->uri.'/sinkron'; ?>
+    @if( (new \App\Http\Traits\AuthFunction)->checkAkses($url_sinkron) )
+        <form action="{{ url($url_sinkron) }}" method="{{ !empty($method_form) ? $method_form : 'POST' }}">
+            @csrf
+            <input type="hidden" name="key" value="{{ !empty($data_mesin->id_mesin_absensi) ? $data_mesin->id_mesin_absensi : '' }}">
+
+            <div class="row justify-content-start align-items-end">
+                <div class="col-lg-5">
+                    <button class="btn btn-primary" type="submit">Sinkronisasi</button>
+                </div>
+            </div>
+        </form>
+    @endif
 @endif
 
 @endsection

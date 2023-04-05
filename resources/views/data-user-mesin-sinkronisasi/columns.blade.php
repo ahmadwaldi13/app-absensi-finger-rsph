@@ -31,6 +31,7 @@
                             <th class="py-3" style="width: 15%">Id User</th>
                             <th class="py-3" style="width: 15%">Nama</th>
                             <th class="py-3" style="width: 15%">Group</th>
+                            <th class="py-3" style="width: 15%">Privilege</th>
                             <th class="py-3" style="width: 15%">Database</th>
                             <th class="py-3" style="width: 15%">Nama User Tersimpan</th>
                         </tr>
@@ -43,11 +44,15 @@
                                 if(!empty($item->ready)){
                                     $check_database="<span style='color:#128628'>Ada</span>";
                                 }
+
+                                $get_privil=(new \App\Models\RefUserInfo())->get_privilege($item->privilege);
+
                             ?>
                             <tr>
                                 <td>{{ !empty($item->id_user) ? $item->id_user : ''  }}</td>
                                 <td>{{ !empty($item->name) ? $item->name : ''  }}</td>
                                 <td>{{ !empty($item->group) ? $item->group : ''  }}</td>
+                                <td>{{ $get_privil  }}</td>
                                 <td>{!! $check_database  !!}</td>
                                 <td>{{ !empty($item->db_name) ? $item->db_name : ''  }}</td>
                             </tr>

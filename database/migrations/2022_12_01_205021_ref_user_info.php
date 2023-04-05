@@ -44,14 +44,15 @@ class RefUserInfo extends Migration
                 $table->charset = 'latin1';
                 $table->collation = 'latin1_swedish_ci';
                 
+                $table->integer('id_mesin_absensi')->length(10)->unsigned();
                 $table->integer('id_user');
                 $table->smallInteger('finger_id')->length(6);
                 $table->string('size', 20)->nullable(true);
                 $table->smallInteger('valid')->length(6);
                 $table->text('finger');
-                $table->unique(['id_user','finger_id'],$table_name.'_uniq');
+                $table->unique(['id_mesin_absensi','id_user','finger_id'],$table_name.'_uniq');
                 
-                $table->foreign(['id_user'],$table_name.'_fk1')->references(['id_user'])->on('ref_user_info')->onUpdate('cascade')->onDelete('cascade');
+                $table->foreign(['id_mesin_absensi','id_user'],$table_name.'_fk1')->references(['id_mesin_absensi','id_user'])->on('ref_user_info')->onUpdate('cascade')->onDelete('cascade');
             });
         }
 
@@ -65,6 +66,24 @@ class RefUserInfo extends Migration
                 $table->integer('id_user');
                 $table->string('name', 40);
                 $table->integer('group')->nullable(true);
+                $table->integer('privilege')->nullable(true);
+            });
+        }
+
+
+        $table_name='ref_karyawan_user';
+        if (!Schema::hasTable($table_name)) {
+            Schema::create($table_name, function (Blueprint $table) use ($table_name) {
+                $table->charset = 'latin1';
+                $table->collation = 'latin1_swedish_ci';
+                $table->integer('id_karyawan')->length(10)->unsigned();
+                $table->integer('id_mesin_absensi')->length(10)->unsigned();
+                $table->integer('id_user');
+                
+                $table->unique(['id_karyawan','id_mesin_absensi','id_user'],$table_name.'_uniq');
+
+                $table->foreign(['id_karyawan'],$table_name.'_fk1')->references(['id_karyawan'])->on('ref_karyawan')->onUpdate('cascade')->onDelete('cascade');
+                $table->foreign(['id_mesin_absensi','id_user'],$table_name.'_fk2')->references(['id_mesin_absensi','id_user'])->on('ref_user_info')->onUpdate('cascade')->onDelete('cascade');
             });
         }
         
@@ -88,6 +107,11 @@ class RefUserInfo extends Migration
         }
 
         $table_name='user_mesin_tmp';
+        if (Schema::hasTable($table_name)) {
+            Schema::dropIfExists($table_name);
+        }
+
+        $table_name='ref_karyawan_user';
         if (Schema::hasTable($table_name)) {
             Schema::dropIfExists($table_name);
         }

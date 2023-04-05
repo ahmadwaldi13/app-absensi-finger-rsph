@@ -108,6 +108,41 @@ class AjaxController extends Controller
             'html'=>view('ajax.columns_ajax',$parameter_view)->render(),
         ];
     }
+    
+    function getListKaryawan($request){
+        $list_data_tmp = (new \App\Services\RefKaryawanService)->getList([], 1)->get();
+        
+        $list_data=[];
+        foreach($list_data_tmp as $value){
+            $list_data[]=[
+                $value->nik,
+                $value->nip,
+                'kode'=>[
+                    'data-item'=>$value->id_karyawan.'@'.$value->nm_karyawan.'@'.$value->nik.'@'.$value->nip.'@'.$value->id_jabatan.'@'.$value->nm_jabatan.'@'.$value->id_departemen.'@'.$value->nm_departemen,
+                    'value'=>$value->nm_karyawan
+                ],
+                $value->nm_jabatan,
+                $value->nm_departemen,
+            ];
+        }
+    
+        $table=[
+            'header'=>[
+               'title'=> ['NIK','NIP','Nama','Jabatan','Departemen'],
+               'parameter'=>[' class="w-5" ',' class="w-5" ',' class="w-25" ',' class="w-25" ',' class="w-25" ']
+            ],
+        ];
+    
+        $parameter_view=[
+            'table'=>$table,
+            'list_data'=>!empty($list_data) ? $list_data : ''
+        ];
+    
+        return [
+            'success' => true,
+            'html'=>view('ajax.columns_ajax',$parameter_view)->render(),
+        ];
+    }
 
     function ajax(Request $request){
         $get_req = $request->all();
@@ -124,6 +159,10 @@ class AjaxController extends Controller
 
             if($get_req['action']=='get_list_mesih_absensi'){
                 $hasil=$this->getListMesihAbsensi($request);
+            }
+
+            if($get_req['action']=='get_list_karyawan'){
+                $hasil=$this->getListKaryawan($request);
             }
 
             if($request->ajax()){

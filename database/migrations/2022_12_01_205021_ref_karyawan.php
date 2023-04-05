@@ -20,7 +20,7 @@ class RefKaryawan extends Migration
                 $table->charset = 'latin1';
                 $table->collation = 'latin1_swedish_ci';
                 $table->increments('id_karyawan');
-                $table->string('nama',50);
+                $table->string('nm_karyawan',50);
                 $table->string('alamat',100);
                 $table->string('nik',20);
                 $table->string('nip',20);

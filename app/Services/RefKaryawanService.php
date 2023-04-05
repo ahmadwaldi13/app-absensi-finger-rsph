@@ -23,7 +23,7 @@ class RefKaryawanService extends BaseService
         ;
 
         $list_search=[
-            'where_or'=>['nama','alamat','nik','nip','nm_jabatan','nm_departemen'],
+            'where_or'=>['nm_karyawan','alamat','nik','nip','nm_jabatan','nm_departemen'],
         ];
 
         if($params){

@@ -51,7 +51,6 @@
                 </div>
             </form>
 
-
             <div style="overflow-x: auto; max-width: auto;">
                 <table class="table border table-responsive-tablet">
                     <thead>
@@ -76,7 +75,7 @@
                             <tr>
                                 <td>{{ !empty($item->nik) ? $item->nik : ''  }}</td>
                                 <td>{{ !empty($item->nip) ? $item->nip : ''  }}</td>
-                                <td>{{ !empty($item->nama) ? $item->nama : ''  }}</td>
+                                <td>{{ !empty($item->nm_karyawan) ? $item->nm_karyawan : ''  }}</td>
                                 <td>{{ !empty($item->nm_jabatan) ? $item->nm_jabatan : ''  }}</td>
                                 <td>{{ !empty($item->nm_departemen) ? $item->nm_departemen : ''  }}</td>
                                 <td>{{ !empty($item->alamat) ? $item->alamat : ''  }}</td>

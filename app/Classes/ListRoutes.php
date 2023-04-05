@@ -237,7 +237,7 @@ class ListRoutes
 				]
 			],
 			[
-				'title' => 'Mesin Absensi | Data User',
+				'title' => 'Mesin Absensi | Data User Pada Database',
 				'item' => [
 					[
 						'type' => 'index',
@@ -247,6 +247,22 @@ class ListRoutes
 						'name' => 'data_user_mesin',
 						'middleware' => '',
 					],
+					[
+                        'type' => 'update',
+                        'method' => ['get', 'post'],
+                        'url' => '/data-user-mesin/update',
+                        'controller' => 'DataUserMesinController@actionUpdate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'delete',
+                        'method' => 'delete',
+                        'url' => '/data-user-mesin/delete',
+                        'controller' => 'DataUserMesinController@actionDelete',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
 				]
 			],
 			[
@@ -258,6 +274,14 @@ class ListRoutes
 						'url' => '/data-user-mesin-sinkronisasi',
 						'controller' => 'DataUserMesinSinkronisasiController@actionIndex',
 						'name' => 'data_user_mesin_sinkronisasi',
+						'middleware' => '',
+					],
+					[
+						'type' => 'Sinkronisasi',
+						'method' => 'post',
+						'url' => '/data-user-mesin-sinkronisasi/sinkron',
+						'controller' => 'DataUserMesinSinkronisasiController@actionSinkron',
+						'name' => '',
 						'middleware' => '',
 					],
 				]
