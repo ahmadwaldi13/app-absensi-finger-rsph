@@ -1,8 +1,10 @@
-<hr>
+<hr style="margin-top:0px">
 <div>
     <div class="row d-flex justify-content-between">
         <div>
             <form action="" method="GET">
+                <input type="hidden" id="filter_id_mesin" name="filter_id_mesin" value="{{ Request::get('filter_id_mesin') }}" />
+                
                 <div class="row justify-content-start align-items-end mb-3">
                     <div class="col-lg-3 col-md-10">
                         <label for="filter_search_text" class="form-label">Pencarian Dengan Keyword</label>
@@ -13,60 +15,47 @@
 
                     <div class="col-lg-1 col-md-1">
                         <div class="d-grid grap-2">
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" name='searchbydb' class="btn btn-primary" value=1>
                                 <i class="fa-sharp fa-solid fa-magnifying-glass"></i>
                             </button>
                         </div>
                     </div>
-                    {{-- <div class="col-lg-1 col-md-1">
-                        <div class="d-grid grap-2">
-                            <a href="{{ route('data-presensi-sync') }}" class="btn btn-primary">
-                                Sync
-                            </a>
-                        </div>
-                    </div> --}}
                 </div>
             </form>
-            <div class="col-lg-1 col-md-1">
-                <div class="d-grid grap-2">
-                    <a href="{{ route('data-presensi-sync') }}" class="btn btn-primary">
-                        Sync
-                    </a>
-                </div>
-            </div>
+
 
             <div style="overflow-x: auto; max-width: auto;">
                 <table class="table border table-responsive-tablet">
                     <thead>
                         <tr>
-                            <th class="py-3" style="width: 15%">No</th>
-                            <th class="py-3" style="width: 15%">user Id</th>
-                            <th class="py-3" style="width: 15%">Jam</th>
-                            <th class="py-3" style="width: 15%">Id Mesin</th>
+                            <th class="py-3" style="width: 15%">Id User</th>
+                            <th class="py-3" style="width: 15%">Tanggal & Jam</th>
+                            <th class="py-3" style="width: 15%">Verifikasi</th>
+                            <th class="py-3" style="width: 15%">Status</th>
+                            {{-- <th class="py-3" style="width: 15%">Database</th>
+                            <th class="py-3" style="width: 15%">Nama User Tersimpan</th> --}}
                         </tr>
                     </thead>
                     <tbody>
+                        {{-- @php
+                            dd($list_data);
+                        @endphp --}}
                         @if(!empty($list_data))
                             @foreach($list_data as $key => $item)
-                            {{-- <?php
-                                $paramater_url=[
-                                    'data_sent'=>$item->id_jabatan
-                                ];
-                            ?> --}}
+                            <?php
+                                $check_database="<span style='color:RED'>Belum Ada</span>";
+                                if(!empty($item->ready)){
+                                    $check_database="<span style='color:#128628'>Ada</span>";
+                                }
+
+                                // $get_privil=(new \App\Models\RefUserInfo())->get_privilege($item->privilege);
+
+                            ?>
                             <tr>
-                                <td>{{ $key + 1 }}</td>
-                                <td>{{ !empty($item->user_id ? $item->user_id : '') }}</td>
-                                <td>{{ !empty($item->datetime) ? $item->datetime : ''}}</td>
-                                <td>{{ !empty($item->machine_id) ? $item->machine_id : '' }}</td>
-                                {{-- <td>{{ !empty($item->nm_jabatan) ? $item->nm_jabatan : ''  }}</td> --}}
-                                {{-- <td class='text-right'>
-                                    {!! (new
-                                    \App\Http\Traits\AuthFunction)->setPermissionButton([$router_name->uri.'/update',$paramater_url,'update'])
-                                    !!}
-                                    {!! (new
-                                    \App\Http\Traits\AuthFunction)->setPermissionButton([$router_name->uri.'/delete',$paramater_url,'delete'],['modal'])
-                                    !!}
-                                </td> --}}
+                                <td>{{ !empty($item->id_user) ? $item->id_user : ''  }}</td>
+                                <td>{{ !empty($item->datetime) ? $item->datetime : ''  }}</td>
+                                <td>{{ !empty($item->verified) ? $item->verified : ''  }}</td>
+                                <td>{{ !empty($item->status) ? $item->status : ''  }}</td>    
                             </tr>
                             @endforeach
                         @endif

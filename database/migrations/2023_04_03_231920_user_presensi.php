@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class UxuiDataPresensi extends Migration
+class UserPresensi extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,16 @@ class UxuiDataPresensi extends Migration
      */
     public function up()
     {
-        $table_name='uxui_data_presensi';
+        $table_name='user_presensi';
         if (!Schema::hasTable($table_name)) {
             Schema::create($table_name, function (Blueprint $table) {
                 $table->charset = 'latin1';
                 $table->collation = 'latin1_swedish_ci';
-                $table->increments('id');
-                $table->string('user_id');
+                $table->integer('id_mesin_absensi')->length(10)->unsigned();
+                $table->integer('id_user');
                 $table->datetime('datetime');
-                $table->integer('machine_id');
-                $table->timestamps();
+                $table->integer('verified');
+                $table->integer('status');
             });
         }
     }
@@ -34,8 +34,8 @@ class UxuiDataPresensi extends Migration
      */
     public function down()
     {
-        if (Schema::hasTable('uxui_data_presensi')) {
-            Schema::dropIfExists('uxui_data_presensi');
+        if (Schema::hasTable('user_presensi')) {
+            Schema::dropIfExists('user_presensi');
         }
     }
 }

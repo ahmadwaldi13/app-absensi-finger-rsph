@@ -216,27 +216,6 @@ class ListRoutes
 				]
 			],
 			[
-				'title' => 'Presensi',
-				'item' => [
-					[
-						'type' => 'index',
-						'method' => 'get',
-						'url' => '/data-presensi',
-						'controller' => 'PresensiController@actionIndex',
-						'name' => 'data-presensi',
-						'middleware' => '',
-					],
-					[
-						'type' => 'Sync',
-						'method' => 'get',
-						'url' => '/data-presensi-sync',
-						'controller' => 'PresensiController@actionSync',
-						'name' => 'data-presensi-sync',
-						'middleware' => '',
-					],
-				]
-			],
-			[
 				'title' => 'Mesin Absensi | Data User Pada Database',
 				'item' => [
 					[
@@ -282,6 +261,32 @@ class ListRoutes
 						'url' => '/data-user-mesin-sinkronisasi/sinkron',
 						'controller' => 'DataUserMesinSinkronisasiController@actionSinkron',
 						'name' => '',
+						'middleware' => '',
+					],
+				]
+			],
+			[
+				'title' => 'User Presensi',
+				'item' => [
+					[
+						'type' => 'index',
+						'method' => 'get',
+						'url' => '/data-presensi',
+						'controller' => 'PresensiController@actionIndex',
+						'name' => 'data-presensi',
+						'middleware' => '',
+					],
+				]
+			],
+			[
+				'title' => 'Upload Data Ke Mesin',
+				'item' => [
+					[
+						'type' => 'index',
+						'method' => 'get',
+						'url' => '/upload-data',
+						'controller' => 'UploadDataController@actionIndex',
+						'name' => 'upload-data',
 						'middleware' => '',
 					],
 				]

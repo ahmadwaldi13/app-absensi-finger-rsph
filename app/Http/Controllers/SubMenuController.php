@@ -76,15 +76,15 @@ class SubMenuController extends Controller
                         'key'=>'data-user-mesin',
                         'url'=>url('/')."/data-user-mesin",
                     ],
-                ];
-            }
-
-            if($type==6){
-                $menu_permission=[
                     [
                         'title'=>'Presensi',
                         'key'=>'data-presensi',
                         'url'=>url('/')."/data-presensi",
+                    ],
+                    [
+                        'title'=>'Upload Data',
+                        'key'=>'upload-data',
+                        'url'=>url('/')."/upload-data",
                     ],
                 ];
             }
