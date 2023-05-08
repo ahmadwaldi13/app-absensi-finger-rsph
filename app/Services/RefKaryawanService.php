@@ -35,4 +35,15 @@ class RefKaryawanService extends BaseService
             return $query;
         }
     }
+
+    function getListdpjp_pasien($params){
+        $query = $this->refKaryawan
+        ->select('ref_karyawan.*','nm_jabatan','nm_departemen')
+        ->Leftjoin('ref_jabatan','ref_jabatan.id_jabatan','=','ref_karyawan.id_jabatan')
+        ->Leftjoin('ref_departemen','ref_departemen.id_departemen','=','ref_karyawan.id_departemen')
+        ->where('ref_karyawan.id_karyawan', '=', $params)
+        ->get();
+
+        return $query;
+    }
 }

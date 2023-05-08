@@ -281,14 +281,30 @@ class ListRoutes
 			[
 				'title' => 'Upload Data Ke Mesin',
 				'item' => [
+					// [
+					// 	'type' => 'index',
+					// 	'method' => 'get',
+					// 	'url' => '/upload-data',
+					// 	'controller' => 'UploadDataController@actionIndex',
+					// 	'name' => 'upload-data',
+					// 	'middleware' => '',
+					// ],
 					[
-						'type' => 'index',
-						'method' => 'get',
-						'url' => '/upload-data',
-						'controller' => 'UploadDataController@actionIndex',
-						'name' => 'upload-data',
-						'middleware' => '',
-					],
+                        'type' => 'Upload',
+                        'method' => ['get', 'post'],
+                        'url' => '/upload-data',
+                        'controller' => 'UploadDataController@actionIndex',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'system',
+                        'method' => 'get',
+                        'url' => '/upload-data/ajax',
+                        'controller' => 'UploadDataController@ajax',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
 				]
 			],
 			[
