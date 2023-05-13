@@ -185,6 +185,8 @@ class UploadDataController extends Controller
                         'id'=>$key,
                         'nama'=>$value->data[2]
                     ];  
+
+                    $upload = $get_user=$mesin->get_user_upload('',$data_save);
                 }
             }
 
@@ -198,10 +200,11 @@ class UploadDataController extends Controller
 
         try {
             
-
+            // $id_mesin='';
             $is_save = 0;
             $mesin=(new \App\Services\MesinFinger($data_mesin->ip_address));
-            $get_user=$mesin->get_user_upload($data_save);
+            $get_user=$mesin->get_user_upload();
+            // $get_user=$mesin->get_user_upload($data_save, $id_mesin);
             dd($get_user);
             if($get_user){
                 $get_user=json_decode($get_user);
