@@ -108,7 +108,12 @@ class UploadDataController extends Controller
 
     private function form(Request $request)
     {
+        $id_mesin_absensi = !empty($request->filter_id_mesin) ? $request->filter_id_mesin : '';
+
         $kode = !empty($request->id_karyawan) ? $request->id_karyawan : null;
+        if(!empty($id_mesin_absensi)){
+            $data_mesin=(new \App\Models\RefMesinAbsensi)->where(['id_mesin_absensi'=>$id_mesin_absensi])->first();
+        }
         
         $model = (new \App\Models\RefKaryawan)->where('id_karyawan', '=', $kode)->first();
 
@@ -125,16 +130,11 @@ class UploadDataController extends Controller
                 }
             }
 
-            // $dataPasien = $this->globalService->getDataPasien($no_rm);
-
-
-
             if ($item_list_terpilih) {
                 $item_list_terpilih = json_encode($item_list_terpilih);
             }
             
         } else {
-            // $dataPasien = $this->globalService->getDataPasien($no_rm);
             $action_form = $this->part_view;
             $model = new \App\Models\RefKaryawan;
         }
@@ -145,6 +145,7 @@ class UploadDataController extends Controller
             'dataPasien'=> $dataPasien,
             'action_form' => $action_form,
             'item_list_terpilih' => !empty($item_list_terpilih) ? $item_list_terpilih : '',
+            'data_mesin'=> !empty($data_mesin) ? $data_mesin : [],
         ];
         $get_request = $request->all();
         if (!empty($get_request['_token'])) {
@@ -163,6 +164,87 @@ class UploadDataController extends Controller
         if ($request->isMethod('post')) {
             return $this->proses($request);
         }
+    }
+
+    private function proses($request){
+        $id_mesin_absensi = !empty($request->filter_id_mesin) ? $request->filter_id_mesin : '';
+
+        $kode = !empty($request->id_karyawan) ? $request->id_karyawan : null;
+        if(!empty($id_mesin_absensi)){
+            $data_mesin=(new \App\Models\RefMesinAbsensi)->where(['id_mesin_absensi'=>$id_mesin_absensi])->first();
+        }
+        $mesin=(new \App\Services\MesinFinger($data_mesin->ip_address));
+        $item_list_terpilih=!empty($request->item_list_terpilih) ? $request->item_list_terpilih : '';
+        $item_list_terpilih=json_decode($item_list_terpilih);
+        $item_list_terpilih=(array)$item_list_terpilih;
+
+            if($item_list_terpilih){
+                $jml_save=0;
+                foreach($item_list_terpilih  as $key => $value){
+                    $data_save=[
+                        'id'=>$key,
+                        'nama'=>$value->data[2]
+                    ];  
+                }
+            }
+
+        $jml_save=0;
+        DB::beginTransaction();
+        $pesan = [];
+        $message_default = [
+            'success' => !empty($kode) ? 'Data berhasil diubah' : 'Data berhasil disimpan',
+            'error' => !empty($kode) ? 'Data tidak berhasil diubah' : 'Data berhasil disimpan'
+        ];
+
+        try {
+            
+
+            $is_save = 0;
+            $mesin=(new \App\Services\MesinFinger($data_mesin->ip_address));
+            $get_user=$mesin->get_user_upload($data_save);
+            dd($get_user);
+            if($get_user){
+                $get_user=json_decode($get_user);
+
+                (new \App\Models\UserPresensi)->where(['id_mesin_absensi'=>$data_mesin->id_mesin_absensi])->delete();
+
+                $jml_save=0;
+                foreach($get_user as $value){
+                    $model = (new \App\Models\UserPresensi);
+                    $model->id_mesin_absensi = $data_mesin->id_mesin_absensi;
+                    $model->id_user = $value->id;
+                    $model->datetime = $value->datetime;
+                    $model->verified = $value->verified;
+                    $model->status = $value->status;
+
+                    if ($model->save()) {
+                        $jml_save++;
+                    }
+                }
+
+                if($jml_save>0){
+                    $is_save = 1;
+                }
+            }
+
+            if ($is_save) {
+                DB::commit();
+                $pesan = ['success', $message_default['success'], 2];
+            } else {
+                DB::rollBack();
+                $pesan = ['error', $message_default['error'], 3];
+            }
+        } catch (\Illuminate\Database\QueryException $e) {
+            DB::rollBack();
+            if ($e->errorInfo[1] == '1062') {
+            }
+            $pesan = ['error', $message_default['error'], 3];
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            $pesan = ['error', $message_default['error'], 3];
+        }
+
+        // return $pesan;
     }
 
 

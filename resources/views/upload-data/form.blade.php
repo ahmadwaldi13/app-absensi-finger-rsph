@@ -4,24 +4,38 @@
 
 <form action="{{ url($action_form) }}" method="{{ !empty($method_form) ? $method_form : 'POST' }}">
     @csrf
-    {{-- <div class="row justify-content-start align-items-end mb-2">
-        <div class="col-6 mb-2">
-            <label for="no_rawat" class="form-label">No.Rawat</label>
-            <input type="text" class="form-control" id="no_rawat" readonly name="no_rawat"  value="{{!empty($no_rawat) ? $no_rawat : ''}}">
+    <div class="row justify-content-start align-items-end mb-3">
+        <div class="col-lg-3 col-md-10">
+            <div class='bagan_form'>
+                <label for="filter_ip_mesin" class="form-label">Pilih Data Mesin <span class="text-danger">*</span></label>
+                <div class="button-icon-inside">
+                    <input type="text" class="input-text" id='filter_ip_mesin' required value="{{ !empty($data_mesin->ip_address) ? $data_mesin->ip_address : '' }}" />
+                    <input type="hidden" id="filter_id_mesin" name="filter_id_mesin" value="{{ Request::get('filter_id_mesin') }}" />
+                    <span class="modal-remote-data" data-modal-src="{{ url('ajax?action=get_list_mesih_absensi') }}" data-modal-key="" data-modal-pencarian='true' data-modal-title='Jenis' data-modal-width='40%' data-modal-action-change="function=.set-data-list-from-modal@data-target=#filter_id_mesin|#filter_ip_mesin|null|#filter_nama_mesin|#filter_lokasi_mesin@data-key-bagan=0@data-btn-close=#closeModalData">
+                        <img class="iconify hover-pointer text-primary" src="{{ asset('') }}icon/selected.png" alt="">
+                    </span>
+                    <a href="#" id='reset_input'><i class="fa-solid fa-square-xmark"></i></a>
+                </div>
+                <div class="message"></div>
+            </div>
         </div>
-        <div class="col-6 mb-2">
-            <label for="no_rawat" class="form-label">No.RM</label>
-            <input type="text" class="form-control" name="no_rm" id="no_rm" readonly value="{{!empty($dataPasien->no_rkm_medis) ? $dataPasien->no_rkm_medis : ''}}">
+
+        <div class="col-lg-3 col-md-10">
+            <div class='bagan_form'>
+            <label for="filter_nama_mesin" class="form-label">Nama Mesin</label>
+                <input type="text" class="form-control" id="filter_nama_mesin" readonly value="{{ !empty($data_mesin->nm_mesin) ? $data_mesin->nm_mesin : '' }}">
+                <div class="message"></div>
+            </div>
         </div>
-        <div class="col-6 mb-2">
-            <label for="no_rawat" class="form-label">Pasien</label>
-            <input type="text" class="form-control" id="nm_pasien" readonly value="{{!empty($dataPasien->nm_pasien) ? $dataPasien->nm_pasien : ''}}">
+
+        <div class="col-lg-5 col-md-10">
+            <div class='bagan_form'>
+            <label for="filter_lokasi_mesin" class="form-label">Lokasi Mesin</label>
+                <input type="text" class="form-control" id="filter_lokasi_mesin" readonly value="{{ !empty($data_mesin->lokasi_mesin) ? $data_mesin->lokasi_mesin : '' }}">
+                <div class="message"></div>
+            </div>
         </div>
-        <div class="col-6 mb-2">
-            <label for="no_rawat" class="form-label">Tgl.Rawat</label>
-            <input type="text" class="form-control" id="nm_pasien" readonly value="{{!empty($dataPasien->tgl_rawat) ? $dataPasien->tgl_rawat : ''}}">
-        </div>
-</div> --}}
+    </div>
 <textarea id='item_list_terpilih' name='item_list_terpilih' style='display:none'>{{ !empty($item_list_terpilih) ? $item_list_terpilih : '' }}</textarea>
     <hr>
     <div class="card card-body" style='background:#bbe7fa'>

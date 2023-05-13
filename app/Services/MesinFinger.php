@@ -185,4 +185,58 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
         }
         return '';
     }
+
+    function get_user_upload($id_user=''){
+        dd($id_user);
+        $connect_ip=$this->connect_sock();
+        
+        if(empty($connect_ip[2]==3)){
+            $pin_x='';
+            if($id_user){
+                $pin_x=$this->lib($id_user)->pin;
+            }
+            $soap_request='';
+            // $soap_request.=$this->lib($this->comm_key)->arg_com_key;
+            $soap_request = "<GetAttLog>
+                            <ArgComKey xsi:type=\"xsd:integer\">" . $this->lib($this->comm_key)->arg_com_key . "</ArgComKey>
+                            <Arg>
+                            <DateTime xsi:type=\"xsd:string\">" . date("Y-m-d H:i:s") . "</DateTime>
+                            </Arg>
+                            </GetAttLog>";
+            $soap_request.="<Arg>".$pin_x."</Arg>";
+            $soap_request="<GetUserInfo>".$soap_request."</GetUserInfo>";
+            $buffer=$this->set_fputs($connect_ip,$soap_request);
+            $buffer = $this->parse_data($buffer, "<GetAttLogResponse>", "</GetAttLogResponse>");
+            $buffer = explode("\r\n", $buffer);
+            $jml=0;
+
+            $data_tmp=[];
+            
+            for($a = 0; $a < count($buffer); $a++) {
+                $data = $this->parse_data($buffer[$a], "<Row>", "</Row>");
+
+                if($data){
+                    $jml++;
+                    $data_tmp[]=[
+                        'id'=>$this->parse_data($data, "<PIN>", "</PIN>"),
+                        'name'=>$this->parse_data($data, "<Name>", "</Name>"),
+                        'datetime'=> $this->parse_data($data, "<DateTime>", "</DateTime>"),
+						'verified'=> $this->parse_data($data, "<Verified>", "</Verified>"),
+						'status'=> $this->parse_data($data, "<Status>", "</Status>"),
+                    ];   
+                }
+            }
+            
+            if(empty($jml)){
+                dd('com key anda salah/tidak ada data');
+            }
+        }else{
+            dd('tidak konek');
+        }
+
+        if($data_tmp){
+            return json_encode($data_tmp);
+        }
+        return '';
+    }
 }
