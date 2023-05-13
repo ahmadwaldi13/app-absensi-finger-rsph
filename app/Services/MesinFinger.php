@@ -187,7 +187,8 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
     }
 
     function get_user_upload($id_user=''){
-        dd($id_user);
+        $id = $id_user['id'];
+        $nama = $id_user['nama'];
         $connect_ip=$this->connect_sock();
         
         if(empty($connect_ip[2]==3)){
@@ -197,16 +198,22 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
             }
             $soap_request='';
             // $soap_request.=$this->lib($this->comm_key)->arg_com_key;
-            $soap_request = "<GetAttLog>
-                            <ArgComKey xsi:type=\"xsd:integer\">" . $this->lib($this->comm_key)->arg_com_key . "</ArgComKey>
+            // $soap_request = "<GetAttLog>
+            //                 <ArgComKey xsi:type=\"xsd:integer\">" . $this->lib($this->comm_key)->arg_com_key . "</ArgComKey>
+            //                 <Arg>
+            //                 <DateTime xsi:type=\"xsd:string\">" . date("Y-m-d H:i:s") . "</DateTime>
+            //                 </Arg>
+            //                 </GetAttLog>";
+            $soap_request = "<SetUserInfo>
+                            <ArgComKey Xsi:type=\"xsd:integer\">" . $this->lib($this->comm_key)->arg_com_key . "</ArgComKey>
                             <Arg>
-                            <DateTime xsi:type=\"xsd:string\">" . date("Y-m-d H:i:s") . "</DateTime>
+                            <PIN>" . $id . "</PIN><Name>" . $nama . "</Name>
                             </Arg>
-                            </GetAttLog>";
+                            </SetUserInfo>";
             $soap_request.="<Arg>".$pin_x."</Arg>";
             $soap_request="<GetUserInfo>".$soap_request."</GetUserInfo>";
             $buffer=$this->set_fputs($connect_ip,$soap_request);
-            $buffer = $this->parse_data($buffer, "<GetAttLogResponse>", "</GetAttLogResponse>");
+            $buffer = $this->parse_data($buffer, "<Information>", "</Information>");
             $buffer = explode("\r\n", $buffer);
             $jml=0;
 
