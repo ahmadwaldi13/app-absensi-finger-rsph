@@ -10,16 +10,16 @@
             <div class="row justify-content-start align-items-end">
                 <div class="col-lg-6 mb-3">
                     <div class='bagan_form'>
-                        <label for="nm_karyawan" class="form-label">Nama Karyawan</label>
-                        <input type="text" class="form-control" id="nm_karyawan" name='nm_karyawan' required value="{{ !empty($model->nm_karyawan) ? $model->nm_karyawan : '' }}">
+                        <label for="jam_masuk" class="form-label">Jam Masuk</label>
+                        <input type="time" class="form-control" id="jam_masuk" name='jam_masuk' required value="{{ !empty($model->jam_masuk) ? $model->jam_masuk : '' }}">
                         <div class="message"></div>
                     </div>
                 </div>
 
                 <div class="col-lg-6 mb-3">
                     <div class='bagan_form'>
-                        <label for="nik" class="form-label">NIK</label>
-                        <input type="number" class="form-control" id="nik" name='nik' required value="{{ !empty($model->nik) ? $model->nik : '' }}">
+                        <label for="jam_keluar" class="form-label">Jam Keluar</label>
+                        <input type="time" class="form-control" id="jam_keluar" name='jam_keluar' required value="{{ !empty($model->jam_keluar) ? $model->jam_keluar : '' }}">
                         <div class="message"></div>
                     </div>
                 </div>

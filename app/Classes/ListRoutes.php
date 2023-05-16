@@ -266,7 +266,7 @@ class ListRoutes
 				]
 			],
 			[
-				'title' => 'User Presensi',
+				'title' => 'Data Presensi Database',
 				'item' => [
 					[
 						'type' => 'index',
@@ -274,6 +274,19 @@ class ListRoutes
 						'url' => '/data-presensi',
 						'controller' => 'PresensiController@actionIndex',
 						'name' => 'data-presensi',
+						'middleware' => '',
+					],
+				]
+			],
+			[
+				'title' => 'Data Presensi Mesin',
+				'item' => [
+					[
+						'type' => 'index',
+						'method' => 'get',
+						'url' => '/data-presensi-sinkronisasi',
+						'controller' => 'SyncPresensiController@actionIndex',
+						'name' => 'data-presensi-sinkronisasi',
 						'middleware' => '',
 					],
 				]

@@ -12,7 +12,7 @@ use App\Services\UserMesinTmpService;
 use App\Services\UserPresensiService;
 use Illuminate\Support\Facades\DB;
 
-class PresensiController extends \App\Http\Controllers\MyAuthController
+class SyncPresensiController extends \App\Http\Controllers\MyAuthController
 {
     public $part_view, $url_index, $url_name, $title, $breadcrumbs, $globalService, $mesinFinger, $soapMesinFinger, $userPresensiService;
 
@@ -38,39 +38,53 @@ class PresensiController extends \App\Http\Controllers\MyAuthController
 
     function actionIndex(Request $request){
 
-        $form_filter_text = !empty($request->form_filter_text) ? $request->form_filter_text : '';
-        $filter_id_mesin = !empty($request->filter_id_mesin) ? $request->filter_id_mesin : '';
-        $filter_id_jabatan = !empty($request->filter_id_jabatan) ? $request->filter_id_jabatan : '';
-        $filter_id_departemen = !empty($request->filter_id_departemen) ? $request->filter_id_departemen : '';
-
-        $paramater=[
-            'search' => $form_filter_text
-        ];
-
-        if(!empty($filter_id_mesin)){
-            $paramater['utama.id_mesin_absensi']=$filter_id_mesin;
+        $id_mesin_absensi = !empty($request->filter_id_mesin) ? $request->filter_id_mesin : '';
+        
+        if(!empty($id_mesin_absensi)){
+            $data_mesin=(new \App\Models\RefMesinAbsensi)->where(['id_mesin_absensi'=>$id_mesin_absensi])->first();
+        }
+        
+        $list_data=[];
+        
+        if(!empty($request->searchbymesin)){
+            if(!empty($data_mesin)){
+                $hasil=$this->proses_tmp($data_mesin);
+            }
         }
 
-        if(!empty($filter_id_jabatan)){
-            $paramater['id_jabatan']=$filter_id_jabatan;
+        if(!empty($request->searchbydb)){
+            $form_filter_text = !empty($request->form_filter_text) ? $request->form_filter_text : '';
+
+            $paramater_column = [
+                'search' => $form_filter_text
+            ];
         }
 
-        if(!empty($filter_id_departemen)){
-            $paramater['id_departemen']=$filter_id_departemen;
-        }
-    
+        $list_data=[];
+        $paramater = [];
+        if(!empty($data_mesin)){
+            $paramater = [
+                'user_presensi.id_mesin_absensi' => $data_mesin->id_mesin_absensi
+            ];
 
-        $list_data = $this->userPresensiService->getList($paramater, 1)->paginate(!empty($request->per_page) ? $request->per_page : 30);
-        // dd($list_data);
+            if(!empty($paramater_column)){
+                $paramater=array_merge($paramater,$paramater_column);
+            }
+            $list_data = $this->userPresensiService->getList($paramater, 1)->paginate(!empty($request->per_page) ? $request->per_page : 30);
+        }
+
 
         $parameter_view = [
             'title' => $this->title,
             'breadcrumbs' => $this->breadcrumbs,
-            'list_data' => $list_data
+            'list_data' => $list_data,
+            'data_mesin'=> !empty($data_mesin) ? $data_mesin : []
         ];
 
         return view($this->part_view . '.index', $parameter_view);
     }
+
+
 
     private function proses_tmp($data_mesin){
         DB::beginTransaction();

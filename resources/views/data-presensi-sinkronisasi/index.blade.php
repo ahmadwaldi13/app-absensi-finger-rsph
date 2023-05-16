@@ -12,12 +12,12 @@
 
 @section('content')
 
-@include('data-presensi.tab_user_presensi', ["active"=>1])
+@include('data-presensi.tab_user_presensi', ["active"=>2])
 
 <div>
-    {{-- <br> --}}
+    <br>
     <div class="row d-flex justify-content-between">
-        {{-- <div>
+        <div>
             <form action="" method="GET">
                 <div class="row justify-content-start align-items-end mb-3">
                     <div class="col-lg-3 col-md-10">
@@ -60,7 +60,7 @@
                     </div>
                 </div>
             </form>
-        </div> --}}
+        </div>
     </div>
 </div>
 

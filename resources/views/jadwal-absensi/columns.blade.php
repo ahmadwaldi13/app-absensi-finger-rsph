@@ -11,7 +11,7 @@
                             placeholder="Masukkan Kata">
                     </div>
 
-                    <div class="col-lg-3 col-md-10">
+                    {{-- <div class="col-lg-3 col-md-10">
                         <div class='bagan_form'>
                             <label for="filter_nm_jabatan" class="form-label">Jabatan <span class="text-danger">*</span></label>
                             <div class="button-icon-inside">
@@ -39,7 +39,7 @@
                             </div>
                             <div class="message"></div>
                         </div>
-                    </div>
+                    </div> --}}
 
                     <div class="col-lg-1 col-md-1">
                         <div class="d-grid grap-2">
@@ -55,12 +55,8 @@
                 <table class="table border table-responsive-tablet">
                     <thead>
                         <tr>
-                            <th class="py-3" style="width: 5%">NIK</th>
-                            <th class="py-3" style="width: 5%">NIP</th>
-                            <th class="py-3" style="width: 20%">Nama</th>
-                            <th class="py-3" style="width: 10%">Jabatan</th>
-                            <th class="py-3" style="width: 10%">Departemen</th>
-                            <th class="py-3" style="width: 20%">ALamat</th>
+                            <th class="py-3" style="width: 5%">Jam Masuk</th>
+                            <th class="py-3" style="width: 5%">Jam Keluar</th>
                             <th class="py-3" style="width: 5%">Action</th>
                         </tr>
                     </thead>
@@ -75,10 +71,6 @@
                             <tr>
                                 <td>{{ !empty($item->nik) ? $item->nik : ''  }}</td>
                                 <td>{{ !empty($item->nip) ? $item->nip : ''  }}</td>
-                                <td>{{ !empty($item->nm_karyawan) ? $item->nm_karyawan : ''  }}</td>
-                                <td>{{ !empty($item->nm_jabatan) ? $item->nm_jabatan : ''  }}</td>
-                                <td>{{ !empty($item->nm_departemen) ? $item->nm_departemen : ''  }}</td>
-                                <td>{{ !empty($item->alamat) ? $item->alamat : ''  }}</td>
                                 <td class='text-right'>
                                     {!! (new
                                     \App\Http\Traits\AuthFunction)->setPermissionButton([$router_name->uri.'/update',$paramater_url,'update'])
