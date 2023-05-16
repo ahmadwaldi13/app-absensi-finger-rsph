@@ -43,25 +43,27 @@ function set_data() {
 }
 
 function get_terpilih() {
-    $form_data=$(document).find('#item_list_terpilih');
-    if($form_data.html()){
-        $tamplate='';
-        $item=[];
-        $item=JSON.parse($form_data.html());
+    $form_data = $(document).find('#item_list_terpilih');
+    if ($form_data.html()) {
+        $tamplate = '';
+        $item = [];
+        $item = JSON.parse($form_data.html());
 
-        $parent=$(document).find('#data-terpilih');
-        $tabel=$parent.find('table');
-        if($tabel.find('tbody').length){
-            $.each( $item, function( key, value ) {
-                if(value.data){
-                    $tamplate+='<tr data-kode="'+key+'">';
-                    $.each( value.data, function( key1, value1 ) {
-                        // $tamplate+="<td>"+decode_html_raw(value1)+"</td>";
-                        // $tamplate+="<td>"+test+"</td>";
-                        // console.log($tamplate);
-                        });
-                        $tamplate+="<td> <a href='#' class='btn btn-kecil btn-danger del_item'> <i class='fa-solid fa-trash'></i> </a> </td>";
-                    $tamplate+='</tr>';
+        $parent = $(document).find('#data-terpilih');
+        $tabel = $parent.find('table');
+        if ($tabel.find('tbody').length) {
+            $.each($item, function (key, value) {
+                if (value.data) {
+                    $tamplate += '<tr data-kode="' + key + '">';
+                    $.each(value.data, function (key1, value1) {
+                        if (key1 == 0) {
+                            value1 = "<input class='form-check-input' type='checkbox' disabled checked value=" + value[1] + ">";
+                        }
+                        $valuesss = value1.toString();
+                        $tamplate += "<td>" + decode_html_raw($valuesss) + "</td>";
+                    });
+                    $tamplate += "<td> <a href='#' class='btn btn-kecil btn-danger del_item'> <i class='fa-solid fa-trash'></i> </a> </td>";
+                    $tamplate += '</tr>';
                 }
             });
 
@@ -70,20 +72,17 @@ function get_terpilih() {
         }
 
 
-        tabel=(typeof $(document).find('.data-table-cus') != "undefined" || $(document).find('.data-table-cus') != null) ? $(document).find('.data-table-cus') : '' ;
-        if(tabel.length){
+        tabel = (typeof $(document).find('.data-table-cus') != "undefined" || $(document).find('.data-table-cus') != null) ? $(document).find('.data-table-cus') : '';
+        if (tabel.length) {
             tabel = tabel.DataTable();
-            tabel.rows().every( function ( key ) {
-                $form_checked_b = $( this.node() ).find('.checked_b');
-        
-                if($form_checked_b.length){
-                    $kode_data=(typeof $form_checked_b.data("kode") != "undefined" || $form_checked_b.data("kode") != null) ? $form_checked_b.data("kode") : '' ;
-                    if($kode_data){
-                        if($item[$kode_data]){
-                            $form_checked_b.prop('checked',true);
-                        }else{
-                            $form_checked_b.prop('checked',false);
-                        }
+            tabel.rows().every(function (key) {
+                $form_checked = $(this.node()).find('.checked_me');
+                if ($form_checked.length && $form_checked.is(":checkbox")) {
+                    $kode_data = (typeof $form_checked.data("kode") != "undefined" || $form_checked.data("kode") != null) ? $form_checked.data("kode") : '';
+                    if ($item[$kode_data]) {
+                        $form_checked.prop('checked', true);
+                    } else {
+                        $form_checked.prop('checked', false);
                     }
                 }
             });

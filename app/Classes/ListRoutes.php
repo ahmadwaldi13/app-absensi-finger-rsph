@@ -279,7 +279,7 @@ class ListRoutes
 				]
 			],
 			[
-				'title' => 'Upload Data Ke Mesin',
+				'title' => 'Upload User Ke Mesin',
 				'item' => [
 					[
                         'type' => 'Upload',
@@ -297,6 +297,27 @@ class ListRoutes
                         'name' => '',
                         'middleware' => '',
                     ],
+				]
+			],
+			[
+				'title' => 'Upload Data Ke Mesin',
+				'item' => [
+					[
+                        'type' => 'Upload',
+                        'method' => 'get',
+                        'url' => '/jadwal-absensi',
+                        'controller' => 'JadwalAbsensiController@actionIndex',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+					[
+						'type' => 'create',
+						'method' => ['get', 'post'],
+						'url' => '/jadwal-absensi/create',
+						'controller' => 'JadwalAbsensiController@actionCreate',
+						'name' => '',
+						'middleware' => '',
+					],
 				]
 			],
 			[

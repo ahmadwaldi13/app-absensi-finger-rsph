@@ -23,7 +23,7 @@ class UploadDataController extends Controller
         $this->url_index = $router_name->uri;
         $this->url_name = $router_name->router_name;
 
-        $this->title = 'Upload Data';
+        $this->title = 'Upload User';
         $this->breadcrumbs = [
             ['title' => 'Mesin Absensi', 'url' => url('/') . "/sub-menu?type=5"],
             ['title' => $this->title, 'url' => url('/') . "/" . $this->url_index],
@@ -119,8 +119,7 @@ class UploadDataController extends Controller
 
         if ($model) {
             $action_form = $this->part_view;
-            $list_item =  $this->refKaryawanService->getListdpjp_pasien($kode);
-            dd($list_item);
+            $list_item = $this->refKaryawanService->getListdpjp_pasien($kode);
             $item_list_terpilih = [];
             if ($list_item) {
                 foreach ($list_item as $value) {
@@ -138,7 +137,6 @@ class UploadDataController extends Controller
             $action_form = $this->part_view;
             $model = new \App\Models\RefKaryawan;
         }
-
         $dataPasien['tgl_rawat'] = substr($kode, 0, 10);
         $parameter_view = [
             'no_rawat' => $kode,
@@ -168,7 +166,7 @@ class UploadDataController extends Controller
 
     private function proses($request){
         $id_mesin_absensi = !empty($request->filter_id_mesin) ? $request->filter_id_mesin : '';
-
+        
         $kode = !empty($request->id_karyawan) ? $request->id_karyawan : null;
         if(!empty($id_mesin_absensi)){
             $data_mesin=(new \App\Models\RefMesinAbsensi)->where(['id_mesin_absensi'=>$id_mesin_absensi])->first();
@@ -178,76 +176,72 @@ class UploadDataController extends Controller
         $item_list_terpilih=json_decode($item_list_terpilih);
         $item_list_terpilih=(array)$item_list_terpilih;
 
-            if($item_list_terpilih){
-                $jml_save=0;
-                foreach($item_list_terpilih  as $key => $value){
-                    $data_save=[
-                        'id'=>$key,
-                        'nama'=>$value->data[2]
-                    ];  
-
-                    $upload = $get_user=$mesin->get_user_upload('',$data_save);
-                }
+        if($item_list_terpilih){
+            $jml_save=0;
+            foreach($item_list_terpilih  as $key => $value){
+                $data_save=[
+                    'id'=>$key,
+                    'nama'=>$value->data[2]
+                ];  
             }
+        }
 
-        $jml_save=0;
-        DB::beginTransaction();
+        // DB::beginTransaction();
         $pesan = [];
         $message_default = [
             'success' => !empty($kode) ? 'Data berhasil diubah' : 'Data berhasil disimpan',
             'error' => !empty($kode) ? 'Data tidak berhasil diubah' : 'Data berhasil disimpan'
         ];
 
-        try {
+        // try {
             
             // $id_mesin='';
             $is_save = 0;
             $mesin=(new \App\Services\MesinFinger($data_mesin->ip_address));
-            $get_user=$mesin->get_user_upload();
-            // $get_user=$mesin->get_user_upload($data_save, $id_mesin);
-            dd($get_user);
-            if($get_user){
-                $get_user=json_decode($get_user);
+            $get_user=$mesin->get_user_upload('',$data_save);
 
-                (new \App\Models\UserPresensi)->where(['id_mesin_absensi'=>$data_mesin->id_mesin_absensi])->delete();
+            // if($get_user){
+            //     $get_user=json_decode($get_user);
 
-                $jml_save=0;
-                foreach($get_user as $value){
-                    $model = (new \App\Models\UserPresensi);
-                    $model->id_mesin_absensi = $data_mesin->id_mesin_absensi;
-                    $model->id_user = $value->id;
-                    $model->datetime = $value->datetime;
-                    $model->verified = $value->verified;
-                    $model->status = $value->status;
+            //     (new \App\Models\UserPresensi)->where(['id_mesin_absensi'=>$data_mesin->id_mesin_absensi])->delete();
 
-                    if ($model->save()) {
-                        $jml_save++;
-                    }
-                }
+                // $jml_save=0;
+                // foreach($get_user as $value){
+                //     $model = (new \App\Models\UserPresensi);
+                //     $model->id_mesin_absensi = $data_mesin->id_mesin_absensi;
+                //     $model->id_user = $value->id;
+                //     $model->datetime = $value->datetime;
+                //     $model->verified = $value->verified;
+                //     $model->status = $value->status;
 
-                if($jml_save>0){
-                    $is_save = 1;
-                }
-            }
+                //     if ($model->save()) {
+                //         $jml_save++;
+                //     }
+                // }
 
-            if ($is_save) {
-                DB::commit();
-                $pesan = ['success', $message_default['success'], 2];
-            } else {
-                DB::rollBack();
-                $pesan = ['error', $message_default['error'], 3];
-            }
-        } catch (\Illuminate\Database\QueryException $e) {
-            DB::rollBack();
-            if ($e->errorInfo[1] == '1062') {
-            }
-            $pesan = ['error', $message_default['error'], 3];
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            $pesan = ['error', $message_default['error'], 3];
-        }
+                // if($jml_save>0){
+                //     $is_save = 1;
+                // }
+            // } 
 
-        // return $pesan;
+        //     if ($is_save) {
+        //         DB::commit();
+        //         $pesan = ['success', $message_default['success'], 2];
+        //     } else {
+        //         DB::rollBack();
+        //         $pesan = ['error', $message_default['error'], 3];
+        //     }
+        // } catch (\Illuminate\Database\QueryException $e) {
+        //     DB::rollBack();
+        //     if ($e->errorInfo[1] == '1062') {
+        //     }
+        //     $pesan = ['error', $message_default['error'], 3];
+        // } catch (\Throwable $e) {
+        //     DB::rollBack();
+        //     $pesan = ['error', $message_default['error'], 3];
+        // }
+
+        return $pesan;
     }
 
 

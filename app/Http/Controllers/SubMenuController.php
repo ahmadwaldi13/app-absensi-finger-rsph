@@ -82,9 +82,19 @@ class SubMenuController extends Controller
                         'url'=>url('/')."/data-presensi",
                     ],
                     [
-                        'title'=>'Upload Data',
+                        'title'=>'Upload User',
                         'key'=>'upload-data',
                         'url'=>url('/')."/upload-data",
+                    ],
+                ];
+            }
+
+            if($type==6){
+                $menu_permission=[
+                    [
+                        'title'=>'Set Masuk / Keluar',
+                        'key'=>'jadwal-absensi',
+                        'url'=>url('/')."/jadwal-absensi",
                     ],
                 ];
             }

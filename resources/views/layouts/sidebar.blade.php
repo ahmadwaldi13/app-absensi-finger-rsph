@@ -17,6 +17,13 @@
             'key_active'=>\App::call('App\Http\Controllers\SubMenuController@listAkses',['type' => 5])->list_menu
         ],
         [
+            'title'=>'Jadwal',
+            'key'=>'sub-menu',
+            'url'=>url('/')."/sub-menu?type=6",
+            'icon'=>"<i class='fa-solid fa-clock'></i>",
+            'key_active'=>\App::call('App\Http\Controllers\SubMenuController@listAkses',['type' => 6])->list_menu
+        ],
+        [
             'title'=>'Manajemen User',
             'key'=>'sub-menu',
             'url'=>url('/')."/sub-menu?type=2",

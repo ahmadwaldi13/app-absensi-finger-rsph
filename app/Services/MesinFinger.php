@@ -197,42 +197,19 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
             $id = $data_save['id'];
             $nama = $data_save['nama'];
             $soap_request='';
-            $soap_request = "<SetUserInfo><ArgComKey Xsi:type=\"xsd:integer\">" . $this->lib($this->comm_key)->arg_com_key . "</ArgComKey><Arg><PIN>" . $id . "</PIN><Name>" . $nama . "</Name></Arg></SetUserInfo>";
-           
+            $soap_request = "<SetUserInfo>
+                                <ArgComKey Xsi:type=\"xsd:integer\">" . $this->lib($this->comm_key)->arg_com_key . "</ArgComKey>
+                                <Arg><PIN>" . $id . "</PIN><Name>" . $nama . "</Name></Arg>
+                            </SetUserInfo>";
             $soap_request.="<Arg>".$pin_x."</Arg>";
             $soap_request="<GetUserInfo>".$soap_request."</GetUserInfo>";
             $buffer=$this->set_fputs($connect_ip,$soap_request);
             $buffer = $this->parse_data($buffer, "<Information>", "</Information>");
             $buffer = explode("\r\n", $buffer);
-            // $jml=0;
-
-            // $data_tmp=[];
-            
-            // for($a = 0; $a < count($buffer); $a++) {
-            //     $data = $this->parse_data($buffer[$a], "<Row>", "</Row>");
-
-            //     if($data){
-            //         $jml++;
-            //         $data_tmp[]=[
-            //             'id'=>$this->parse_data($data, "<PIN>", "</PIN>"),
-            //             'name'=>$this->parse_data($data, "<Name>", "</Name>"),
-            //             'datetime'=> $this->parse_data($data, "<DateTime>", "</DateTime>"),
-			// 			'verified'=> $this->parse_data($data, "<Verified>", "</Verified>"),
-			// 			'status'=> $this->parse_data($data, "<Status>", "</Status>"),
-            //         ];   
-            //     }
-            }
-            
-        //     if(empty($jml)){
-        //         dd('com key anda salah/tidak ada data');
-        //     }
-        // }else{
-        //     dd('tidak konek');
-        // }
-
-        // if($data_tmp){
-        //     return json_encode($data_tmp);
-        // }
-        return '';
+        }
+        else{
+            dd('tidak konek');
+        }
+        return $buffer;
     }
 }
