@@ -54,7 +54,7 @@
                     <div class="col-lg-1 col-md-1">
                         <div class="d-grid grap-2">
                             <button type="submit" name='searchbymesin' class="btn btn-primary" value=1>
-                                <i class="fa-sharp fa-solid fa-magnifying-glass"></i>
+                                <i class="fa-solid fa-download"></i>
                             </button>
                         </div>
                     </div>
