@@ -187,25 +187,33 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
     }
 
 
-    function get_user_upload($id_user='', $data_save){
+    function get_user_upload($id_user='', $item_list_terpilih){
         $connect_ip=$this->connect_sock();
         if(empty($connect_ip[2]==3)){
             $pin_x='';
             if($id_user){
                 $pin_x=$this->lib($id_user)->pin;
             }
-            $id = $data_save['id'];
-            $nama = $data_save['nama'];
-            $soap_request='';
-            $soap_request = "<SetUserInfo>
-                                <ArgComKey Xsi:type=\"xsd:integer\">" . $this->lib($this->comm_key)->arg_com_key . "</ArgComKey>
-                                <Arg><PIN>" . $id . "</PIN><Name>" . $nama . "</Name></Arg>
-                            </SetUserInfo>";
-            $soap_request.="<Arg>".$pin_x."</Arg>";
-            $soap_request="<GetUserInfo>".$soap_request."</GetUserInfo>";
-            $buffer=$this->set_fputs($connect_ip,$soap_request);
-            $buffer = $this->parse_data($buffer, "<Information>", "</Information>");
-            $buffer = explode("\r\n", $buffer);
+            foreach($item_list_terpilih as $value)
+            {
+                $data_save=[];
+                $data_save=[
+                    'id'=>$value->data['1'],
+                    'nama'=>$value->data['2']
+                ];  
+            
+                $soap_request='';
+                $soap_request = "<SetUserInfo>
+                                    <ArgComKey Xsi:type=\"xsd:integer\">" . $this->lib($this->comm_key)->arg_com_key . "</ArgComKey>
+                                    <Arg><PIN>" . $data_save['id'] . "</PIN><Name>" . $data_save['nama'] . "</Name></Arg>
+                                </SetUserInfo>";
+                $soap_request.="<Arg>".$pin_x."</Arg>";
+                $soap_request="<GetUserInfo>".$soap_request."</GetUserInfo>";
+                $buffer=$this->set_fputs($connect_ip,$soap_request);
+                $buffer = $this->parse_data($buffer, "<Information>", "</Information>");
+                $buffer = explode("\r\n", $buffer);
+            }
+
         }
         else{
             dd('tidak konek');

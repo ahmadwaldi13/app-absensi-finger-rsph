@@ -176,72 +176,11 @@ class UploadDataController extends Controller
         $item_list_terpilih=json_decode($item_list_terpilih);
         $item_list_terpilih=(array)$item_list_terpilih;
 
-        if($item_list_terpilih){
-            $jml_save=0;
-            foreach($item_list_terpilih  as $key => $value){
-                $data_save=[
-                    'id'=>$key,
-                    'nama'=>$value->data[2]
-                ];  
-            }
-        }
+       
+        $mesin=(new \App\Services\MesinFinger($data_mesin->ip_address));
+        $get_user=$mesin->get_user_upload('',$item_list_terpilih);
 
-        // DB::beginTransaction();
-        $pesan = [];
-        $message_default = [
-            'success' => !empty($kode) ? 'Data berhasil diubah' : 'Data berhasil disimpan',
-            'error' => !empty($kode) ? 'Data tidak berhasil diubah' : 'Data berhasil disimpan'
-        ];
-
-        // try {
-            
-            // $id_mesin='';
-            $is_save = 0;
-            $mesin=(new \App\Services\MesinFinger($data_mesin->ip_address));
-            $get_user=$mesin->get_user_upload('',$data_save);
-
-            // if($get_user){
-            //     $get_user=json_decode($get_user);
-
-            //     (new \App\Models\UserPresensi)->where(['id_mesin_absensi'=>$data_mesin->id_mesin_absensi])->delete();
-
-                // $jml_save=0;
-                // foreach($get_user as $value){
-                //     $model = (new \App\Models\UserPresensi);
-                //     $model->id_mesin_absensi = $data_mesin->id_mesin_absensi;
-                //     $model->id_user = $value->id;
-                //     $model->datetime = $value->datetime;
-                //     $model->verified = $value->verified;
-                //     $model->status = $value->status;
-
-                //     if ($model->save()) {
-                //         $jml_save++;
-                //     }
-                // }
-
-                // if($jml_save>0){
-                //     $is_save = 1;
-                // }
-            // } 
-
-        //     if ($is_save) {
-        //         DB::commit();
-        //         $pesan = ['success', $message_default['success'], 2];
-        //     } else {
-        //         DB::rollBack();
-        //         $pesan = ['error', $message_default['error'], 3];
-        //     }
-        // } catch (\Illuminate\Database\QueryException $e) {
-        //     DB::rollBack();
-        //     if ($e->errorInfo[1] == '1062') {
-        //     }
-        //     $pesan = ['error', $message_default['error'], 3];
-        // } catch (\Throwable $e) {
-        //     DB::rollBack();
-        //     $pesan = ['error', $message_default['error'], 3];
-        // }
-
-        return $pesan;
+        return $get_user;
     }
 
 
