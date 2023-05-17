@@ -4,7 +4,7 @@
 <hr>
 <div>
     <div class="row d-flex justify-content-between">
-        <div class='bagan-data-table-cus' data-url="{{ url('/upload-data/ajax?action=list_karyawan_master_form') }}">
+        <div class='bagan-data-table-cus' data-url="{{ url('/upload-sidik-jari-user/ajax?action=list_sidik_jari_master_form') }}">
             <form action="" method="GET">
                 <div class="row justify-content-start align-items-end mb-3">
                     <div class="col-lg-3 col-md-10">
@@ -26,9 +26,9 @@
                     <thead>
                         <tr>
                             <th class="py-3" style="width: 4%">Aksi</th>
-                            <th class="py-3" style="width: 8%">Id Karyawan</th>
-                            <th class="py-3" style="width: 15%">Nama Karyawan</th>
-                            <th class="py-3" style="width: 15%">Alamat</th>
+                            <th class="py-3" style="width: 8%">Id user</th>
+                            <th class="py-3" style="width: 15%">Finger Id</th>
+                            <th class="py-3" style="width: 15%">Finger</th>
                         </tr>
                     </thead>
                     <tbody>

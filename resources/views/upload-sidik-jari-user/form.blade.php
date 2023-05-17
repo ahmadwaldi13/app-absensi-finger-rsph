@@ -46,9 +46,9 @@
                     <thead>
                         <tr>
                             <th class="py-3" style="width: 4%">Aksi</th>
-                            <th class="py-3" style="width: 8%">Id Karyawan</th>
-                            <th class="py-3" style="width: 13%">Nama Karyawan</th>
-                            <th class="py-3" style="width: 10%">Alamat</th>
+                            <th class="py-3" style="width: 8%">Id User</th>
+                            <th class="py-3" style="width: 13%">Finger Id</th>
+                            <th class="py-3" style="width: 10%">Figer</th>
                             <th class="py-3" style="width: 4%">Opsi</th>
                         </tr>
                     </thead>
@@ -69,10 +69,10 @@
 <div class="card card-body mt-5">
     <h4>List Data Karyawan</h4>
     <div id="list-data">
-        @include('upload-data.columns')
+        @include('upload-sidik-jari-user.columns')
     </div>
 </div>
 
 @push('script-end-2')
-    <script src="{{ asset('js/upload-data/form.js') }}"></script>
+    <script src="{{ asset('js/upload-nama-user/form.js') }}"></script>
 @endpush

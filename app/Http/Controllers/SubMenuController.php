@@ -82,9 +82,14 @@ class SubMenuController extends Controller
                         'url'=>url('/')."/data-presensi",
                     ],
                     [
-                        'title'=>'Upload User',
-                        'key'=>'upload-data',
-                        'url'=>url('/')."/upload-data",
+                        'title'=>'Upload Nama User',
+                        'key'=>'upload-nama-user',
+                        'url'=>url('/')."/upload-nama-user",
+                    ],
+                    [
+                        'title'=>'Upload Sidik Jari User',
+                        'key'=>'upload-sidik-jari-user',
+                        'url'=>url('/')."/upload-sidik-jari-user",
                     ],
                 ];
             }

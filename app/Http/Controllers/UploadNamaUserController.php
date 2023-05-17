@@ -12,7 +12,7 @@ use App\Services\UserMesinTmpService;
 use App\Services\RefKaryawanService;
 use Illuminate\Support\Facades\DB;
 
-class UploadDataController extends Controller
+class UploadNamaUserController extends \App\Http\Controllers\MyAuthController
 {
     public $part_view, $url_index, $url_name, $title, $breadcrumbs, $globalService, $mesinFinger, $soapMesinFinger, $refKaryawanService;
 
@@ -23,7 +23,7 @@ class UploadDataController extends Controller
         $this->url_index = $router_name->uri;
         $this->url_name = $router_name->router_name;
 
-        $this->title = 'Upload User';
+        $this->title = 'Upload Nama User';
         $this->breadcrumbs = [
             ['title' => 'Mesin Absensi', 'url' => url('/') . "/sub-menu?type=5"],
             ['title' => $this->title, 'url' => url('/') . "/" . $this->url_index],
@@ -80,7 +80,6 @@ class UploadDataController extends Controller
             $paramater = [
                 'search' => $form_filter_text,
             ];
-
             $data_tmp = (new \App\Services\RefKaryawanService())
                 ->getList($paramater, 1)
                 ->offset($start_page)
@@ -119,7 +118,7 @@ class UploadDataController extends Controller
 
         if ($model) {
             $action_form = $this->part_view;
-            $list_item = $this->refKaryawanService->getListdpjp_pasien($kode);
+            $list_item = $this->refKaryawanService->getList_karyawan($kode);
             $item_list_terpilih = [];
             if ($list_item) {
                 foreach ($list_item as $value) {
@@ -151,7 +150,7 @@ class UploadDataController extends Controller
         }
         $parameter_view = array_merge($parameter_view, $get_request);
 
-        return view('upload-data.form', $parameter_view);
+        return view('upload-nama-user.form', $parameter_view);
     }
 
     function actionCreate(Request $request)
@@ -175,7 +174,6 @@ class UploadDataController extends Controller
         $item_list_terpilih=!empty($request->item_list_terpilih) ? $request->item_list_terpilih : '';
         $item_list_terpilih=json_decode($item_list_terpilih);
         $item_list_terpilih=(array)$item_list_terpilih;
-
        
         $mesin=(new \App\Services\MesinFinger($data_mesin->ip_address));
         $get_user=$mesin->get_user_upload('',$item_list_terpilih);

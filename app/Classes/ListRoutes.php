@@ -292,31 +292,52 @@ class ListRoutes
 				]
 			],
 			[
-				'title' => 'Upload User Ke Mesin',
+				'title' => 'Upload Nama User Ke Mesin',
 				'item' => [
 					[
                         'type' => 'Upload',
                         'method' => ['get', 'post'],
-                        'url' => '/upload-data',
-                        'controller' => 'UploadDataController@actionIndex',
+                        'url' => '/upload-nama-user',
+                        'controller' => 'UploadNamaUserController@actionIndex',
                         'name' => '',
                         'middleware' => '',
                     ],
                     [
                         'type' => 'system',
                         'method' => 'get',
-                        'url' => '/upload-data/ajax',
-                        'controller' => 'UploadDataController@ajax',
+                        'url' => '/upload-nama-user/ajax',
+                        'controller' => 'UploadNamaUserController@ajax',
                         'name' => '',
                         'middleware' => '',
                     ],
 				]
 			],
 			[
-				'title' => 'Upload Data Ke Mesin',
+				'title' => 'Upload Sidik Jari User Ke Mesin',
 				'item' => [
 					[
                         'type' => 'Upload',
+                        'method' => ['get', 'post'],
+                        'url' => '/upload-sidik-jari-user',
+                        'controller' => 'UploadSidikJariUserController@actionIndex',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'system',
+                        'method' => 'get',
+                        'url' => '/upload-sidik-jari-user/ajax',
+                        'controller' => 'UploadSidikJariUserController@ajax',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+				]
+			],
+			[
+				'title' => 'Setting Jadwal',
+				'item' => [
+					[
+                        'type' => 'index',
                         'method' => 'get',
                         'url' => '/jadwal-absensi',
                         'controller' => 'JadwalAbsensiController@actionIndex',
