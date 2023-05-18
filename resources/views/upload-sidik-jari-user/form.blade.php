@@ -47,6 +47,7 @@
                         <tr>
                             <th class="py-3" style="width: 4%">Aksi</th>
                             <th class="py-3" style="width: 8%">Id User</th>
+                            <th class="py-3" style="width: 8%">Nama</th>
                             <th class="py-3" style="width: 13%">Finger Id</th>
                             <th class="py-3" style="width: 10%">Figer</th>
                             <th class="py-3" style="width: 4%">Opsi</th>

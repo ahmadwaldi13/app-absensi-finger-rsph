@@ -27,6 +27,7 @@
                         <tr>
                             <th class="py-3" style="width: 4%">Aksi</th>
                             <th class="py-3" style="width: 8%">Id user</th>
+                            <th class="py-3" style="width: 15%">Nama</th>
                             <th class="py-3" style="width: 15%">Finger Id</th>
                             <th class="py-3" style="width: 15%">Finger</th>
                         </tr>

@@ -80,16 +80,16 @@ class UploadSidikJariUserController extends \App\Http\Controllers\MyAuthControll
                 'search' => $form_filter_text,
             ];
 
-            $data_tmp = (new \App\Services\RefKaryawanService())
-                ->getList_finger($paramater, 1)
+            $data_tmp = (new \App\Services\RefUserInfoDetailService())
+                ->getList($paramater, 1)
                 ->offset($start_page)
                 ->limit($end_page)
                 ->get();
-            $data_count = (new \App\Services\RefKaryawanService())->getList($paramater, 1)->count();
+            $data_count = (new \App\Services\RefUserInfoDetailService())->getList($paramater, 1)->count();
 
             if (!empty($data_tmp)) {
                 foreach ($data_tmp as $value) {
-                    $data = ["<input class='form-check-input checked_me' type='checkbox' data-kode='" . $value->id_user . "'>", !empty($value->id_user) ? $value->id_user : '', !empty($value->finger_id) ? $value->finger_id : '', !empty($value->finger) ? $value->finger : ''];
+                    $data = ["<input class='form-check-input checked_me' type='checkbox' data-kode='" . $value->id_user . "'>", !empty($value->id_user) ? $value->id_user : '', !empty($value->nm_karyawan) ? $value->nm_karyawan : '', !empty($value->finger_id) ? $value->finger_id : '', !empty($value->finger) ? $value->finger : ''];
                     $hasil_data[] = $data;
                 }
             }
@@ -122,7 +122,7 @@ class UploadSidikJariUserController extends \App\Http\Controllers\MyAuthControll
             if ($list_item) {
                 foreach ($list_item as $value) {
                     $item_list_terpilih[$value->id_user] = [
-                        'data' => ['', $value->id_user, $value->finger_id, $value->finger],
+                        'data' => ['', $value->id_user, $value->nm_karyawan, $value->finger_id, $value->finger],
                     ];
                 }
             }
@@ -174,7 +174,6 @@ class UploadSidikJariUserController extends \App\Http\Controllers\MyAuthControll
         $item_list_terpilih=!empty($request->item_list_terpilih) ? $request->item_list_terpilih : '';
         $item_list_terpilih=json_decode($item_list_terpilih);
         $item_list_terpilih=(array)$item_list_terpilih;
-        dd($item_list_terpilih);
 
        
         $mesin=(new \App\Services\MesinFinger($data_mesin->ip_address));
