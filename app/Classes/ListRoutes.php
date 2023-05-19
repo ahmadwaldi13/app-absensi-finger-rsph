@@ -433,7 +433,7 @@ class ListRoutes
 					],
 					[
 						'type' => 'update',
-						'method' => 'post',
+						'method' => ['get', 'post'],
 						'url' => '/user-akses/update',
 						'controller' => 'UserAksesController@actionUpdate',
 						'name' => '',

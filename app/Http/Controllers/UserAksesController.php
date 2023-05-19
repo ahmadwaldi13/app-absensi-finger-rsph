@@ -11,13 +11,17 @@ use App\Services\UserManagement\UserGroupAppService;
 class UserAksesController extends Controller
 {
 
-    public $part_view, $url_index, $url_name,$url_name_index, $title, $breadcrumbs, $globalService;
+    public $part_view, $url_index, $url_name, $title, $breadcrumbs, $globalService;
     public $userAksesAppService,$userGroupAppService;
 
     public function __construct() {
-        
+
+        $router_name = (new \App\Http\Traits\GlobalFunction)->getRouterIndex();
+        $this->part_view = $router_name->path_base;
+        $this->url_index = $router_name->uri;
+        $this->url_name = $router_name->router_name;
+
         $this->title='User akses';
-        $this->url_name_index='user_akses';
         $this->breadcrumbs=[
             ['title'=>'Manajemen User','url'=>url('/')."/sub-menu?type=2"],
             ['title'=>$this->title,'url'=>url('/')."/user-akses"],
@@ -27,154 +31,186 @@ class UserAksesController extends Controller
         $this->userGroupAppService = new UserGroupAppService;
     }
 
-    function actionIndex(Request $request, $level = null)
+    function actionIndex(Request $request)
     {
-        $form_level_akses = !empty($request->form_level_akses) ? $request->form_level_akses : '';
-        $form_jenis_akun = !empty($request->form_jenis_akun) ? $request->form_jenis_akun : '';
-        $form_search_text = !empty($request->form_search_text) ? $request->form_search_text : '';
 
-        $level_akses_list=$this->userGroupAppService->getUxuiAuthGroup();
-        $jenis_akun_list = ['dokter'=>'Dokter','petugas'=>'Petugas'];
-        $data_list = $this->userAksesAppService->getList(['alias_group'=>$form_level_akses,'status'=>$form_jenis_akun,'search'=>$form_search_text],1)
-        ->paginate(!empty($request->per_page) ? $request->per_page : 20);
-        
-        $parameter_view=[
-            'title'=>$this->title,
-            'breadcrumbs'=>$this->breadcrumbs,
-            "level_akses_list" => $level_akses_list,
-            "jenis_akun_list" => $jenis_akun_list,
-            "data_list" => $data_list
+        $form_filter_text = !empty($request->form_filter_text) ? $request->form_filter_text : '';
+        $filter_level_akses = !empty($request->filter_level_akses) ? $request->filter_level_akses : '';
+        $filter_status_akses = !empty($request->filter_status_akses) ? $request->filter_status_akses : '';
+
+        $paramater = [
+            'search' => $form_filter_text
         ];
+
+        if(!empty($filter_level_akses)){
+            $paramater['alias_group']= $filter_level_akses;
+        }
+
+        if(!empty($filter_status_akses)){
+            $paramater['status_tersedia']= $filter_status_akses;
+        }
+        
+        $list_data = $this->userGroupAppService->getUserKaryawanGroup($paramater, 1)->paginate(!empty($request->per_page) ? $request->per_page : 15);
+        $level_akses_list=$this->userGroupAppService->getUxuiAuthGroup();
+
+        $parameter_view = [
+            'title' => $this->title,
+            'breadcrumbs' => $this->breadcrumbs,
+            'level_akses_list'=>$level_akses_list,
+            'list_data' => $list_data
+        ];
+
         return view('user-management.user-akses.index', $parameter_view);
     }
 
-    function form(Request $request)
+    private function form(Request $request)
     {
-        $kode = !empty($request->data_sent) ? $request->data_sent : null;
-        $model = $this->userAksesAppService->getList(['id_user_'=>$kode]);
-        $model=!empty($model[0]) ? $model[0] : (object)[];
-        $action_form = 'user-akses/update';
+        $kode = !empty($request->data_sent) ? $request->data_sent : '';
+        $paramater = [
+            'id_karyawan' => $kode
+        ];
+        $model = $this->userGroupAppService->getUserKaryawanGroup($paramater, 1)->first();
+        if ($model) {
+            $action_form = $this->part_view . '/update';
+        } else {
+            $action_form = $this->part_view . '/create';
+        }
+
         $level_akses_list=$this->userGroupAppService->getUxuiAuthGroup();
-        
         $parameter_view = [
             'action_form' => $action_form,
-            'model' => $model,
-            'level_akses_list' =>  $level_akses_list,
-            'kode' => $kode,
+            'level_akses_list'=>$level_akses_list,
+            'model' => $model
         ];
 
-        $bagan_html = 'user-management.user-akses.form';
-
-        if ($request->ajax()) {
-            $returnHTML = view($bagan_html, $parameter_view)->render();
-            return response()->json(array('success' => true, 'html' => $returnHTML));
-        } else {
-            return view($bagan_html, $parameter_view);
-        }
+        return view('user-management.user-akses.form_input_users', $parameter_view);
     }
 
     function actionUpdate(Request $request)
     {
+        if ($request->isMethod('get')) {
+            $bagan_form = $this->form($request);
+
+            $parameter_view = [
+                'title' => $this->title,
+                'breadcrumbs' => $this->breadcrumbs,
+                'bagan_form' => $bagan_form,
+                'url_back' => $this->url_name
+            ];
+
+            return view('layouts.index_bagan_form', $parameter_view);
+        }
+
+        if ($request->isMethod('post')) {
+            return $this->proses($request);
+        }
+    }
+
+    private function proses($request)
+    {
+        $req = $request->all();
+        dd($req);
+        $kode = !empty($req['key_old']) ? $req['key_old'] : '';
+        $action_is_create = (str_contains($request->getPathInfo(), $this->url_index . '/create')) ? 1 : 0;
+        $link_back_redirect = ($action_is_create) ? $this->url_name : $this->url_name . '/update';
         DB::beginTransaction();
-        $key_data = !empty($request->key_data) ? $request->key_data : null;
-        $level_akses = !empty($request->level_akses) ? $request->level_akses : null;
-        
-        $link_back = 'user_akses';
+        $pesan = [];
         $link_back_param = [];
+        if ($action_is_create) {
+            $link_back_param = [];
+        } else {
+            $link_back_param = ['data_sent' => $kode];
+        }
+        $link_back_param = array_merge($link_back_param, $request->all());
         $message_default = [
-            'success' => 'Level Akses Berhasil di ubah',
-            'error' => 'Level Akses Gagal di Ubah'
+            'success' => !empty($kode) ? 'Data berhasil diubah' : 'Data berhasil disimpan',
+            'error' => !empty($kode) ? 'Data tidak berhasil diubah' : 'Data berhasil disimpan'
         ];
 
         try {
-            if (!empty($key_data) and !empty($level_akses)) {
-                $check_data = $this->userAksesAppService->uxuiAuthUsers->where('id','=',$key_data)->first();
-                $model = $this->userAksesAppService->getList(['id_user_'=>$key_data]);
-                $model=!empty($model[0]) ? $model[0] : (object)[];
-                
-                $is_save=0;
-                if($check_data){
-                    $data_save=[
-                        'id'=>$model->id_user_,
-                        'id_user'=>$model->id_user,
-                        'alias_group'=>$level_akses
-                    ];
-                    $model_save=$this->userAksesAppService->update(['id'=>$model->id_user_],$data_save);
-                    if($model_save){
-                        $is_save=1;
-                    }
-                }else{
-                    $data_save=[
-                        'id'=>$model->id_user_,
-                        'id_user'=>$model->id_user,
-                        'alias_group'=>$level_akses
-                    ];
-                    $model_save=$this->userAksesAppService->insert($data_save);
-                    if($model_save){
-                        $is_save=1;
-                    }
-                }
-                
-                if($is_save){
-                    DB::commit();
-                    $pesan=['success' => $message_default['success']];
-                }else{
-                    DB::rollBack();
-                    $pesan=['error' => $message_default['error']];
-                }
-                return redirect()->route($link_back, $link_back_param)->with($pesan);
+            $model = (new \App\Models\IpsrsJenisBarang)->where('kd_jenis', '=', $kode)->first();
+            if (empty($model)) {
+                $model = (new \App\Models\IpsrsJenisBarang);
             }
-            return redirect()->route($link_back, $link_back_param)->with(['error' => $message_default['error']]);
+            $data_save = $req;
+            $model->set_model_with_data($data_save);
+
+            $is_save = 0;
+
+            if ($model->save()) {
+                $model_1 = (new \App\Models\UxuiIpsrsjenisbarang)->where('kd_jenis', '=', $model->kd_jenis)->first();
+                if (empty($model_1)) {
+                    $model_1 = (new \App\Models\UxuiIpsrsjenisbarang);
+                }
+                $model_1->set_model_with_data($data_save);
+                if ($model_1->save()) {
+                    $is_save = 1;
+                }
+                $is_save = 1;
+            }
+
+            if ($is_save) {
+                DB::commit();
+                $link_back_param = $this->clear_request($link_back_param, $request);
+                $pesan = ['success', $message_default['success'], 2];
+            } else {
+                DB::rollBack();
+                $pesan = ['error', $message_default['error'], 3];
+            }
         } catch (\Illuminate\Database\QueryException $e) {
             DB::rollBack();
             if ($e->errorInfo[1] == '1062') {
-                return redirect()->route($link_back, $link_back_param)->with(['error' => 'Maaf tidak dapat menyimpan data yang sama']);
             }
-            return redirect()->route($link_back, $link_back_param)->with(['error' => $message_default['error']]);
+            $pesan = ['error', $message_default['error'], 3];
         } catch (\Throwable $e) {
             DB::rollBack();
-            return redirect()->route($link_back, $link_back_param)->with(['error' => $message_default['error']]);
+            $pesan = ['error', $message_default['error'], 3];
         }
+
+        return redirect()->route($link_back_redirect, $link_back_param)->with([$pesan[0] => $pesan[1]]);
     }
 
     function actionDelete(Request $request)
     {
-        DB::beginTransaction();
-        $kode = !empty($request->data_sent) ? $request->data_sent : null;
 
-        $link_back = 'user_akses';
+        DB::beginTransaction();
+        $pesan = [];
         $link_back_param = [];
         $message_default = [
-            'success' => 'Level Akses Berhasil di Hapus',
-            'error' => 'Level Akses Gagal di Hapus'
+            'success' => 'Data berhasil dihapus',
+            'error' => 'Maaf data tidak berhasil dihapus'
         ];
 
+        $kode = !empty($request->data_sent) ? $request->data_sent : null;
+
         try {
-            
-            if (!empty($kode)) {
-                $paramater_where = [
-                    'id' => $kode
-                ];
-                $deleteUserGroup = $this->userAksesAppService->delete($paramater_where);
-                if ($deleteUserGroup) {
-                    DB::commit();
-                    $pesan = ['success' => $message_default['success']];
-                } else {
-                    DB::rollBack();
-                    $pesan = ['error' => $message_default['error']];
-                }
-                return redirect()->route($link_back, $link_back_param)->with($pesan);
+            $model = (new \App\Models\IpsrsJenisBarang)->where('kd_jenis', '=', $kode)->first();
+            if (empty($model)) {
+                return redirect()->route($this->url_name, $link_back_param)->with(['error', 'Data tidak ditemukan']);
             }
-            return redirect()->route($link_back, $link_back_param)->with(['error' => $message_default['error']]);
+
+            $is_save = 0;
+            if ($model->delete()) {
+                $is_save = 1;
+            }
+
+            if ($is_save) {
+                DB::commit();
+                $pesan = ['success', $message_default['success'], 2];
+            } else {
+                DB::rollBack();
+                $pesan = ['error', $message_default['error'], 3];
+            }
         } catch (\Illuminate\Database\QueryException $e) {
             DB::rollBack();
             if ($e->errorInfo[1] == '1062') {
-                return redirect()->route($link_back, $link_back_param)->with(['error' => 'Maaf tidak dapat menyimpan data yang sama']);
             }
-            return redirect()->route($link_back, $link_back_param)->with(['error' => $message_default['error']]);
+            $pesan = ['error', $message_default['error'], 3];
         } catch (\Throwable $e) {
             DB::rollBack();
-            return redirect()->route($link_back, $link_back_param)->with(['error' => $message_default['error']]);
+            $pesan = ['error', $message_default['error'], 3];
         }
+
+        return redirect()->route($this->url_name, $link_back_param)->with([$pesan[0] => $pesan[1]]);
     }
 }
