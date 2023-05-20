@@ -115,21 +115,6 @@ class UserGroupAppService extends \App\Services\BaseService
 
     public function getUserKaryawanGroup($params=[],$type=''){
 
-        // $query = $this->refKaryawan
-        //     ->select('ref_karyawan.*','nm_jabatan','nm_departemen',
-        //         'uxui_users.id as id_uxui_users',
-        //         'uxui_users.username',
-        //         'alias_group','uxui_auth_group.name as nama_group'
-        //     )
-        //     ->Leftjoin('ref_jabatan','ref_jabatan.id_jabatan','=','ref_karyawan.id_jabatan')
-        //     ->Leftjoin('ref_departemen','ref_departemen.id_departemen','=','ref_karyawan.id_departemen')
-        //     ->Leftjoin('uxui_users_karyawan','ref_karyawan.id_karyawan','=','uxui_users_karyawan.id_karyawan')
-        //     ->leftjoin('uxui_users','uxui_users.id','=','uxui_users_karyawan.id_uxui_users')
-        //     ->leftjoin('uxui_auth_users','uxui_auth_users.id_user','=','uxui_users.id')
-        //     ->leftjoin('uxui_auth_group','uxui_auth_group.alias','=','uxui_auth_users.alias_group')
-        //     ->orderBy('nm_karyawan','ASC')
-        // ;
-
         $query =DB::table(
             DB::raw('(
             select 

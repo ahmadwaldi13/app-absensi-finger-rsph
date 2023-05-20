@@ -40,7 +40,6 @@
                 </div>
             </form>
 
-
             <div style="overflow-x: auto; max-width: auto;">
                 <table class="table border table-responsive-tablet">
                     <thead>
@@ -50,7 +49,7 @@
                             <th class="py-3" style="width: 15%">Departemen</th>
                             <th class="py-3" style="width: 15%">Username</th>
                             <th class="py-3" style="width: 15%">Level Akses</th>
-                            <th class="py-3" style="width: 15%">Status Users</th>
+                            <th class="py-3" style="width: 15%">Status Akun</th>
                             <th class="py-3" style="width: 15%">Action</th>
                         </tr>
                     </thead>

@@ -3,6 +3,7 @@
     <?php
     var_dump($model);
     $alias_group=!empty($model->alias_group) ? $model->alias_group : '';
+    $password=!empty($model->password) ? $model->password : ''
     ?>
     <input type="text" name="id_karyawan" value="{{ !empty( $model->id_karyawan ) ? $model->id_karyawan : '' }}">
     <input type="text" name="id_uxui_users" value="{{ !empty( $model->id_uxui_users ) ? $model->id_uxui_users : '' }}">
@@ -44,17 +45,23 @@
                 <div class="col-lg-12">
                     <div class='bagan_form'>
                         <label for="username" class="form-label">Username</label>
-                        <input type="text" class="form-control" id="username" name='username' required
-                            value="{{ !empty($model->username) ? $model->username : '' }}">
+                        <input type="text" class="form-control" id="username" name='username' required value="{{ !empty($model->username) ? $model->username : '' }}">
                         <div class="message"></div>
                     </div>
                 </div>
 
                 <div class="col-lg-12">
-                    <div class='bagan_form'>
-                        <label for="password" class="form-label">Password</label>
-                        <input type="text" class="form-control" id="password" name='password' required
-                            value="{{ !empty($model->password) ? $model->password : '' }}">
+                    <div class='bagan_form mt-3'>
+                        <?php
+                            $label_pass='Password';
+                            $status_form_pass='required';
+                            if(!empty($model->id_uxui_users)){
+                                $label_pass='Password Baru <span style="color:RED">(Silahkan isi, jika ingin ganti password)</span>';
+                                $status_form_pass='';
+                            }
+                        ?>
+                        <label for="password" class="form-label">{!! $label_pass !!}</label>
+                        <input type="text" class="form-control" id="password" name='password' {{ $status_form_pass }} value="">
                         <div class="message"></div>
                     </div>
                 </div>
@@ -80,6 +87,7 @@
             </div>
         </div>
     </div>
-
-    
 </form>
+@push('script-end-2')
+    <!-- <script src="{{ asset('js/user-akses/form.js') }}"></script> -->
+@endpush

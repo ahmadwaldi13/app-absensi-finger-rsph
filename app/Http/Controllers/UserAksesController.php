@@ -5,8 +5,11 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Traits\GlobalFunction;
+use Illuminate\Support\Facades\Hash;
+
 use App\Services\UserManagement\UserAksesAppService;
 use App\Services\UserManagement\UserGroupAppService;
+
 
 class UserAksesController extends Controller
 {
@@ -108,19 +111,15 @@ class UserAksesController extends Controller
 
     private function proses($request)
     {
+        DB::statement("ALTER TABLE ".( new \App\Models\UserManagement\UxuiUsers )->table." AUTO_INCREMENT = 1");
+        DB::statement("ALTER TABLE ".( new \App\Models\UxuiUsersKaryawan )->table." AUTO_INCREMENT = 1");
         $req = $request->all();
-        dd($req);
-        $kode = !empty($req['key_old']) ? $req['key_old'] : '';
-        $action_is_create = (str_contains($request->getPathInfo(), $this->url_index . '/create')) ? 1 : 0;
-        $link_back_redirect = ($action_is_create) ? $this->url_name : $this->url_name . '/update';
+        $id_karyawan = !empty($req['id_karyawan']) ? $req['id_karyawan'] : '';
+        $id_uxui_users = !empty($req['id_uxui_users']) ? $req['id_uxui_users'] : '';
+        $link_back_redirect = $this->url_name . '/update';
         DB::beginTransaction();
         $pesan = [];
-        $link_back_param = [];
-        if ($action_is_create) {
-            $link_back_param = [];
-        } else {
-            $link_back_param = ['data_sent' => $kode];
-        }
+        $link_back_param = ['data_sent' => $id_karyawan];
         $link_back_param = array_merge($link_back_param, $request->all());
         $message_default = [
             'success' => !empty($kode) ? 'Data berhasil diubah' : 'Data berhasil disimpan',
@@ -128,30 +127,99 @@ class UserAksesController extends Controller
         ];
 
         try {
-            $model = (new \App\Models\IpsrsJenisBarang)->where('kd_jenis', '=', $kode)->first();
-            if (empty($model)) {
-                $model = (new \App\Models\IpsrsJenisBarang);
-            }
-            $data_save = $req;
-            $model->set_model_with_data($data_save);
+            $data_form=(object)$req;
 
+            $username=!empty($data_form->username) ? $data_form->username : '';
+            $password=!empty($data_form->password) ? $data_form->password : '';
+            $level_akses=!empty($data_form->level_akses) ? $data_form->level_akses : '';
+            if(!$username){
+                return redirect()->route($link_back_redirect, $link_back_param)->with(['error'=>'Username masih kosong']);
+            }
+            
+            if(empty($id_uxui_users)){
+                if(!$password){
+                    return redirect()->route($link_back_redirect, $link_back_param)->with(['error'=>'Password masih kosong']);
+                }
+            }
+
+            if(!$level_akses){
+                return redirect()->route($link_back_redirect, $link_back_param)->with(['error'=>'Level Akses Masih Kosong']);
+            }
+
+            if(empty($id_uxui_users)){
+                $check_users = (new \App\Models\UxuiUsersKaryawan)->where('id_karyawan', '=', $id_karyawan)->first();
+                $id_uxui_users=!empty($check_users->id_uxui_users) ? $check_users->id_uxui_users : '';
+            }
+
+            $model_uxui_user = (new \App\Models\UserManagement\UxuiUsers)->where('id', '=', $id_uxui_users)->first();
+            if (empty($model_uxui_user)) {
+                $model_uxui_user = (new \App\Models\UserManagement\UxuiUsers);
+                $model_uxui_user->status=1;
+            }
+
+            $key_encripsi=(new \App\Services\AuthService)->key_encripsi();
+            
+            $model_uxui_user->username=$username;
+            $ganti_pass=0;
+            if(!empty($model_uxui_user->password) and !empty($password)){
+                $pass_tmp=$password;
+                $password=Hash::make($password);
+                $model_uxui_user->password=DB::raw("AES_ENCRYPT('".$password."','".$key_encripsi."')");
+                $ganti_pass=1;
+            }
+            
             $is_save = 0;
 
-            if ($model->save()) {
-                $model_1 = (new \App\Models\UxuiIpsrsjenisbarang)->where('kd_jenis', '=', $model->kd_jenis)->first();
-                if (empty($model_1)) {
-                    $model_1 = (new \App\Models\UxuiIpsrsjenisbarang);
+            if ($model_uxui_user->save()) {
+                $id_uxui_users=$model_uxui_user->id;
+                $is_save_11=0;
+
+                if($ganti_pass){
+                    (new \App\Models\UxuiUuTmp)->where('id', '=', $id_uxui_users)->delete();
+                    $model_uu_tmp = (new \App\Models\UxuiUuTmp)->where('id', '=', $id_uxui_users)->first();
+                    if (empty($model_uu_tmp)) {
+                        $model_uu_tmp = (new \App\Models\UxuiUuTmp);
+                        $model_uu_tmp->id=$id_uxui_users;
+                        $model_uu_tmp->uraian=DB::raw("AES_ENCRYPT('".$pass_tmp."','".$key_encripsi."')");
+                    }
+                    if($model_uu_tmp->save()){
+                        $is_save_11=1;
+                    }else{
+                        $is_save_11=0;
+                    }
+                }else{
+                    $is_save_11=1;
                 }
-                $model_1->set_model_with_data($data_save);
-                if ($model_1->save()) {
-                    $is_save = 1;
+
+                if($is_save_11){
+                    $model_user_karyawan = (new \App\Models\UxuiUsersKaryawan)->where('id_uxui_users', '=', $id_uxui_users)->where('id_karyawan', '=', $id_karyawan)->first();
+                    if (empty($model_user_karyawan)) {
+                        $model_user_karyawan = (new \App\Models\UxuiUsersKaryawan);
+                        $model_user_karyawan->id_uxui_users=$id_uxui_users;
+                        $model_user_karyawan->id_karyawan=$id_karyawan;
+                    }
+                    if($model_user_karyawan->save()){
+                        $is_save = 1;
+                    }
                 }
-                $is_save = 1;
             }
 
+            $model_auth_users = (new \App\Models\UserManagement\UxuiAuthUsers)->where('id_user', '=', $id_uxui_users)->first();
+            if (empty($model_auth_users)) {
+                $model_auth_users = (new \App\Models\UserManagement\UxuiAuthUsers);
+                $model_auth_users->id=$id_uxui_users;
+                $model_auth_users->id_user=$id_uxui_users;
+            }
+            $model_auth_users->alias_group=$level_akses;
+
+            if ($model_auth_users->save()) {
+                $is_save = 1;
+            }else{
+                $is_save = 0;
+            }
+            
             if ($is_save) {
                 DB::commit();
-                $link_back_param = $this->clear_request($link_back_param, $request);
                 $pesan = ['success', $message_default['success'], 2];
             } else {
                 DB::rollBack();
@@ -166,7 +234,6 @@ class UserAksesController extends Controller
             DB::rollBack();
             $pesan = ['error', $message_default['error'], 3];
         }
-
         return redirect()->route($link_back_redirect, $link_back_param)->with([$pesan[0] => $pesan[1]]);
     }
 
