@@ -1,9 +1,8 @@
 <form action="{{ url($action_form) }}" method="{{ !empty($method_form) ? $method_form : 'POST' }}">
     @csrf
     <?php
-    var_dump($model);
-    $alias_group=!empty($model->alias_group) ? $model->alias_group : '';
-    $password=!empty($model->password) ? $model->password : ''
+        $alias_group=!empty($model->alias_group) ? $model->alias_group : '';
+        $password=!empty($model->password) ? $model->password : ''
     ?>
     <input type="text" name="id_karyawan" value="{{ !empty( $model->id_karyawan ) ? $model->id_karyawan : '' }}">
     <input type="text" name="id_uxui_users" value="{{ !empty( $model->id_uxui_users ) ? $model->id_uxui_users : '' }}">
