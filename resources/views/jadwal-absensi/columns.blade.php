@@ -55,8 +55,10 @@
                 <table class="table border table-responsive-tablet">
                     <thead>
                         <tr>
+                            <th class="py-3" style="width: 5%">Nama Uraian</th>
                             <th class="py-3" style="width: 5%">Jam Masuk</th>
                             <th class="py-3" style="width: 5%">Jam Keluar</th>
+                            <th class="py-3" style="width: 5%">Alias</th>
                             <th class="py-3" style="width: 5%">Action</th>
                         </tr>
                     </thead>
@@ -65,12 +67,14 @@
                             @foreach($list_data as $key => $item)
                             <?php
                                 $paramater_url=[
-                                    'data_sent'=>$item->id_karyawan
+                                    'data_sent'=>$item->id_jadwal
                                 ];
                             ?>
                             <tr>
-                                <td>{{ !empty($item->nik) ? $item->nik : ''  }}</td>
-                                <td>{{ !empty($item->nip) ? $item->nip : ''  }}</td>
+                                <td>{{ !empty($item->uraian) ? $item->uraian : ''  }}</td>
+                                <td>{{ !empty($item->jam_awal) ? $item->jam_awal : ''  }}</td>
+                                <td>{{ !empty($item->jam_akhir) ? $item->jam_akhir : ''  }}</td>
+                                <td>{{ !empty($item->alias) ? $item->alias : ''  }}</td>
                                 <td class='text-right'>
                                     {!! (new
                                     \App\Http\Traits\AuthFunction)->setPermissionButton([$router_name->uri.'/update',$paramater_url,'update'])
