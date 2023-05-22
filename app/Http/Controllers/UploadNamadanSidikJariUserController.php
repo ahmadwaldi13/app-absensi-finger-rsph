@@ -173,37 +173,27 @@ class UploadNamadanSidikJariUserController extends \App\Http\Controllers\MyAuthC
         $item_list_terpilih=(array)$item_list_terpilih;
        
         $mesin=(new \App\Services\MesinFinger($data_mesin->ip_address));
-        // $get_user=$mesin->get_user_upload('',$item_list_terpilih);
 
-        // $check_presensi= [];
-        // if($check_presensi>0){
-        //     return redirect()->back()->with(['error' => "Data Udah Ada ditabel"]);
-        // }
-
-        $jml_save_user=0;
-        $jml_save_finger=0;
+        $jml_user=0;
+        $jml_finger=0;
         $get_user=$mesin->get_user_upload('',$item_list_terpilih);
         if($get_user){
-            $jml_save_finger++;
+            $jml_user++;
         }
         $get_user_jari=$mesin->get_user_upload_sidik_jari('',$item_list_terpilih);
         if($get_user_jari){
-            $jml_save_finger++; 
+            $jml_finger++; 
         }
         
 
-        $is_save=0;
-        if($jml_save_user>0 && $jml_save_finger>0){
-            $is_save=1;
+        $is_check=0;
+        if($jml_user>0 && $jml_finger>0){
+            $is_check=1;
         }
-        dd($is_save);
-
-        if ($is_save) {
-            // DB::commit();
-            $pesan = ['success', $message_default['success'], 2];
+        if ($is_check) {
+            return redirect()->back()->with(['success' => "Data Berhasil Di upload"]);
         }else{
-            // DB::rollBack();
-            $pesan = ['error', $message_default['error'], 3];
+            return redirect()->back()->with(['error' => "Data tidak berhasil di proses"]);
         }
     }
 

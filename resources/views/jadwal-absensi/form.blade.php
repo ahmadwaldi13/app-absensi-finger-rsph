@@ -18,7 +18,7 @@
                 <div class="col-lg-6 mb-3">
                     <div class='bagan_form'>
                         <label for="jam_awal" class="form-label">Jam Masuk</label>
-                        <input type="time" class="form-control" id="jam_awal" name='jam_awal' required value="{{ !empty($model->jam_awal) ? $model->jam_awal : '' }}">
+                        <input type="time" class="form-control input-daterange" id="jam_awal" name='jam_awal' required value="{{ !empty($model->jam_awal) ? $model->jam_awal : '' }}">
                         <div class="message"></div>
                     </div>
                 </div>
@@ -29,7 +29,7 @@
                 <div class="col-lg-6 mb-3">
                     <div class='bagan_form'>
                         <label for="jam_akhir" class="form-label">Jam Keluar</label>
-                        <input type="time" class="form-control" id="jam_akhir" name='jam_akhir' required value="{{ !empty($model->jam_akhir) ? $model->jam_akhir : '' }}">
+                        <input type="time" class="form-control input-daterange" id="jam_akhir" name='jam_akhir' required value="{{ !empty($model->jam_akhir) ? $model->jam_akhir : '' }}">
                         <div class="message"></div>
                     </div>
                 </div>
