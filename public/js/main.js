@@ -43,17 +43,6 @@ function removeLocalStrg(){
 // Variabel untuk tampilkan row data
 var e = document.getElementById("row-data");
 
-// function selected() {
-//     var value = e.options[e.selectedIndex].value;
-//     console.log(value);
-// }
-// e.onchange = selected;
-// selected();
-
-// document.getElementById("modalKlinik").addEventListener("click", function () {
-//     document.getElementById("showModal").click();
-// });
-
 function setValue(item) {
     document.getElementById("poliklinik").value = item;
     document.getElementById("close").click();

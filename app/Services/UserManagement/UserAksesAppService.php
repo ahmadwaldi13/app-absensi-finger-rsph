@@ -95,7 +95,6 @@ class UserAksesAppService extends \App\Services\BaseService
             }
         }
 
-        // dd( $query->toSql());
         if(!empty($type_return)){
             return $query;
         }else{

@@ -512,7 +512,6 @@ function action_set_data($meModal, $button_modal, $ajax_url, $type_ajax, $data_s
                 $meModal.find('.modal-body').attr("data-modal-row", $modal_row);
                 document.getElementById($button_modal).click();
             }
-            // console.log(data);
         },
         error: function (data) {
             alert("Maaf data tidak dapat di tampilkan");

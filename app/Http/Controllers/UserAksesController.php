@@ -151,17 +151,24 @@ class UserAksesController extends Controller
                 $id_uxui_users=!empty($check_users->id_uxui_users) ? $check_users->id_uxui_users : '';
             }
 
+            $user_baru=0;
             $model_uxui_user = (new \App\Models\UserManagement\UxuiUsers)->where('id', '=', $id_uxui_users)->first();
             if (empty($model_uxui_user)) {
                 $model_uxui_user = (new \App\Models\UserManagement\UxuiUsers);
                 $model_uxui_user->status=1;
+                $user_baru=1;
             }
 
             $key_encripsi=(new \App\Services\AuthService)->key_encripsi();
             
             $model_uxui_user->username=$username;
             $ganti_pass=0;
+            $ubah_pass=0;
             if(!empty($model_uxui_user->password) and !empty($password)){
+                $ubah_pass=1;
+            }
+            
+            if( ($user_baru==1) || ($ubah_pass==1) ){
                 $pass_tmp=$password;
                 $password=Hash::make($password);
                 $model_uxui_user->password=DB::raw("AES_ENCRYPT('".$password."','".$key_encripsi."')");
@@ -237,47 +244,47 @@ class UserAksesController extends Controller
         return redirect()->route($link_back_redirect, $link_back_param)->with([$pesan[0] => $pesan[1]]);
     }
 
-    function actionDelete(Request $request)
-    {
+    // function actionDelete(Request $request)
+    // {
 
-        DB::beginTransaction();
-        $pesan = [];
-        $link_back_param = [];
-        $message_default = [
-            'success' => 'Data berhasil dihapus',
-            'error' => 'Maaf data tidak berhasil dihapus'
-        ];
+    //     DB::beginTransaction();
+    //     $pesan = [];
+    //     $link_back_param = [];
+    //     $message_default = [
+    //         'success' => 'Data berhasil dihapus',
+    //         'error' => 'Maaf data tidak berhasil dihapus'
+    //     ];
 
-        $kode = !empty($request->data_sent) ? $request->data_sent : null;
+    //     $kode = !empty($request->data_sent) ? $request->data_sent : null;
 
-        try {
-            $model = (new \App\Models\IpsrsJenisBarang)->where('kd_jenis', '=', $kode)->first();
-            if (empty($model)) {
-                return redirect()->route($this->url_name, $link_back_param)->with(['error', 'Data tidak ditemukan']);
-            }
+    //     try {
+    //         $model = (new \App\Models\IpsrsJenisBarang)->where('kd_jenis', '=', $kode)->first();
+    //         if (empty($model)) {
+    //             return redirect()->route($this->url_name, $link_back_param)->with(['error', 'Data tidak ditemukan']);
+    //         }
 
-            $is_save = 0;
-            if ($model->delete()) {
-                $is_save = 1;
-            }
+    //         $is_save = 0;
+    //         if ($model->delete()) {
+    //             $is_save = 1;
+    //         }
 
-            if ($is_save) {
-                DB::commit();
-                $pesan = ['success', $message_default['success'], 2];
-            } else {
-                DB::rollBack();
-                $pesan = ['error', $message_default['error'], 3];
-            }
-        } catch (\Illuminate\Database\QueryException $e) {
-            DB::rollBack();
-            if ($e->errorInfo[1] == '1062') {
-            }
-            $pesan = ['error', $message_default['error'], 3];
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            $pesan = ['error', $message_default['error'], 3];
-        }
+    //         if ($is_save) {
+    //             DB::commit();
+    //             $pesan = ['success', $message_default['success'], 2];
+    //         } else {
+    //             DB::rollBack();
+    //             $pesan = ['error', $message_default['error'], 3];
+    //         }
+    //     } catch (\Illuminate\Database\QueryException $e) {
+    //         DB::rollBack();
+    //         if ($e->errorInfo[1] == '1062') {
+    //         }
+    //         $pesan = ['error', $message_default['error'], 3];
+    //     } catch (\Throwable $e) {
+    //         DB::rollBack();
+    //         $pesan = ['error', $message_default['error'], 3];
+    //     }
 
-        return redirect()->route($this->url_name, $link_back_param)->with([$pesan[0] => $pesan[1]]);
-    }
+    //     return redirect()->route($this->url_name, $link_back_param)->with([$pesan[0] => $pesan[1]]);
+    // }
 }

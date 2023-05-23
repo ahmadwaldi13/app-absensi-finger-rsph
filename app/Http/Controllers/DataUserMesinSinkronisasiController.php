@@ -222,13 +222,11 @@ class DataUserMesinSinkronisasiController extends \App\Http\Controllers\MyAuthCo
                 $pesan = ['success', 'Tidak ada yang di proses' , 2];
             }
         } catch (\Illuminate\Database\QueryException $e) {
-            dd($e);
             DB::rollBack();
             if ($e->errorInfo[1] == '1062') {
             }
             $pesan = ['error', $message_default['error'], 3];
         } catch (\Throwable $e) {
-            dd($e);
             DB::rollBack();
             $pesan = ['error', $message_default['error'], 3];
         }

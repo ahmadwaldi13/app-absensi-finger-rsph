@@ -163,7 +163,6 @@ class UploadSidikJariUserController extends \App\Http\Controllers\MyAuthControll
     }
 
     private function proses($request){
-        // dd($request);
         $id_mesin_absensi = !empty($request->filter_id_mesin) ? $request->filter_id_mesin : '';
         
         $kode = !empty($request->id_karyawan) ? $request->id_karyawan : null;

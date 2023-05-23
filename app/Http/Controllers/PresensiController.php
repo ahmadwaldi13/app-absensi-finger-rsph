@@ -61,7 +61,6 @@ class PresensiController extends \App\Http\Controllers\MyAuthController
     
 
         $list_data = $this->userPresensiService->getList($paramater, 1)->paginate(!empty($request->per_page) ? $request->per_page : 30);
-        // dd($list_data);
 
         $parameter_view = [
             'title' => $this->title,
