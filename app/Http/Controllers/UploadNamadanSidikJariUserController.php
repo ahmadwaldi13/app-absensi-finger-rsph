@@ -2,17 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
 use App\Services\GlobalService;
 use App\Services\MesinFinger;
 use App\Classes\SoapMesinFinger;
-use App\Services\UserMesinTmpService;
 use App\Services\RefKaryawanService;
-use Illuminate\Support\Facades\DB;
 
-class UploadNamaUserController extends \App\Http\Controllers\MyAuthController
+class UploadNamadanSidikJariUserController extends \App\Http\Controllers\MyAuthController
 {
     public $part_view, $url_index, $url_name, $title, $breadcrumbs, $globalService, $mesinFinger, $soapMesinFinger, $refKaryawanService;
 
@@ -23,7 +19,7 @@ class UploadNamaUserController extends \App\Http\Controllers\MyAuthController
         $this->url_index = $router_name->uri;
         $this->url_name = $router_name->router_name;
 
-        $this->title = 'Upload Nama User';
+        $this->title = 'Upload Nama dan Sidik Jari User';
         $this->breadcrumbs = [
             ['title' => 'Mesin Absensi', 'url' => url('/') . "/sub-menu?type=5"],
             ['title' => $this->title, 'url' => url('/') . "/" . $this->url_index],
@@ -80,17 +76,17 @@ class UploadNamaUserController extends \App\Http\Controllers\MyAuthController
             $paramater = [
                 'search' => $form_filter_text,
             ];
-            $data_tmp = (new \App\Services\RefKaryawanService())
+            $data_tmp = (new \App\Services\RefUserInfoDetailService())
                 ->getList($paramater, 1)
                 ->offset($start_page)
                 ->limit($end_page)
                 ->get();
 
-            $data_count = (new \App\Services\RefKaryawanService())->getList($paramater, 1)->count();
+            $data_count = (new \App\Services\RefUserInfoDetailService())->getList($paramater, 1)->count();
 
             if (!empty($data_tmp)) {
                 foreach ($data_tmp as $value) {
-                    $data = ["<input class='form-check-input checked_me' type='checkbox' data-kode='" . $value->id_karyawan . "'>", !empty($value->id_karyawan) ? $value->id_karyawan : '', !empty($value->nm_karyawan) ? $value->nm_karyawan : '', !empty($value->alamat) ? $value->alamat : ''];
+                    $data = ["<input class='form-check-input checked_me' type='checkbox' data-kode='" . $value->id_karyawan . "'>", !empty($value->id_karyawan) ? $value->id_karyawan : '', !empty($value->nm_karyawan) ? $value->nm_karyawan : '', !empty($value->nm_jabatan) ? $value->nm_jabatan : '', !empty($value->finger_id) ? $value->finger_id : '', !empty($value->finger) ? $value->finger : '', !empty($value->alamat) ? $value->alamat : ''];
                     $hasil_data[] = $data;
                 }
             }
@@ -123,7 +119,7 @@ class UploadNamaUserController extends \App\Http\Controllers\MyAuthController
             if ($list_item) {
                 foreach ($list_item as $value) {
                     $item_list_terpilih[$value->id_karyawan] = [
-                        'data' => ['', $value->id_karyawan, $value->nm_karyawan, $value->alamat],
+                        'data' => ['', $value->id_karyawan, $value->nm_karyawan, $value->nm_jabatan, $value->finger_id, $value->finger, $value->alamat],
                     ];
                 }
             }
@@ -150,7 +146,7 @@ class UploadNamaUserController extends \App\Http\Controllers\MyAuthController
         }
         $parameter_view = array_merge($parameter_view, $get_request);
 
-        return view('upload-nama-user.form', $parameter_view);
+        return view('upload-nama-dan-sidik-jari-user.form', $parameter_view);
     }
 
     function actionCreate(Request $request)
@@ -164,6 +160,7 @@ class UploadNamaUserController extends \App\Http\Controllers\MyAuthController
     }
 
     private function proses($request){
+        // dd($request);
         $id_mesin_absensi = !empty($request->filter_id_mesin) ? $request->filter_id_mesin : '';
         
         $kode = !empty($request->id_karyawan) ? $request->id_karyawan : null;
@@ -176,13 +173,28 @@ class UploadNamaUserController extends \App\Http\Controllers\MyAuthController
         $item_list_terpilih=(array)$item_list_terpilih;
        
         $mesin=(new \App\Services\MesinFinger($data_mesin->ip_address));
-        // $get_user=$mesin->get_user_upload('',$item_list_terpilih);
 
-        $check_presensi= [];
-        if($check_presensi>0){
-            return redirect()->back()->with(['error' => "Data Udah Ada ditabel"]);
+        $jml_user=0;
+        $jml_finger=0;
+        $get_user=$mesin->get_user_upload('',$item_list_terpilih);
+        if($get_user){
+            $jml_user++;
         }
+        $get_user_jari=$mesin->get_user_upload_sidik_jari('',$item_list_terpilih);
+        if($get_user_jari){
+            $jml_finger++; 
+        }
+        
 
+        $is_check=0;
+        if($jml_user>0 && $jml_finger>0){
+            $is_check=1;
+        }
+        if ($is_check) {
+            return redirect()->back()->with(['success' => "Data Berhasil Di upload"]);
+        }else{
+            return redirect()->back()->with(['error' => "Data tidak berhasil di proses"]);
+        }
     }
 
 
@@ -190,7 +202,7 @@ class UploadNamaUserController extends \App\Http\Controllers\MyAuthController
     {
         $get_req = $request->all();
         
-        if ($get_req['action'] == 'list_karyawan_master_form') {
+        if ($get_req['action'] == 'list_nama_dan_sidikjari_master_form') {
             $hasil = $this->getListKaryawanMasterForm($request);
             if ($request->ajax()) {
                 $return = '';

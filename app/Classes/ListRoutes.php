@@ -291,43 +291,64 @@ class ListRoutes
 					],
 				]
 			],
+			// [
+			// 	'title' => 'Upload Nama User Ke Mesin',
+			// 	'item' => [
+			// 		[
+            //             'type' => 'Upload',
+            //             'method' => ['get', 'post'],
+            //             'url' => '/upload-nama-user',
+            //             'controller' => 'UploadNamaUserController@actionIndex',
+            //             'name' => '',
+            //             'middleware' => '',
+            //         ],
+            //         [
+            //             'type' => 'system',
+            //             'method' => 'get',
+            //             'url' => '/upload-nama-user/ajax',
+            //             'controller' => 'UploadNamaUserController@ajax',
+            //             'name' => '',
+            //             'middleware' => '',
+            //         ],
+			// 	]
+			// ],
+			// [
+			// 	'title' => 'Upload Sidik Jari User Ke Mesin',
+			// 	'item' => [
+			// 		[
+            //             'type' => 'Upload',
+            //             'method' => ['get', 'post'],
+            //             'url' => '/upload-sidik-jari-user',
+            //             'controller' => 'UploadSidikJariUserController@actionIndex',
+            //             'name' => '',
+            //             'middleware' => '',
+            //         ],
+            //         [
+            //             'type' => 'system',
+            //             'method' => 'get',
+            //             'url' => '/upload-sidik-jari-user/ajax',
+            //             'controller' => 'UploadSidikJariUserController@ajax',
+            //             'name' => '',
+            //             'middleware' => '',
+            //         ],
+			// 	]
+			// ],
 			[
-				'title' => 'Upload Nama User Ke Mesin',
+				'title' => 'Upload Nama dan Sidik Jari User Ke Mesin',
 				'item' => [
 					[
                         'type' => 'Upload',
                         'method' => ['get', 'post'],
-                        'url' => '/upload-nama-user',
-                        'controller' => 'UploadNamaUserController@actionIndex',
+                        'url' => '/upload-nama-dan-sidik-jari-user',
+                        'controller' => 'UploadNamadanSidikJariUserController@actionIndex',
                         'name' => '',
                         'middleware' => '',
                     ],
                     [
                         'type' => 'system',
                         'method' => 'get',
-                        'url' => '/upload-nama-user/ajax',
-                        'controller' => 'UploadNamaUserController@ajax',
-                        'name' => '',
-                        'middleware' => '',
-                    ],
-				]
-			],
-			[
-				'title' => 'Upload Sidik Jari User Ke Mesin',
-				'item' => [
-					[
-                        'type' => 'Upload',
-                        'method' => ['get', 'post'],
-                        'url' => '/upload-sidik-jari-user',
-                        'controller' => 'UploadSidikJariUserController@actionIndex',
-                        'name' => '',
-                        'middleware' => '',
-                    ],
-                    [
-                        'type' => 'system',
-                        'method' => 'get',
-                        'url' => '/upload-sidik-jari-user/ajax',
-                        'controller' => 'UploadSidikJariUserController@ajax',
+                        'url' => '/upload-nama-dan-sidik-jari-user/ajax',
+                        'controller' => 'UploadNamadanSidikJariUserController@ajax',
                         'name' => '',
                         'middleware' => '',
                     ],
@@ -349,6 +370,22 @@ class ListRoutes
 						'method' => ['get', 'post'],
 						'url' => '/jadwal-absensi/create',
 						'controller' => 'JadwalAbsensiController@actionCreate',
+						'name' => '',
+						'middleware' => '',
+					],
+					[
+						'type' => 'update',
+						'method' => ['get', 'post'],
+						'url' => '/jadwal-absensi/update',
+						'controller' => 'JadwalAbsensiController@actionUpdate',
+						'name' => '',
+						'middleware' => '',
+					],
+					[
+						'type' => 'delete',
+						'method' => 'delete',
+						'url' => '/jadwal-absensi/delete',
+						'controller' => 'JadwalAbsensiController@actionDelete',
 						'name' => '',
 						'middleware' => '',
 					],
