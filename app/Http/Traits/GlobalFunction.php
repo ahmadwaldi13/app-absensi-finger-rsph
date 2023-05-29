@@ -2,6 +2,7 @@
 
 namespace App\Http\Traits;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 trait GlobalTraits {
 
@@ -204,6 +205,25 @@ trait GlobalTraits {
         }
         $parameter=implode('&',$tmp_para);
         return $url.'?'.$parameter;
+    }
+
+    public function validator($request=[],$rules=[],$message=[]){
+        $check_validasi=Validator::make($request,$rules,$message);
+        $list_error=[];
+        if ( $check_validasi->fails() ) {
+            $get_errors=$check_validasi->errors();
+            foreach($get_errors->getMessages() as $key => $value){
+                foreach($value as $key_1 => $value_1){
+                    $list_error[]=$value_1;
+                }
+            }
+            $list_error=implode(',',$list_error);
+        }
+
+        return (object)[
+            'validasi'=>$check_validasi,
+            'list_error'=>$list_error,
+        ];
     }
 }
 

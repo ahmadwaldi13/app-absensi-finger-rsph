@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 class MyModel extends Model
 {
@@ -263,6 +264,10 @@ class MyModel extends Model
         } catch (\Throwable $e) {
             dd($e);
         }
+    }
+
+    public function validator(){
+        // return Validator::make($request,$rules,$message);
     }
 
     protected static function boot(){

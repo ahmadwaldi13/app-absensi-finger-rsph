@@ -60,6 +60,24 @@
                                 $paramater_url=[
                                     'data_sent'=>$item->id_karyawan
                                 ];
+                                $paramater_url_delete=[
+                                    'data_sent'=>$item->id_uxui_users
+                                ];
+
+                                $status_user=0;
+                                $status_user_text='';
+                                if(isset($item->status_user)){
+                                    if($item->status_user==1){
+                                        $status_user_text='Aktif';
+                                        $status_user=1;
+                                    }else{
+                                        $status_user_text='Tidak Aktif';
+                                        $status_user=2;
+                                    }
+                                }else{
+                                    $status_user_text='TIdak ada Akun';
+                                    $status_user=0;
+                                }
                             ?>
                             <tr>
                                 <td>
@@ -70,12 +88,12 @@
                                 <td>{{ !empty($item->nm_departemen) ? $item->nm_departemen : ''  }}</td>
                                 <td>{{ !empty($item->username) ? $item->username : ''  }}</td>
                                 <td>{{ !empty($item->nama_group) ? $item->nama_group : ''  }}</td>
-                                <td>{{ !empty($item->nm_status_user) ? $item->nm_status_user : ''  }}</td>
+                                <td>{{ $status_user_text  }}</td>
                                 <td class='text-right'>
-                                    {!! (new \App\Http\Traits\AuthFunction)->setPermissionButton([$router_name->uri.'/update',$paramater_url,'update'])
-                                    !!}
-                                    {!! (new \App\Http\Traits\AuthFunction)->setPermissionButton([$router_name->uri.'/delete',$paramater_url,'delete'],['modal'])
-                                    !!}
+                                    {!! (new \App\Http\Traits\AuthFunction)->setPermissionButton([$router_name->uri.'/update',$paramater_url,'update']) !!}
+                                    @if(!empty($status_user))
+                                        {!! (new \App\Http\Traits\AuthFunction)->setPermissionButton([$router_name->uri.'/delete',$paramater_url_delete,'delete'],['modal',['data-confirm-message'=>'Apakah anda yakin menghapus akun ini ?']]) !!}
+                                    @endif
                                 </td>
                             </tr>
                             @endforeach

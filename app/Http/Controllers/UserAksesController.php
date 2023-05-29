@@ -10,7 +10,6 @@ use Illuminate\Support\Facades\Hash;
 use App\Services\UserManagement\UserAksesAppService;
 use App\Services\UserManagement\UserGroupAppService;
 
-
 class UserAksesController extends Controller
 {
 
@@ -86,7 +85,7 @@ class UserAksesController extends Controller
             'model' => $model
         ];
 
-        return view('user-management.user-akses.form_input_users', $parameter_view);
+        return view('user-management.user-akses.form', $parameter_view);
     }
 
     function actionUpdate(Request $request)
@@ -128,8 +127,9 @@ class UserAksesController extends Controller
 
         try {
             $data_form=(object)$req;
-
+            
             $username=!empty($data_form->username) ? $data_form->username : '';
+            $username=trim($username);
             $password=!empty($data_form->password) ? $data_form->password : '';
             $level_akses=!empty($data_form->level_akses) ? $data_form->level_akses : '';
             if(!$username){
@@ -155,8 +155,13 @@ class UserAksesController extends Controller
             $model_uxui_user = (new \App\Models\UserManagement\UxuiUsers)->where('id', '=', $id_uxui_users)->first();
             if (empty($model_uxui_user)) {
                 $model_uxui_user = (new \App\Models\UserManagement\UxuiUsers);
+                $user_baru=1;                
+            }
+
+            if(!empty($data_form->status_user)){
                 $model_uxui_user->status=1;
-                $user_baru=1;
+            }else{
+                $model_uxui_user->status=0;
             }
 
             $key_encripsi=(new \App\Services\AuthService)->key_encripsi();
@@ -176,6 +181,17 @@ class UserAksesController extends Controller
             }
             
             $is_save = 0;
+
+            $data_model_attribut=$model_uxui_user->getAttributes();
+            $id_primary=!empty($id_uxui_users) ? $id_uxui_users : '';
+
+            $get_rules=(new \App\Models\UserManagement\UxuiUsers)->getValidation($id_primary);
+
+            $validator=(new \App\Http\Traits\GlobalFunction)->validator($data_model_attribut,$get_rules->rules,$get_rules->message);
+            
+            if(!empty($validator->list_error)){
+                return redirect()->route($link_back_redirect, $link_back_param)->with(['error'=>$validator->list_error]);
+            }
 
             if ($model_uxui_user->save()) {
                 $id_uxui_users=$model_uxui_user->id;
@@ -224,7 +240,7 @@ class UserAksesController extends Controller
             }else{
                 $is_save = 0;
             }
-            
+
             if ($is_save) {
                 DB::commit();
                 $pesan = ['success', $message_default['success'], 2];
@@ -244,47 +260,50 @@ class UserAksesController extends Controller
         return redirect()->route($link_back_redirect, $link_back_param)->with([$pesan[0] => $pesan[1]]);
     }
 
-    // function actionDelete(Request $request)
-    // {
+    function actionDelete(Request $request){
 
-    //     DB::beginTransaction();
-    //     $pesan = [];
-    //     $link_back_param = [];
-    //     $message_default = [
-    //         'success' => 'Data berhasil dihapus',
-    //         'error' => 'Maaf data tidak berhasil dihapus'
-    //     ];
+        $req = $request->all();
+        DB::beginTransaction();
+        $pesan = [];
+        $link_back_param = [];
+        $message_default = [
+            'success' => 'Data berhasil dihapus',
+            'error' => 'Maaf data tidak berhasil dihapus'
+        ];
 
-    //     $kode = !empty($request->data_sent) ? $request->data_sent : null;
+        $kode = !empty($request->data_sent) ? $request->data_sent : null;
 
-    //     try {
-    //         $model = (new \App\Models\IpsrsJenisBarang)->where('kd_jenis', '=', $kode)->first();
-    //         if (empty($model)) {
-    //             return redirect()->route($this->url_name, $link_back_param)->with(['error', 'Data tidak ditemukan']);
-    //         }
+        try {
+            $model = (new \App\Models\UserManagement\UxuiUsers)->where('id', '=', $kode)->first();
+            if (empty($model)) {
+                return redirect()->route($this->url_name, $link_back_param)->with(['error', 'Data tidak ditemukan']);
+            }
 
-    //         $is_save = 0;
-    //         if ($model->delete()) {
-    //             $is_save = 1;
-    //         }
+            $is_save = 0;
+            if ($model->delete()) {
+                $model_auth_user=(new \App\Models\UserManagement\UxuiAuthUsers)->where('id', '=', $model->id)->first();
+                if( $model_auth_user->delete() ){
+                    $is_save = 1;
+                }
+            }
 
-    //         if ($is_save) {
-    //             DB::commit();
-    //             $pesan = ['success', $message_default['success'], 2];
-    //         } else {
-    //             DB::rollBack();
-    //             $pesan = ['error', $message_default['error'], 3];
-    //         }
-    //     } catch (\Illuminate\Database\QueryException $e) {
-    //         DB::rollBack();
-    //         if ($e->errorInfo[1] == '1062') {
-    //         }
-    //         $pesan = ['error', $message_default['error'], 3];
-    //     } catch (\Throwable $e) {
-    //         DB::rollBack();
-    //         $pesan = ['error', $message_default['error'], 3];
-    //     }
+            if ($is_save) {
+                DB::commit();
+                $pesan = ['success', $message_default['success'], 2];
+            } else {
+                DB::rollBack();
+                $pesan = ['error', $message_default['error'], 3];
+            }
+        } catch (\Illuminate\Database\QueryException $e) {
+            DB::rollBack();
+            if ($e->errorInfo[1] == '1062') {
+            }
+            $pesan = ['error', $message_default['error'], 3];
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            $pesan = ['error', $message_default['error'], 3];
+        }
 
-    //     return redirect()->route($this->url_name, $link_back_param)->with([$pesan[0] => $pesan[1]]);
-    // }
+        return redirect()->route($this->url_name, $link_back_param)->with([$pesan[0] => $pesan[1]]);
+    }
 }

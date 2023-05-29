@@ -114,6 +114,7 @@ class DataKaryawanController extends \App\Http\Controllers\MyAuthController
     private function proses($request)
     {
         $req = $request->all();
+        DB::statement("ALTER TABLE ".(new \App\Models\RefKaryawan)->table." AUTO_INCREMENT = 1");
         $kode = !empty($req['key_old']) ? $req['key_old'] : '';
         $action_is_create = (str_contains($request->getPathInfo(), $this->url_index . '/create')) ? 1 : 0;
         $link_back_redirect = ($action_is_create) ? $this->url_name : $this->url_name . '/update';
