@@ -22,7 +22,6 @@ class RefKaryawan extends Migration
                 $table->increments('id_karyawan');
                 $table->string('nm_karyawan',50);
                 $table->string('alamat',100);
-                $table->string('nik',20);
                 $table->string('nip',20);
                 $table->smallInteger('id_jabatan');
                 $table->smallInteger('id_departemen');

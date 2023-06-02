@@ -2,12 +2,12 @@
 
 $item = [
     1 => (object) [
-        'nama' => 'Data User Pada Database',
-        'key' => 'data-user-mesin',
-    ],
-    2 => (object) [
         'nama' => 'Sikronisasi Data Mesin & Database',
         'key' => 'data-user-mesin-sinkronisasi',
+    ],
+    2 => (object) [
+        'nama' => 'Data User Pada Database',
+        'key' => 'data-user-mesin',
     ],
     3 => (object) [
         'nama' => 'Copy Data User Mesin',

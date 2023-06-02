@@ -21,7 +21,7 @@ class RefUserInfoDetailService extends BaseService
         ->select(
             'utama.*','ip_address','nm_mesin','lokasi_mesin',
             DB::raw('if(a.id_user,1,0) as status_id_user'),
-            'nip','nik','id_karyawan','nm_karyawan','id_departemen','nm_departemen','id_jabatan','nm_jabatan','alamat',
+            'nip','id_karyawan','nm_karyawan','id_departemen','nm_departemen','id_jabatan','nm_jabatan','alamat',
         )
         ->join('ref_mesin_absensi', 'ref_mesin_absensi.id_mesin_absensi', '=', 'utama.id_mesin_absensi')
         ->leftJoin(
@@ -44,7 +44,7 @@ class RefUserInfoDetailService extends BaseService
         ->orderBy(DB::raw('if(a.id_user,1,0)'),'ASC');
 
         $list_search=[
-            'where_or'=>['name','nm_karyawan','nip','nik','utama.id_user'],
+            'where_or'=>['name','nm_karyawan','nip','utama.id_user'],
         ];
 
         if($params){

@@ -111,14 +111,12 @@ class AjaxController extends Controller
     
     function getListKaryawan($request){
         $list_data_tmp = (new \App\Services\RefKaryawanService)->getList([], 1)->get();
-        
         $list_data=[];
         foreach($list_data_tmp as $value){
             $list_data[]=[
-                $value->nik,
                 $value->nip,
                 'kode'=>[
-                    'data-item'=>$value->id_karyawan.'@'.$value->nm_karyawan.'@'.$value->nik.'@'.$value->nip.'@'.$value->id_jabatan.'@'.$value->nm_jabatan.'@'.$value->id_departemen.'@'.$value->nm_departemen,
+                    'data-item'=>$value->id_karyawan.'@'.$value->nm_karyawan.'@'.$value->nip.'@'.$value->id_jabatan.'@'.$value->nm_jabatan.'@'.$value->id_departemen.'@'.$value->nm_departemen,
                     'value'=>$value->nm_karyawan
                 ],
                 $value->nm_jabatan,
@@ -128,7 +126,7 @@ class AjaxController extends Controller
     
         $table=[
             'header'=>[
-               'title'=> ['NIK','NIP','Nama','Jabatan','Departemen'],
+               'title'=> ['NIP','Nama','Jabatan','Departemen'],
                'parameter'=>[' class="w-5" ',' class="w-5" ',' class="w-25" ',' class="w-25" ',' class="w-25" ']
             ],
         ];

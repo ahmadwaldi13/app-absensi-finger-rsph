@@ -26,7 +26,7 @@ class RefKaryawanService extends BaseService
         ;
 
         $list_search=[
-            'where_or'=>['nm_karyawan','alamat','nik','nip','nm_jabatan','nm_departemen'],
+            'where_or'=>['nm_karyawan','alamat','nip','nm_jabatan','nm_departemen'],
         ];
 
         if($params){
@@ -51,25 +51,6 @@ class RefKaryawanService extends BaseService
     }
     function getList_finger($params){
         $query = $this->refUserInfoDetail;
-        // ->select('ref_karyawan.*','nm_jabatan','nm_departemen')
-        // ->Leftjoin('ref_jabatan','ref_jabatan.id_jabatan','=','ref_karyawan.id_jabatan')
-        // ->Leftjoin('ref_departemen','ref_departemen.id_departemen','=','ref_karyawan.id_departemen')
-        // ->where('ref_karyawan.id_karyawan', '=', $params)
-        // ->where('ref_user_info.id_user', '=', $params)
-        // ->get();
-
-        // return $query;
-        // $list_search=[
-        //     'where_or'=>['nm_karyawan','alamat','nik','nip','nm_jabatan','nm_departemen'],
-        // ];
-
-        // if($params){
-        //     $query=(new \App\Models\MyModel)->set_where($query,$params,$list_search);
-        // }
-        // if(empty($type)){
-        //     return $query->get();
-        // }else{
-            return $query;
-        // }
+        return $query;
     }
 }

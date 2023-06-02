@@ -23,6 +23,86 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
         parent::__construct($this->ip,$this->comm_key,$this->port);
     }
 
+    function restart_mesin(){
+        $connect_ip=$this->connect_sock();
+
+        if(empty($connect_ip[2]==3)){
+            $soap_request='';
+            $soap_request = "
+                <Restart>
+                    <ArgComKey Xsi:type=\"xsd:integer\">" . $this->lib($this->comm_key)->arg_com_key . "</ArgComKey>
+                </Restart>
+            ";
+            $buffer=$this->set_fputs($connect_ip,$soap_request);
+            $buffer = $this->parse_data($buffer, "<Information>", "</Information>");
+            $buffer = explode("\r\n", $buffer);
+
+            $check_hasil=!empty($buffer[0]) ? $buffer[0] : '';
+            if($check_hasil=='Successfully!'){
+                return ['success',1];
+            }else{
+                return ['error',2];
+            }
+        }else{
+            return ['error','tidak Terkoneksi'];
+        }
+
+    }
+    
+    function refresh_db_mesin(){
+        $connect_ip=$this->connect_sock();
+
+        if(empty($connect_ip[2]==3)){
+            $soap_request='';
+            $soap_request = "
+                <RefreshDb>
+                    ".$this->lib($this->comm_key)->arg_com_key ."
+                </RefreshDb>
+            ";
+            $buffer=$this->set_fputs($connect_ip,$soap_request);
+            $buffer = explode("\r\n", $buffer);
+            $check_hasil='Successfully!';
+            if($check_hasil=='Successfully!'){
+                return ['success',1];
+            }else{
+                return ['error',2];
+            }
+        }else{
+            return ['error','tidak Terkoneksi'];
+        }
+
+    }
+
+    function set_waktu_mesin(){
+        $connect_ip=$this->connect_sock();
+
+        if(empty($connect_ip[2]==3)){
+            $soap_request='';
+            $soap_request = "
+                <SetDate>
+                    ".$this->lib($this->comm_key)->arg_com_key ."
+                    <Arg>
+                        <Date xsi:type=\"xsd:string\">" . date("Y-m-d") . "</Date>
+                        <Time xsi:type=\"xsd:string\">" . date("H:i:s") . "</Time>
+                    </Arg>
+                </SetDate>
+            ";
+            $buffer=$this->set_fputs($connect_ip,$soap_request);
+            $buffer = $this->parse_data($buffer, "<Information>", "</Information>");
+            $buffer = explode("\r\n", $buffer);
+
+            $check_hasil=!empty($buffer[0]) ? $buffer[0] : '';
+            if($check_hasil=='Successfully!'){
+                return ['success',1];
+            }else{
+                return ['error',2];
+            }
+        }else{
+            return ['error','tidak Terkoneksi'];
+        }
+
+    }
+
     function get_user($id_user=''){
         $connect_ip=$this->connect_sock();
         
@@ -45,7 +125,7 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
                 if($data){
                     $jml++;
                     $data_tmp[]=[
-                        'id'=>$this->parse_data($data, "<PIN>", "</PIN>"),
+                        'id'=>$this->parse_data($data, "<PIN2>", "</PIN2>"),
                         'name'=>$this->parse_data($data, "<Name>", "</Name>"),
                         'password'=>$this->parse_data($data, "<Password>", "</Password>"),
                         'group'=>$this->parse_data($data, "<Group>", "</Group>"),
@@ -58,12 +138,11 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
                     ];   
                 }
             }
-            
             if(empty($jml)){
-                dd('com key anda salah/tidak ada data');
+                return ['error','com key anda salah/tidak ada data'];
             }
         }else{
-            dd('tidak konek');
+            return ['error','tidak Terkoneksi'];
         }
 
         if($data_tmp){
@@ -107,7 +186,6 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
         }else{
             dd('tidak konek');
         }
-
         if($data_tmp){
             return $data_tmp;
         }
@@ -130,6 +208,153 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
             return json_encode($data_tmp);
         }
         return '';
+    }
+
+    function upload_user_to_mesin($data_user){
+        $connect_ip=$this->connect_sock();
+
+        if(empty($connect_ip[2]==3)){
+            if($data_user->id_user){
+                
+                $soap_request = "
+                    <SetUserInfo>
+                        ". $this->lib($this->comm_key)->arg_com_key."
+                        <Arg>
+                            <PIN>" . $data_user->id_user . "</PIN>
+                            <Name>" . $data_user->name . "</Name>
+                            <Password>". $data_user->password ."</Password>
+                            <Group>". $data_user->group ."</Group>
+                            <Privilege>". $data_user->privilege ."</Privilege>
+                            <Card>". $data_user->card ."</Card>
+                            <PIN2>". $data_user->pin2 ."</PIN2>
+                        </Arg>
+                    </SetUserInfo>";
+                $buffer=$this->set_fputs($connect_ip,$soap_request);
+                $buffer = $this->parse_data($buffer, "<Information>", "</Information>");
+                
+                $check_hasil=!empty($buffer[0]) ? $buffer[0] : '';
+                $check_hasil='Successfully!';
+                if($check_hasil=='Successfully!'){
+                    return ['success',1];
+                }else{
+                    return ['error',2];
+                }
+            }else{
+                return ['error',2];
+            }
+        }else{
+            return ['error','tidak Terkoneksi'];
+        }
+
+    }
+
+    function upload_user_finger_to_mesin($data_user){
+        $connect_ip=$this->connect_sock();
+
+        if(empty($connect_ip[2]==3)){
+            if($data_user->id_user){
+
+                $soap_request='';
+                $soap_request = "
+                    <SetUserTemplate>
+                        ".$this->lib($this->comm_key)->arg_com_key ."
+                        <Arg>
+                            <PIN>". $data_user->id_user ."</PIN>
+                            <FingerID>". $data_user->finger_id ."</FingerID>
+                            <Size>". strlen($data_user->finger) ."</Size>
+                            <Valid>". $data_user->valid ."</Valid>
+                            <Template>". $data_user->finger ."</Template>
+                        </Arg>
+                    </SetUserTemplate>";
+                
+                $buffer=$this->set_fputs($connect_ip,$soap_request);
+                $buffer = $this->parse_data($buffer, "<SetUserTemplateResponse>", "</SetUserTemplateResponse>");
+				$buffer = $this->parse_data($buffer, "<Information>", "</Information>");
+
+                $buffer = explode("\r\n", $buffer);
+
+                $check_hasil=!empty($buffer[0]) ? $buffer[0] : '';
+                
+                if($check_hasil=='Successfully!'){
+                    return ['success',1];
+                }else{
+                    return ['error',2];
+                }
+            }else{
+                return ['error',2];
+            }
+        }else{
+            return ['error','tidak Terkoneksi'];
+        }
+
+    }
+
+    function delete_finger_to_mesin($data_user){
+        $connect_ip=$this->connect_sock();
+
+        if(empty($connect_ip[2]==3)){
+            if($data_user->id){
+                $soap_request='';
+                $soap_request = "
+                    <DeleteTemplate>
+                        ".$this->lib($this->comm_key)->arg_com_key ."
+                        <Arg>
+                            <PIN xsi:type=\"xsd:integer\">" . $data_user->id . "</PIN>
+                        </Arg>
+                    </DeleteTemplate>
+                ";
+                $buffer='';
+                $buffer=$this->set_fputs($connect_ip,$soap_request);
+                $buffer = $this->parse_data($buffer, "<Information>", "</Information>");
+                $buffer = explode("\r\n", $buffer);
+
+                $check_hasil=!empty($buffer[0]) ? $buffer[0] : '';
+                if($check_hasil=='Successfully!'){
+                    return ['success',1];
+                }else{
+                    return ['error',2];
+                }
+            }else{
+                return ['error',2];
+            }
+        }else{
+            return ['error','tidak Terkoneksi'];
+        }
+
+    }
+
+    function delete_user_to_mesin($data_user){
+        $connect_ip=$this->connect_sock();
+
+        if(empty($connect_ip[2]==3)){
+            if($data_user->id){
+                $soap_request='';
+                $soap_request = "
+                    <DeleteUser>
+                        ".$this->lib($this->comm_key)->arg_com_key ."
+                        <Arg>
+                            <PIN xsi:type=\"xsd:integer\">" . $data_user->id . "</PIN>
+                        </Arg>
+                    </DeleteUser>
+                ";
+                $buffer='';
+                $buffer=$this->set_fputs($connect_ip,$soap_request);
+                $buffer = $this->parse_data($buffer, "<Information>", "</Information>");
+                $buffer = explode("\r\n", $buffer);
+
+                $check_hasil=!empty($buffer[0]) ? $buffer[0] : '';
+                if($check_hasil=='Successfully!'){
+                    return ['success',1];
+                }else{
+                    return ['error',2];
+                }
+            }else{
+                return ['error',2];
+            }
+        }else{
+            return ['error','tidak Terkoneksi'];
+        }
+
     }
 
 
@@ -187,71 +412,71 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
     }
 
 
-    function get_user_upload($id_user='', $item_list_terpilih){
-        $connect_ip=$this->connect_sock();
-        if(empty($connect_ip[2]==3)){
-            $pin_x='';
-            if($id_user){
-                $pin_x=$this->lib($id_user)->pin;
-            }
-            foreach($item_list_terpilih as $value)
-            {
-                $data_save=[];
-                $data_save=[
-                    'id'=>$value->data['1'],
-                    'nama'=>$value->data['2']
-                ];  
+    // function get_user_upload($id_user='', $item_list_terpilih){
+    //     $connect_ip=$this->connect_sock();
+    //     if(empty($connect_ip[2]==3)){
+    //         $pin_x='';
+    //         if($id_user){
+    //             $pin_x=$this->lib($id_user)->pin;
+    //         }
+    //         foreach($item_list_terpilih as $value)
+    //         {
+    //             $data_save=[];
+    //             $data_save=[
+    //                 'id'=>$value->data['1'],
+    //                 'nama'=>$value->data['2']
+    //             ];  
             
-                $soap_request='';
-                $soap_request = "<SetUserInfo>
-                                    <ArgComKey Xsi:type=\"xsd:integer\">" . $this->lib($this->comm_key)->arg_com_key . "</ArgComKey>
-                                    <Arg><PIN>" . $data_save['id'] . "</PIN><Name>" . $data_save['nama'] . "</Name></Arg>
-                                </SetUserInfo>";
-                $soap_request.="<Arg>".$pin_x."</Arg>";
-                $soap_request="<GetUserInfo>".$soap_request."</GetUserInfo>";
-                $buffer=$this->set_fputs($connect_ip,$soap_request);
-                $buffer = $this->parse_data($buffer, "<Information>", "</Information>");
-                $buffer = explode("\r\n", $buffer);
-            }
+    //             $soap_request='';
+    //             $soap_request = "<SetUserInfo>
+    //                                 <ArgComKey Xsi:type=\"xsd:integer\">" . $this->lib($this->comm_key)->arg_com_key . "</ArgComKey>
+    //                                 <Arg><PIN>" . $data_save['id'] . "</PIN><Name>" . $data_save['nama'] . "</Name></Arg>
+    //                             </SetUserInfo>";
+    //             $soap_request.="<Arg>".$pin_x."</Arg>";
+    //             $soap_request="<GetUserInfo>".$soap_request."</GetUserInfo>";
+    //             $buffer=$this->set_fputs($connect_ip,$soap_request);
+    //             $buffer = $this->parse_data($buffer, "<Information>", "</Information>");
+    //             $buffer = explode("\r\n", $buffer);
+    //         }
 
-        }
-        else{
-            dd('tidak konek');
-        }
-        return $buffer;
-    }
+    //     }
+    //     else{
+    //         dd('tidak konek');
+    //     }
+    //     return $buffer;
+    // }
 
-    function get_user_upload_sidik_jari($id_user='', $item_list_terpilih){
-        $connect_ip=$this->connect_sock();
-        if(empty($connect_ip[2]==3)){
-            $pin_x='';
-            if($id_user){
-                $pin_x=$this->lib($id_user)->pin;
-            }
-            foreach($item_list_terpilih as $value)
-            {
-                $data_save=[];
-                $data_save=[
-                    'id'=>$value->data['1'],
-                    'fn'=>$value->data['2'],
-                    'temp'=>$value->data['3']
-                ];  
+    // function get_user_upload_sidik_jari($id_user='', $item_list_terpilih){
+    //     $connect_ip=$this->connect_sock();
+    //     if(empty($connect_ip[2]==3)){
+    //         $pin_x='';
+    //         if($id_user){
+    //             $pin_x=$this->lib($id_user)->pin;
+    //         }
+    //         foreach($item_list_terpilih as $value)
+    //         {
+    //             $data_save=[];
+    //             $data_save=[
+    //                 'id'=>$value->data['1'],
+    //                 'fn'=>$value->data['2'],
+    //                 'temp'=>$value->data['3']
+    //             ];  
             
-                $soap_request='';
-                $soap_request = "<SetUserTemplate>
-                                    <ArgComKey xsi:type=\"xsd:integer\">" . $this->lib($this->comm_key)->arg_com_key . "</ArgComKey>
-                                    <Arg><PIN xsi:type=\"xsd:integer\">" . $data_save['id'] . "</PIN><FingerID xsi:type=\"xsd:integer\">" . $data_save['fn'] . "</FingerID><Size>" . strlen($data_save['temp']) . "</Size><Valid>1</Valid><Template>" . $data_save['temp'] . "</Template></Arg></SetUserTemplate>";
-                $soap_request.="<Arg>".$pin_x."</Arg>";
-                $soap_request="<SetUserTemplateResponse>".$soap_request."</SetUserTemplateResponse>";
-                $buffer=$this->set_fputs($connect_ip,$soap_request);
-                $buffer = $this->parse_data($buffer, "<Information>", "</Information>");
-                $buffer = explode("\r\n", $buffer);
-            }
+    //             $soap_request='';
+    //             $soap_request = "<SetUserTemplate>
+    //                                 <ArgComKey xsi:type=\"xsd:integer\">" . $this->lib($this->comm_key)->arg_com_key . "</ArgComKey>
+    //                                 <Arg><PIN xsi:type=\"xsd:integer\">" . $data_save['id'] . "</PIN><FingerID xsi:type=\"xsd:integer\">" . $data_save['fn'] . "</FingerID><Size>" . strlen($data_save['temp']) . "</Size><Valid>1</Valid><Template>" . $data_save['temp'] . "</Template></Arg></SetUserTemplate>";
+    //             $soap_request.="<Arg>".$pin_x."</Arg>";
+    //             $soap_request="<SetUserTemplateResponse>".$soap_request."</SetUserTemplateResponse>";
+    //             $buffer=$this->set_fputs($connect_ip,$soap_request);
+    //             $buffer = $this->parse_data($buffer, "<Information>", "</Information>");
+    //             $buffer = explode("\r\n", $buffer);
+    //         }
 
-        }
-        else{
-            dd('tidak konek');
-        }
-        return $buffer;
-    }
+    //     }
+    //     else{
+    //         dd('tidak konek');
+    //     }
+    //     return $buffer;
+    // }
 }

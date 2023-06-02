@@ -139,7 +139,7 @@ class UserGroupAppService extends \App\Services\BaseService
         );
 
         $list_search=[
-            'where_or'=>['nm_karyawan','nik','nip','nm_jabatan','nm_departemen','username'],
+            'where_or'=>['nm_karyawan','nip','nm_jabatan','nm_departemen','username'],
         ];
 
         if($params){

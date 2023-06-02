@@ -74,7 +74,12 @@ class SoapMesinFinger
 
         try {
             $connect = $this->connect_sock($ip,$port);
-            if($connect) {
+            $check_connect=!empty($connect[0]) ? $connect[0] : '';
+            $is_connect=1;
+            if($check_connect=='error'){
+                $is_connect=0;
+            }
+            if($is_connect) {
                 $connect_ip=['success','ip connect',1];
             }else{
                 $connect_ip=['error','ip tidak connect',2];

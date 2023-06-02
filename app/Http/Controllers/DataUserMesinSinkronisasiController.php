@@ -21,7 +21,7 @@ class DataUserMesinSinkronisasiController extends \App\Http\Controllers\MyAuthCo
         $this->url_index = $router_name->uri;
         $this->url_name = $router_name->router_name;
 
-        $this->title = 'Data User Mesin';
+        $this->title = 'Sikronisasi Data Mesin & Database';
         $this->breadcrumbs = [
             ['title' => 'Mesin Absensi', 'url' => url('/') . "/sub-menu?type=5"],
             ['title' => $this->title, 'url' => url('/') . "/" . $this->url_index],
@@ -43,7 +43,18 @@ class DataUserMesinSinkronisasiController extends \App\Http\Controllers\MyAuthCo
 
         if(!empty($request->searchbymesin)){
             if(!empty($data_mesin)){
+                $mesin=(new \App\Services\MesinFinger($data_mesin->ip_address));
+                $connect=$mesin->connect();
+                $connect=!empty($connect[2]) ? $connect[2] : '';
+                if($connect==2){
+                    return redirect()->route($this->url_name, [])->with(['error' => 'Maaf Mesin tidak connect']);
+                }
+                
                 $hasil=$this->proses_tmp($data_mesin);
+                $check_hasil=!empty($hasil[0]) ? $hasil[0] : '';
+                if($check_hasil=='error'){
+                    return redirect()->route($this->url_name, [])->with(['error' => $hasil[1]]);
+                }
             }
         }
 
@@ -68,7 +79,6 @@ class DataUserMesinSinkronisasiController extends \App\Http\Controllers\MyAuthCo
             $list_data = $this->userMesinTmpService->getList($paramater, 1)->paginate(!empty($request->per_page) ? $request->per_page : 30);
         }
 
-
         $parameter_view = [
             'title' => $this->title,
             'breadcrumbs' => $this->breadcrumbs,
@@ -92,6 +102,10 @@ class DataUserMesinSinkronisasiController extends \App\Http\Controllers\MyAuthCo
             $is_save = 0;
             $mesin=(new \App\Services\MesinFinger($data_mesin->ip_address));
             $get_user=$mesin->get_user();
+            $check_hasil=!empty($get_user[0]) ? $get_user[0] : '';
+            if($check_hasil=='error'){
+                return ['error',$get_user[1]];
+            }
             if($get_user){
                 $get_user=json_decode($get_user);
 
@@ -207,7 +221,7 @@ class DataUserMesinSinkronisasiController extends \App\Http\Controllers\MyAuthCo
                 }
 
                 $is_save=0;
-                if($jml_save_user>0 && $jml_save_finger>0){
+                if($jml_save_user>0){
                     $is_save=1;
                 }
 

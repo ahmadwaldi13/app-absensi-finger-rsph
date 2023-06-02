@@ -216,6 +216,27 @@ class ListRoutes
 				]
 			],
 			[
+				'title' => 'Mesin Absensi | Sinkronisasi Mesin & Database',
+				'item' => [
+					[
+						'type' => 'index',
+						'method' => 'get',
+						'url' => '/data-user-mesin-sinkronisasi',
+						'controller' => 'DataUserMesinSinkronisasiController@actionIndex',
+						'name' => 'data_user_mesin_sinkronisasi',
+						'middleware' => '',
+					],
+					[
+						'type' => 'Sinkronisasi',
+						'method' => 'post',
+						'url' => '/data-user-mesin-sinkronisasi/sinkron',
+						'controller' => 'DataUserMesinSinkronisasiController@actionSinkron',
+						'name' => '',
+						'middleware' => '',
+					],
+				]
+			],
+			[
 				'title' => 'Mesin Absensi | Data User Pada Database',
 				'item' => [
 					[
@@ -245,52 +266,53 @@ class ListRoutes
 				]
 			],
 			[
-				'title' => 'Mesin Absensi | Sinkronisasi Mesin & Database',
+				'title' => 'Mesin Absensi | Copy Data User Mesin',
 				'item' => [
 					[
 						'type' => 'index',
-						'method' => 'get',
-						'url' => '/data-user-mesin-sinkronisasi',
-						'controller' => 'DataUserMesinSinkronisasiController@actionIndex',
-						'name' => 'data_user_mesin_sinkronisasi',
+						'method' => ['get', 'post'],
+						'url' => '/data-user-mesin-copy',
+						'controller' => 'DataUserMesinCopyController@actionIndex',
+						'name' => 'data_user_mesin_copy',
 						'middleware' => '',
 					],
 					[
-						'type' => 'Sinkronisasi',
-						'method' => 'post',
-						'url' => '/data-user-mesin-sinkronisasi/sinkron',
-						'controller' => 'DataUserMesinSinkronisasiController@actionSinkron',
-						'name' => '',
-						'middleware' => '',
-					],
+                        'type' => 'proses',
+                        'method' => ['get', 'post'],
+                        'url' => '/data-user-mesin-copy/update',
+                        'controller' => 'DataUserMesinController@actionUpdate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
 				]
 			],
-			[
-				'title' => 'Data Presensi Database',
-				'item' => [
-					[
-						'type' => 'index',
-						'method' => 'get',
-						'url' => '/data-presensi',
-						'controller' => 'PresensiController@actionIndex',
-						'name' => 'data-presensi',
-						'middleware' => '',
-					],
-				]
-			],
-			[
-				'title' => 'Data Presensi Mesin',
-				'item' => [
-					[
-						'type' => 'index',
-						'method' => 'get',
-						'url' => '/data-presensi-sinkronisasi',
-						'controller' => 'SyncPresensiController@actionIndex',
-						'name' => 'data-presensi-sinkronisasi',
-						'middleware' => '',
-					],
-				]
-			],
+			
+			// [
+			// 	'title' => 'Data Presensi Database',
+			// 	'item' => [
+			// 		[
+			// 			'type' => 'index',
+			// 			'method' => 'get',
+			// 			'url' => '/data-presensi',
+			// 			'controller' => 'PresensiController@actionIndex',
+			// 			'name' => 'data-presensi',
+			// 			'middleware' => '',
+			// 		],
+			// 	]
+			// ],
+			// [
+			// 	'title' => 'Data Presensi Mesin',
+			// 	'item' => [
+			// 		[
+			// 			'type' => 'index',
+			// 			'method' => 'get',
+			// 			'url' => '/data-presensi-sinkronisasi',
+			// 			'controller' => 'SyncPresensiController@actionIndex',
+			// 			'name' => 'data-presensi-sinkronisasi',
+			// 			'middleware' => '',
+			// 		],
+			// 	]
+			// ],
 			// [
 			// 	'title' => 'Upload Nama User Ke Mesin',
 			// 	'item' => [
@@ -333,64 +355,64 @@ class ListRoutes
             //         ],
 			// 	]
 			// ],
-			[
-				'title' => 'Upload Nama dan Sidik Jari User Ke Mesin',
-				'item' => [
-					[
-                        'type' => 'Upload',
-                        'method' => ['get', 'post'],
-                        'url' => '/upload-nama-dan-sidik-jari-user',
-                        'controller' => 'UploadNamadanSidikJariUserController@actionIndex',
-                        'name' => '',
-                        'middleware' => '',
-                    ],
-                    [
-                        'type' => 'system',
-                        'method' => 'get',
-                        'url' => '/upload-nama-dan-sidik-jari-user/ajax',
-                        'controller' => 'UploadNamadanSidikJariUserController@ajax',
-                        'name' => '',
-                        'middleware' => '',
-                    ],
-				]
-			],
-			[
-				'title' => 'Setting Jadwal',
-				'item' => [
-					[
-                        'type' => 'index',
-                        'method' => 'get',
-                        'url' => '/jadwal-absensi',
-                        'controller' => 'JadwalAbsensiController@actionIndex',
-                        'name' => '',
-                        'middleware' => '',
-                    ],
-					[
-						'type' => 'create',
-						'method' => ['get', 'post'],
-						'url' => '/jadwal-absensi/create',
-						'controller' => 'JadwalAbsensiController@actionCreate',
-						'name' => '',
-						'middleware' => '',
-					],
-					[
-						'type' => 'update',
-						'method' => ['get', 'post'],
-						'url' => '/jadwal-absensi/update',
-						'controller' => 'JadwalAbsensiController@actionUpdate',
-						'name' => '',
-						'middleware' => '',
-					],
-					[
-						'type' => 'delete',
-						'method' => 'delete',
-						'url' => '/jadwal-absensi/delete',
-						'controller' => 'JadwalAbsensiController@actionDelete',
-						'name' => '',
-						'middleware' => '',
-					],
-				]
-			],
+			// [
+			// 	'title' => 'Upload Nama dan Sidik Jari User Ke Mesin',
+			// 	'item' => [
+			// 		[
+            //             'type' => 'Upload',
+            //             'method' => ['get', 'post'],
+            //             'url' => '/upload-nama-dan-sidik-jari-user',
+            //             'controller' => 'UploadNamadanSidikJariUserController@actionIndex',
+            //             'name' => '',
+            //             'middleware' => '',
+            //         ],
+            //         [
+            //             'type' => 'system',
+            //             'method' => 'get',
+            //             'url' => '/upload-nama-dan-sidik-jari-user/ajax',
+            //             'controller' => 'UploadNamadanSidikJariUserController@ajax',
+            //             'name' => '',
+            //             'middleware' => '',
+            //         ],
+			// 	]
+			// ],
+			// [
+			// 	'title' => 'Setting Jadwal',
+			// 	'item' => [
+			// 		[
+            //             'type' => 'index',
+            //             'method' => 'get',
+            //             'url' => '/jadwal-absensi',
+            //             'controller' => 'JadwalAbsensiController@actionIndex',
+            //             'name' => '',
+            //             'middleware' => '',
+            //         ],
+			// 		[
+			// 			'type' => 'create',
+			// 			'method' => ['get', 'post'],
+			// 			'url' => '/jadwal-absensi/create',
+			// 			'controller' => 'JadwalAbsensiController@actionCreate',
+			// 			'name' => '',
+			// 			'middleware' => '',
+			// 		],
+			// 		[
+			// 			'type' => 'update',
+			// 			'method' => ['get', 'post'],
+			// 			'url' => '/jadwal-absensi/update',
+			// 			'controller' => 'JadwalAbsensiController@actionUpdate',
+			// 			'name' => '',
+			// 			'middleware' => '',
+			// 		],
+			// 		[
+			// 			'type' => 'delete',
+			// 			'method' => 'delete',
+			// 			'url' => '/jadwal-absensi/delete',
+			// 			'controller' => 'JadwalAbsensiController@actionDelete',
+			// 			'name' => '',
+			// 			'middleware' => '',
+			// 		],
+			// 	]
+			// ],
 			[
 				'title' => 'Manajemen User | Group User',
 				'item' => [

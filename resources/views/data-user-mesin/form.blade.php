@@ -65,7 +65,7 @@
                             <input type="text" class="input-text" id='nm_karyawan' readonly required value="{{ !empty($model->nm_karyawan) ? $model->nm_karyawan : '' }}" />
                             <input type="hidden" id="id_karyawan" name='id_karyawan' required value="{{ !empty($model->id_karyawan) ? $model->id_karyawan : '' }}">
                             <span class="modal-remote-data" data-modal-src="{{ url('ajax?action=get_list_karyawan') }}" data-modal-key="" data-modal-pencarian='true' data-modal-title='Data Karyawan' data-modal-width='80%' 
-                            data-modal-action-change="function=.set-data-list-from-modal@data-target=#id_karyawan|#nm_karyawan|#nik|#nip||#nm_jabatan||#nm_departemen@data-key-bagan=0@data-btn-close=#closeModalData">
+                            data-modal-action-change="function=.set-data-list-from-modal@data-target=#id_karyawan|#nm_karyawan|#nip||#nm_jabatan||#nm_departemen@data-key-bagan=0@data-btn-close=#closeModalData">
                                 <img class="iconify hover-pointer text-primary" src="{{ asset('') }}icon/selected.png" alt="">
                             </span>
                             <a href="#" id='reset_input'><i class="fa-solid fa-square-xmark"></i></a>                            
@@ -78,14 +78,6 @@
 
         <div class="col-lg-12">
             <div class="row justify-content-start align-items-end">
-
-                <div class="col-lg-3 mb-3">
-                    <div class='bagan_form'>
-                        <label for="nik" class="form-label">NIK</label>
-                        <input type="text" class="form-control" id="nik" readonly value="{{ !empty($model->nik) ? $model->nik : '' }}">
-                        <div class="message"></div>
-                    </div>
-                </div>
 
                 <div class="col-lg-3 mb-3">
                     <div class='bagan_form'>
@@ -120,3 +112,7 @@
         </div>
     </div>
 </form>
+
+@push('script-end-2')
+<script src="{{ asset('js/data-user-mesin/form.js') }}"></script>
+@endpush

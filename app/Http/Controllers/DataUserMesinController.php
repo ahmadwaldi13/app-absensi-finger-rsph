@@ -39,7 +39,8 @@ class DataUserMesinController extends \App\Http\Controllers\MyAuthController
         $filter_id_departemen = !empty($request->filter_id_departemen) ? $request->filter_id_departemen : '';
 
         $paramater=[
-            'search' => $form_filter_text
+            'search' => $form_filter_text,
+            'utama.id_mesin_absensi'=>0,
         ];
 
         if(!empty($filter_id_mesin)){
@@ -140,12 +141,27 @@ class DataUserMesinController extends \App\Http\Controllers\MyAuthController
             }
             $data_save = $req;
             $model->set_model_with_data($data_save);
-            
-            $is_save = 0;
+            $data_old=(object)(!empty($model->getOriginal()) ? $model->getOriginal() : []);
+            $data_new=(object)(!empty($model->getAttributes()) ? $model->getAttributes() : []);
 
-            if ($model->save()) {
-                $is_save = 1;
+            $proses_delete=0;
+            if(!empty($data_old->id_karyawan)){
+                if(empty($data_new->id_karyawan)){
+                    $proses_delete=1;
+                }
             }
+
+            $is_save=0;
+            if(!empty($proses_delete)){
+                if ($model->delete()) {
+                    $is_save = 1;
+                }
+            }else{
+                if ($model->save()) {
+                    $is_save = 1;
+                }    
+            }
+            
             
             if ($is_save) {
                 DB::commit();
@@ -165,5 +181,53 @@ class DataUserMesinController extends \App\Http\Controllers\MyAuthController
         }
 
         return redirect()->route($link_back_redirect, $link_back_param)->with([$pesan[0] => $pesan[1]]);
+    }
+
+    function actionDelete(Request $request)
+    {
+        $kode = !empty($request->data_sent) ? $request->data_sent : '';
+        $exp=explode('@',$kode);
+        $id_mesin_absensi=!empty($exp[0]) ? $exp[0] : '';
+        $id_user=!empty($exp[1]) ? $exp[1] : '';
+
+        DB::beginTransaction();
+        $pesan = [];
+        $link_back_param = [];
+        $message_default = [
+            'success' => 'Data berhasil dihapus',
+            'error' => 'Maaf data tidak berhasil dihapus'
+        ];
+
+        $kode = !empty($request->data_sent) ? $request->data_sent : null;
+
+        try {
+            $model = (new \App\Models\RefUserInfo)->where('id_user', '=', $id_user)->first();
+            if (empty($model)) {
+                return redirect()->route($this->url_name, $link_back_param)->with(['error', 'Data tidak ditemukan']);
+            }
+
+            $is_save = 0;
+            if ($model->delete()) {
+                $is_save = 1;
+            }
+
+            if ($is_save) {
+                DB::commit();
+                $pesan = ['success', $message_default['success'], 2];
+            } else {
+                DB::rollBack();
+                $pesan = ['error', $message_default['error'], 3];
+            }
+        } catch (\Illuminate\Database\QueryException $e) {
+            DB::rollBack();
+            if ($e->errorInfo[1] == '1062') {
+            }
+            $pesan = ['error', $message_default['error'], 3];
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            $pesan = ['error', $message_default['error'], 3];
+        }
+
+        return redirect()->route($this->url_name, $link_back_param)->with([$pesan[0] => $pesan[1]]);
     }
 }

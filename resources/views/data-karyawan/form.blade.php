@@ -18,20 +18,11 @@
 
                 <div class="col-lg-12 mb-3">
                     <div class='bagan_form'>
-                        <label for="nik" class="form-label">NIK</label>
-                        <input type="number" class="form-control" id="nik" name='nik' required value="{{ !empty($model->nik) ? $model->nik : '' }}">
-                        <div class="message"></div>
-                    </div>
-                </div>
-
-                <div class="col-lg-12 mb-3">
-                    <div class='bagan_form'>
                         <label for="nip" class="form-label">NIP</label>
                         <input type="number" class="form-control" id="nip" name='nip' required value="{{ !empty($model->nip) ? $model->nip : '' }}">
                         <div class="message"></div>
                     </div>
                 </div>
-
                 
             </div>
         </div>
@@ -41,7 +32,7 @@
                 <div class="col-lg-12 mb-3">
                     <div class='bagan_form'>
                         <label for="alamat" class="form-label">Alamat</label>
-                        <textarea class="form-control" id="alamat" name="alamat" rows="3">{{!empty($model->alamat) ? $model->alamat : ''}}</textarea>
+                        <textarea class="form-control" id="alamat" name="alamat" rows="2">{{!empty($model->alamat) ? $model->alamat : ''}}</textarea>
                         <div class="message"></div>
                     </div>
                 </div>

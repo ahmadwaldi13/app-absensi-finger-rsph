@@ -12,7 +12,7 @@
 
 @section('content')
 
-@include('data-presensi.tab_user_presensi', ["active"=>2])
+@include('data-presensi.tab_user_presensi', ["active"=>1])
 
 <div>
     <br>

@@ -55,7 +55,6 @@
                 <table class="table border table-responsive-tablet">
                     <thead>
                         <tr>
-                            <th class="py-3" style="width: 5%">NIK</th>
                             <th class="py-3" style="width: 5%">NIP</th>
                             <th class="py-3" style="width: 20%">Nama</th>
                             <th class="py-3" style="width: 10%">Jabatan</th>
@@ -73,7 +72,6 @@
                                 ];
                             ?>
                             <tr>
-                                <td>{{ !empty($item->nik) ? $item->nik : ''  }}</td>
                                 <td>{{ !empty($item->nip) ? $item->nip : ''  }}</td>
                                 <td>{{ !empty($item->nm_karyawan) ? $item->nm_karyawan : ''  }}</td>
                                 <td>{{ !empty($item->nm_jabatan) ? $item->nm_jabatan : ''  }}</td>

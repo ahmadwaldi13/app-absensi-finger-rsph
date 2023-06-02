@@ -12,7 +12,7 @@
 
 @section('content')
 
-@include('data-user-mesin.tab_user_mesin', ["active"=>2])
+@include('data-user-mesin.tab_user_mesin', ["active"=>1])
 
 <div>
     <br>
@@ -64,21 +64,23 @@
     </div>
 </div>
 
-@if(!empty($list_data))
-    @include($router_name->path_base.'.columns')
+@if(!empty( $list_data ))
+    @if(!empty( $list_data->total() ))
+        @include($router_name->path_base.'.columns')
 
-    <?php $url_sinkron=$router_name->uri.'/sinkron'; ?>
-    @if( (new \App\Http\Traits\AuthFunction)->checkAkses($url_sinkron) )
-        <form action="{{ url($url_sinkron) }}" method="{{ !empty($method_form) ? $method_form : 'POST' }}">
-            @csrf
-            <input type="hidden" name="key" value="{{ !empty($data_mesin->id_mesin_absensi) ? $data_mesin->id_mesin_absensi : '' }}">
+        <?php $url_sinkron=$router_name->uri.'/sinkron'; ?>
+        @if( (new \App\Http\Traits\AuthFunction)->checkAkses($url_sinkron) )
+            <form action="{{ url($url_sinkron) }}" method="{{ !empty($method_form) ? $method_form : 'POST' }}">
+                @csrf
+                <input type="hidden" name="key" value="{{ !empty($data_mesin->id_mesin_absensi) ? $data_mesin->id_mesin_absensi : '' }}">
 
-            <div class="row justify-content-start align-items-end">
-                <div class="col-lg-5">
-                    <button class="btn btn-primary" type="submit">Sinkronisasi</button>
+                <div class="row justify-content-start align-items-end">
+                    <div class="col-lg-5">
+                        <button class="btn btn-primary" type="submit">Sinkronisasi</button>
+                    </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        @endif
     @endif
 @endif
 
