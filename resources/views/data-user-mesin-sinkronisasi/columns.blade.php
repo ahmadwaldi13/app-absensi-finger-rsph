@@ -33,7 +33,7 @@
                             <th class="py-3" style="width: 15%">Group</th>
                             <th class="py-3" style="width: 15%">Privilege</th>
                             <th class="py-3" style="width: 15%">Database</th>
-                            <th class="py-3" style="width: 15%">Nama User Tersimpan</th>
+                            <th class="py-3" style="width: 15%">Nama User di Database</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -46,7 +46,6 @@
                                 }
 
                                 $get_privil=(new \App\Models\RefUserInfo())->get_privilege($item->privilege);
-
                             ?>
                             <tr>
                                 <td>{{ !empty($item->id_user) ? $item->id_user : ''  }}</td>

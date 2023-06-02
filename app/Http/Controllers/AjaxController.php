@@ -142,6 +142,37 @@ class AjaxController extends Controller
         ];
     }
 
+    function getJenisJadwal($request){
+        $list_data_tmp=(new \App\Models\RefJenisJadwal)->get();
+        
+        $list_data=[];
+        foreach($list_data_tmp as $value){
+            $list_data[]=[
+                'kode'=>[
+                    'data-item'=>$value->id_jenis_jadwal.'@'.$value->nm_jenis_jadwal,
+                    'value'=>$value->nm_jenis_jadwal
+                ],
+            ];
+        }
+    
+        $table=[
+            'header'=>[
+               'title'=> ['Nama Jenis Jadwal'],
+               'parameter'=>[' class="w-30" ']
+            ],
+        ];
+    
+        $parameter_view=[
+            'table'=>$table,
+            'list_data'=>!empty($list_data) ? $list_data : ''
+        ];
+    
+        return [
+            'success' => true,
+            'html'=>view('ajax.columns_ajax',$parameter_view)->render(),
+        ];
+    }
+
     function ajax(Request $request){
         $get_req = $request->all();
         $hasil='';
@@ -161,6 +192,10 @@ class AjaxController extends Controller
 
             if($get_req['action']=='get_list_karyawan'){
                 $hasil=$this->getListKaryawan($request);
+            }
+
+            if($get_req['action']=='get_jenis_jadwal'){
+                $hasil=$this->getJenisJadwal($request);
             }
 
             if($request->ajax()){

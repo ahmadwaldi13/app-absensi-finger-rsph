@@ -2,40 +2,11 @@
     @csrf
     
     <input type="hidden" name="data_sent" value="{{ Request::get('data_sent') }}">
-    <input type="hidden" name="id_mesin_absensi" value="{{ !empty($model->id_mesin_absensi) ? $model->id_mesin_absensi : '' }}">
     <input type="hidden" name="id_user" value="{{ !empty($model->id_user) ? $model->id_user : '' }}">
     <input type="hidden" name="id_karyawan_old" value="{{ !empty($model->id_karyawan) ? $model->id_karyawan : '' }}">
+    <input type="hidden" name="params_respon" value="{{ !empty($paramater_url_back_tmp) ? $paramater_url_back_tmp : '' }}">
 
     <div class="row justify-content-start align-items-end mb-3">
-        <h4>Informasi Mesin</h4>
-        <div class="col-lg-12">
-            <div class="row justify-content-start align-items-end">
-                <div class="col-lg-3 mb-3">
-                    <div class='bagan_form'>
-                        <label for="ip_address" class="form-label">Ip Address Mesin</label>
-                        <input type="text" class="form-control format_ip_address" id="ip_address" readonly value="{{ !empty($model->ip_address) ? $model->ip_address : '' }}">
-                        <div class="message"></div>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 mb-3">
-                    <div class='bagan_form'>
-                        <label for="nm_mesin" class="form-label">Nama/Alias Mesin</label>
-                        <input type="text" class="form-control" id="nm_mesin" readonly value="{{ !empty($model->nm_mesin) ? $model->nm_mesin : '' }}">
-                        <div class="message"></div>
-                    </div>
-                </div>
-                
-                <div class="col-lg-5 mb-3">
-                    <div class='bagan_form'>
-                        <label for="lokasi_mesin" class="form-label">Lokasi Mesin</label>
-                        <textarea class="form-control" id="lokasi_mesin" readonly rows="1">{{!empty($model->lokasi_mesin) ? $model->lokasi_mesin : ''}}</textarea>
-                        <div class="message"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <div class="col-lg-12">
             <div class="row justify-content-start align-items-end">
                 <div class="col-lg-3 mb-3">

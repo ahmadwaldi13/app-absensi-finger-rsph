@@ -286,6 +286,101 @@ class ListRoutes
                     ],
 				]
 			],
+			[
+				'title' => 'Absensi | Jenis Jadwal Absensi',
+				'item' => [
+					[
+						'type' => 'index',
+						'method' => 'get',
+						'url' => '/jenis-jadwal-absensi',
+						'controller' => 'JenisJadwalAbsensiController@actionIndex',
+						'name' => 'jenis_jadwal_absensi',
+						'middleware' => '',
+					],
+					[
+						'type' => 'create',
+						'method' => ['get', 'post'],
+						'url' => '/jenis-jadwal-absensi/create',
+						'controller' => 'JenisJadwalAbsensiController@actionCreate',
+						'name' => '',
+						'middleware' => '',
+					],
+					[
+						'type' => 'update',
+						'method' => ['get', 'post'],
+						'url' => '/jenis-jadwal-absensi/update',
+						'controller' => 'JenisJadwalAbsensiController@actionUpdate',
+						'name' => '',
+						'middleware' => '',
+					],
+					[
+						'type' => 'delete',
+						'method' => 'delete',
+						'url' => '/jenis-jadwal-absensi/delete',
+						'controller' => 'JenisJadwalAbsensiController@actionDelete',
+						'name' => '',
+						'middleware' => '',
+					],
+				]
+			],
+			[
+				'title' => 'Absensi | Jadwal Absensi',
+				'item' => [
+					[
+						'type' => 'index',
+						'method' => 'get',
+						'url' => '/jadwal-absensi',
+						'controller' => 'JadwalAbsensiController@actionIndex',
+						'name' => 'jadwal_absensi',
+						'middleware' => '',
+					],
+					[
+						'type' => 'create',
+						'method' => ['get', 'post'],
+						'url' => '/jadwal-absensi/create',
+						'controller' => 'JadwalAbsensiController@actionCreate',
+						'name' => '',
+						'middleware' => '',
+					],
+					[
+						'type' => 'update',
+						'method' => ['get', 'post'],
+						'url' => '/jadwal-absensi/update',
+						'controller' => 'JadwalAbsensiController@actionUpdate',
+						'name' => '',
+						'middleware' => '',
+					],
+					[
+						'type' => 'delete',
+						'method' => 'delete',
+						'url' => '/jadwal-absensi/delete',
+						'controller' => 'JadwalAbsensiController@actionDelete',
+						'name' => '',
+						'middleware' => '',
+					],
+				]
+			],
+			[
+				'title' => 'Absensi | Absensi Karyawan',
+				'item' => [
+					[
+						'type' => 'index',
+						'method' => 'get',
+						'url' => '/absensi-karyawan',
+						'controller' => 'AbsensiKaryawanController@actionIndex',
+						'name' => 'absensi_karyawan',
+						'middleware' => '',
+					],
+					[
+						'type' => 'view',
+						'method' => 'get',
+						'url' => '/absensi-karyawan/view',
+						'controller' => 'AbsensiKaryawanController@actionView',
+						'name' => '',
+						'middleware' => '',
+					],
+				]
+			],
 			
 			// [
 			// 	'title' => 'Data Presensi Database',

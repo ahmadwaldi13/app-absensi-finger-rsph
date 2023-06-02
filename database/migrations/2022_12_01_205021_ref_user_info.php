@@ -19,7 +19,8 @@ class RefUserInfo extends Migration
             Schema::create($table_name, function (Blueprint $table) use ($table_name) {
                 $table->charset = 'latin1';
                 $table->collation = 'latin1_swedish_ci';
-                $table->integer('id_mesin_absensi')->length(10)->unsigned();
+                $table->increments('id_user_info');
+                // $table->integer('id_mesin_absensi')->length(10)->unsigned();
                 $table->integer('id_user');
                 $table->string('name', 40);
                 $table->string('password', 20)->nullable(true);
@@ -32,9 +33,8 @@ class RefUserInfo extends Migration
                 $table->integer('tz3')->nullable(true);
                 
                 $table->index('id_user');
-                $table->unique(['id_mesin_absensi','id_user'],$table_name.'_uniq');
-                
-                $table->foreign(['id_mesin_absensi'],$table_name.'_fk1')->references(['id_mesin_absensi'])->on('ref_mesin_absensi')->onUpdate('cascade')->onDelete('cascade');
+                $table->unique(['id_user'],$table_name.'_uniq');
+                // $table->foreign(['id_mesin_absensi'],$table_name.'_fk1')->references(['id_mesin_absensi'])->on('ref_mesin_absensi')->onUpdate('cascade')->onDelete('cascade');
             });
         }
 
@@ -44,15 +44,14 @@ class RefUserInfo extends Migration
                 $table->charset = 'latin1';
                 $table->collation = 'latin1_swedish_ci';
                 
-                $table->integer('id_mesin_absensi')->length(10)->unsigned();
+                // $table->integer('id_mesin_absensi')->length(10)->unsigned();
                 $table->integer('id_user');
                 $table->smallInteger('finger_id')->length(6);
                 $table->string('size', 20)->nullable(true);
                 $table->smallInteger('valid')->length(6);
                 $table->text('finger');
-                $table->unique(['id_mesin_absensi','id_user','finger_id'],$table_name.'_uniq');
-                
-                $table->foreign(['id_mesin_absensi','id_user'],$table_name.'_fk1')->references(['id_mesin_absensi','id_user'])->on('ref_user_info')->onUpdate('cascade')->onDelete('cascade');
+                $table->unique(['id_user','finger_id'],$table_name.'_uniq');
+                $table->foreign(['id_user'],$table_name.'_fk1')->references(['id_user'])->on('ref_user_info')->onUpdate('cascade')->onDelete('cascade');
             });
         }
 
@@ -77,13 +76,14 @@ class RefUserInfo extends Migration
                 $table->charset = 'latin1';
                 $table->collation = 'latin1_swedish_ci';
                 $table->integer('id_karyawan')->length(10)->unsigned();
-                $table->integer('id_mesin_absensi')->length(10)->unsigned();
+                // $table->integer('id_mesin_absensi')->length(10)->unsigned();
                 $table->integer('id_user');
                 
-                $table->unique(['id_karyawan','id_mesin_absensi','id_user'],$table_name.'_uniq');
+                // $table->unique(['id_karyawan','id_mesin_absensi','id_user'],$table_name.'_uniq');
+                $table->unique(['id_karyawan','id_user'],$table_name.'_uniq');
 
                 $table->foreign(['id_karyawan'],$table_name.'_fk1')->references(['id_karyawan'])->on('ref_karyawan')->onUpdate('cascade')->onDelete('cascade');
-                $table->foreign(['id_mesin_absensi','id_user'],$table_name.'_fk2')->references(['id_mesin_absensi','id_user'])->on('ref_user_info')->onUpdate('cascade')->onDelete('cascade');
+                // $table->foreign(['id_mesin_absensi','id_user'],$table_name.'_fk2')->references(['id_mesin_absensi','id_user'])->on('ref_user_info')->onUpdate('cascade')->onDelete('cascade');
             });
         }
         

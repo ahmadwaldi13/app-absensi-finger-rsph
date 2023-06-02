@@ -4,27 +4,23 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class DeleteTabelSeeder extends Seeder
+class DeleteTabelDuluSeeder extends Seeder
 {
     public function run()
     {
         try {
             DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-            if (Schema::hasTable('kamar_operasis')) {
-                Schema::dropIfExists('kamar_operasis');
-            }
 
-            if (Schema::hasTable('jadwal_kamar_operasis')) {
-                Schema::dropIfExists('jadwal_kamar_operasis');
+            $data_table=['ref_user_info','ref_user_info_detail','ref_karyawan_user','ref_jadwal'];
+            foreach($data_table as $value){
+                if (Schema::hasTable($value)) {
+                    Schema::dropIfExists($value);
+                }
             }
-
-            if (Schema::hasTable('booking_operasi_subs')) {
-                Schema::dropIfExists('booking_operasi_subs');
-            }
+        
             DB::statement('SET FOREIGN_KEY_CHECKS=1;');
         } catch(\Illuminate\Database\QueryException $e){
             if($e->errorInfo[1] == '1062'){
-                dd($e);
             }
             dd($e);
         } catch (\Throwable $e) {

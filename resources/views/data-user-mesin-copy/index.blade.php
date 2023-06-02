@@ -24,41 +24,6 @@
                     <div class="row justify-content-start align-items-end mb-3">
                         <div class="col-lg-3 col-md-10">
                             <div class='bagan_form'>
-                                <label for="ip_mesin_database" class="form-label">Pilih Data Mesin dari Database<span class="text-danger">*</span></label>
-                                <div class="button-icon-inside">
-                                    <input type="text" class="input-text" id='ip_mesin_database' required value="" />
-                                    <input type="hidden" id="id_mesin_database" name="id_mesin_database" value="" />
-                                    <span class="modal-remote-data" data-modal-src="{{ url('ajax?action=get_list_mesih_absensi') }}" data-modal-key="" data-modal-pencarian='true' data-modal-title='Jenis' data-modal-width='40%' data-modal-action-change="function=.set-data-list-from-modal@data-target=#id_mesin_database|#ip_mesin_database|null|#nama_mesin_database|#lokasi_mesin_database@data-key-bagan=0@data-btn-close=#closeModalData">
-                                        <img class="iconify hover-pointer text-primary" src="{{ asset('') }}icon/selected.png" alt="">
-                                    </span>
-                                    <a href="#" id='reset_input'><i class="fa-solid fa-square-xmark"></i></a>
-                                </div>
-                                <div class="message"></div>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-3 col-md-10">
-                            <div class='bagan_form'>
-                            <label for="nama_mesin_database" class="form-label">Nama Mesin</label>
-                                <input type="text" class="form-control" id="nama_mesin_database" readonly value="">
-                                <div class="message"></div>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-5 col-md-10">
-                            <div class='bagan_form'>
-                            <label for="lokasi_mesin_database" class="form-label">Lokasi Mesin</label>
-                                <input type="text" class="form-control" id="lokasi_mesin_database" readonly value="">
-                                <div class="message"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-12">
-                    <div class="row justify-content-start align-items-end mb-3">
-                    <div class="col-lg-3 col-md-10">
-                            <div class='bagan_form'>
                                 <label for="ip_mesin_tujuan" class="form-label">Pilih Data Mesin Tujuan<span class="text-danger">*</span></label>
                                 <div class="button-icon-inside">
                                     <input type="text" class="input-text" id='ip_mesin_tujuan' required value="" />

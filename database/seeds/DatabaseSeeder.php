@@ -16,7 +16,6 @@ class DatabaseSeeder extends Seeder
             UxuiUserCreateUserDefaultSeeder::class,
             UxuiUserAksesSeeder::class,
             UxuiSettingAppVariabelSeeder::class,
-            DeleteTabelSeeder::class,
             SettingTabelSeeder::class
         ]);
     }

@@ -25,10 +25,7 @@
                 <table class="table border table-responsive-tablet">
                     <thead>
                         <tr>
-                            <th class="py-3" style="width: 5%">Jenis Jadwal</th>
-                            <th class="py-3" style="width: 5%">Nama Uraian</th>
-                            <th class="py-3" style="width: 5%">Jam Masuk</th>
-                            <th class="py-3" style="width: 5%">Jam Keluar</th>
+                            <th class="py-3" style="width: 10%">Nama Jenis Jadwal</th>
                             <th class="py-3" style="width: 5%">Action</th>
                         </tr>
                     </thead>
@@ -36,15 +33,13 @@
                         @if(!empty($list_data))
                             @foreach($list_data as $key => $item)
                             <?php
+
                                 $paramater_url=[
-                                    'data_sent'=>$item->id_jadwal
+                                    'data_sent'=>$item->id_jenis_jadwal
                                 ];
                             ?>
                             <tr>
                                 <td>{{ !empty($item->nm_jenis_jadwal) ? $item->nm_jenis_jadwal : ''  }}</td>
-                                <td>{{ !empty($item->uraian) ? $item->uraian : ''  }}</td>
-                                <td>{{ !empty($item->jam_awal) ? $item->jam_awal : ''  }}</td>
-                                <td>{{ !empty($item->jam_akhir) ? $item->jam_akhir : ''  }}</td>
                                 <td class='text-right'>
                                     {!! (new
                                     \App\Http\Traits\AuthFunction)->setPermissionButton([$router_name->uri.'/update',$paramater_url,'update'])

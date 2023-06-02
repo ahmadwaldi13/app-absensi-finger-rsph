@@ -6,13 +6,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 use App\Services\GlobalService;
-use App\Services\RefJadwalService;
 use App\Http\Traits\GlobalFunction;
 
-class JadwalAbsensiController extends \App\Http\Controllers\MyAuthController
+class JenisJadwalAbsensiController extends \App\Http\Controllers\MyAuthController
 {
     public $part_view, $url_index, $url_name, $title, $breadcrumbs, $globalService, $globalFunction;
-    public $refJadwalService;
 
     public function __construct()
     {
@@ -21,7 +19,7 @@ class JadwalAbsensiController extends \App\Http\Controllers\MyAuthController
         $this->url_index = $router_name->uri;
         $this->url_name = $router_name->router_name;
 
-        $this->title = 'Jadwal Absensi';
+        $this->title = 'Jenis Jadwal Absensi';
         $this->breadcrumbs = [
             ['title' => 'Jadwal', 'url' => url('/') . "/sub-menu?type=6"],
             ['title' => $this->title, 'url' => url('/') . "/" . $this->url_index],
@@ -29,19 +27,19 @@ class JadwalAbsensiController extends \App\Http\Controllers\MyAuthController
 
         $this->globalService = new GlobalService;
         $this->globalFunction = new GlobalFunction;
-        $this->refJadwalService = new RefJadwalService;
     }
 
     function actionIndex(Request $request)
     {
-        DB::statement("ALTER TABLE ".( new \App\Models\RefJadwal() )->table." AUTO_INCREMENT = 1");
+        DB::statement("ALTER TABLE ".( new \App\Models\RefJenisJadwal() )->table." AUTO_INCREMENT = 1");
         $form_filter_text = !empty($request->form_filter_text) ? $request->form_filter_text : '';
 
         $paramater=[
             'search' => $form_filter_text
         ];
 
-        $list_data = $this->refJadwalService->getList($paramater, 1)->paginate(!empty($request->per_page) ? $request->per_page : 15);
+        $data_tmp_tmp=( new \App\Models\RefJenisJadwal() );
+        $list_data=$data_tmp_tmp->set_where($data_tmp_tmp,$paramater)->paginate(!empty($request->per_page) ? $request->per_page : 15);
 
         $parameter_view = [
             'title' => $this->title,
@@ -56,9 +54,9 @@ class JadwalAbsensiController extends \App\Http\Controllers\MyAuthController
     {
         $kode = !empty($request->data_sent) ? $request->data_sent : '';
         $paramater = [
-            'id_jadwal' => $kode
+            'id_jenis_jadwal' => $kode
         ];
-        $model = $this->refJadwalService->getList($paramater, 1)->first();
+        $model = (new \App\Models\RefJenisJadwal())->where('id_jenis_jadwal', '=', $kode)->first();
         if ($model) {
             $action_form = $this->part_view . '/update';
         } else {
@@ -125,12 +123,11 @@ class JadwalAbsensiController extends \App\Http\Controllers\MyAuthController
         
         
         try {
-            $model = (new \App\Models\Refjadwal)->where('id_jadwal', '=', $kode)->first();
+            $model = (new \App\Models\RefJenisjadwal)->where('id_jenis_jadwal', '=', $kode)->first();
             if (empty($model)) {
-                $model = (new \App\Models\Refjadwal);
+                $model = (new \App\Models\RefJenisjadwal);
             }
             $data_save = $req;
-            $data_save['alias'] = strtolower(str_replace(" ", "_", $this->globalFunction->remove_multiplespace($data_save['uraian'])));
             $model->set_model_with_data($data_save);
             
             $is_save = 0;
@@ -162,6 +159,7 @@ class JadwalAbsensiController extends \App\Http\Controllers\MyAuthController
 
     function actionDelete(Request $request)
     {
+
         DB::beginTransaction();
         $pesan = [];
         $link_back_param = [];
@@ -173,7 +171,7 @@ class JadwalAbsensiController extends \App\Http\Controllers\MyAuthController
         $kode = !empty($request->data_sent) ? $request->data_sent : null;
 
         try {
-            $model = (new \App\Models\RefJadwal)->where('id_jadwal', '=', $kode)->first();
+            $model = (new \App\Models\RefJenisJadwal)->where('id_jenis_jadwal', '=', $kode)->first();
             if (empty($model)) {
                 return redirect()->route($this->url_name, $link_back_param)->with(['error', 'Data tidak ditemukan']);
             }
@@ -185,7 +183,7 @@ class JadwalAbsensiController extends \App\Http\Controllers\MyAuthController
 
             if ($is_save) {
                 DB::commit();
-                DB::statement("ALTER TABLE ".( new \App\Models\RefJadwal )->table." AUTO_INCREMENT = 1");
+                DB::statement("ALTER TABLE ".( new \App\Models\RefJenisJadwal )->table." AUTO_INCREMENT = 1");
                 $pesan = ['success', $message_default['success'], 2];
             } else {
                 DB::rollBack();

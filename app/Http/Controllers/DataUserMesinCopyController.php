@@ -47,19 +47,18 @@ class DataUserMesinCopyController extends \App\Http\Controllers\MyAuthController
 
     private function proses($request){
         $req = $request->all();
-        $id_mesin_database = !empty($req['id_mesin_database']) ? $req['id_mesin_database'] : '';
         $id_mesin_tujuan = !empty($req['id_mesin_tujuan']) ? $req['id_mesin_tujuan'] : '';
         
         $pesan = [];
         $link_back_param = [];
         $message_default = [
             'success' => 'Data berhasil disinkronisasi',
-            'error' => 'Maaf Data berhasil disinkronisasi'
+            'error' => 'Maaf Data tidak berhasil disinkronisasi'
         ];
 
         try {
 
-            $get_data=( new \App\Models\RefUserInfo() )->where('id_mesin_absensi','=', $id_mesin_database)->orderBy('id_user','ASC')->get();
+            $get_data=( new \App\Models\RefUserInfo() )->orderBy('id_user','ASC')->get();
             if(empty($get_data[0])){
                 return redirect()->route($this->url_name, $link_back_param)->with(['error'=>'Data tidak ditemukan']);
             }
@@ -87,8 +86,8 @@ class DataUserMesinCopyController extends \App\Http\Controllers\MyAuthController
             if($check_hasil!='error'){
                 $get_user_mesin_tujuan=json_decode($get_user_mesin_tujuan);
                 foreach($get_user_mesin_tujuan as $value){
-                    $hasil_delete=$model_mesin_tujuan->delete_finger_to_mesin($value);
-                    $hasil_delete=$model_mesin_tujuan->delete_user_to_mesin($value);
+                    $model_mesin_tujuan->delete_finger_to_mesin($value);
+                    $model_mesin_tujuan->delete_user_to_mesin($value);
                 }
             }
             
@@ -100,13 +99,13 @@ class DataUserMesinCopyController extends \App\Http\Controllers\MyAuthController
                 if($check_hasil==1){
                     $jml_user++;
 
-                    $get_user_detail=( new \App\Models\RefUserInfoDetail() )->where('id_mesin_absensi','=', $id_mesin_database)->where('id_user','=', $user->id_user)->orderBy('id_user','ASC')->get();
+                    $get_user_detail=( new \App\Models\RefUserInfoDetail() )->where('id_user','=', $user->id_user)->orderBy('id_user','ASC')->get();
                     if(!empty($get_user_detail[0])){
                         foreach($get_user_detail as $user_detail){
                             $hasil_user=$model_mesin_tujuan->upload_user_finger_to_mesin($user_detail);
                             $check_hasil=!empty($hasil_user[1]) ? $hasil_user[1] : '';
                             if($check_hasil==1){
-                                $hasil=$model_mesin_tujuan->refresh_db_mesin();
+                                $model_mesin_tujuan->refresh_db_mesin();
                                 $jml_user_detail++;
                             }
                         }
@@ -115,7 +114,6 @@ class DataUserMesinCopyController extends \App\Http\Controllers\MyAuthController
             }
 
             $is_save = 0;
-
             if(!empty($jml_user)){
                 $is_save=1;
             }

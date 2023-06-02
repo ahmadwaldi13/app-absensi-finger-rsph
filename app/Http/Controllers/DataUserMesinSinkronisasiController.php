@@ -69,10 +69,7 @@ class DataUserMesinSinkronisasiController extends \App\Http\Controllers\MyAuthCo
         $list_data=[];
         $paramater = [];
         if(!empty($data_mesin)){
-            $paramater = [
-                'user_mesin_tmp.id_mesin_absensi' => $data_mesin->id_mesin_absensi
-            ];
-
+            
             if(!empty($paramater_column)){
                 $paramater=array_merge($paramater,$paramater_column);
             }
@@ -108,9 +105,9 @@ class DataUserMesinSinkronisasiController extends \App\Http\Controllers\MyAuthCo
             }
             if($get_user){
                 $get_user=json_decode($get_user);
-
-                (new \App\Models\UserMesinTmp)->where(['id_mesin_absensi'=>$data_mesin->id_mesin_absensi])->delete();
-
+                
+                (new \App\Models\UserMesinTmp)->truncate();
+                
                 $jml_save=0;
                 foreach($get_user as $value){
                     $model = (new \App\Models\UserMesinTmp);
@@ -186,10 +183,9 @@ class DataUserMesinSinkronisasiController extends \App\Http\Controllers\MyAuthCo
                         'tz3'=>$value_user->tz3,
                     ];
 
-                    $model_user=(new \App\Models\RefUserInfo())->where(['id_mesin_absensi'=>$id_mesin_absensi,'id_user'=>$value_user->id])->first();
+                    $model_user=(new \App\Models\RefUserInfo())->where(['id_user'=>$value_user->id])->first();
                     if(empty($model_user)){
                         $model_user=(new \App\Models\RefUserInfo());
-                        $model_user->id_mesin_absensi=$id_mesin_absensi;
                         $model_user->id_user=$value_user->id;
                     }
                     $model_user->set_model_with_data($data_item);
@@ -206,11 +202,10 @@ class DataUserMesinSinkronisasiController extends \App\Http\Controllers\MyAuthCo
                                 unset($data_item['template']);
 
                                 $model_finger=(new \App\Models\RefUserInfoDetail());
-                                $model_finger->id_mesin_absensi=$id_mesin_absensi;
                                 $model_finger->id_user=$value_user->id;
 
                                 $model_finger->set_model_with_data($data_item);
-
+                                
                                 if($model_finger->save()){
                                     $jml_save_finger++;
                                 }

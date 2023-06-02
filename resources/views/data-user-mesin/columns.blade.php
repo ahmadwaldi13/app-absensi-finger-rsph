@@ -13,21 +13,6 @@
 
                     <div class="col-lg-3 col-md-10">
                         <div class='bagan_form'>
-                            <label for="filter_nama_mesin" class="form-label">Pilih Data Mesin</label>
-                            <div class="button-icon-inside">
-                                <input type="text" class="input-text" id='filter_nama_mesin' name='filter_nama_mesin' value="{{ Request::get('filter_nama_mesin') }}" />
-                                <input type="hidden" id="filter_id_mesin" name="filter_id_mesin" value="{{ Request::get('filter_id_mesin') }}" />
-                                <span class="modal-remote-data" data-modal-src="{{ url('ajax?action=get_list_mesih_absensi') }}" data-modal-key="" data-modal-pencarian='true' data-modal-title='Jenis' data-modal-width='40%' data-modal-action-change="function=.set-data-list-from-modal@data-target=#filter_id_mesin|#filter_ip_mesin|null|#filter_nama_mesin@data-key-bagan=0@data-btn-close=#closeModalData">
-                                    <img class="iconify hover-pointer text-primary" src="{{ asset('') }}icon/selected.png" alt="">
-                                </span>
-                                <a href="#" id='reset_input'><i class="fa-solid fa-square-xmark"></i></a>
-                            </div>
-                            <div class="message"></div>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-3 col-md-10">
-                        <div class='bagan_form'>
                             <label for="filter_nm_jabatan" class="form-label">Jabatan</label>
                             <div class="button-icon-inside">
                                 <input type="text" class="input-text" id='filter_nm_jabatan' name="filter_nm_jabatan" value="{{ Request::get('filter_nm_jabatan') }}" />
@@ -71,9 +56,6 @@
                 <table class="table border table-responsive-tablet">
                     <thead>
                         <tr>
-                            <th class="py-3" style="width: 5%">Ip Mesin</th>
-                            <th class="py-3" style="width: 15%">Nama/Alias Mesin</th>
-                            <th class="py-3" style="width: 15%">Lokasi Mesin</th>
                             <th class="py-3" style="width: 3%">Id User Mesin</th>
                             <th class="py-3" style="width: 15%">Name User Mesin</th>
                             <th class="py-3" style="width: 3%">Group</th>
@@ -89,7 +71,8 @@
                             @foreach($list_data as $key => $item)
                             <?php
                                 $paramater_url=[
-                                    'data_sent'=>$item->id_mesin_absensi.'@'.$item->id_user,
+                                    'data_sent'=>$item->id_user,
+                                    'data_respon'=>$params_json
                                 ];
                                 $nama_karyawan="<span style='color:RED'>Belum Disetting</span>";
                                 if(!empty($item->status_id_user)){
@@ -99,9 +82,6 @@
                                 $get_privil=(new \App\Models\RefUserInfo())->get_privilege($item->privilege);
                             ?>
                             <tr>
-                                <td>{{ !empty($item->ip_address) ? $item->ip_address : ''  }}</td>
-                                <td>{{ !empty($item->nm_mesin) ? $item->nm_mesin : ''  }}</td>
-                                <td>{{ !empty($item->lokasi_mesin) ? $item->lokasi_mesin : ''  }}</td>
                                 <td>{{ !empty($item->id_user) ? $item->id_user : ''  }}</td>
                                 <td>{{ !empty($item->name) ? $item->name : ''  }}</td>
                                 <td>{{ !empty($item->group) ? $item->group : ''  }}</td>

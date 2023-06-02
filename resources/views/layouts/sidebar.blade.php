@@ -17,7 +17,7 @@
             'key_active'=>\App::call('App\Http\Controllers\SubMenuController@listAkses',['type' => 5])->list_menu
         ],
         [
-            'title'=>'Jadwal',
+            'title'=>'Absensi',
             'key'=>'sub-menu',
             'url'=>url('/')."/sub-menu?type=6",
             'icon'=>"<i class='fa-solid fa-clock'></i>",

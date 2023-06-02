@@ -76,11 +76,11 @@ class SubMenuController extends Controller
                         'key'=>'data-user-mesin',
                         'url'=>url('/')."/data-user-mesin",
                     ],
-                    [
-                        'title'=>'Presensi',
-                        'key'=>'data-presensi',
-                        'url'=>url('/')."/data-presensi",
-                    ],
+                    // [
+                    //     'title'=>'Presensi',
+                    //     'key'=>'data-presensi',
+                    //     'url'=>url('/')."/data-presensi",
+                    // ],
                     // [
                     //     'title'=>'Upload Nama User',
                     //     'key'=>'upload-nama-user',
@@ -91,20 +91,30 @@ class SubMenuController extends Controller
                     //     'key'=>'upload-sidik-jari-user',
                     //     'url'=>url('/')."/upload-sidik-jari-user",
                     // ],
-                    [
-                        'title'=>'Upload Nama dan Sidik Jari User',
-                        'key'=>'upload-nama-dan-sidik-jari-user',
-                        'url'=>url('/')."/upload-nama-dan-sidik-jari-user",
-                    ],
+                    // [
+                    //     'title'=>'Upload Nama dan Sidik Jari User',
+                    //     'key'=>'upload-nama-dan-sidik-jari-user',
+                    //     'url'=>url('/')."/upload-nama-dan-sidik-jari-user",
+                    // ],
                 ];
             }
 
             if($type==6){
                 $menu_permission=[
                     [
-                        'title'=>'Set Masuk / Keluar',
+                        'title'=>'Jenis Jadwal Absensi',
+                        'key'=>'jenis-jadwal-absensi',
+                        'url'=>url('/')."/jenis-jadwal-absensi",
+                    ],
+                    [
+                        'title'=>'Jadwal Absensi',
                         'key'=>'jadwal-absensi',
                         'url'=>url('/')."/jadwal-absensi",
+                    ],
+                    [
+                        'title'=>'Absensi',
+                        'key'=>'absensi-karyawan',
+                        'url'=>url('/')."/absensi-karyawan",
                     ],
                 ];
             }
