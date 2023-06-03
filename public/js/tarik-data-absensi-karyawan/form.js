@@ -2,21 +2,21 @@
 
 $('#proses').click(function(e) {
     e.preventDefault();
-    
+
     $url=$(document).find('#url_get_mesin').val();
     $tanggal=$(document).find('#tgl').val();
     $data_sent=$tanggal;
+    $(this).prop('disabled', true);
 
     $.ajax({
         type: "GET",
         url:$url,
-        // data: { data_sent: $data_sent },
         success: function(hasil){
             $bagan=$(document).find('#progress-item');
             $bagan.html(hasil.html);
-            // setTimeout(function(){
+            setTimeout(function(){
                 proses_data();
-            // }, 2000);
+            }, 1000);
         },
         error: function(xhr, status, error){
             console.log(error);
@@ -34,15 +34,16 @@ function proses_data(){
             $key=$data.find('.id_mesin').val();
             $status=$(this).attr('data-status');
             if($key && $status==0){
-                // setTimeout(function(){
+                setTimeout(function(){
                     import_data($key,1,0,0);
-                // }, 2000);
+                }, 1000);
                 return false;
             }
         });
     }else{
         setTimeout(function(){
             alert('Proses Selesai');
+            $('#proses').prop('disabled', false);
         }, 800);
         return false;
     }
@@ -53,7 +54,7 @@ function proses_data(){
 function import_data($key,$urut_proses,$start_query,$end_query){
     $url=$(document).find('#url_proses').val();
     $tanggal=$(document).find('#tgl').val();
-    
+
     $.ajax({
         type: "GET",
         url:$url,
@@ -68,11 +69,13 @@ function import_data($key,$urut_proses,$start_query,$end_query){
             $tampil_console={
                 'callback':hasil.hasil,
                 'proses_ke':hasil.no_proses,
+                'limit_ke':hasil.start_query+' - '+hasil.end_query,
             }
             console.log($tampil_console);
 
             if(hasil.hasil==504){
                 alert('Proses Terhenti, System Error');
+                $('#proses').prop('disabled', false);
                 return false;
             }
 
@@ -80,31 +83,31 @@ function import_data($key,$urut_proses,$start_query,$end_query){
             $progress=$get_html.find('.progress-bar');
             $progress.css('width',hasil.progres_bar+'%');
             $get_html.find('#bar-progress-label').html(hasil.progres_bar+'%');
+            $progress.css('background-color','#0d6efd');
             if(hasil.status_mesin==1){
                 $get_html.find('.status_mesin').html(hasil.message);
-                $progress.css('width','0%');
-                $get_html.find('#bar-progress-label').html('0%');
+                $progress.css('background-color','#f20862');
             }
-            
             if(hasil.proses_selesai==0){
-                // setTimeout(function(){
+                $get_html.find('.status_mesin').html('Proses');
+                setTimeout(function(){
                     import_data($key,hasil.no_proses,hasil.start_query,hasil.end_query);
-                // }, 1000);
+                }, 1000);
             }else{
+                $get_html.find('.status_mesin').html('Selesai');
+                if(hasil.status_mesin==1){
+                    $get_html.find('.status_mesin').html(hasil.message);
+                }
                 $get_html.attr('data-status',1);
-                $target_jml_progress=$(document).find('#jumlah_progres_dinas');
-                $jml_progress=parseInt($target_jml_progress.val());
-                
-                $jml_progress=$jml_progress+1;
-                $target_jml_progress.val($jml_progress);
 
-                // setTimeout(function(){
+                setTimeout(function(){
                     proses_data();
-                // }, 2000);
+                }, 1000);
                 return false;
             }
         },
         error: function(xhr, status, error){
+            $('#proses').prop('disabled', false);
             console.log(error);
         }
     });

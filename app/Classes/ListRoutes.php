@@ -413,7 +413,7 @@ class ListRoutes
 				]
 			],
 			[
-				'title' => 'Absensi | Absensi Karyawan',
+				'title' => 'Absensi | Data Absensi',
 				'item' => [
 					[
 						'type' => 'index',

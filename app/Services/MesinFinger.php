@@ -44,9 +44,8 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
                 return ['error',2];
             }
         }else{
-            return ['error','tidak Terkoneksi'];
+            return ['error','Tidak Terkoneksi'];
         }
-
     }
 
     function refresh_db_mesin(){
@@ -68,7 +67,7 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
                 return ['error',2];
             }
         }else{
-            return ['error','tidak Terkoneksi'];
+            return ['error','Tidak Terkoneksi'];
         }
 
     }
@@ -98,7 +97,7 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
                 return ['error',2];
             }
         }else{
-            return ['error','tidak Terkoneksi'];
+            return ['error','Tidak Terkoneksi'];
         }
 
     }
@@ -142,7 +141,7 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
                 return ['error','com key anda salah/tidak ada data'];
             }
         }else{
-            return ['error','tidak Terkoneksi'];
+            return ['error','Tidak Terkoneksi'];
         }
 
         if($data_tmp){
@@ -241,7 +240,7 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
             }
 
         }else{
-            return ['error','tidak Terkoneksi'];
+            return ['error','Tidak Terkoneksi'];
         }
         if($data_tmp){
             return json_encode($data_tmp);
@@ -300,7 +299,7 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
                 return ['error',2];
             }
         }else{
-            return ['error','tidak Terkoneksi'];
+            return ['error','Tidak Terkoneksi'];
         }
 
     }
@@ -341,7 +340,7 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
                 return ['error',2];
             }
         }else{
-            return ['error','tidak Terkoneksi'];
+            return ['error','Tidak Terkoneksi'];
         }
 
     }
@@ -375,7 +374,7 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
                 return ['error',2];
             }
         }else{
-            return ['error','tidak Terkoneksi'];
+            return ['error','Tidak Terkoneksi'];
         }
 
     }
@@ -409,7 +408,7 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
                 return ['error',2];
             }
         }else{
-            return ['error','tidak Terkoneksi'];
+            return ['error','Tidak Terkoneksi'];
         }
     }
 }

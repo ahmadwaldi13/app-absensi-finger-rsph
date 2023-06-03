@@ -41,8 +41,8 @@
                     $url_get_mesin=$router_name->uri.'/ajax?action=get_data_mesin'; 
                     $url_proses=$router_name->uri.'/ajax?action=get_data_log'; 
                 ?>
-                <input type="text" id='url_get_mesin' value='{{ $url_get_mesin }}'>
-                <input type="text" id='url_proses' value='{{ $url_proses }}'>
+                <input type="hidden" id='url_get_mesin' value='{{ $url_get_mesin }}'>
+                <input type="hidden" id='url_proses' value='{{ $url_proses }}'>
                 
                 <div id='progress-item'>
                     

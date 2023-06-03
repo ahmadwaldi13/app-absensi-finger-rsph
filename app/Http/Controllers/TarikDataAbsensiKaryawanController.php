@@ -22,7 +22,7 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
         $this->url_index = $router_name->uri;
         $this->url_name = $router_name->router_name;
 
-        $this->title = 'Absensi Karyawan';
+        $this->title = 'Tarik Log Data Absensi';
         $this->breadcrumbs = [
             ['title' => 'Mesin Absensi', 'url' => url('/') . "/sub-menu?type=5"],
             ['title' => $this->title, 'url' => url('/') . "/" . $this->url_index],
@@ -31,6 +31,19 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
         $this->globalService = new GlobalService;
         $this->userMesinTmpService = new UserMesinTmpService;
         $this->refDataAbsensiTmpService = new RefDataAbsensiTmpService;
+    }
+
+    function actionIndex(Request $request){
+
+        $tanggal_filter=!empty($request->tanggal) ? $request->tanggal : date('Y-m-d');
+
+        $parameter_view = [
+            'title' => $this->title,
+            'breadcrumbs' => $this->breadcrumbs,
+            'tanggal_filter'=>$tanggal_filter
+        ];
+
+        return view($this->part_view . '.index', $parameter_view);
     }
 
     private function hitung_waktu($awal,$akhir){
@@ -51,7 +64,7 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
         $waktu_mulai=$tanggal.' '.$jadwal_masuk_tmp;
         $waktu_tutup=$tanggal.' '.$jadwal_tutup_tmp;
         $waktu_absensi=$tanggal.' '.$absensi_tmp;
-        
+
         $jadwal_masuk = strtotime($waktu_mulai);
         $jadwal_tutup = strtotime($waktu_tutup);
         $absensi = strtotime($waktu_absensi);
@@ -81,8 +94,7 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
         return (object)$return;
     }
 
-    function proses(){
-
+    function proses($params=[]){
         $jenis_jadwal=[1,2,3];
         $data_jadwal=[];
         foreach($jenis_jadwal as $value){
@@ -100,13 +112,15 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
             }
         }
 
-        $tanggal_filter='2023-06-03';
         $parameter=[
-            'tanggal'=>$tanggal_filter
+            'tanggal'=>$params['tanggal_cari'],
+            'limit'=>$params['limit_query'],
+            'id_mesin_absensi'=>$params['id_mesin_absensi'],
         ];
 
         $list_data=$this->refDataAbsensiTmpService->getList($parameter)->get();
         $select_user=[];
+        $select_user_jam=[];
         $hasil_ditemukan=[];
         foreach($list_data as $data_user){
             if(empty($select_user[$data_user->id_user])){
@@ -128,50 +142,41 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
                     $waktu_tutup=$get_jadwal->jam_akhir;
 
                     $hasil=$this->status_absensi($tanggal_absensi,$jam_absensi,$waktu_mulai,$waktu_tutup);
-                    if(empty($hasil->hasil_status_absensi)){
+                    $kode=$get_jadwal->id_jenis_jadwal.'@'.$get_jadwal->id_jadwal;
+
+                    if(!empty($hasil->hasil_status_absensi)){
+                        if(empty($select_user_jam[$data_user->id_user][$kode][$hasil->hasil_status_absensi])){
+                            $select_user_jam[$data_user->id_user][$kode][$hasil->hasil_status_absensi]=$jam_absensi;
+                        }
+                    }else{
                         $select_user[$data_user->id_user]--;
                     }
-                    $hasil=(array)$hasil;
-                    $set_data_jadwal=[];
-                    $set_data_jadwal=[
-                        'nm_jadwal'=>$get_jadwal->uraian,
-                        'waktu_buka'=>$get_jadwal->jam_awal,
-                        'waktu_tutup'=>$get_jadwal->jam_akhir,
-                        'jenis_jadwal'=>$get_jadwal->nm_jenis_jadwal
-                    ];
-                    $hasil=array_merge($hasil,$set_data_jadwal);
-                    $user_tmp_data=(array)$data_user;
-                    $user_tmp_data=array_merge($user_tmp_data,$hasil);
-                    $hasil_ditemukan[]=(object)$user_tmp_data;
+
+                    if(!empty($select_user_jam[$data_user->id_user][$kode][$hasil->hasil_status_absensi])){
+                        $hasil=(array)$hasil;
+                        $set_data_jadwal=[];
+                        $set_data_jadwal=[
+                            'id_jadwal'=>$get_jadwal->id_jadwal,
+                            'nm_jadwal'=>$get_jadwal->uraian,
+                            'waktu_buka'=>$get_jadwal->jam_awal,
+                            'waktu_tutup'=>$get_jadwal->jam_akhir,
+                            'jenis_jadwal'=>$get_jadwal->nm_jenis_jadwal
+                        ];
+                        $hasil=array_merge($hasil,$set_data_jadwal);
+                        $user_tmp_data=(array)$data_user;
+                        $user_tmp_data=array_merge($user_tmp_data,$hasil);
+                        $hasil_ditemukan[]=(object)$user_tmp_data;
+                    }
                 }
             }
         }
 
-        dd($hasil_ditemukan);
-        die;
-
+        return $hasil_ditemukan;
     }
-
-    function actionIndex(Request $request){
-
-        $tanggal_filter=!empty($request->tanggal) ? $request->tanggal : date('Y-m-d');
-
-        $this->proses();
-
-
-        $parameter_view = [
-            'title' => $this->title,
-            'breadcrumbs' => $this->breadcrumbs,
-            'tanggal_filter'=>$tanggal_filter
-        ];
-
-        return view($this->part_view . '.index', $parameter_view);
-    }
-
 
     private function get_data_mesin(){
-        $list_data_tmp=(new \App\Models\RefMesinAbsensi)->get();
-        
+        $list_data_tmp=(new \App\Models\RefMesinAbsensi)->orderByRaw("CONVERT ( REPLACE ( ip_address, '.', '' ), UNSIGNED INTEGER )",'ASC')->get();
+
         $list_data=[];
         foreach($list_data_tmp as $value){
             $data_sent=$value->getAttributes();
@@ -236,27 +241,26 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
         ];
     }
 
-    private function get_data_log($params){
+    private function tarik_data_mesin($params){
         ini_set("memory_limit","800M");
         set_time_limit(0);
 
         $proses_selesai=0;
         $hasil=504;
-        $end_proses=1;
+        $end_proses=2;
         $end_proses=$end_proses+1;
         $calcu=floor(100/$end_proses);
         $progres_bar=0;
-        $exs_query=100;
+        $exs_query=20;
 
         try {
             $urut_proses=!empty($params['urut_proses']) ? $params['urut_proses'] : 0;
             $id_mesin=!empty($params['key']) ? $params['key'] : 0;
             $tanggal_cari=!empty($params['tanggal']) ? $params['tanggal'] : date('Y-m-d');
-            $start_query=!empty($post['start_query']) ? $post['start_query'] : 0;
-            $end_query=!empty($post['end_query']) ? $post['end_query'] : $exs_query;
+            $start_query=!empty($params['start_query']) ? $params['start_query'] : 0;
+            $end_query=!empty($params['end_query']) ? $params['end_query'] : $exs_query;
 
             if($urut_proses==1){
-
                 $data_mesin=(new \App\Models\RefMesinAbsensi)->where(['id_mesin_absensi'=>$id_mesin])->first();
                 if(empty($data_mesin)){
                     return $this->sent_error('proses'.$urut_proses.' 1');
@@ -269,23 +273,19 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
                 ];
                 $get_data_log=$mesin->get_log_data_absensi($parameter);
                 $check_hasil=!empty($get_data_log[0]) ? $get_data_log[0] : '';
+                $proses_gagal=0;
                 if($check_hasil=='error'){
-                    $hasil=200;
-                    $progres_bar=$calcu*$urut_proses;
-                    $urut_proses_succ=$urut_proses+1;
-                    $urut_proses_tmp=$urut_proses_succ;
-                    $urut_proses=$urut_proses_tmp;
+                    $proses_gagal++;
                     $message=$get_data_log[1];
-                    $status_mesin=1;
                 }else{
                     if($get_data_log){
                         $get_data_log=json_decode($get_data_log);
                         if(!empty($get_data_log)){
-    
+
                             DB::beginTransaction();
-    
+
                             (new \App\Models\RefDataAbsensiTmp)->whereRaw('date(waktu) = "'.$tanggal_cari.'"')->where('id_mesin_absensi','=',$id_mesin)->delete();
-    
+
                             try{
                                 $jml_waktu_dicari=0;
                                 $jml_save=0;
@@ -295,14 +295,14 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
                                     $tgl_waktu_data=$waktu_data->format('Y-m-d');
                                     $jam_waktu_data=$waktu_data->format('H:i:s');
                                     if(trim($tanggal_cari)==trim($tgl_waktu_data)){
-                                        
+
                                         $model_tmp = (new \App\Models\RefDataAbsensiTmp);
                                         $model_tmp->id_mesin_absensi = $id_mesin;
                                         $model_tmp->id_user = $value->id;
                                         $model_tmp->waktu = $value->date_time;
                                         $model_tmp->verified = $value->verified;
                                         $model_tmp->status = $value->status;
-    
+
                                         if ($model_tmp->save()) {
                                             $jml_save++;
                                         }
@@ -310,28 +310,19 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
                                         $jml_waktu_dicari++;
                                     }
                                 }
-    
+
                                 if($jml_save>0){
                                     $is_save = 1;
                                 }
-    
+
                                 if (!empty($is_save)) {
                                     DB::commit();
-                                    $hasil=200;
-                                    $progres_bar=$calcu*$urut_proses;
-                                    $urut_proses_succ=$urut_proses+1;
-                                    $urut_proses_tmp=$urut_proses_succ;
-                                    $urut_proses=$urut_proses_tmp;
+                                    $proses_gagal=0;
                                 } else {
                                     DB::rollBack();
                                     if($jml_waktu_dicari>0){
-                                        $hasil=200;
-                                        $progres_bar=$calcu*$urut_proses;
-                                        $urut_proses_succ=$urut_proses+1;
-                                        $urut_proses_tmp=$urut_proses_succ;
-                                        $urut_proses=$urut_proses_tmp;
+                                        $proses_gagal++;
                                         $message='Data Tidak Ada';
-                                        $status_mesin=1;
                                     }else{
                                         return $this->sent_error('proses'.$urut_proses.' 2');
                                         die;
@@ -352,21 +343,139 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
                                 ];
                                 return $this->sent_error('proses'.$urut_proses.' 4');
                                 die;
-                            }   
+                            }
                         }else{
-                            $hasil=200;
-                            $progres_bar=$calcu*$urut_proses;
-                            $urut_proses_succ=$urut_proses+1;
-                            $urut_proses_tmp=$urut_proses_succ;
-                            $urut_proses=$urut_proses_tmp;
+                            $proses_gagal++;
                         }
                     }else{
-                        $hasil=200;
-                        $progres_bar=$calcu*$urut_proses;
-                        $urut_proses_succ=$urut_proses+1;
-                        $urut_proses_tmp=$urut_proses_succ;
-                        $urut_proses=$urut_proses_tmp;
+                        $proses_gagal++;
                     }
+                }
+                if($proses_gagal){
+                    $status_mesin=1;
+                    $urut_proses=$end_proses;
+                }else{
+                    $status_mesin=0;
+                    $message='';
+                    $progres_bar=$calcu*$urut_proses;
+                    $urut_proses_succ=$urut_proses+1;
+                    $urut_proses_tmp=$urut_proses_succ;
+                    $urut_proses=$urut_proses_tmp;
+                }
+
+                $hasil=200;
+                $start_query=0;
+                $end_query=$exs_query;
+            }
+
+            if($urut_proses==2){
+                try{
+                    $parameter=[
+                        'tanggal'=>$tanggal_cari,
+                        'id_mesin_absensi'=>$id_mesin
+                    ];
+
+                    $list_data=$this->refDataAbsensiTmpService->getList($parameter)->get();
+                    $jml_hasil_query=count($list_data);
+                } catch (\Illuminate\Database\QueryException $e) {
+                    $jml_hasil_query='error';
+                } catch (\Throwable $e) {
+                    $jml_hasil_query='error';
+                }
+
+                if($jml_hasil_query==='error'){
+                    $return=[
+                        'success' => false,
+                        'message'=>'',
+                        'hasil'=>504,
+                    ];
+                    return $this->sent_error('proses'.$urut_proses.' 1');
+                }
+
+                $proses_gagal=0;
+                if(!empty($jml_hasil_query)){
+                    DB::beginTransaction();
+                    try{
+                        $params=[
+                            'tanggal_cari'=>$tanggal_cari,
+                            'limit_query'=>['start'=>$start_query,'end'=>$end_query],
+                            'id_mesin_absensi'=>$id_mesin
+                        ];
+                        $hasil_proses=$this->proses($params);
+                        if($hasil_proses){
+                            $jml_save=0;
+                            foreach($hasil_proses as $item){
+                                $data_save=(array)$item;
+                                $model=(new \App\Models\DataAbsensiKaryawan())->where([
+                                    'id_user'=>$item->id_user,
+                                    'id_mesin_absensi'=>$item->id_mesin_absensi,
+                                    'waktu_absensi'=>$item->waktu_absensi
+                                ])->first();
+                                if(!empty($model)){
+                                    unset($data_save['id_user']);
+                                    unset($data_save['id_mesin_absensi']);
+                                }else{
+                                    $model=(new \App\Models\DataAbsensiKaryawan());
+                                }
+                                $model->set_model_with_data($data_save);
+
+                                if ($model->save()) {
+                                    $jml_save++;
+                                }
+                            }
+
+                            if($jml_save>0){
+                                $is_save = 1;
+                            }
+
+                            if (!empty($is_save)) {
+                                DB::commit();
+                                $paramater=[
+                                    'query_status'=>'success',
+                                    'exs_query'=> $exs_query,
+                                    'calcu'=>$calcu,
+                                    'urut_proses'=>$urut_proses,
+                                    'jml_hasil_query'=>$jml_hasil_query,
+                                    'start_query'=>$start_query,
+                                    'end_query'=>$end_query,
+                                ];
+
+                                $return_hasil=$this->proses_regenerate_return($paramater);
+
+                                $urut_proses_tmp=$return_hasil->urut_proses;
+                                $hasil=$return_hasil->hasil;
+                                $progres_bar=$return_hasil->progres_bar;
+                                $start_query=$return_hasil->start_query;
+                                $end_query=$return_hasil->end_query;
+                                $urut_proses=$urut_proses_tmp;
+
+                            }else{
+                                DB::rollBack();
+                                return $this->sent_error('proses'.$urut_proses.' tidak simpan');
+                                die;
+                            }
+                        }else{
+                            dd('1');
+                        }
+
+                    } catch (\Illuminate\Database\QueryException $e) {
+                        DB::rollBack();
+                        if ($e->errorInfo[1] == '1062') {
+                        }
+                        return $this->sent_error('proses'.$urut_proses.' 3');
+                        die;
+                    } catch (\Throwable $e) {
+                        DB::rollBack();
+                        $return=[
+                            'success' => false,
+                            'message'=>'',
+                            'hasil'=>504,
+                        ];
+                        return $this->sent_error('proses'.$urut_proses.' 4');
+                        die;
+                    }
+                }else{
+                    dd('2');
                 }
             }
 
@@ -384,6 +493,7 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
             return $this->sent_error('proses'.$urut_proses.' 6');
             die;
         }
+        
         return [
             'hasil'=>$hasil,
             'proses_selesai'=>$proses_selesai,
@@ -393,6 +503,7 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
             'end_query'=>$end_query,
             'message'=>!empty($message) ? $message : '',
             'status_mesin'=>!empty($status_mesin) ? $status_mesin : '',
+            'id_mesin'=>$id_mesin
         ];
     }
 
@@ -407,7 +518,7 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
                 $parameter=[
                     'list_data'=>$list_data
                 ];
-                
+
                 if($request->ajax()){
                     $returnHTML = view($this->part_view . '.get_data_mesin', $parameter)->render();
                     return response()->json(array('success' => true, 'html'=>$returnHTML));
@@ -417,7 +528,7 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
 
         if(!empty($get_req['action'])){
             if($get_req['action']=='get_data_log'){
-                $hasil=$this->get_data_log($get_req);
+                $hasil=$this->tarik_data_mesin($get_req);
                 if($request->ajax()){
                     return response()->json($hasil);
                 }

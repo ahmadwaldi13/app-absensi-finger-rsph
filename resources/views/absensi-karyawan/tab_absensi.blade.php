@@ -6,7 +6,7 @@ $item = [
         'key' => 'tarik-data-absensi-karyawan',
     ],
     2 => (object) [
-        'nama' => 'Absensi Karyawan',
+        'nama' => 'Data Absensi',
         'key' => 'absensi-karyawan',
     ]
 ];

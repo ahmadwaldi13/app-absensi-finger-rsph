@@ -21,7 +21,7 @@ class AbsensiKaryawanController extends \App\Http\Controllers\MyAuthController
         $this->url_index = $router_name->uri;
         $this->url_name = $router_name->router_name;
 
-        $this->title = 'Absensi Karyawan';
+        $this->title = 'Data Absensi';
         $this->breadcrumbs = [
             ['title' => 'Mesin Absensi', 'url' => url('/') . "/sub-menu?type=5"],
             ['title' => $this->title, 'url' => url('/') . "/" . $this->url_index],
