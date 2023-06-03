@@ -48,7 +48,7 @@ class RefDataAbsensiTmpService extends BaseService
                 '.$sql_limit.'
                 ) utama')
                 )
-                ->join(DB::raw('(select
+                ->leftJoin(DB::raw('(select
                                     utama.id_user as idu1,
                                     name as username,
                                     karyawan.*

@@ -1,3 +1,22 @@
+<style>
+    .label_status_ab_yes,.label_status_ab_no{
+        padding:5px;
+        color:444;
+    }
+
+    .label_status_ab_yes{
+        background-color:#00ff71 ;
+    }
+
+    .label_status_ab_no{
+        background-color:#ec051e ;
+        color:#fff ;
+    }
+
+    .label_status_ab_unow{
+        background-color:#716f6f17 ;
+    }
+</style>
 <hr style="margin-top:0px">
 <div>
     <div class="row d-flex justify-content-between">
@@ -7,10 +26,13 @@
                 
                 <div class="row justify-content-start align-items-end mb-3">
                     <div class="col-lg-3 col-md-10">
-                        <label for="filter_search_text" class="form-label">Pencarian Dengan Keyword</label>
-                        <input type="text" class="form-control" name='form_filter_text'
-                            value="{{ Request::get('form_filter_text') }}" id='filter_search_text'
-                            placeholder="Masukkan Kata">
+                        <div class='input-date-range-bagan'>
+                            <label for="tanggal_data" class="form-label">Tanggal</label>
+                            <span class='icon-bagan-date'></span>
+                            <input type="text" class="form-control input-date-range" id="tanggal_data" placeholder="Tanggal">
+                            <input type="hidden" id="tgl_start" name="filter_date_start" value="{{ Request::get('filter_date_start') }}">
+                            <input type="hidden" id="tgl_end" name="filter_date_end" value="{{ Request::get('filter_date_end') }}">
+                        </div>
                     </div>
 
                     <div class="col-lg-1 col-md-1">
@@ -28,42 +50,95 @@
                 <table class="table border table-responsive-tablet">
                     <thead>
                         <tr>
-                            <th class="py-3" style="width: 15%">Id User</th>
-                            <th class="py-3" style="width: 15%">Nama</th>
-                            <th class="py-3" style="width: 15%">Group</th>
-                            <th class="py-3" style="width: 15%">Privilege</th>
-                            <th class="py-3" style="width: 15%">Database</th>
-                            <th class="py-3" style="width: 15%">Nama User di Database</th>
+                            <th class="py-3" style="width: 10%">Tanggal</th>
+                            <th class="py-3" style="width: 5%">Jenis Jadwal</th>
+                            <th class="py-3" style="width: 5%">Jadwal</th>
+                            <th class="py-3" style="width: 5%">Waktu Absen</th>
+                            <th class="py-3" style="width: 5%">Waktu Jadwal</th>
+                            <th class="py-3" style="width: 15%">Status</th>
+                            <th class="py-3" style="width: 10%">Data Mesin</th>
+                            <th class="py-3" style="width: 15%">NIP/Nama</th>
+                            <th class="py-3" style="width: 5%">Departemen</th>
+                            <th class="py-3" style="width: 10%">Mesin</th>
+                            <th class="py-3" style="width: 5%">Cara Absen</th>
+                            
                         </tr>
                     </thead>
                     <tbody>
                         @if(!empty($list_data))
                             @foreach($list_data as $key => $item)
-                            <?php
-                                $check_database="<span style='color:RED'>Belum Ada</span>";
-                                if(!empty($item->ready)){
-                                    $check_database="<span style='color:#128628'>Ada</span>";
-                                }
+                                <?php 
 
-                                $get_privil=(new \App\Models\RefUserInfo())->get_privilege($item->privilege);
-                            ?>
-                            <tr>
-                                <td>{{ !empty($item->id_user) ? $item->id_user : ''  }}</td>
-                                <td>{{ !empty($item->name) ? $item->name : ''  }}</td>
-                                <td>{{ !empty($item->group) ? $item->group : ''  }}</td>
-                                <td>{{ $get_privil  }}</td>
-                                <td>{!! $check_database  !!}</td>
-                                <td>{{ !empty($item->db_name) ? $item->db_name : ''  }}</td>
-                            </tr>
+                                    if($item->hasil_status_absensi==1){
+                                        $hasil_absensi='<span class="label_status_ab_yes">Tidak Telat</span>';
+                                    }elseif($item->hasil_status_absensi==2){
+                                        $hasil_absensi='<span class="label_status_ab_no">Tepat Waktu</span>';
+                                    }else{
+                                        $hasil_absensi='<span class="label_status_ab_no">""</span>';
+                                    }
+
+                                    $cara_absen='';
+                                    if($item->verified_mesin==1){
+                                        $cara_absen='Finger';
+                                    }
+
+                                    if($item->verified_mesin==3){
+                                        $cara_absen='Password';
+                                    }
+
+                                    $selisih_waktu='';
+                                    if($item->hasil_status_absensi==1){
+                                        $selisih_waktu.='Lebih Cepat<br>';
+                                    }elseif($item->hasil_status_absensi==2){
+                                        $selisih_waktu.='Terlambat<br>';
+                                    }
+                                    $selisih_waktu.=$item->jam.' jam, ';
+                                    $selisih_waktu.=$item->menit.' menit, ';
+                                    $selisih_waktu.=$item->detik.' detik';
+                                ?>
+                                <tr>
+                                    <td>{{ !empty($item->tgl_absensi) ? $item->tgl_absensi : ''  }}</td>
+                                    <td>{{ !empty($item->nm_jenis_jadwal) ? $item->nm_jenis_jadwal : ''  }}</td>
+                                    
+                                    <td>{{ !empty($item->nm_jadwal) ? $item->nm_jadwal : ''  }}</td>
+                                    <td>{{ !empty($item->jam_absensi) ? $item->jam_absensi : ''  }}</td>
+                                    <td>
+                                        <div>{{ !empty($item->waktu_buka) ? $item->waktu_buka : ''  }}</div>
+                                        <div>S/D</div>
+                                        <div>{{ !empty($item->waktu_tutup) ? $item->waktu_tutup : ''  }}</div>
+                                    </td>
+                                    <td>
+                                        <div>{!! $hasil_absensi !!}</div>
+                                        <div>{!! $selisih_waktu !!}</div>
+                                    </td>
+                                    <td>
+                                        <div>( {{ !empty($item->id_user) ? $item->id_user : ''  }} )</div>
+                                        <div>{{ !empty($item->username) ? $item->username : ''  }}</div>
+                                    </td>
+                                    <td>
+                                        <div>( {{ !empty($item->nip) ? $item->nip : ''  }} )</div>
+                                        <div>{{ !empty($item->nm_karyawan) ? $item->nm_karyawan : ''  }}</div>
+                                    </td>
+                                    <td>
+                                        <div>( {{ !empty($item->nm_jabatan) ? $item->nm_jabatan : ''  }} )</div>
+                                        <div>{{ !empty($item->nm_departemen) ? $item->nm_departemen : ''  }}</div>
+                                    </td>
+                                    <td>
+                                        <div>( {{ !empty($item->nm_mesin) ? $item->nm_mesin : ''  }} )</div>
+                                        <div>{{ !empty($item->lokasi_mesin) ? $item->lokasi_mesin : ''  }}</div>
+                                    </td>
+                                    <td>{{ $cara_absen }}</td>
+                                    
+                                </tr>
                             @endforeach
                         @endif
                     </tbody>
                 </table>
             </div>
             @if(!empty($list_data))
-            <div class="d-flex justify-content-end">
-                {{ $list_data->withQueryString()->onEachSide(0)->links() }}
-            </div>
+                <div class="d-flex justify-content-end">
+                    {{ $list_data->withQueryString()->onEachSide(0)->links() }}
+                </div>
             @endif
         </div>
     </div>

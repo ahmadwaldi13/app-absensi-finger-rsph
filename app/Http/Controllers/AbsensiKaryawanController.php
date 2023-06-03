@@ -6,13 +6,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 use App\Services\GlobalService;
-use App\Services\UserMesinTmpService;
+use App\Services\DataAbsensiKaryawanService;
 
 class AbsensiKaryawanController extends \App\Http\Controllers\MyAuthController
 {
 
     public $part_view, $url_index, $url_name, $title, $breadcrumbs, $globalService;
-    public $userMesinTmpService;
+    public $dataAbsensiKaryawanService;
 
     public function __construct()
     {
@@ -28,77 +28,27 @@ class AbsensiKaryawanController extends \App\Http\Controllers\MyAuthController
         ];
 
         $this->globalService = new GlobalService;
-        $this->userMesinTmpService = new UserMesinTmpService;
+        $this->dataAbsensiKaryawanService = new DataAbsensiKaryawanService;
     }
 
     function actionIndex(Request $request){
 
+        $filter_date_start=!empty($request->filter_date_start) ? $request->filter_date_start : date('Y-m-d');
+        $filter_date_end=!empty($request->filter_date_end) ? $request->filter_date_end : date('Y-m-d');
+
+        $paramater = [
+            'where_between'=>['tgl_absensi'=>[$filter_date_start,$filter_date_end ]],
+        ];
+
+        $data_tmp_tmp=( new \App\Models\DataAbsensiKaryawan() );
+        $list_data=$data_tmp_tmp->set_where($data_tmp_tmp,$paramater)->orderBy('nm_karyawan','ASC')->orderByRaw('UNIX_TIMESTAMP( waktu_absensi )','ASC')->paginate(!empty($request->per_page) ? $request->per_page : 15);
+        
         $parameter_view = [
             'title' => $this->title,
             'breadcrumbs' => $this->breadcrumbs,
+            'list_data'=>$list_data
         ];
 
         return view($this->part_view . '.index', $parameter_view);
-    }
-
-    private function proses_tmp($data_mesin){
-        DB::beginTransaction();
-        $pesan = [];
-        $message_default = [
-            'success' => !empty($kode) ? 'Data berhasil diubah' : 'Data berhasil disimpan',
-            'error' => !empty($kode) ? 'Data tidak berhasil diubah' : 'Data berhasil disimpan'
-        ];
-
-        try {
-
-            $is_save = 0;
-            $mesin=(new \App\Services\MesinFinger($data_mesin->ip_address));
-            $get_user=$mesin->get_user();
-            $check_hasil=!empty($get_user[0]) ? $get_user[0] : '';
-            if($check_hasil=='error'){
-                return ['error',$get_user[1]];
-            }
-            if($get_user){
-                $get_user=json_decode($get_user);
-                
-                (new \App\Models\UserMesinTmp)->truncate();
-                
-                $jml_save=0;
-                foreach($get_user as $value){
-                    $model = (new \App\Models\UserMesinTmp);
-                    $model->id_mesin_absensi = $data_mesin->id_mesin_absensi;
-                    $model->id_user = $value->id;
-                    $model->name = $value->name;
-                    $model->group = $value->group;
-                    $model->privilege = $value->privilege;
-
-                    if ($model->save()) {
-                        $jml_save++;
-                    }
-                }
-
-                if($jml_save>0){
-                    $is_save = 1;
-                }
-            }
-
-            if ($is_save) {
-                DB::commit();
-                $pesan = ['success', $message_default['success'], 2];
-            } else {
-                DB::rollBack();
-                $pesan = ['error', $message_default['error'], 3];
-            }
-        } catch (\Illuminate\Database\QueryException $e) {
-            DB::rollBack();
-            if ($e->errorInfo[1] == '1062') {
-            }
-            $pesan = ['error', $message_default['error'], 3];
-        } catch (\Throwable $e) {
-            DB::rollBack();
-            $pesan = ['error', $message_default['error'], 3];
-        }
-
-        return $pesan;
     }
 }

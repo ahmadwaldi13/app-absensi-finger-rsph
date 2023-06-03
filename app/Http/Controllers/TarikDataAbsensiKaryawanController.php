@@ -160,7 +160,7 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
                             'nm_jadwal'=>$get_jadwal->uraian,
                             'waktu_buka'=>$get_jadwal->jam_awal,
                             'waktu_tutup'=>$get_jadwal->jam_akhir,
-                            'jenis_jadwal'=>$get_jadwal->nm_jenis_jadwal
+                            'nm_jenis_jadwal'=>$get_jadwal->nm_jenis_jadwal
                         ];
                         $hasil=array_merge($hasil,$set_data_jadwal);
                         $user_tmp_data=(array)$data_user;
@@ -170,7 +170,7 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
                 }
             }
         }
-
+        
         return $hasil_ditemukan;
     }
 
@@ -416,6 +416,16 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
                                     unset($data_save['id_mesin_absensi']);
                                 }else{
                                     $model=(new \App\Models\DataAbsensiKaryawan());
+                                }
+                                
+                                if(!empty($data_save['waktu_absensi'])){
+                                    $waktu_absensi=$data_save['waktu_absensi'];
+                                    $waktu_tmp=new \DateTime($waktu_absensi);
+                                    $tanggal_absensi = $waktu_tmp->format('Y-m-d');
+                                    $jam_absensi = $waktu_tmp->format('H:i:s');
+
+                                    $data_save['tgl_absensi']=$tanggal_absensi;
+                                    $data_save['jam_absensi']=$jam_absensi;
                                 }
                                 $model->set_model_with_data($data_save);
 

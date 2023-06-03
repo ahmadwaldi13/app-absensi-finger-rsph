@@ -39,6 +39,8 @@ class CreateTableAbsensi extends \App\Classes\MyMigration
         $table->string('nm_mesin')->length(255);
         $table->string('lokasi_mesin')->length(255);
         $table->dateTime('waktu_absensi');
+        $table->date('tgl_absensi');
+        $table->string('jam_absensi',20);
         $table->string('verified_mesin', 20);
         $table->string('status_absensi_mesin', 20);
         $table->integer('id_jenis_jadwal')->length(10)->unsigned();
