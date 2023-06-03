@@ -1,0 +1,429 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+
+use App\Services\GlobalService;
+use App\Services\UserMesinTmpService;
+use App\Services\RefDataAbsensiTmpService;
+
+class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthController
+{
+
+    public $part_view, $url_index, $url_name, $title, $breadcrumbs, $globalService;
+    public $userMesinTmpService,$refDataAbsensiTmpService;
+
+    public function __construct()
+    {
+        $router_name = (new \App\Http\Traits\GlobalFunction)->getRouterIndex();
+        $this->part_view = $router_name->path_base;
+        $this->url_index = $router_name->uri;
+        $this->url_name = $router_name->router_name;
+
+        $this->title = 'Absensi Karyawan';
+        $this->breadcrumbs = [
+            ['title' => 'Mesin Absensi', 'url' => url('/') . "/sub-menu?type=5"],
+            ['title' => $this->title, 'url' => url('/') . "/" . $this->url_index],
+        ];
+
+        $this->globalService = new GlobalService;
+        $this->userMesinTmpService = new UserMesinTmpService;
+        $this->refDataAbsensiTmpService = new RefDataAbsensiTmpService;
+    }
+
+    private function hitung_waktu($awal,$akhir){
+        $diff  = $akhir - $awal;
+
+        $jam   = floor($diff / (60 * 60));
+        $menit = $diff - ( $jam * (60 * 60) );
+        $detik = $diff % 60;
+
+        return (object)[
+            'jam'=>$jam,
+            'menit'=>floor( $menit / 60 ),
+            'detik'=>$detik,
+        ];
+    }
+
+    private function status_absensi($tanggal,$absensi_tmp,$jadwal_masuk_tmp,$jadwal_tutup_tmp){
+        $waktu_mulai=$tanggal.' '.$jadwal_masuk_tmp;
+        $waktu_tutup=$tanggal.' '.$jadwal_tutup_tmp;
+        $waktu_absensi=$tanggal.' '.$absensi_tmp;
+        
+        $jadwal_masuk = strtotime($waktu_mulai);
+        $jadwal_tutup = strtotime($waktu_tutup);
+        $absensi = strtotime($waktu_absensi);
+
+        $return=[];
+        if(($jadwal_masuk <= $absensi) and ($jadwal_tutup >= $absensi)){
+            $hasil=(array)$this->hitung_waktu($absensi,$jadwal_tutup);
+            $return=[
+                'hasil_status_absensi'=>1,
+                'hasil_status_absensi_text'=>'Tidak Telat',
+            ];
+            $return=array_merge($return,$hasil);
+        }elseif($absensi > $jadwal_tutup ){
+            $hasil=(array)$this->hitung_waktu($jadwal_tutup,$absensi);
+            $return=[
+                'hasil_status_absensi'=>2,
+                'hasil_status_absensi_text'=>'Telat',
+            ];
+            $return=array_merge($return,$hasil);
+        }else{
+            $return=[
+                'hasil_status_absensi'=>0,
+                'hasil_status_absensi_text'=>'Di luar Jadwal',
+            ];
+        }
+
+        return (object)$return;
+    }
+
+    function proses(){
+
+        $jenis_jadwal=[1,2,3];
+        $data_jadwal=[];
+        foreach($jenis_jadwal as $value){
+            $get_jadwal=(new \App\Models\RefJadwal())->where('id_jenis_jadwal','=',$value)->get();
+            foreach($get_jadwal as $key_jadwal =>$value_jadwal){
+                $key_jadwal++;
+                $get_jenis_jadwal=(new \App\Models\RefJenisJadwal())->where('id_jenis_jadwal','=',$value)->first();
+                $value_jadwal=(array)$value_jadwal->getAttributes();
+                if(!empty($get_jenis_jadwal)){
+                    $value_jadwal['nm_jenis_jadwal']=$get_jenis_jadwal->nm_jenis_jadwal;
+                }else{
+                    $value_jadwal['nm_jenis_jadwal']='tidak diketahui';
+                }
+                $data_jadwal[$value][$key_jadwal]=(object)$value_jadwal;
+            }
+        }
+
+        $tanggal_filter='2023-06-03';
+        $parameter=[
+            'tanggal'=>$tanggal_filter
+        ];
+
+        $list_data=$this->refDataAbsensiTmpService->getList($parameter)->get();
+        $select_user=[];
+        $hasil_ditemukan=[];
+        foreach($list_data as $data_user){
+            if(empty($select_user[$data_user->id_user])){
+                $select_user[$data_user->id_user]=1;
+            }else{
+                $select_user[$data_user->id_user]++;
+            }
+            $data_absensi_ke=$select_user[$data_user->id_user];
+
+            if(!empty($data_jadwal[$data_user->id_jenis_jadwal][$data_absensi_ke])){
+                $get_jadwal=$data_jadwal[$data_user->id_jenis_jadwal][$data_absensi_ke];
+                $get_waktu_ab=!empty($data_user->waktu_absensi) ? $data_user->waktu_absensi : '';
+                if(!empty($get_waktu_ab)){
+                    $waktu_tmp=new \DateTime($get_waktu_ab);
+                    $tanggal_absensi = $waktu_tmp->format('Y-m-d');
+                    $jam_absensi = $waktu_tmp->format('H:i:s');
+
+                    $waktu_mulai=$get_jadwal->jam_awal;
+                    $waktu_tutup=$get_jadwal->jam_akhir;
+
+                    $hasil=$this->status_absensi($tanggal_absensi,$jam_absensi,$waktu_mulai,$waktu_tutup);
+                    if(empty($hasil->hasil_status_absensi)){
+                        $select_user[$data_user->id_user]--;
+                    }
+                    $hasil=(array)$hasil;
+                    $set_data_jadwal=[];
+                    $set_data_jadwal=[
+                        'nm_jadwal'=>$get_jadwal->uraian,
+                        'waktu_buka'=>$get_jadwal->jam_awal,
+                        'waktu_tutup'=>$get_jadwal->jam_akhir,
+                        'jenis_jadwal'=>$get_jadwal->nm_jenis_jadwal
+                    ];
+                    $hasil=array_merge($hasil,$set_data_jadwal);
+                    $user_tmp_data=(array)$data_user;
+                    $user_tmp_data=array_merge($user_tmp_data,$hasil);
+                    $hasil_ditemukan[]=(object)$user_tmp_data;
+                }
+            }
+        }
+
+        dd($hasil_ditemukan);
+        die;
+
+    }
+
+    function actionIndex(Request $request){
+
+        $tanggal_filter=!empty($request->tanggal) ? $request->tanggal : date('Y-m-d');
+
+        $this->proses();
+
+
+        $parameter_view = [
+            'title' => $this->title,
+            'breadcrumbs' => $this->breadcrumbs,
+            'tanggal_filter'=>$tanggal_filter
+        ];
+
+        return view($this->part_view . '.index', $parameter_view);
+    }
+
+
+    private function get_data_mesin(){
+        $list_data_tmp=(new \App\Models\RefMesinAbsensi)->get();
+        
+        $list_data=[];
+        foreach($list_data_tmp as $value){
+            $data_sent=$value->getAttributes();
+
+            $model_mesin_tujuan=(new \App\Services\MesinFinger($value->ip_address));
+            $connect_tujuan=$model_mesin_tujuan->connect();
+            $connect_tujuan=!empty($connect_tujuan[2]) ? $connect_tujuan[2] : '';
+            if($connect_tujuan==2){
+                $data_sent['status_text']='Tidak Connect';
+                $data_sent['status']=0;
+            }
+            $data_sent['status_text']='Connect';
+            $data_sent['status']=1;
+            $data_sent=(object)$data_sent;
+            $list_data[]=$data_sent;
+        }
+
+        return $list_data;
+    }
+
+    private function sent_error($message=''){
+        $return=[
+            'success' => false,
+            'message'=>$message,
+            'hasil'=>504,
+        ];
+        return response()->json($return);
+    }
+
+    private function proses_regenerate_return($param){
+        $param=(object)$param;
+        $hasil=200;
+
+        $exs_query=$param->exs_query;
+        $calcu=$param->calcu;
+        $urut_proses=$param->urut_proses;
+        $query_status=$param->query_status;
+        $jml_hasil_query=$param->jml_hasil_query;
+        $start_query=$param->start_query;
+        $end_query=$param->end_query;
+
+        if($query_status=='success'){
+            $start_query=$end_query;
+            $end_query=$end_query+$exs_query;
+        }else{
+            $hasil=504;
+        }
+
+        $progres_bar=$calcu*$urut_proses;
+        if($start_query>$jml_hasil_query){
+            $urut_proses=$urut_proses+1;
+            $start_query=0;
+            $end_query=0;
+        }
+
+        return (object)[
+            'hasil'=>$hasil,
+            'progres_bar'=>$progres_bar,
+            'start_query'=>$start_query,
+            'end_query'=>$end_query,
+            'urut_proses'=>$urut_proses,
+        ];
+    }
+
+    private function get_data_log($params){
+        ini_set("memory_limit","800M");
+        set_time_limit(0);
+
+        $proses_selesai=0;
+        $hasil=504;
+        $end_proses=1;
+        $end_proses=$end_proses+1;
+        $calcu=floor(100/$end_proses);
+        $progres_bar=0;
+        $exs_query=100;
+
+        try {
+            $urut_proses=!empty($params['urut_proses']) ? $params['urut_proses'] : 0;
+            $id_mesin=!empty($params['key']) ? $params['key'] : 0;
+            $tanggal_cari=!empty($params['tanggal']) ? $params['tanggal'] : date('Y-m-d');
+            $start_query=!empty($post['start_query']) ? $post['start_query'] : 0;
+            $end_query=!empty($post['end_query']) ? $post['end_query'] : $exs_query;
+
+            if($urut_proses==1){
+
+                $data_mesin=(new \App\Models\RefMesinAbsensi)->where(['id_mesin_absensi'=>$id_mesin])->first();
+                if(empty($data_mesin)){
+                    return $this->sent_error('proses'.$urut_proses.' 1');
+                    die;
+                }
+
+                $mesin=(new \App\Services\MesinFinger($data_mesin->ip_address));
+                $parameter=[
+                    'tanggal'=>$tanggal_cari,
+                ];
+                $get_data_log=$mesin->get_log_data_absensi($parameter);
+                $check_hasil=!empty($get_data_log[0]) ? $get_data_log[0] : '';
+                if($check_hasil=='error'){
+                    $hasil=200;
+                    $progres_bar=$calcu*$urut_proses;
+                    $urut_proses_succ=$urut_proses+1;
+                    $urut_proses_tmp=$urut_proses_succ;
+                    $urut_proses=$urut_proses_tmp;
+                    $message=$get_data_log[1];
+                    $status_mesin=1;
+                }else{
+                    if($get_data_log){
+                        $get_data_log=json_decode($get_data_log);
+                        if(!empty($get_data_log)){
+    
+                            DB::beginTransaction();
+    
+                            (new \App\Models\RefDataAbsensiTmp)->whereRaw('date(waktu) = "'.$tanggal_cari.'"')->where('id_mesin_absensi','=',$id_mesin)->delete();
+    
+                            try{
+                                $jml_waktu_dicari=0;
+                                $jml_save=0;
+                                foreach($get_data_log as $value){
+                                    $waktu_data=$value->date_time;
+                                    $waktu_data = new \DateTime($waktu_data);
+                                    $tgl_waktu_data=$waktu_data->format('Y-m-d');
+                                    $jam_waktu_data=$waktu_data->format('H:i:s');
+                                    if(trim($tanggal_cari)==trim($tgl_waktu_data)){
+                                        
+                                        $model_tmp = (new \App\Models\RefDataAbsensiTmp);
+                                        $model_tmp->id_mesin_absensi = $id_mesin;
+                                        $model_tmp->id_user = $value->id;
+                                        $model_tmp->waktu = $value->date_time;
+                                        $model_tmp->verified = $value->verified;
+                                        $model_tmp->status = $value->status;
+    
+                                        if ($model_tmp->save()) {
+                                            $jml_save++;
+                                        }
+                                    }else{
+                                        $jml_waktu_dicari++;
+                                    }
+                                }
+    
+                                if($jml_save>0){
+                                    $is_save = 1;
+                                }
+    
+                                if (!empty($is_save)) {
+                                    DB::commit();
+                                    $hasil=200;
+                                    $progres_bar=$calcu*$urut_proses;
+                                    $urut_proses_succ=$urut_proses+1;
+                                    $urut_proses_tmp=$urut_proses_succ;
+                                    $urut_proses=$urut_proses_tmp;
+                                } else {
+                                    DB::rollBack();
+                                    if($jml_waktu_dicari>0){
+                                        $hasil=200;
+                                        $progres_bar=$calcu*$urut_proses;
+                                        $urut_proses_succ=$urut_proses+1;
+                                        $urut_proses_tmp=$urut_proses_succ;
+                                        $urut_proses=$urut_proses_tmp;
+                                        $message='Data Tidak Ada';
+                                        $status_mesin=1;
+                                    }else{
+                                        return $this->sent_error('proses'.$urut_proses.' 2');
+                                        die;
+                                    }
+                                }
+                            } catch (\Illuminate\Database\QueryException $e) {
+                                DB::rollBack();
+                                if ($e->errorInfo[1] == '1062') {
+                                }
+                                return $this->sent_error('proses'.$urut_proses.' 3');
+                                die;
+                            } catch (\Throwable $e) {
+                                DB::rollBack();
+                                $return=[
+                                    'success' => false,
+                                    'message'=>'',
+                                    'hasil'=>504,
+                                ];
+                                return $this->sent_error('proses'.$urut_proses.' 4');
+                                die;
+                            }   
+                        }else{
+                            $hasil=200;
+                            $progres_bar=$calcu*$urut_proses;
+                            $urut_proses_succ=$urut_proses+1;
+                            $urut_proses_tmp=$urut_proses_succ;
+                            $urut_proses=$urut_proses_tmp;
+                        }
+                    }else{
+                        $hasil=200;
+                        $progres_bar=$calcu*$urut_proses;
+                        $urut_proses_succ=$urut_proses+1;
+                        $urut_proses_tmp=$urut_proses_succ;
+                        $urut_proses=$urut_proses_tmp;
+                    }
+                }
+            }
+
+            if($urut_proses==$end_proses){
+                $progres_bar=100;
+                $urut_proses=$end_proses;
+                $hasil=200;
+                $proses_selesai=1;
+            }
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            return $this->sent_error('proses'.$urut_proses.' 5');
+            die;
+        } catch (\Throwable $e) {
+            return $this->sent_error('proses'.$urut_proses.' 6');
+            die;
+        }
+        return [
+            'hasil'=>$hasil,
+            'proses_selesai'=>$proses_selesai,
+            'no_proses'=>$urut_proses,
+            'progres_bar'=>$progres_bar,
+            'start_query'=>$start_query,
+            'end_query'=>$end_query,
+            'message'=>!empty($message) ? $message : '',
+            'status_mesin'=>!empty($status_mesin) ? $status_mesin : '',
+        ];
+    }
+
+    function ajax(Request $request){
+
+        $get_req = $request->all();
+
+        if(!empty($get_req['action'])){
+            if($get_req['action']=='get_data_mesin'){
+                $list_data=$this->get_data_mesin();
+
+                $parameter=[
+                    'list_data'=>$list_data
+                ];
+                
+                if($request->ajax()){
+                    $returnHTML = view($this->part_view . '.get_data_mesin', $parameter)->render();
+                    return response()->json(array('success' => true, 'html'=>$returnHTML));
+                }
+            }
+        }
+
+        if(!empty($get_req['action'])){
+            if($get_req['action']=='get_data_log'){
+                $hasil=$this->get_data_log($get_req);
+                if($request->ajax()){
+                    return response()->json($hasil);
+                }
+            }
+        }
+
+        return response()->json(array('error' => true, 'html'=>''));
+    }
+}

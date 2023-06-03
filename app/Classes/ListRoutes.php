@@ -361,6 +361,35 @@ class ListRoutes
 				]
 			],
 			[
+				'title' => 'Absensi | Tarik Log Absensi Karyawan',
+				'item' => [
+					[
+						'type' => 'index',
+						'method' => 'get',
+						'url' => '/tarik-data-absensi-karyawan',
+						'controller' => 'TarikDataAbsensiKaryawanController@actionIndex',
+						'name' => 'tarik_data_absensi_karyawan',
+						'middleware' => '',
+					],
+					[
+						'type' => 'view',
+						'method' => 'get',
+						'url' => '/tarik-data-absensi-karyawan/view',
+						'controller' => 'TarikDataAbsensiKaryawanController@actionView',
+						'name' => '',
+						'middleware' => '',
+					],
+					[
+                        'type' => 'system',
+                        'method' => ['get', 'post'],
+                        'url' => '/tarik-data-absensi-karyawan/ajax',
+                        'controller' => 'TarikDataAbsensiKaryawanController@ajax',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+				]
+			],
+			[
 				'title' => 'Absensi | Absensi Karyawan',
 				'item' => [
 					[
