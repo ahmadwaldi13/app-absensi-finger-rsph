@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\RefKaryawan;
 use App\Models\RefUserInfoDetail;
+use Illuminate\Support\Facades\DB;
 
 class RefKaryawanService extends BaseService
 {
@@ -52,5 +53,31 @@ class RefKaryawanService extends BaseService
     function getList_finger($params){
         $query = $this->refUserInfoDetail;
         return $query;
+    }
+
+    function getListKaryawanJadwal($params=[],$type=''){
+        
+        $query = $this->refKaryawan
+            ->select('ref_karyawan.*','nm_jabatan','nm_departemen','ref_jenis_jadwal.id_jenis_jadwal','nm_jenis_jadwal','ref_karyawan_user.id_user',DB::raw("IF( ref_karyawan_user.id_user, 1, 0 ) as status_akun_mesin "))
+            ->Leftjoin('ref_jabatan','ref_jabatan.id_jabatan','=','ref_karyawan.id_jabatan')
+            ->Leftjoin('ref_departemen','ref_departemen.id_departemen','=','ref_karyawan.id_departemen')
+            ->Leftjoin('ref_karyawan_jadwal','ref_karyawan_jadwal.id_karyawan','=','ref_karyawan.id_karyawan')
+            ->Leftjoin('ref_jenis_jadwal','ref_jenis_jadwal.id_jenis_jadwal','=','ref_karyawan_jadwal.id_jenis_jadwal')
+            ->Leftjoin('ref_karyawan_user','ref_karyawan_user.id_karyawan','=','ref_karyawan.id_karyawan')
+            ->orderBy('nm_karyawan','ASC')
+        ;
+
+        $list_search=[
+            'where_or'=>['nm_karyawan','alamat','nip','nm_jabatan','nm_departemen'],
+        ];
+
+        if($params){
+            $query=(new \App\Models\MyModel)->set_where($query,$params,$list_search);
+        }
+        if(empty($type)){
+            return $query->get();
+        }else{
+            return $query;
+        }
     }
 }

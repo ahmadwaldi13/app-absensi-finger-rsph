@@ -61,6 +61,11 @@ class SubMenuController extends Controller
                         'key'=>'data-karyawan',
                         'url'=>url('/')."/data-karyawan",
                     ],
+                    [
+                        'title'=>'Data Jadwal Karyawan',
+                        'key'=>'data-jadwal-karyawan',
+                        'url'=>url('/')."/data-jadwal-karyawan",
+                    ],
                 ];
             }
 
@@ -76,26 +81,6 @@ class SubMenuController extends Controller
                         'key'=>'data-user-mesin',
                         'url'=>url('/')."/data-user-mesin",
                     ],
-                    // [
-                    //     'title'=>'Presensi',
-                    //     'key'=>'data-presensi',
-                    //     'url'=>url('/')."/data-presensi",
-                    // ],
-                    // [
-                    //     'title'=>'Upload Nama User',
-                    //     'key'=>'upload-nama-user',
-                    //     'url'=>url('/')."/upload-nama-user",
-                    // ],
-                    // [
-                    //     'title'=>'Upload Sidik Jari User',
-                    //     'key'=>'upload-sidik-jari-user',
-                    //     'url'=>url('/')."/upload-sidik-jari-user",
-                    // ],
-                    // [
-                    //     'title'=>'Upload Nama dan Sidik Jari User',
-                    //     'key'=>'upload-nama-dan-sidik-jari-user',
-                    //     'url'=>url('/')."/upload-nama-dan-sidik-jari-user",
-                    // ],
                 ];
             }
 

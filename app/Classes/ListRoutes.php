@@ -178,6 +178,29 @@ class ListRoutes
 					],
 				]
 			],
+			
+			[
+				'title' => 'Data Karyawan | Data Jadwal karyawan',
+				'item' => [
+					[
+						'type' => 'index',
+						'method' => ['get', 'post'],
+						'url' => '/data-jadwal-karyawan',
+						'controller' => 'DataJadwalKaryawanController@actionIndex',
+						'name' => 'data_jadwal_karyawan',
+						'middleware' => '',
+					],
+					[
+                        'type' => 'system',
+                        'method' => ['get', 'post'],
+                        'url' => '/data-jadwal-karyawan/ajax',
+                        'controller' => 'DataJadwalKaryawanController@ajax',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+				]
+			],
+
 			[
 				'title' => 'Mesin Absensi | Data Mesin',
 				'item' => [

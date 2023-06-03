@@ -37,7 +37,7 @@
                     </div>
                 </div>
 
-                <?php 
+                <?php
                     $url_get_mesin=$router_name->uri.'/ajax?action=get_data_mesin'; 
                     $url_proses=$router_name->uri.'/ajax?action=get_data_log'; 
                 ?>

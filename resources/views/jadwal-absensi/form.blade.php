@@ -14,8 +14,8 @@
                     <div class='bagan_form'>
                         <label for="jenis_jadwal" class="form-label">Pilih Jenis Jadwal<span class="text-danger">*</span></label>
                         <div class="button-icon-inside">
-                            <input type="text" class="input-text" id='jenis_jadwal' required value="" />
-                            <input type="hidden" id="id_jenis_jadwal" name="id_jenis_jadwal" value="" />
+                            <input type="text" class="input-text" id='jenis_jadwal' required value="{{ !empty($model->nm_jenis_jadwal) ? $model->nm_jenis_jadwal : '' }}" />
+                            <input type="hidden" id="id_jenis_jadwal" name="id_jenis_jadwal" value="{{ !empty($model->id_jenis_jadwal) ? $model->id_jenis_jadwal : '' }}" />
                             <span class="modal-remote-data" data-modal-src="{{ url('ajax?action=get_jenis_jadwal') }}" data-modal-key="" data-modal-pencarian='true' data-modal-title='Jenis' data-modal-width='40%' data-modal-action-change="function=.set-data-list-from-modal@data-target=#id_jenis_jadwal|#jenis_jadwal@data-key-bagan=0@data-btn-close=#closeModalData">
                                 <img class="iconify hover-pointer text-primary" src="{{ asset('') }}icon/selected.png" alt="">
                             </span>

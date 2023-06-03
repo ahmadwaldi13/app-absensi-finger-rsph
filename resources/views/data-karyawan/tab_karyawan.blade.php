@@ -2,17 +2,13 @@
 
 $item = [
     1 => (object) [
-        'nama' => 'Data Presensi',
-        'key' => 'data-presensi',
+        'nama' => 'Data Karyawan',
+        'key' => 'data-karyawan',
     ],
     2 => (object) [
-        'nama' => 'Sikronisasi Data Presensi',
-        'key' => 'data-presensi-sinkronisasi',
-    ],
-    3 => (object) [
-        'nama' => 'Copy Data User Mesin',
-        'key' => 'data-user-mesin-copy',
-    ],
+        'nama' => 'Jadwal Karyawan',
+        'key' => 'data-jadwal-karyawan',
+    ]
 ];
 
 $item = (new \App\Http\Traits\AuthFunction())->checkMenuAkses($item);
