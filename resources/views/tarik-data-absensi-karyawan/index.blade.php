@@ -20,11 +20,21 @@
         <div>
             <form action="" method="GET">
                 <div class="row justify-content-start align-items-end mb-3">
-                    <div class="col-lg-3 col-md-10">
+                    <!-- <div class="col-lg-3 col-md-10">
                         <div class='input-date-bagan'>
                             <label for="tanggal" class="form-label">Tanggal : <span class="text-danger">*</span></label>
                             <span class='icon-bagan-date'></span>
                             <input type="text" class='tgl_me form-control input-date' id="tgl" required name="tanggal" value="{{ !empty($tanggal_filter) ? $tanggal_filter : date('Y-m-d') }}">
+                        </div>
+                    </div> -->
+
+                    <div class="col-lg-3 col-md-10">
+                        <div class='input-date-range-bagan'>
+                            <label for="tanggal_data" class="form-label">Tanggal</label>
+                            <span class='icon-bagan-date'></span>
+                            <input type="text" class="form-control input-date-range" id="tanggal_data" placeholder="Tanggal">
+                            <input type="hidden" id="tgl_start" name="tanggal_filter_start" value="{{ !empty($tanggal_filter_start) ? $tanggal_filter_start : date('Y-m-d') }}">
+                            <input type="hidden" id="tgl_end" name="tanggal_filter_end" value="{{ !empty($tanggal_filter_end) ? $tanggal_filter_end : date('Y-m-d') }}">
                         </div>
                     </div>
 

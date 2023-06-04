@@ -22,11 +22,11 @@ class RefDataAbsensiTmpService extends BaseService
 
         $where=[];
         if(!empty($params['id_mesin_absensi'])){
-            $where[]='ref_data_absensi_tmp.id_mesin_absensi = '.$params['id_mesin_absensi'];
+            $where[]=' ref_data_absensi_tmp.id_mesin_absensi = '.$params['id_mesin_absensi'];
         }
 
         if(!empty($params['tanggal'])){
-            $where[]='date(waktu)="'.$params['tanggal'].'"';
+            $where[]=' date(waktu) BETWEEN "'.$params['tanggal']['start'].'" and "'.$params['tanggal']['end'].'" ';
         }
 
         if(!empty($where)){
@@ -68,6 +68,45 @@ class RefDataAbsensiTmpService extends BaseService
                                 )karyawan on karyawan.idu=utama.id_user) data_user'),'data_user.idu1','=','utama.id_user'
                 )
                 ->orderByRaw('UNIX_TIMESTAMP( waktu_absensi )','ASC')
+        ;
+
+        return $query;
+    }
+
+    public function getListCount($params=[]){
+        ini_set("memory_limit","800M");
+
+        $sql_limit='';
+        if(!empty($params['limit'])){
+            $limit=$params['limit'];
+            $limit_start=!empty($limit['start']) ? $limit['start'] : 0;
+            $limit_end=!empty($limit['end']) ? $limit['end'] : 0;
+            $sql_limit="LIMIT ".$limit_start.",".$limit_end;
+        }
+
+        $where=[];
+        if(!empty($params['id_mesin_absensi'])){
+            $where[]=' ref_data_absensi_tmp.id_mesin_absensi = '.$params['id_mesin_absensi'];
+        }
+
+        if(!empty($params['tanggal'])){
+            $where[]=' date(waktu) BETWEEN "'.$params['tanggal']['start'].'" and "'.$params['tanggal']['end'].'" ';
+        }
+
+        if(!empty($where)){
+            $where=" where ".implode(' and ',$where);
+        }
+        
+        $query=DB::table(DB::raw('(select
+                    count(id_user) as jml
+                from
+                    ref_data_absensi_tmp
+                    inner join ref_mesin_absensi rma on rma.id_mesin_absensi = ref_data_absensi_tmp.id_mesin_absensi
+                '.$where.'
+                '.$sql_limit.'
+                order by UNIX_TIMESTAMP( waktu ) asc
+                )utama'))
+                ->selectRaw('jml')
         ;
 
         return $query;

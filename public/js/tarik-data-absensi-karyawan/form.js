@@ -4,8 +4,6 @@ $('#proses').click(function(e) {
     e.preventDefault();
 
     $url=$(document).find('#url_get_mesin').val();
-    $tanggal=$(document).find('#tgl').val();
-    $data_sent=$tanggal;
     $(this).prop('disabled', true);
 
     $.ajax({
@@ -53,14 +51,16 @@ function proses_data(){
 
 function import_data($key,$urut_proses,$start_query,$end_query){
     $url=$(document).find('#url_proses').val();
-    $tanggal=$(document).find('#tgl').val();
+    $tanggal_start=$(document).find('#tgl_start').val();
+    $tanggal_end=$(document).find('#tgl_end').val();
 
     $.ajax({
         type: "GET",
         url:$url,
         data:{
             key:$key,
-            tanggal:$tanggal,
+            tanggal_start:$tanggal_start,
+            tanggal_end:$tanggal_end,
             urut_proses:$urut_proses,
             start_query:$start_query,
             end_query:$end_query,
