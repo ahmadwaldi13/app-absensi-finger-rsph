@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Services\GlobalService;
 use App\Services\DataAbsensiKaryawanService;
 
-class AbsensiKaryawanController extends \App\Http\Controllers\MyAuthController
+class AbsensiPerKaryawanController extends \App\Http\Controllers\MyAuthController
 {
 
     public $part_view, $url_index, $url_name, $title, $breadcrumbs, $globalService;
@@ -23,7 +23,6 @@ class AbsensiKaryawanController extends \App\Http\Controllers\MyAuthController
 
         $this->title = 'Data Absensi';
         $this->breadcrumbs = [
-            ['title' => 'Mesin Absensi', 'url' => url('/') . "/sub-menu?type=5"],
             ['title' => $this->title, 'url' => url('/') . "/" . $this->url_index],
         ];
 
@@ -32,42 +31,39 @@ class AbsensiKaryawanController extends \App\Http\Controllers\MyAuthController
     }
 
     function actionIndex(Request $request){
-
+    
         $filter_date_start=!empty($request->filter_date_start) ? $request->filter_date_start : date('Y-m-d');
         $filter_date_end=!empty($request->filter_date_end) ? $request->filter_date_end : date('Y-m-d');
 
-        $form_filter_text=!empty($request->form_filter_text) ? $request->form_filter_text : '';
-        $filter_id_jabatan=!empty($request->filter_id_jabatan) ? $request->filter_id_jabatan : '';
-        $filter_id_departemen=!empty($request->filter_id_departemen) ? $request->filter_id_departemen : '';
-        
         $filter_status_absensi=!empty($request->filter_status_absensi) ? $request->filter_status_absensi : '';
         $filter_cara_absensi=!empty($request->filter_cara_absensi) ? $request->filter_cara_absensi : '';
 
-        $paramater = [
-            'search'=>$form_filter_text,
-            'where_between'=>['tgl_absensi'=>[$filter_date_start,$filter_date_end ]],
-        ];
-
-        if(!empty($filter_id_jabatan)){
-            $paramater['id_jabatan']=$filter_id_jabatan;
-        }
-
-        if(!empty($filter_id_departemen)){
-            $paramater['id_departemen']=$filter_id_departemen;
-        }
-
-        if(!empty($filter_status_absensi)){
-            $paramater['hasil_status_absensi']=$filter_status_absensi;
-        }
-
-        if(!empty($filter_cara_absensi)){
-            $paramater['verified_mesin']=$filter_cara_absensi;
-        }
-
-        $data_tmp_tmp=( new \App\Models\DataAbsensiKaryawan() );
-        $where_like=['where_or' => ['nm_karyawan', 'username']];
-        $list_data=$data_tmp_tmp->set_where($data_tmp_tmp,$paramater,$where_like)->orderBy('nm_karyawan','ASC')->orderByRaw('UNIX_TIMESTAMP( waktu_absensi )','ASC')->paginate(!empty($request->per_page) ? $request->per_page : 15);
+        $get_user=(new \App\Http\Traits\AuthFunction)->getUser();
         
+        if(!empty($get_user->data_user_sistem)){
+            if(!empty($get_user->data_user_sistem->id_karyawan)){
+                
+                $paramater = [
+                    'id_karyawan'=>$get_user->data_user_sistem->id_karyawan,
+                    'where_between'=>['tgl_absensi'=>[$filter_date_start,$filter_date_end ]],
+                ];
+
+                if(!empty($filter_status_absensi)){
+                    $paramater['hasil_status_absensi']=$filter_status_absensi;
+                }
+
+                if(!empty($filter_cara_absensi)){
+                    $paramater['verified_mesin']=$filter_cara_absensi;
+                }
+
+                $data_tmp_tmp=( new \App\Models\DataAbsensiKaryawan() );
+                $where_like=['where_or' => ['nm_karyawan', 'username']];
+                $list_data=$data_tmp_tmp->set_where($data_tmp_tmp,$paramater,$where_like)->orderBy('nm_karyawan','ASC')->orderByRaw('UNIX_TIMESTAMP( waktu_absensi )','ASC')->paginate(!empty($request->per_page) ? $request->per_page : 15);
+            }
+        }else{
+            $list_data=[];
+        }
+            
         $parameter_view = [
             'title' => $this->title,
             'breadcrumbs' => $this->breadcrumbs,

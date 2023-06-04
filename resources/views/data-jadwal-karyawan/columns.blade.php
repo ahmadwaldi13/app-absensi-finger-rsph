@@ -90,7 +90,7 @@
                             <th class="py-3" style="width: 10%">Departemen</th>
                             <th class="py-3" style="width: 10%">ALamat</th>
                             <th class="py-3" style="width: 5%">Data Connect ke Mesin Finger</th>
-                            <th class="py-3" style="width: 5%">Action</th>
+                            <th class="py-3" style="width: 5%">Jenis Jadwal</th>
                         </tr>
                     </thead>
                     <tbody>

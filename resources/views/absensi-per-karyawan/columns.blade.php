@@ -38,47 +38,6 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-4 col-md-10">
-                                <label for="filter_search_text" class="form-label">Pencarian Dengan Keyword</label>
-                                <input type="text" class="form-control" name='form_filter_text' value="{{ Request::get('form_filter_text') }}" id='filter_search_text' placeholder="Masukkan Kata">
-                            </div>
-
-                        </div>
-                    </div>
-
-                    <div class="col-lg-12 col-md-12">
-                        <div class="row justify-content-start align-items-end mb-3">
-
-                            <div class="col-lg-2 col-md-10">
-                                <div class='bagan_form'>
-                                    <label for="filter_nm_jabatan" class="form-label">Jabatan </label>
-                                    <div class="button-icon-inside">
-                                        <input type="text" class="input-text" id='filter_nm_jabatan' name="filter_nm_jabatan" readonly value="{{ Request::get('filter_nm_jabatan') }}" />
-                                        <input type="hidden" id="filter_id_jabatan" name='filter_id_jabatan' readonly required value="{{ Request::get('filter_id_jabatan') }}">
-                                        <span class="modal-remote-data" data-modal-src="{{ url('ajax?action=get_list_jabatan') }}" data-modal-key="" data-modal-pencarian='true' data-modal-title='Jabatan' data-modal-width='30%' data-modal-action-change="function=.set-data-list-from-modal@data-target=#filter_id_jabatan|#filter_nm_jabatan@data-key-bagan=0@data-btn-close=#closeModalData">
-                                            <img class="iconify hover-pointer text-primary" src="{{ asset('') }}icon/selected.png" alt="">
-                                        </span>
-                                        <a href="#" id='reset_input'><i class="fa-solid fa-square-xmark"></i></a>
-                                    </div>
-                                    <div class="message"></div>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-2 col-md-10">
-                                <div class='bagan_form'>
-                                    <label for="filter_nm_departemen" class="form-label">Departemen </label>
-                                    <div class="button-icon-inside">
-                                        <input type="text" class="input-text" id='filter_nm_departemen' name="filter_nm_departemen" readonly value="{{ Request::get('filter_nm_departemen') }}" />
-                                        <input type="hidden" id="filter_id_departemen" name='filter_id_departemen' readonly required value="{{ Request::get('filter_id_departemen') }}">
-                                        <span class="modal-remote-data" data-modal-src="{{ url('ajax?action=get_list_departemen') }}" data-modal-key="" data-modal-pencarian='true' data-modal-title='Departemen' data-modal-width='30%' data-modal-action-change="function=.set-data-list-from-modal@data-target=#filter_id_departemen|#filter_nm_departemen@data-key-bagan=0@data-btn-close=#closeModalData">
-                                            <img class="iconify hover-pointer text-primary" src="{{ asset('') }}icon/selected.png" alt="">
-                                        </span>
-                                        <a href="#" id='reset_input'><i class="fa-solid fa-square-xmark"></i></a>                            
-                                    </div>
-                                    <div class="message"></div>
-                                </div>
-                            </div>
-
                             <div class="col-lg-2 col-md-10">
                                 <div class='bagan_form'>
                                     <label for="filter_status_absensi" class="form-label">Status Absensi : </label>
@@ -102,16 +61,18 @@
                                     <div class="message"></div>
                                 </div>
                             </div>
+
+                            <div class="col-lg-1 col-md-1">
+                                <div class="d-grid grap-2">
+                                    <button type="submit" name='searchbydb' class="btn btn-primary" value=1>
+                                        <i class="fa-sharp fa-solid fa-magnifying-glass"></i>
+                                    </button>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
 
-                    <div class="col-lg-1 col-md-1">
-                        <div class="d-grid grap-2">
-                            <button type="submit" name='searchbydb' class="btn btn-primary" value=1>
-                                <i class="fa-sharp fa-solid fa-magnifying-glass"></i>
-                            </button>
-                        </div>
-                    </div>
                 </div>
             </form>
 

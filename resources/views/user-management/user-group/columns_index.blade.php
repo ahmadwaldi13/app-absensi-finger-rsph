@@ -13,7 +13,20 @@
             @if (!empty($dataList))
                 @foreach ($dataList as $key => $value)
                     <?php
-                    $kode = $value->id;
+                        $kode = $value->id;
+                        
+                        $data_group_khusus=[
+                            'group_super_admin',
+                            'group_admin',
+                            'group_karyawan'
+                        ];
+                        
+                        $nm_group=str_replace(' ','',$value->alias);
+                        $not_delete=0;
+                        if(in_array($nm_group,$data_group_khusus)){
+                            $not_delete=1;
+                        }
+
                     ?>
                     <tr>
                         <td class="text-center">{{ $key + 1 }}</td>
@@ -24,8 +37,9 @@
                             <a class="btn btn-primary" href="{{ url('permission-group-app?id=' . $value->id . '&alias=' . $value->alias) }}" role="button">Permission</a>
 
                             <a href="{{ url('user-group-app/form') }}" class='btn btn-warning modal-remote' data-modal-key='{{ $kode }}' data-modal-width='50%' data-modal-title='Ubah Group'>Edit</a>
-
-                            <a href="{{ url('user-group-app/delete') }}" class='btn btn-danger modal-remote-delete' data-modal-key='{{ $kode }}' data-confirm-message="Apakah anda yakin menghapus data ini ?">Hapus</a>
+                            @if(empty($not_delete))
+                                <a href="{{ url('user-group-app/delete') }}" class='btn btn-danger modal-remote-delete' data-modal-key='{{ $kode }}' data-confirm-message="Apakah anda yakin menghapus data ini ?">Hapus</a>
+                            @endif
                         </td>
                     </tr>
                 @endforeach

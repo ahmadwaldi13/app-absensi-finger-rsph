@@ -17,11 +17,17 @@
             'key_active'=>\App::call('App\Http\Controllers\SubMenuController@listAkses',['type' => 5])->list_menu
         ],
         [
-            'title'=>'Absensi',
+            'title'=>'Manajemen Absensi',
             'key'=>'sub-menu',
             'url'=>url('/')."/sub-menu?type=6",
             'icon'=>"<i class='fa-solid fa-clock'></i>",
             'key_active'=>\App::call('App\Http\Controllers\SubMenuController@listAkses',['type' => 6])->list_menu
+        ],
+        [
+            'title'=>'Absensi',
+            'key'=>'absensi-per-karyawan',
+            'url'=>url('/')."/absensi-per-karyawan",
+            'icon'=>"<i class='fa-solid fa-clock'></i>",
         ],
         [
             'title'=>'Manajemen User',

@@ -44,6 +44,21 @@ trait AuthTraits {
 
                 $data_user['auth_user']=$list;
             }
+
+            $get_data_karyawan = (new \App\Models\UxuiUsersKaryawan)->where('id_uxui_users', '=', $this->id_user)->first();
+            if(!empty($get_data_karyawan)){
+                $paramater_search=[
+                    'ref_karyawan.id_karyawan'=>$get_data_karyawan->id_karyawan,
+                ];
+                $get_karyawan=(new \App\Services\RefKaryawanService)->getListKaryawanJadwal($paramater_search, 1)->first();
+                $data_user_sistem=[
+                    'id_karyawan'=>$get_data_karyawan->id_karyawan,
+                    'nm_karyawan'=>$get_karyawan->nm_karyawan,
+                    'id_jenis_jadwal'=>$get_karyawan->id_jenis_jadwal,
+                    'id_user_mesin'=>$get_karyawan->id_user,
+                ];
+                $data_user['data_user_sistem']=(object)$data_user_sistem;
+            }
         }
 
         if(empty($data_user['auth']) && empty($data_user['auth_user'])){

@@ -384,7 +384,7 @@ class ListRoutes
 				]
 			],
 			[
-				'title' => 'Absensi | Tarik Log Absensi Karyawan',
+				'title' => 'Manajemen Absensi | Tarik Log Absensi Karyawan',
 				'item' => [
 					[
 						'type' => 'index',
@@ -413,7 +413,7 @@ class ListRoutes
 				]
 			],
 			[
-				'title' => 'Absensi | Data Absensi',
+				'title' => 'Manajemen | Data Absensi',
 				'item' => [
 					[
 						'type' => 'index',
@@ -433,6 +433,29 @@ class ListRoutes
 					],
 				]
 			],
+
+			[
+				'title' => 'Absensi | Data Absensi Perkaryawan ',
+				'item' => [
+					[
+						'type' => 'index',
+						'method' => 'get',
+						'url' => '/absensi-per-karyawan',
+						'controller' => 'AbsensiPerKaryawanController@actionIndex',
+						'name' => 'absensi_per_karyawan',
+						'middleware' => '',
+					],
+					[
+						'type' => 'view',
+						'method' => 'get',
+						'url' => '/absensi-per-karyawan/view',
+						'controller' => 'AbsensiPerKaryawanController@actionView',
+						'name' => '',
+						'middleware' => '',
+					],
+				]
+			],
+
 			[
 				'title' => 'Manajemen User | Group User',
 				'item' => [
