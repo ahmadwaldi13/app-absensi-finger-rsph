@@ -106,6 +106,11 @@
                                 }
 
                                 $get_privil=(new \App\Models\RefUserInfo())->get_privilege($item->privilege);
+
+                                $id_mesin_absensi=!empty($item->id_mesin_absensi) ? $item->id_mesin_absensi : '';
+                                $id_user_mesin=!empty($item->id_user) ? $item->id_user : '';
+                                $username_mesin=!empty($item->name) ? $item->name : '';
+                                $kode_change=$id_mesin_absensi.'@'.$id_user_mesin;
                             ?>
                             <tr>
                                 <td>
@@ -113,8 +118,16 @@
                                     <div>IP : {{ !empty($item->ip_address) ? $item->ip_address : ''  }}</div>
                                     <div>lokasi : {{ !empty($item->lokasi_mesin) ? $item->lokasi_mesin : ''  }}</div>
                                 </td>
-                                <td><span style="color:{{ $color_red_id }}">{{ !empty($item->id_user) ? $item->id_user : ''  }}</span></td>
-                                <td><span style="color:{{ $color_red_name }}">{{ !empty($item->name) ? $item->name : ''  }}</span></td>
+                                <td>
+                                    <a style="color:{{ $color_red_id }}" href="#" data-url="{{ $router_name->uri }}" data-type="text" class="form_text_change" data-value="{{ $id_user_mesin }}"  data-pk="{{ $kode_change }}@id">
+                                        <span >{{ $id_user_mesin }}</span>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a style="color:{{ $color_red_name }}" href="#" data-url="{{ $router_name->uri }}" data-type="text" class="form_text_change" data-value="{{ $username_mesin }}"  data-pk="{{ $kode_change }}@name">
+                                        <span>{{ $username_mesin }}</span>
+                                    </a>
+                                </td>
                                 <td>{{ !empty($item->group) ? $item->group : ''  }}</td>
                                 <td>{{ $get_privil  }}</td>
                                 <td>{!! $check_database  !!}</td>
@@ -140,3 +153,16 @@
         </div>
     </div>
 </div>
+
+@push('link-end-1')
+    <link href="{{ asset('libs\editable\bootstrap5-editable\css\bootstrap-editable.css' )}}" rel="stylesheet" />
+@endpush
+
+@push('script-end-1')
+<script type="text/javascript" src="{{ asset('bootstrap/js/bootstrap.bundle.min.js' )}}"></script>
+<script type="text/javascript" src="{{ asset('libs\editable\bootstrap5-editable\js\bootstrap-editable.min.js' )}}"></script>
+@endpush
+
+@push('script-end-2')
+<script src="{{ asset('js/data-user-mesin-sinkronisasi/form.js') }}"></script>
+@endpush

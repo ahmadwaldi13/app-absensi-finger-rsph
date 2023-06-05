@@ -33,6 +33,10 @@ class DataUserMesinSinkronisasiController extends \App\Http\Controllers\MyAuthCo
 
     function actionIndex(Request $request){
 
+        if($request->isMethod('post')){
+            return $this->proses_data($request);
+        }
+
         $paramater_search=[];
         if(!empty($request->searchbymesin)){
             $id_mesin_absensi = !empty($request->filter_id_mesin) ? $request->filter_id_mesin : '';
@@ -257,5 +261,63 @@ class DataUserMesinSinkronisasiController extends \App\Http\Controllers\MyAuthCo
             $pesan = ['error', $message_default['error'], 3];
         }
         return redirect()->route($link_back_redirect, $link_back_param)->with([$pesan[0] => $pesan[1]]);
+    }
+
+    private function proses_data($request){
+        $req = $request->all();
+        $kode = !empty($req['pk']) ? $req['pk'] : '';
+        $exp=explode('@',$kode);
+        $id_mesin_absensi=!empty($exp[0]) ? $exp[0] : '';
+        $id_user=!empty($exp[1]) ? $exp[1] : '';
+        $type=!empty($exp[2]) ? $exp[2] : '';
+        $data_change = !empty($req['value']) ? $req['value'] : '';
+
+        DB::beginTransaction();
+        $pesan = [];
+
+        $message_default = [
+            'success' => 'Data berhasil diubah',
+            'error' => 'Data tidak berhasil diubah'
+        ];
+
+        if ($request->ajax()) {
+            try {
+                $model=( new \App\Models\UserMesinTmp() )->where('id_mesin_absensi','=',$id_mesin_absensi)->where('id_user','=',$id_user)->first();
+                if(!empty($model)){
+                    if($type=='id'){
+                        $model->id_user=$data_change;
+                    }
+                    if($type=='name'){
+                        $model->name=$data_change;
+                    }
+
+                    if ($model->save()) {
+                        $is_save = 1;
+                    }
+                }else{
+                    $is_save=0;
+                }
+
+                if (!empty($is_save)) {
+                    DB::commit();
+                    $pesan = ['success', $message_default['success'], 2];
+                } else {
+                    DB::rollBack();
+                    $pesan = ['error', $message_default['error'], 3];
+                }
+            } catch (\Illuminate\Database\QueryException $e) {
+                DB::rollBack();
+                dd($e);
+                if ($e->errorInfo[1] == '1062') {
+                }
+                $pesan = ['error', $message_default['error'], 3];
+            } catch (\Throwable $e) {
+                dd($e);
+                DB::rollBack();
+                $pesan = ['error', $message_default['error'], 3];
+            }
+
+            return response()->json($pesan);
+        }
     }
 }
