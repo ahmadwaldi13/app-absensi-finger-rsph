@@ -3,7 +3,6 @@
     <div class="row d-flex justify-content-between">
         <div>
             <form action="" method="GET">
-                <input type="hidden" id="filter_id_mesin" name="filter_id_mesin" value="{{ Request::get('filter_id_mesin') }}" />
                 
                 <div class="row justify-content-start align-items-end mb-3">
                     <div class="col-lg-3 col-md-10">
@@ -11,6 +10,45 @@
                         <input type="text" class="form-control" name='form_filter_text'
                             value="{{ Request::get('form_filter_text') }}" id='filter_search_text'
                             placeholder="Masukkan Kata">
+                    </div>
+
+                    <div class="col-lg-2 col-md-10">
+                        <div class='bagan_form'>
+                            <label for="filter_ip_mesin_asal" class="form-label">Pilih Asal Mesin </label>
+                            <div class="button-icon-inside">
+                                <input type="text" class="input-text" id='filter_ip_mesin_asal' value="{{ !empty($hasil_ip_asal) ? $hasil_ip_asal : '' }}" />
+                                <input type="hidden" id="filter_id_mesin_asal" name="filter_id_mesin_asal" value="{{ Request::get('filter_id_mesin_asal') }}" />
+                                <span class="modal-remote-data" data-modal-src="{{ url('ajax?action=get_list_mesih_absensi') }}" data-modal-key="" data-modal-pencarian='true' data-modal-title='Jenis' data-modal-width='40%' data-modal-action-change="function=.set-data-list-from-modal@data-target=#filter_id_mesin_asal|#filter_ip_mesin_asal|null|#filter_nama_mesin|#filter_lokasi_mesin@data-key-bagan=0@data-btn-close=#closeModalData">
+                                    <img class="iconify hover-pointer text-primary" src="{{ asset('') }}icon/selected.png" alt="">
+                                </span>
+                                <a href="#" id='reset_input'><i class="fa-solid fa-square-xmark"></i></a>
+                            </div>
+                            <div class="message"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-2 col-md-10">
+                        <div class='bagan_form'>
+                            <label for="filter_simpan_db" class="form-label">Status Data pada Database : </label>
+                            <select class="form-select" id="filter_simpan_db" name="filter_simpan_db"  aria-label="Default select ">
+                                <option value=""  {{ (Request::get('filter_simpan_db')=='') ? 'selected' : '' }}>Semua</option>
+                                <option value="1" {{ (Request::get('filter_simpan_db')=='1') ? 'selected' : '' }}>Sudah</option>
+                                <option value="2" {{ (Request::get('filter_simpan_db')=='2') ? 'selected' : '' }}>Belum</option>
+                            </select>
+                            <div class="message"></div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-2 col-md-10">
+                        <div class='bagan_form'>
+                            <label for="filter_duplicate_data" class="form-label">Status Duplicate Data : </label>
+                            <select class="form-select" id="filter_duplicate_data" name="filter_duplicate_data"  aria-label="Default select ">
+                                <option value=""  {{ (Request::get('filter_duplicate_data')=='') ? 'selected' : '' }}>Semua</option>
+                                <option value="1" {{ (Request::get('filter_duplicate_data')=='1') ? 'selected' : '' }}>Tidak Duplicate</option>
+                                <option value="2" {{ (Request::get('filter_duplicate_data')=='2') ? 'selected' : '' }}>Duplicate</option>
+                            </select>
+                            <div class="message"></div>
+                        </div>
                     </div>
 
                     <div class="col-lg-1 col-md-1">
@@ -28,11 +66,13 @@
                 <table class="table border table-responsive-tablet">
                     <thead>
                         <tr>
+                            <th class="py-3" style="width: 15%">Nama Mesin</th>
                             <th class="py-3" style="width: 15%">Id User</th>
-                            <th class="py-3" style="width: 15%">Nama</th>
-                            <th class="py-3" style="width: 15%">Group</th>
+                            <th class="py-3" style="width: 15%">Username</th>
+                            <th class="py-3" style="width: 2%">Group</th>
                             <th class="py-3" style="width: 15%">Privilege</th>
                             <th class="py-3" style="width: 15%">Database</th>
+                            <th class="py-3" style="width: 15%">Keterangan</th>
                             <th class="py-3" style="width: 15%">Nama User di Database</th>
                         </tr>
                     </thead>
@@ -41,18 +81,50 @@
                             @foreach($list_data as $key => $item)
                             <?php
                                 $check_database="<span style='color:RED'>Belum Ada</span>";
-                                if(!empty($item->ready)){
+                                if(!empty($item->db)){
                                     $check_database="<span style='color:#128628'>Ada</span>";
+                                }
+                                
+                                $status_dup=0;
+                                $data_duplicate_text="";
+                                $data_duplicate_id='';
+                                $data_duplicate_name='';
+                                $color_red_id='#000';
+                                $color_red_name='#000';
+                                if(!empty($item->duplicate_id) || !empty($item->duplicate_name)){
+                                    $status_dup=1;
+                                    $data_duplicate_text="<span style='color:RED'>Duplicate ID USER Mesin</span>";
+                                    if(!empty($item->duplicate_id)){
+                                        $color_red_id='red';
+                                        $data_duplicate_id=!empty($item->duplicate_id_id_user) ? $item->duplicate_id_id_user : '';
+                                        $data_duplicate_name=!empty($item->duplicate_id_name) ? $item->duplicate_id_name : '';
+                                    }elseif(!empty($item->duplicate_name)){
+                                        $color_red_name='red';
+                                        $data_duplicate_id=!empty($item->duplicate_name_id_user) ? $item->duplicate_name_id_user : '';
+                                        $data_duplicate_name=!empty($item->duplicate_name_name) ? $item->duplicate_name_name : '';
+                                    }
                                 }
 
                                 $get_privil=(new \App\Models\RefUserInfo())->get_privilege($item->privilege);
                             ?>
                             <tr>
-                                <td>{{ !empty($item->id_user) ? $item->id_user : ''  }}</td>
-                                <td>{{ !empty($item->name) ? $item->name : ''  }}</td>
+                                <td>
+                                    <div>{{ !empty($item->nm_mesin) ? $item->nm_mesin : ''  }}</div>
+                                    <div>IP : {{ !empty($item->ip_address) ? $item->ip_address : ''  }}</div>
+                                    <div>lokasi : {{ !empty($item->lokasi_mesin) ? $item->lokasi_mesin : ''  }}</div>
+                                </td>
+                                <td><span style="color:{{ $color_red_id }}">{{ !empty($item->id_user) ? $item->id_user : ''  }}</span></td>
+                                <td><span style="color:{{ $color_red_name }}">{{ !empty($item->name) ? $item->name : ''  }}</span></td>
                                 <td>{{ !empty($item->group) ? $item->group : ''  }}</td>
                                 <td>{{ $get_privil  }}</td>
                                 <td>{!! $check_database  !!}</td>
+                                <td>
+                                    @if(!empty($status_dup))
+                                        <div>{!! $data_duplicate_text  !!}</div>
+                                        <div>Id User  : {{ $data_duplicate_id  }}</div>
+                                        <div>Username : {{ $data_duplicate_name  }}</div>
+                                    @endif
+                                </td>
                                 <td>{{ !empty($item->db_name) ? $item->db_name : ''  }}</td>
                             </tr>
                             @endforeach

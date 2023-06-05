@@ -17,7 +17,17 @@
 <div>
     <br>
     <div class="row d-flex justify-content-between">
-        <div>
+        <div class="card card-body" style='background:#9bf80030'>
+            <h4>1. Form Untuk Tarik Data User Dari Mesin</h4>
+            <p>
+                Keterangan<br>
+                Tarik Data User dari mesin mengunakan form ini
+                <br>
+                <span style='color:RED'>
+                    NOTE : Jika Form ini di proses, maka data di form 2 akan berubah kembali berdasarkan data di mesin<br>
+                </span>
+            </p>
+            <hr>
             <form action="" method="GET">
                 <div class="row justify-content-start align-items-end mb-3">
                     <div class="col-lg-3 col-md-10">
@@ -54,7 +64,7 @@
                     <div class="col-lg-1 col-md-1">
                         <div class="d-grid grap-2">
                             <button type="submit" name='searchbymesin' class="btn btn-primary" value=1>
-                                <i class="fa-sharp fa-solid fa-magnifying-glass"></i>
+                                <span>Proses</span>
                             </button>
                         </div>
                     </div>
@@ -63,25 +73,41 @@
         </div>
     </div>
 </div>
+<br><br>
 
-@if(!empty( $list_data ))
-    @if(!empty( $list_data->total() ))
+
+<div class="row d-flex justify-content-between">
+    <div class="card card-body" style='background:#f2f2f2'>
+        <h4>2. Form Proses Data sebelum di masukan ke database</h4>
+        <p>
+            Keterangan<br>
+            Proses data sebelum di disimpan ke dalam database utama,data ini bersifat temporari, jika form 1 di jalankan, data akan berubah kembali
+            <br>
+            <span style='color:RED'>
+                NOTE : Data dengan id user dan username yang sama( duplicate )akan mengubah data yang telah tersimpan di database utama,<br> 
+                silahkan cek kembali id user dan username dari database utama, sebelum anda melakukan sinkronisasi
+            </span>
+        </p>
         @include($router_name->path_base.'.columns')
+        
+        @if(!empty( $list_data ))
+            @if(!empty( $list_data->total() ))
+                <?php $url_sinkron=$router_name->uri.'/sinkron'; ?>
+                @if( (new \App\Http\Traits\AuthFunction)->checkAkses($url_sinkron) )
+                    <form action="{{ url($url_sinkron) }}" method="{{ !empty($method_form) ? $method_form : 'POST' }}">
+                        @csrf
+                        <input type="hidden" name="key" value="{{ !empty($data_mesin->id_mesin_absensi) ? $data_mesin->id_mesin_absensi : '' }}">
 
-        <?php $url_sinkron=$router_name->uri.'/sinkron'; ?>
-        @if( (new \App\Http\Traits\AuthFunction)->checkAkses($url_sinkron) )
-            <form action="{{ url($url_sinkron) }}" method="{{ !empty($method_form) ? $method_form : 'POST' }}">
-                @csrf
-                <input type="hidden" name="key" value="{{ !empty($data_mesin->id_mesin_absensi) ? $data_mesin->id_mesin_absensi : '' }}">
-
-                <div class="row justify-content-start align-items-end">
-                    <div class="col-lg-5">
-                        <button class="btn btn-primary" type="submit">Sinkronisasi</button>
-                    </div>
-                </div>
-            </form>
+                        <div class="row justify-content-start align-items-end">
+                            <div class="col-lg-5">
+                                <button class="btn btn-primary" type="submit">Sinkronisasi</button>
+                            </div>
+                        </div>
+                    </form>
+                @endif
+            @endif
         @endif
-    @endif
-@endif
+    </div>
+</div>
 
 @endsection

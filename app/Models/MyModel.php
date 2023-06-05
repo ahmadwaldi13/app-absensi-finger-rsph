@@ -129,7 +129,7 @@ class MyModel extends Model
             ];
         */
 
-        $ignore=['where_in','where_between','where_raw','search','where_or'];
+        $ignore=['where_in','where_between','where_raw','search','where_or','where_and_or'];
         $param_tmp=[];
 
         if(!empty($params)){
@@ -202,6 +202,20 @@ class MyModel extends Model
                     $query=$query->orWhere($key,$type,$value);
                 }
             }
+        }
+
+        if(!empty($param_tmp['where_and_or'])){
+            $search=$param_tmp['where_and_or'];
+            $query=$query->where(function ($qb2) use ($search) {
+                foreach($search as $key => $value){
+                    if(is_array($value)){
+                        $qb2->orWhere($key,$value[0],$value[1]);
+                    }else{
+                        $type=is_numeric($value) ? '=' : 'like';
+                        $qb2->orWhere($key,$type,$value);
+                    }
+                }
+            });
         }
 
         return $query;

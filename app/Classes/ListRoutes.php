@@ -257,6 +257,14 @@ class ListRoutes
 						'name' => '',
 						'middleware' => '',
 					],
+					[
+                        'type' => 'system',
+                        'method' => ['get', 'post'],
+                        'url' => '/data-user-mesin-sinkronisasi/ajax',
+                        'controller' => 'DataUserMesinSinkronisasiController@ajax',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
 				]
 			],
 			[

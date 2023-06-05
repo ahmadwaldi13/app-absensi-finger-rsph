@@ -33,15 +33,13 @@ class DataUserMesinSinkronisasiController extends \App\Http\Controllers\MyAuthCo
 
     function actionIndex(Request $request){
 
-        $id_mesin_absensi = !empty($request->filter_id_mesin) ? $request->filter_id_mesin : '';
-
-        if(!empty($id_mesin_absensi)){
-            $data_mesin=(new \App\Models\RefMesinAbsensi)->where(['id_mesin_absensi'=>$id_mesin_absensi])->first();
-        }
-
-        $list_data=[];
-
+        $paramater_search=[];
         if(!empty($request->searchbymesin)){
+            $id_mesin_absensi = !empty($request->filter_id_mesin) ? $request->filter_id_mesin : '';
+            if(!empty($id_mesin_absensi)){
+                $data_mesin=(new \App\Models\RefMesinAbsensi)->where(['id_mesin_absensi'=>$id_mesin_absensi])->first();
+            }
+
             if(!empty($data_mesin)){
                 $mesin=(new \App\Services\MesinFinger($data_mesin->ip_address));
                 $connect=$mesin->connect();
@@ -60,27 +58,46 @@ class DataUserMesinSinkronisasiController extends \App\Http\Controllers\MyAuthCo
 
         if(!empty($request->searchbydb)){
             $form_filter_text = !empty($request->form_filter_text) ? $request->form_filter_text : '';
+            $filter_id_mesin_asal = !empty($request->filter_id_mesin_asal) ? $request->filter_id_mesin_asal : '';
+            $filter_simpan_db = !empty($request->filter_simpan_db) ? $request->filter_simpan_db : '';
+            $filter_duplicate_data = !empty($request->filter_duplicate_data) ? $request->filter_duplicate_data : '';
 
-            $paramater_column = [
+            $paramater_search = [
                 'search' => $form_filter_text
             ];
+
+            $id_mesin_absensi = !empty($filter_id_mesin_asal) ? $filter_id_mesin_asal : '';
+            if(!empty($id_mesin_absensi)){
+                $data_mesin=(new \App\Models\RefMesinAbsensi)->where(['id_mesin_absensi'=>$id_mesin_absensi])->first();
+                $hasil_ip_asal=!empty($data_mesin->ip_address) ? $data_mesin->ip_address : '';
+                $paramater_search['id_mesin_absensi']=$id_mesin_absensi;
+            }
+
+            if(!empty($filter_simpan_db)){
+                $hasil=0;
+                if($filter_simpan_db==1){
+                    $hasil=1;
+                }
+                $paramater_search['db']=$hasil;
+            }
+
+            if(!empty($filter_duplicate_data)){
+                $hasil=0;
+                if($filter_duplicate_data==2){
+                    $hasil=1;
+                }
+                $paramater_search['where_and_or']=['duplicate_id'=>$hasil,'duplicate_name'=>$hasil ];
+            }
         }
 
-        $list_data=[];
-        $paramater = [];
-        if(!empty($data_mesin)){
-            
-            if(!empty($paramater_column)){
-                $paramater=array_merge($paramater,$paramater_column);
-            }
-            $list_data = $this->userMesinTmpService->getList($paramater, 1)->paginate(!empty($request->per_page) ? $request->per_page : 30);
-        }
+        $list_data = $this->userMesinTmpService->getList($paramater_search, 1)->paginate(!empty($request->per_page) ? $request->per_page : 30);
 
         $parameter_view = [
             'title' => $this->title,
             'breadcrumbs' => $this->breadcrumbs,
             'list_data' => $list_data,
-            'data_mesin'=> !empty($data_mesin) ? $data_mesin : []
+            'data_mesin'=> !empty($data_mesin) ? $data_mesin : [],
+            'hasil_ip_asal'=>!empty($hasil_ip_asal) ? $hasil_ip_asal : '',
         ];
 
         return view($this->part_view . '.index', $parameter_view);
