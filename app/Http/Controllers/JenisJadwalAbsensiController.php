@@ -118,14 +118,14 @@ class JenisJadwalAbsensiController extends \App\Http\Controllers\MyAuthControlle
         $link_back_param = array_merge($link_back_param, $request->all());
         $message_default = [
             'success' => !empty($kode) ? 'Data berhasil diubah' : 'Data berhasil disimpan',
-            'error' => !empty($kode) ? 'Data tidak berhasil diubah' : 'Data berhasil disimpan'
+            'error' => !empty($kode) ? 'Data tidak berhasil diubah' : 'Data tidak berhasil disimpan'
         ];
         
         
         try {
-            $model = (new \App\Models\RefJenisjadwal)->where('id_jenis_jadwal', '=', $kode)->first();
+            $model = (new \App\Models\RefJenisJadwal)->where('id_jenis_jadwal', '=', $kode)->first();
             if (empty($model)) {
-                $model = (new \App\Models\RefJenisjadwal);
+                $model = (new \App\Models\RefJenisJadwal);
             }
             $data_save = $req;
             $model->set_model_with_data($data_save);
