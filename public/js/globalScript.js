@@ -829,10 +829,17 @@ $(document).delegate(".set-data-list-from-modal", "click", function (event) {
     return false;
 });
 
-function validate_form() {
+function validate_form($parent=null) {
     $jumlah = 0;
     $position = '';
-    $('[required]').each(function (idx, elem) {
+    $bagan=$('[required]');
+    if($parent){
+        if ($parent.length == 1) {
+            $bagan=$parent.find('[required]');
+        }
+    }
+    
+    $bagan.each(function (idx, elem) {
         $parent = $(elem).parents('.bagan_form');
         $target = $parent.find('.message');
 
@@ -870,6 +877,14 @@ $(document).delegate(".bagan_form #reset_input", "click", function (event) {
     });
 
     return false;
+});
+
+$(document).delegate(".validate_submit", "click", function (event) {
+    let parent = $(this).parents('form');
+    $check = validate_form(parent);
+    if ($check == false) {
+        return false;
+    }
 });
 
 $(document).delegate(".submit_confirmasi", "click", function (event) {

@@ -134,7 +134,7 @@ class DataKaryawanController extends \App\Http\Controllers\MyAuthController
         $link_back_param = array_merge($link_back_param, $request->all());
         $message_default = [
             'success' => !empty($kode) ? 'Data berhasil diubah' : 'Data berhasil disimpan',
-            'error' => !empty($kode) ? 'Data tidak berhasil diubah' : 'Data berhasil disimpan'
+            'error' => !empty($kode) ? 'Data tidak berhasil diubah' : 'Data tidak berhasil disimpan'
         ];
 
         try {
