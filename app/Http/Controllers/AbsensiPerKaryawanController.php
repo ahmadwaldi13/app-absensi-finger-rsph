@@ -46,6 +46,7 @@ class AbsensiPerKaryawanController extends \App\Http\Controllers\MyAuthControlle
                 $paramater = [
                     'id_karyawan'=>$get_user->data_user_sistem->id_karyawan,
                     'where_between'=>['tgl_absensi'=>[$filter_date_start,$filter_date_end ]],
+                    'hasil_status_absensi'=>['!=',3],
                 ];
 
                 if(!empty($filter_status_absensi)){

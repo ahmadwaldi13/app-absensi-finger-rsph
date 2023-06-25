@@ -88,7 +88,7 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
             $return=array_merge($return,$hasil);
         }else{
             $return=[
-                'hasil_status_absensi'=>0,
+                'hasil_status_absensi'=>3,
                 'hasil_status_absensi_text'=>'Di luar Jadwal',
             ];
         }
@@ -125,52 +125,83 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
         $select_user_jam=[];
         $hasil_ditemukan=[];
         foreach($list_data as $data_user){
-            if(empty($select_user[$data_user->id_user])){
-                $select_user[$data_user->id_user]=1;
-            }else{
-                $select_user[$data_user->id_user]++;
-            }
-            $data_absensi_ke=$select_user[$data_user->id_user];
+            $waktu_check=new \DateTime($data_user->waktu_absensi);
+            $tgl_absensi_check = $waktu_check->format('Y-m-d');
 
-            if(!empty($data_jadwal[$data_user->id_jenis_jadwal][$data_absensi_ke])){
-                $get_jadwal=$data_jadwal[$data_user->id_jenis_jadwal][$data_absensi_ke];
+            $get_jadwal_shift_karyawan=(new \App\Models\RefKaryawanJadwalShift())->where('id_karyawan','=',$data_user->id_karyawan)
+                ->where('tgl_mulai','<=',$tgl_absensi_check)->where('tgl_akhir','>=',$tgl_absensi_check)->first();
+            if($get_jadwal_shift_karyawan){
+                $data_user=(array)$data_user;
+                $data_user['id_jenis_jadwal']=$get_jadwal_shift_karyawan->id_jenis_jadwal;
+                $data_user=(object)$data_user;
+            }
+            
+            if(empty($select_user[$data_user->id_user][$tgl_absensi_check])){
+                $select_user[$data_user->id_user][$tgl_absensi_check]=1;
+            }else{
+                $select_user[$data_user->id_user][$tgl_absensi_check]++;
+            }
+            $data_absensi_ke=$select_user[$data_user->id_user][$tgl_absensi_check];
+            // if(!empty($data_jadwal[$data_user->id_jenis_jadwal][$data_absensi_ke])){
+                $get_jadwal=!empty($data_jadwal[$data_user->id_jenis_jadwal][$data_absensi_ke]) ? $data_jadwal[$data_user->id_jenis_jadwal][$data_absensi_ke] : '';
+                
                 $get_waktu_ab=!empty($data_user->waktu_absensi) ? $data_user->waktu_absensi : '';
                 if(!empty($get_waktu_ab)){
                     $waktu_tmp=new \DateTime($get_waktu_ab);
                     $tanggal_absensi = $waktu_tmp->format('Y-m-d');
                     $jam_absensi = $waktu_tmp->format('H:i:s');
 
-                    $waktu_mulai=$get_jadwal->jam_awal;
-                    $waktu_tutup=$get_jadwal->jam_akhir;
-
-                    $hasil=$this->status_absensi($tanggal_absensi,$jam_absensi,$waktu_mulai,$waktu_tutup);
-                    $kode=$get_jadwal->id_jenis_jadwal.'@'.$get_jadwal->id_jadwal;
-
-                    if(!empty($hasil->hasil_status_absensi)){
-                        if(empty($select_user_jam[$data_user->id_user][$kode][$hasil->hasil_status_absensi])){
-                            $select_user_jam[$data_user->id_user][$kode][$hasil->hasil_status_absensi]=$jam_absensi;
-                        }
+                    $hasil=[];
+                    if(!empty($get_jadwal)){
+                        $waktu_mulai=$get_jadwal->jam_awal;
+                        $waktu_tutup=$get_jadwal->jam_akhir;
+                        $hasil=$this->status_absensi($tanggal_absensi,$jam_absensi,$waktu_mulai,$waktu_tutup);
                     }else{
-                        $select_user[$data_user->id_user]--;
+                        $hasil=(object)[
+                            'hasil_status_absensi'=>3,
+                            'hasil_status_absensi_text'=>'Di luar Jadwal',
+                        ];
                     }
 
-                    if(!empty($select_user_jam[$data_user->id_user][$kode][$hasil->hasil_status_absensi])){
-                        $hasil=(array)$hasil;
-                        $set_data_jadwal=[];
-                        $set_data_jadwal=[
-                            'id_jadwal'=>$get_jadwal->id_jadwal,
-                            'nm_jadwal'=>$get_jadwal->uraian,
-                            'waktu_buka'=>$get_jadwal->jam_awal,
-                            'waktu_tutup'=>$get_jadwal->jam_akhir,
-                            'nm_jenis_jadwal'=>$get_jadwal->nm_jenis_jadwal
-                        ];
-                        $hasil=array_merge($hasil,$set_data_jadwal);
-                        $user_tmp_data=(array)$data_user;
-                        $user_tmp_data=array_merge($user_tmp_data,$hasil);
-                        $hasil_ditemukan[]=(object)$user_tmp_data;
-                    }
+                    // if(!empty($hasil->hasil_status_absensi)){
+                    //     if(empty($select_user_jam[$data_user->id_user][$kode][$hasil->hasil_status_absensi])){
+                    //         $select_user_jam[$data_user->id_user][$kode][$hasil->hasil_status_absensi]=$jam_absensi;
+                    //     }
+                    // }else{
+                    //     $select_user[$data_user->id_user]--;
+                    // }
+
+                    // if(!empty($select_user_jam[$data_user->id_user][$kode][$hasil->hasil_status_absensi])){
+                        if(!empty($hasil)){
+                            $hasil=(array)$hasil;
+                            $set_data_jadwal=[];
+
+                            if(!empty($get_jadwal)){
+                                $set_data_jadwal=[
+                                    'id_jadwal'=>$get_jadwal->id_jadwal,
+                                    'nm_jadwal'=>$get_jadwal->uraian,
+                                    'waktu_buka'=>$get_jadwal->jam_awal,
+                                    'waktu_tutup'=>$get_jadwal->jam_akhir,
+                                    'nm_jenis_jadwal'=>$get_jadwal->nm_jenis_jadwal
+                                ];
+                            }else{
+                                $set_data_jadwal=[
+                                    'id_jadwal'=>0,
+                                    'nm_jadwal'=>'Tidak ditemukan',
+                                    'waktu_buka'=>'',
+                                    'waktu_tutup'=>'',
+                                    'nm_jenis_jadwal'=>''
+                                ];
+                            }
+                            
+                            $hasil=array_merge($hasil,$set_data_jadwal);
+                            $user_tmp_data=(array)$data_user;
+                            $user_tmp_data=array_merge($user_tmp_data,$hasil);
+                            $hasil_ditemukan[]=(object)$user_tmp_data;
+                        }
+                    // }
                 }
-            }
+            // }
         }
         
         return $hasil_ditemukan;
@@ -284,35 +315,41 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
 
                             DB::beginTransaction();
 
-                            (new \App\Models\RefDataAbsensiTmp)->whereRaw('date(waktu) BETWEEN "'.$tanggal_start.'" and "'.$tanggal_end.'"')->where('id_mesin_absensi','=',$id_mesin)->delete();
+                            // (new \App\Models\RefDataAbsensiTmp)->whereRaw('date(waktu) BETWEEN "'.$tanggal_start.'" and "'.$tanggal_end.'"')->where('id_mesin_absensi','=',$id_mesin)->delete();
                             
                             try{
                                 $jml_waktu_dicari=0;
                                 $jml_save=0;
                                 foreach($get_data_log as $value){
-                                    $waktu_data=$value->date_time;
-                                    $waktu_data = new \DateTime($waktu_data);
-                                    $tgl_waktu_data=$waktu_data->format('Y-m-d');
-                                    $jam_waktu_data=$waktu_data->format('H:i:s');
+                                    // $waktu_data=$value->date_time;
+                                    // $waktu_data = new \DateTime($waktu_data);
+                                    // $tgl_waktu_data=$waktu_data->format('Y-m-d');
+                                    // $jam_waktu_data=$waktu_data->format('H:i:s');
 
-                                    $paymentDate=date('Y-m-d', strtotime($tgl_waktu_data));
-                                    $contractDateBegin = date('Y-m-d', strtotime($tanggal_start));
-                                    $contractDateEnd = date('Y-m-d', strtotime($tanggal_end));
+                                    // $paymentDate=date('Y-m-d', strtotime($tgl_waktu_data));
+                                    // $contractDateBegin = date('Y-m-d', strtotime($tanggal_start));
+                                    // $contractDateEnd = date('Y-m-d', strtotime($tanggal_end));
                                        
-                                    $tgl_antara=0;
-                                    if (($paymentDate >= $contractDateBegin) && ($paymentDate <= $contractDateEnd)){
-                                        $tgl_antara=1;
-                                    }
+                                    // $tgl_antara=0;
+                                    // if (($paymentDate >= $contractDateBegin) && ($paymentDate <= $contractDateEnd)){
+                                    //     $tgl_antara=1;
+                                    // }
+                                    $tgl_antara=1;
 
                                     if(!empty($tgl_antara)){
-                                        $model_tmp = (new \App\Models\RefDataAbsensiTmp);
-                                        $model_tmp->id_mesin_absensi = $id_mesin;
-                                        $model_tmp->id_user = $value->id;
-                                        $model_tmp->waktu = $value->date_time;
-                                        $model_tmp->verified = $value->verified;
-                                        $model_tmp->status = $value->status;
+                                        $check=(new \App\Models\RefDataAbsensiTmp)->where('id_mesin_absensi','=',$id_mesin)->where('id_user','=',$value->id)->where('waktu','=',$value->date_time)->where('verified','=',$value->verified)->where('status','=',$value->status)->first();
+                                        if(empty($check)){
+                                            $model_tmp = (new \App\Models\RefDataAbsensiTmp);
+                                            $model_tmp->id_mesin_absensi = $id_mesin;
+                                            $model_tmp->id_user = $value->id;
+                                            $model_tmp->waktu = $value->date_time;
+                                            $model_tmp->verified = $value->verified;
+                                            $model_tmp->status = $value->status;
 
-                                        if ($model_tmp->save()) {
+                                            if ($model_tmp->save()) {
+                                                $jml_save++;
+                                            }
+                                        }else{
                                             $jml_save++;
                                         }
                                     }else{
@@ -511,7 +548,9 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
                         die;
                     }
                 }else{
-                    dd('2');
+                    $status_mesin=1;
+                    $message='Tidak ada data';
+                    $urut_proses=$end_proses;
                 }
             }
 

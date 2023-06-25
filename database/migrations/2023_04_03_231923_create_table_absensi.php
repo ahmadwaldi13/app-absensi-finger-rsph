@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class CreateTableAbsensi extends \App\Classes\MyMigration
 {
@@ -57,6 +58,8 @@ class CreateTableAbsensi extends \App\Classes\MyMigration
 
         $table->unique(['id_user','id_mesin_absensi','waktu_absensi'],$table_name.'_uniq');
         $this->set_table($table_name,$table);
+
+        DB::statement("ALTER TABLE ".$table_name." DROP COLUMN id_data_absensi_karyawan");
     }
 
     /**
