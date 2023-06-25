@@ -76,6 +76,48 @@ class AjaxController extends Controller
         ];
     }
 
+    function getListRuangan($request){
+        
+        $data_sent = !empty($request->data_sent) ? $request->data_sent : '';
+        $exp=explode('@',$data_sent);
+        $id_departemen=$exp[0];
+
+        $paramater_search=[];
+        if($id_departemen){
+            $paramater_search['ref_ruangan.id_departemen']=$id_departemen;
+        }
+        
+        $list_data_tmp=(new \App\Services\DataRuanganService)->getList($paramater_search, 1)->get();
+        
+        $list_data=[];
+        foreach($list_data_tmp as $value){
+            $list_data[]=[
+                $value->nm_departemen,
+                'kode'=>[
+                    'data-item'=>$value->id_ruangan.'@'.$value->nm_ruangan,
+                    'value'=>$value->nm_ruangan
+                ]
+            ];
+        }
+    
+        $table=[
+            'header'=>[
+               'title'=> ['Departemen/Bidang','Ruangan'],
+               'parameter'=>[' class="w-25" ']
+            ],
+        ];
+    
+        $parameter_view=[
+            'table'=>$table,
+            'list_data'=>!empty($list_data) ? $list_data : ''
+        ];
+    
+        return [
+            'success' => true,
+            'html'=>view('ajax.columns_ajax',$parameter_view)->render(),
+        ];
+    }
+
     function getListMesihAbsensi($request){
         $list_data_tmp=(new \App\Models\RefMesinAbsensi)->get();
         
@@ -184,6 +226,10 @@ class AjaxController extends Controller
             
             if($get_req['action']=='get_list_departemen'){
                 $hasil=$this->getListDepartemen($request);
+            }
+
+            if($get_req['action']=='get_list_ruangan'){
+                $hasil=$this->getListRuangan($request);
             }
 
             if($get_req['action']=='get_list_mesih_absensi'){

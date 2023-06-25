@@ -68,6 +68,43 @@ class ListRoutes
 				]
 			],
 			[
+				'title' => 'Data Karyawan | Referensi Jabatan Karyawan',
+				'item' => [
+					[
+						'type' => 'index',
+						'method' => 'get',
+						'url' => '/jabatan',
+						'controller' => 'JabatanController@actionIndex',
+						'name' => 'jabatan',
+						'middleware' => '',
+					],
+					[
+						'type' => 'create',
+						'method' => ['get', 'post'],
+						'url' => '/jabatan/create',
+						'controller' => 'JabatanController@actionCreate',
+						'name' => '',
+						'middleware' => '',
+					],
+					[
+						'type' => 'update',
+						'method' => ['get', 'post'],
+						'url' => '/jabatan/update',
+						'controller' => 'JabatanController@actionUpdate',
+						'name' => '',
+						'middleware' => '',
+					],
+					[
+						'type' => 'delete',
+						'method' => 'delete',
+						'url' => '/jabatan/delete',
+						'controller' => 'JabatanController@actionDelete',
+						'name' => '',
+						'middleware' => '',
+					],
+				]
+			],
+			[
 				'title' => 'Data Karyawan | Referensi Departemen/Bidang',
 				'item' => [
 					[
@@ -105,42 +142,43 @@ class ListRoutes
 				]
 			],
 			[
-				'title' => 'Data Karyawan | Referensi Jabatan Karyawan',
+				'title' => 'Data Karyawan | Data Ruangan',
 				'item' => [
 					[
 						'type' => 'index',
 						'method' => 'get',
-						'url' => '/jabatan',
-						'controller' => 'JabatanController@actionIndex',
-						'name' => 'jabatan',
+						'url' => '/data-ruangan',
+						'controller' => 'DataRuanganController@actionIndex',
+						'name' => 'data_ruangan',
 						'middleware' => '',
 					],
 					[
 						'type' => 'create',
 						'method' => ['get', 'post'],
-						'url' => '/jabatan/create',
-						'controller' => 'JabatanController@actionCreate',
+						'url' => '/data-ruangan/create',
+						'controller' => 'DataRuanganController@actionCreate',
 						'name' => '',
 						'middleware' => '',
 					],
 					[
 						'type' => 'update',
 						'method' => ['get', 'post'],
-						'url' => '/jabatan/update',
-						'controller' => 'JabatanController@actionUpdate',
+						'url' => '/data-ruangan/update',
+						'controller' => 'DataRuanganController@actionUpdate',
 						'name' => '',
 						'middleware' => '',
 					],
 					[
 						'type' => 'delete',
 						'method' => 'delete',
-						'url' => '/jabatan/delete',
-						'controller' => 'JabatanController@actionDelete',
+						'url' => '/data-ruangan/delete',
+						'controller' => 'DataRuanganController@actionDelete',
 						'name' => '',
 						'middleware' => '',
 					],
 				]
 			],
+			
 			[
 				'title' => 'Data Karyawan | Data karyawan',
 				'item' => [

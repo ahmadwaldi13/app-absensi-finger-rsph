@@ -36,6 +36,7 @@ class DataJadwalKaryawanController extends \App\Http\Controllers\MyAuthControlle
         $form_filter_text = !empty($request->form_filter_text) ? $request->form_filter_text : '';
         $filter_id_jabatan = !empty($request->filter_id_jabatan) ? $request->filter_id_jabatan : '';
         $filter_id_departemen = !empty($request->filter_id_departemen) ? $request->filter_id_departemen : '';
+        $filter_id_ruangan = !empty($request->filter_id_ruangan) ? $request->filter_id_ruangan : '';
         $form_jenis_jadwal = !empty($request->form_jenis_jadwal) ? $request->form_jenis_jadwal : '';
         $form_connect_mesin = !empty($request->form_connect_mesin) ? $request->form_connect_mesin : '';
 
@@ -53,6 +54,10 @@ class DataJadwalKaryawanController extends \App\Http\Controllers\MyAuthControlle
 
         if($filter_id_departemen){
             $paramater['ref_karyawan.id_departemen']=$filter_id_departemen;
+        }
+
+        if($filter_id_ruangan){
+            $paramater['ref_karyawan.id_ruangan']=$filter_id_ruangan;
         }
 
         if($form_jenis_jadwal){

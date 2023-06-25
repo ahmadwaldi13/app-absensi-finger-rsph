@@ -47,14 +47,19 @@ class SubMenuController extends Controller
             if($type==4){
                 $menu_permission=[
                     [
+                        'title'=>'Referensi Jabatan Karyawan',
+                        'key'=>'jabatan',
+                        'url'=>url('/')."/jabatan",
+                    ],
+                    [
                         'title'=>'Referensi Departemen/Bidang',
                         'key'=>'departemen',
                         'url'=>url('/')."/departemen",
                     ],
                     [
-                        'title'=>'Referensi Jabatan Karyawan',
-                        'key'=>'jabatan',
-                        'url'=>url('/')."/jabatan",
+                        'title'=>'Referensi Ruangan',
+                        'key'=>'data-ruangan',
+                        'url'=>url('/')."/data-ruangan",
                     ],
                     [
                         'title'=>'Data Karyawan',

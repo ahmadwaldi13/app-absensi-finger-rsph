@@ -554,7 +554,49 @@ $(document).delegate(".modal-remote-data", "click", function (event) {
     let type_ajax = (typeof $(this).attr('data-modal-method') != "undefined" || $(this).attr('data-modal-method') != null) ? $(this).attr('data-modal-method') : 'GET';
     let data_sent = (typeof $(this).attr('data-modal-key') != "undefined" || $(this).attr('data-modal-key') != null) ? $(this).attr('data-modal-key') : '';
     let data_change_row = (typeof $(this).attr('data-modal-action-change') != "undefined" || $(this).attr('data-modal-action-change') != null) ? $(this).attr('data-modal-action-change') : '';
-    
+
+    let data_form = (typeof $(this).attr('data-modal-key-with-form') != "undefined" || $(this).attr('data-modal-key-with-form') != null) ? $(this).attr('data-modal-key-with-form') : '';
+    data_form = data_form.split("|");
+
+    $hasil_value=[];
+    $.each(data_form, function (key, value) {
+        if (value.indexOf('@') == -1) {
+            $check = (typeof $(document).find(value) != "undefined" || $(document).find(value) != null) ? $(document).find(value) : '';
+            $hasil_check='';
+            if ($check.length == 1) {
+                if ($check[0].value !== undefined) {
+                    $hasil_check=$check.val();
+                } else {
+                    $hasil_check=$check.html();
+                }
+            }
+            $hasil_value.push($hasil_check);
+        }else{
+            $modul = value.split("@");
+            $parent_modul=$modul[0];
+            $value_modul=$modul[1];
+
+            $check_parent = (typeof $(document).find($parent_modul) != "undefined" || $(document).find($parent_modul) != null) ? $(document).find($parent_modul) : '';
+            $hasil_check='';
+            if ($check_parent.length == 1) {
+                $check = (typeof $($check_parent).find($value_modul) != "undefined" || $($check_parent).find($value_modul) != null) ? $($check_parent).find($value_modul) : '';
+                $hasil_check='';
+                if ($check.length == 1) {
+                    if ($check[0].value !== undefined) {
+                        $hasil_check=$check.val();
+                    } else {
+                        $hasil_check=$check.html();
+                    }
+                }
+            }
+            $hasil_value.push($hasil_check);
+        }
+    });
+    $hasil_value=$hasil_value.join("@");
+    if($hasil_value){
+        data_sent=$hasil_value;
+    }
+
     let meModal = $(document).find(modal_bagan);
     if (meModal) {
         meModal.find('.modal-body').html('');

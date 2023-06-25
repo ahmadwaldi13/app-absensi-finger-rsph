@@ -6,12 +6,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 use App\Services\GlobalService;
-use App\Services\RefKaryawanService;
+use App\Services\DataRuanganService;
 
-class DataKaryawanController extends \App\Http\Controllers\MyAuthController
+class DataRuanganController extends \App\Http\Controllers\MyAuthController
 {
     public $part_view, $url_index, $url_name, $title, $breadcrumbs, $globalService;
-    public $refKaryawanService;
+    public $dataRuanganService;
 
     public function __construct()
     {
@@ -20,41 +20,26 @@ class DataKaryawanController extends \App\Http\Controllers\MyAuthController
         $this->url_index = $router_name->uri;
         $this->url_name = $router_name->router_name;
 
-        $this->title = 'Data Karyawan';
+        $this->title = 'Data Ruangan';
         $this->breadcrumbs = [
             ['title' => 'Data Karyawan', 'url' => url('/') . "/sub-menu?type=4"],
             ['title' => $this->title, 'url' => url('/') . "/" . $this->url_index],
         ];
 
         $this->globalService = new GlobalService;
-        $this->refKaryawanService = new RefKaryawanService;
+        $this->dataRuanganService = new DataRuanganService;
     }
 
     function actionIndex(Request $request)
     {
 
         $form_filter_text = !empty($request->form_filter_text) ? $request->form_filter_text : '';
-        $filter_id_jabatan = !empty($request->filter_id_jabatan) ? $request->filter_id_jabatan : '';
-        $filter_id_departemen = !empty($request->filter_id_departemen) ? $request->filter_id_departemen : '';
-        $filter_id_ruangan = !empty($request->filter_id_ruangan) ? $request->filter_id_ruangan : '';
 
-        $paramater=[
+        $paramater_search=[
             'search' => $form_filter_text
         ];
 
-        if($filter_id_jabatan){
-            $paramater['ref_karyawan.id_jabatan']=$filter_id_jabatan;
-        }
-
-        if($filter_id_departemen){
-            $paramater['ref_karyawan.id_departemen']=$filter_id_departemen;
-        }
-
-        if($filter_id_ruangan){
-            $paramater['ref_karyawan.id_ruangan']=$filter_id_ruangan;
-        }
-
-        $list_data = $this->refKaryawanService->getList($paramater, 1)->paginate(!empty($request->per_page) ? $request->per_page : 15);
+        $list_data = $this->dataRuanganService->getList($paramater_search, 1)->paginate(!empty($request->per_page) ? $request->per_page : 15);
 
         $parameter_view = [
             'title' => $this->title,
@@ -68,10 +53,12 @@ class DataKaryawanController extends \App\Http\Controllers\MyAuthController
     private function form(Request $request)
     {
         $kode = !empty($request->data_sent) ? $request->data_sent : '';
-        $paramater = [
-            'id_karyawan' => $kode
+        $paramater_where = [
+            'id_ruangan' => $kode
         ];
-        $model = $this->refKaryawanService->getList($paramater, 1)->first();
+
+        $model = $this->dataRuanganService->getList($paramater_where, 1)->first();
+
         if ($model) {
             $action_form = $this->part_view . '/update';
         } else {
@@ -119,7 +106,6 @@ class DataKaryawanController extends \App\Http\Controllers\MyAuthController
     private function proses($request)
     {
         $req = $request->all();
-        DB::statement("ALTER TABLE ".(new \App\Models\RefKaryawan)->table." AUTO_INCREMENT = 1");
         $kode = !empty($req['key_old']) ? $req['key_old'] : '';
         $action_is_create = (str_contains($request->getPathInfo(), $this->url_index . '/create')) ? 1 : 0;
         $link_back_redirect = ($action_is_create) ? $this->url_name : $this->url_name . '/update';
@@ -138,19 +124,19 @@ class DataKaryawanController extends \App\Http\Controllers\MyAuthController
         ];
 
         try {
-            $model = (new \App\Models\RefKaryawan)->where('id_karyawan', '=', $kode)->first();
+            $model = (new \App\Models\RefRuangan)->where('id_ruangan', '=', $kode)->first();
             if (empty($model)) {
-                $model = (new \App\Models\RefKaryawan);
+                $model = (new \App\Models\RefRuangan);
             }
             $data_save = $req;
             $model->set_model_with_data($data_save);
-            
+
             $is_save = 0;
 
             if ($model->save()) {
                 $is_save = 1;
             }
-            
+
             if ($is_save) {
                 DB::commit();
                 $link_back_param = $this->clear_request($link_back_param, $request);
@@ -186,7 +172,7 @@ class DataKaryawanController extends \App\Http\Controllers\MyAuthController
         $kode = !empty($request->data_sent) ? $request->data_sent : null;
 
         try {
-            $model = (new \App\Models\RefKaryawan)->where('id_karyawan', '=', $kode)->first();
+            $model = (new \App\Models\RefRuangan)->where('id_ruangan', '=', $kode)->first();
             if (empty($model)) {
                 return redirect()->route($this->url_name, $link_back_param)->with(['error', 'Data tidak ditemukan']);
             }
@@ -198,7 +184,7 @@ class DataKaryawanController extends \App\Http\Controllers\MyAuthController
 
             if ($is_save) {
                 DB::commit();
-                DB::statement("ALTER TABLE ".( new \App\Models\RefKaryawan )->table." AUTO_INCREMENT = 1");
+                DB::statement("ALTER TABLE ".( new \App\Models\RefRuangan )->table." AUTO_INCREMENT = 1");
                 $pesan = ['success', $message_default['success'], 2];
             } else {
                 DB::rollBack();
