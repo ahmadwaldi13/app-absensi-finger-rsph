@@ -20,6 +20,8 @@ class CreateTableAbsensi extends \App\Classes\MyMigration
         $table->dateTime('waktu');
         $table->string('verified', 20);
         $table->string('status', 20);
+
+        $table->unique(['id_user','waktu','verified','status'],$table_name.'_uniq');
         $this->set_table($table_name,$table);
 
 
