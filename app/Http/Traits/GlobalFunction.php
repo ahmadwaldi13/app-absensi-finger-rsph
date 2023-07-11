@@ -4,6 +4,10 @@ namespace App\Http\Traits;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
+
 trait GlobalTraits {
 
     public function filterValidasiField($field_not_empty,$data){
@@ -224,6 +228,13 @@ trait GlobalTraits {
             'validasi'=>$check_validasi,
             'list_error'=>$list_error,
         ];
+    }
+
+    public function paginate($items, $perPage = 5, $page = null, $options = [])
+    {
+        $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
+        $items = $items instanceof Collection ? $items : Collection::make($items);
+        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
     }
 }
 

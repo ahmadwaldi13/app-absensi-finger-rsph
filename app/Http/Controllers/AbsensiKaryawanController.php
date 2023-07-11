@@ -39,6 +39,10 @@ class AbsensiKaryawanController extends \App\Http\Controllers\MyAuthController
 
         $list_data=$this->get_data_by_jadwal_rutin($request);
 
+        $page = isset($request->page) ? $request->page : 1;
+        $option=['path' => $request->url(), 'query' => $request->query()];
+        $list_data = (new \App\Http\Traits\GlobalFunction)->paginate($list_data,5,$page,$option);
+
         $parameter_view = [
             'title' => $this->title,
             'breadcrumbs' => $this->breadcrumbs,
@@ -96,7 +100,11 @@ class AbsensiKaryawanController extends \App\Http\Controllers\MyAuthController
             $hasil=$this->dataAbsensiKaryawanService->proses_absensi_rutin($get_jadwal_rutin,$value);
             $tgl_filter=trim($value->tanggal);
 
-            if(empty($data_absensi[$tgl_filter][$value->id_user]['data_karyawan'])){
+            if(empty($data_absensi[$tgl_filter]['tgl'])){
+                $data_absensi[$tgl_filter]['tgl']=$tgl_filter;
+            }
+
+            if(empty($data_absensi[$tgl_filter]['data'][$value->id_user]['data_karyawan'])){
                 $paramter_data=(object)[
                     'id_user'=>!empty($value->id_user) ? $value->id_user : '',
                     'username'=>!empty($value->username) ? $value->username : '',
@@ -111,15 +119,15 @@ class AbsensiKaryawanController extends \App\Http\Controllers\MyAuthController
                     'id_ruangan'=>!empty($value->id_ruangan) ? $value->id_ruangan : '',
                     'nm_ruangan'=>!empty($value->nm_ruangan) ? $value->nm_ruangan : '',
                 ];
-                $data_absensi[$tgl_filter][$value->id_user]['data_karyawan']=$paramter_data;
+                $data_absensi[$tgl_filter]['data'][$value->id_user]['data_karyawan']=$paramter_data;
             }
 
-            if(empty($data_absensi[$tgl_filter][$value->id_user]['data_jadwal'])){
-                $data_absensi[$tgl_filter][$value->id_user]['data_jadwal']=$data_jadwal_rutin;
+            if(empty($data_absensi[$tgl_filter]['data'][$value->id_user]['data_jadwal'])){
+                $data_absensi[$tgl_filter]['data'][$value->id_user]['data_jadwal']=$data_jadwal_rutin;
             }
 
-            if(empty($data_absensi[$tgl_filter][$value->id_user]['absensi'][$hasil->id_jadwal])){
-                $data_absensi[$tgl_filter][$value->id_user]['absensi'][$hasil->id_jadwal]=$hasil;
+            if(empty($data_absensi[$tgl_filter]['data'][$value->id_user]['absensi'][$hasil->id_jadwal])){
+                $data_absensi[$tgl_filter]['data'][$value->id_user]['absensi'][$hasil->id_jadwal]=$hasil;
             }
         }
         return $data_absensi;

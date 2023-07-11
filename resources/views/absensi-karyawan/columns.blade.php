@@ -148,7 +148,6 @@
                 </div>
             </form>
 
-
             <div style="overflow-x: auto; max-width: auto;">
                 <table class="table border table-responsive-tablet">
                     <thead>
@@ -167,183 +166,194 @@
                             ?>
                             @foreach($list_data as $key_tgl => $item_tgl)
                                 <?php
-                                    $tanggal=(new \App\Http\Traits\GlobalFunction)->set_format_tanggal($key_tgl);
+                                    $item_tgl=(object)$item_tgl;
+                                    $tanggal=(new \App\Http\Traits\GlobalFunction)->set_format_tanggal($item_tgl->tgl);
                                     $tanggal=!empty($tanggal->tanggal) ? $tanggal->tanggal : '';
+
+                                    
                                 ?>
-                                @foreach($item_tgl as $key => $data)
-                                    <?php
-                                        $data=(object)$data;
-                                        $data_karyawan=!empty($data->data_karyawan) ? $data->data_karyawan : '';
-                                        $data_jadwal=!empty($data->data_jadwal) ? $data->data_jadwal : [];
-                                        $jml_jadwal=count($data_jadwal);
-                                        if($jml_jadwal<=0){
-                                            $jml_jadwal=1;
-                                        }
-                                        $max_width_jadwal=100;
-                                        $col_width_jadwal=round($max_width_jadwal/$jml_jadwal);
-                                        $col_width_jadwal_akhir=$max_width_jadwal-($col_width_jadwal*($jml_jadwal-1));
-                                        $data_absensi=!empty($data->absensi) ? $data->absensi : [];
-                                        $jml_j=0;
+                                @if(!empty($item_tgl->data))
+                                    @foreach($item_tgl->data as $key => $data)
+                                        <?php
+                                            $data=(object)$data;
+                                            $data_karyawan=!empty($data->data_karyawan) ? $data->data_karyawan : '';
+                                            $data_jadwal=!empty($data->data_jadwal) ? $data->data_jadwal : [];
+                                            $jml_jadwal=count($data_jadwal);
+                                            if($jml_jadwal<=0){
+                                                $jml_jadwal=1;
+                                            }
+                                            $max_width_jadwal=100;
+                                            $col_width_jadwal=round($max_width_jadwal/$jml_jadwal);
+                                            $col_width_jadwal_akhir=$max_width_jadwal-($col_width_jadwal*($jml_jadwal-1));
+                                            $data_absensi=!empty($data->absensi) ? $data->absensi : [];
+                                            $jml_j=0;
 
-                                        $btn_item_collapse="btn-collapse-data-".($no_item_collapse++);
-                                    ?>
-                                    <tr>
-                                        <td style='width:10%; vertical-align: middle;'>{{ $tanggal  }}</td>
-                                        <td style='width:10%; vertical-align: middle;'>{{ !empty($data_karyawan->nm_karyawan) ? $data_karyawan->nm_karyawan : '' }}</td>
-                                        <td style='width:10%; vertical-align: middle;'>
-                                            <div>{{ !empty($data_karyawan->nm_departemen) ? $data_karyawan->nm_departemen : '' }}</div>
-                                            <div><hr style='margin:0px;'></div>
-                                            <div>{{ !empty($data_karyawan->nm_ruangan) ? $data_karyawan->nm_ruangan : '' }}</div>
-                                        </td>
-                                        <td style='width:10%; vertical-align: middle;'>{{ !empty($data_karyawan->nm_jabatan) ? $data_karyawan->nm_jabatan : '' }}</td>
-                                        <td style='width:10%; vertical-align: middle;'>
-                                            <table class="table table-responsive-tablet" style='width:100%'>
-                                                <tbody>
-                                                    <tr>
-                                                        @foreach($data_jadwal as $key_jadwal => $list_jadwal)
-                                                            <?php
-                                                                $jml_j++;
-                                                                $width_td='width:';
-                                                                if($jml_j==$jml_jadwal){
-                                                                    $width_td.=$col_width_jadwal_akhir.'%;';
-                                                                }else{
-                                                                    $width_td.=$col_width_jadwal.'%;';
-                                                                }
-
-                                                                $hasil_jadwal='-';
-                                                                $style_absensi='absensi_gray';
-                                                                if(!empty($data_absensi[$key_jadwal])){
-                                                                    $val_absensi=$data_absensi[$key_jadwal];
-                                                                    $selisih_waktu_list=!empty($val_absensi->selisih_waktu) ? (object)$val_absensi->selisih_waktu : '';
-
-                                                                    $selisih_waktu='';
-                                                                    if($val_absensi->hasil_status_absensi==1){
-                                                                        $style_absensi='absensi_green';
-                                                                    }elseif($val_absensi->hasil_status_absensi==2){
-                                                                        $style_absensi='absensi_red';
+                                            $btn_item_collapse="btn-collapse-data-".($no_item_collapse++);
+                                        ?>
+                                        <tr>
+                                            <td style='width:10%; vertical-align: middle;'>{{ $tanggal  }}</td>
+                                            <td style='width:10%; vertical-align: middle;'>{{ !empty($data_karyawan->nm_karyawan) ? $data_karyawan->nm_karyawan : '' }}</td>
+                                            <td style='width:10%; vertical-align: middle;'>
+                                                <div>{{ !empty($data_karyawan->nm_departemen) ? $data_karyawan->nm_departemen : '' }}</div>
+                                                <div><hr style='margin:0px;'></div>
+                                                <div>{{ !empty($data_karyawan->nm_ruangan) ? $data_karyawan->nm_ruangan : '' }}</div>
+                                            </td>
+                                            <td style='width:10%; vertical-align: middle;'>{{ !empty($data_karyawan->nm_jabatan) ? $data_karyawan->nm_jabatan : '' }}</td>
+                                            <td style='width:10%; vertical-align: middle;'>
+                                                <table class="table table-responsive-tablet" style='width:100%'>
+                                                    <tbody>
+                                                        <tr>
+                                                            @foreach($data_jadwal as $key_jadwal => $list_jadwal)
+                                                                <?php
+                                                                    $jml_j++;
+                                                                    $width_td='width:';
+                                                                    if($jml_j==$jml_jadwal){
+                                                                        $width_td.=$col_width_jadwal_akhir.'%;';
+                                                                    }else{
+                                                                        $width_td.=$col_width_jadwal.'%;';
                                                                     }
 
-                                                                    $selisih_waktu.=$selisih_waktu_list->jam.' jam, ';
-                                                                    $selisih_waktu.=$selisih_waktu_list->menit.' menit, ';
-                                                                    $selisih_waktu.=$selisih_waktu_list->detik.' detik';
+                                                                    $hasil_jadwal='-';
+                                                                    $style_absensi='absensi_gray';
+                                                                    if(!empty($data_absensi[$key_jadwal])){
+                                                                        $val_absensi=$data_absensi[$key_jadwal];
+                                                                        $selisih_waktu_list=!empty($val_absensi->selisih_waktu) ? (object)$val_absensi->selisih_waktu : '';
 
-                                                                    $hasil_jadwal=$selisih_waktu;
-                                                                }
-                                                            ?>
-                                                            <td style='{!! $width_td !!}'>
-                                                                <div class='absensi_style {!! $style_absensi !!}'>
-                                                                    <div>{{ !empty($list_jadwal->uraian) ? $list_jadwal->uraian : '' }}</div>
-                                                                    <div>{{ $hasil_jadwal }}</div>
+                                                                        $selisih_waktu='';
+                                                                        if($val_absensi->hasil_status_absensi==1){
+                                                                            $style_absensi='absensi_green';
+                                                                        }elseif($val_absensi->hasil_status_absensi==2){
+                                                                            $style_absensi='absensi_red';
+                                                                        }
+
+                                                                        $selisih_waktu.=$selisih_waktu_list->jam.' jam, ';
+                                                                        $selisih_waktu.=$selisih_waktu_list->menit.' menit, ';
+                                                                        $selisih_waktu.=$selisih_waktu_list->detik.' detik';
+
+                                                                        $hasil_jadwal=$selisih_waktu;
+                                                                    }
+                                                                ?>
+                                                                <td style='{!! $width_td !!}'>
+                                                                    <div class='absensi_style {!! $style_absensi !!}'>
+                                                                        <div>{{ !empty($list_jadwal->uraian) ? $list_jadwal->uraian : '' }}</div>
+                                                                        <div>{{ $hasil_jadwal }}</div>
+                                                                    </div>
+                                                                </td>
+                                                            @endforeach
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="{{ $jml_jadwal }}" style="width: 15%; vertical-align: middle;">
+                                                                <div>
+                                                                    <a class="btn btn-info btn-sm collapse-cus" style='color:#fff' data-bs-toggle="collapse" href="#{{ $btn_item_collapse }}" role="button" aria-expanded="false" aria-controls="{{ $btn_item_collapse }}">
+                                                                        <span id='collapse-open'><i class="fa-solid fa-angles-down"></i> Tampil Detail</span>
+                                                                        <span id='collapse-closed'><i class="fa-solid fa-angles-up"></i> Tutup Detail</span>
+                                                                    </a>
                                                                 </div>
-                                                            </td>
-                                                        @endforeach
-                                                    </tr>
-                                                    <tr>
-                                                        <td colspan="{{ $jml_jadwal }}" style="width: 15%; vertical-align: middle;">
-                                                            <div>
-                                                                <a class="btn btn-info btn-sm collapse-cus" style='color:#fff' data-bs-toggle="collapse" href="#{{ $btn_item_collapse }}" role="button" aria-expanded="false" aria-controls="{{ $btn_item_collapse }}">
-                                                                    <span id='collapse-open'><i class="fa-solid fa-angles-down"></i> Tampil Detail</span>
-                                                                    <span id='collapse-closed'><i class="fa-solid fa-angles-up"></i> Tutup Detail</span>
-                                                                </a>
-                                                            </div>
 
-                                                            <div class="collapse mb-2" id="{{ $btn_item_collapse }}">
-                                                                <div class='card'>
-                                                                    <div class='card-body'>
-                                                                        <div style="overflow-x: auto; max-width: auto;">
-                                                                            <table class="table table-bordered table-responsive-tablet">
-                                                                                <tbody>
-                                                                                    <tr>
-                                                                                        <td colspan='2' style="vertical-align: middle; text-align: center; font-size: 25px; font-weight: 700;">Jadwal</td>
-                                                                                    </tr>
-                                                                                    @foreach($data_jadwal as $key_jadwal => $list_jadwal)
-                                                                                        <tr style='background: #ebebeb;'>
-                                                                                            <td style="width: 20%; vertical-align: middle;">{{ !empty($list_jadwal->uraian) ? $list_jadwal->uraian : '' }}</td>
-                                                                                            <td style="width: 80%; vertical-align: middle;">{{ !empty($list_jadwal->jam_awal) ? $list_jadwal->jam_awal : '' }} s/d {{ !empty($list_jadwal->jam_akhir) ? $list_jadwal->jam_akhir : '' }}</td>
+                                                                <div class="collapse mb-2" id="{{ $btn_item_collapse }}">
+                                                                    <div class='card'>
+                                                                        <div class='card-body'>
+                                                                            <div style="overflow-x: auto; max-width: auto;">
+                                                                                <table class="table table-bordered table-responsive-tablet">
+                                                                                    <tbody>
+                                                                                        <tr>
+                                                                                            <td colspan='2' style="vertical-align: middle; text-align: center; font-size: 25px; font-weight: 700;">Jadwal</td>
                                                                                         </tr>
-                                                                                    @endforeach
-                                                                                    <tr>
-                                                                                        <td colspan='2'><hr></td>
-                                                                                    </tr>
-                                                                                    <tr>
-                                                                                        <td colspan='2' style="vertical-align: middle; text-align: center; font-size: 25px; font-weight: 700;">Absensi</td>
-                                                                                    </tr>
-                                                                                    @foreach($data_jadwal as $key_jadwal => $list_jadwal)
-                                                                                        <tr style='background: #d2fffb;'>
-                                                                                            <td colspan='2' style="vertical-align: middle; font-size: 20px;">{{ !empty($list_jadwal->uraian) ? $list_jadwal->uraian : '' }}</td>
+                                                                                        @foreach($data_jadwal as $key_jadwal => $list_jadwal)
+                                                                                            <tr style='background: #ebebeb;'>
+                                                                                                <td style="width: 20%; vertical-align: middle;">{{ !empty($list_jadwal->uraian) ? $list_jadwal->uraian : '' }}</td>
+                                                                                                <td style="width: 80%; vertical-align: middle;">{{ !empty($list_jadwal->jam_awal) ? $list_jadwal->jam_awal : '' }} s/d {{ !empty($list_jadwal->jam_akhir) ? $list_jadwal->jam_akhir : '' }}</td>
+                                                                                            </tr>
+                                                                                        @endforeach
+                                                                                        <tr>
+                                                                                            <td colspan='2'><hr></td>
                                                                                         </tr>
-                                                                                        <tr style='background: #d2fffb;'>
-                                                                                            <td colspan=2 style='padding:5px;'>
-                                                                                                <table class="table table-responsive-tablet" style='width:100%'>
-                                                                                                    <thead>
-                                                                                                        <tr>
-                                                                                                            <th class="py-3" style="width: 10%; padding:5px; font-size:18px;">Mesin</th>
-                                                                                                            <th class="py-3" style="width: 10%; padding:5px; font-size:18px;">Waktu Absensi</th>
-                                                                                                            <th class="py-3" style="width: 10%; padding:5px; font-size:18px;">Status</th>
-                                                                                                            <th class="py-3" style="width: 10%; padding:5px; font-size:18px;">Cara Absen</th>
-                                                                                                        </tr>
-                                                                                                    </thead>
-                                                                                                    <tbody>
-                                                                                                        <?php
-                                                                                                            $color='';
-                                                                                                            $data_detail=[];
-                                                                                                            $cara_absen='';
-                                                                                                            if(!empty($data_absensi[$key_jadwal])){
-
-                                                                                                                $data_detail=$data_absensi[$key_jadwal];
-
-                                                                                                                if($data_detail->verified_mesin==1){
-                                                                                                                    $cara_absen='Finger';
-                                                                                                                }
-
-                                                                                                                if($data_detail->verified_mesin==3){
-                                                                                                                    $cara_absen='Password';
-                                                                                                                }
-
-                                                                                                                if($data_detail->hasil_status_absensi==1){
-                                                                                                                    $color='absensi_green_color';
-                                                                                                                }
-                                                                                                                if($data_detail->hasil_status_absensi==2){
-                                                                                                                    $color='absensi_red_color';
-                                                                                                                }
-                                                                                                                if($data_detail->hasil_status_absensi==3){
-                                                                                                                    $color='absensi_gray_color';
-                                                                                                                }
-                                                                                                            }
-                                                                                                        ?>
-                                                                                                        <tr>
-                                                                                                            <td style='padding:5px;'>
-                                                                                                                <div>{{ !empty($data_detail->nm_mesin) ? $data_detail->nm_mesin : '-' }}</div>
-                                                                                                                <div><hr style='margin:0px;'></div>
-                                                                                                                <div>{{ !empty($data_detail->lokasi_mesin) ? $data_detail->lokasi_mesin : '-' }}</div>
-                                                                                                            </td>
-                                                                                                            <td style='padding:5px;'>{{ !empty($data_detail->jam_absensi) ? $data_detail->jam_absensi : '-' }}</td>
-                                                                                                            <td class='{{ $color }}' style='padding:5px;font-weight:700;'>{{ !empty($data_detail->hasil_status_absensi_text) ? $data_detail->hasil_status_absensi_text : '-' }}</td>
-                                                                                                            <td style='padding:5px;'>{{ !empty($cara_absen) ? $cara_absen : '' }}</td>
-                                                                                                        </tr>
-                                                                                                    </tbody>
-                                                                                                </table>
-                                                                                            </td>
+                                                                                        <tr>
+                                                                                            <td colspan='2' style="vertical-align: middle; text-align: center; font-size: 25px; font-weight: 700;">Absensi</td>
                                                                                         </tr>
-                                                                                    @endforeach
-                                                                                </tbody>
-                                                                            </table>
+                                                                                        @foreach($data_jadwal as $key_jadwal => $list_jadwal)
+                                                                                            <tr style='background: #d2fffb;'>
+                                                                                                <td colspan='2' style="vertical-align: middle; font-size: 20px;">{{ !empty($list_jadwal->uraian) ? $list_jadwal->uraian : '' }}</td>
+                                                                                            </tr>
+                                                                                            <tr style='background: #d2fffb;'>
+                                                                                                <td colspan=2 style='padding:5px;'>
+                                                                                                    <table class="table table-responsive-tablet" style='width:100%'>
+                                                                                                        <thead>
+                                                                                                            <tr>
+                                                                                                                <th class="py-3" style="width: 10%; padding:5px; font-size:18px;">Mesin</th>
+                                                                                                                <th class="py-3" style="width: 10%; padding:5px; font-size:18px;">Waktu Absensi</th>
+                                                                                                                <th class="py-3" style="width: 10%; padding:5px; font-size:18px;">Status</th>
+                                                                                                                <th class="py-3" style="width: 10%; padding:5px; font-size:18px;">Cara Absen</th>
+                                                                                                            </tr>
+                                                                                                        </thead>
+                                                                                                        <tbody>
+                                                                                                            <?php
+                                                                                                                $color='';
+                                                                                                                $data_detail=[];
+                                                                                                                $cara_absen='';
+                                                                                                                if(!empty($data_absensi[$key_jadwal])){
+
+                                                                                                                    $data_detail=$data_absensi[$key_jadwal];
+
+                                                                                                                    if($data_detail->verified_mesin==1){
+                                                                                                                        $cara_absen='Finger';
+                                                                                                                    }
+
+                                                                                                                    if($data_detail->verified_mesin==3){
+                                                                                                                        $cara_absen='Password';
+                                                                                                                    }
+
+                                                                                                                    if($data_detail->hasil_status_absensi==1){
+                                                                                                                        $color='absensi_green_color';
+                                                                                                                    }
+                                                                                                                    if($data_detail->hasil_status_absensi==2){
+                                                                                                                        $color='absensi_red_color';
+                                                                                                                    }
+                                                                                                                    if($data_detail->hasil_status_absensi==3){
+                                                                                                                        $color='absensi_gray_color';
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            ?>
+                                                                                                            <tr>
+                                                                                                                <td style='padding:5px;'>
+                                                                                                                    <div>{{ !empty($data_detail->nm_mesin) ? $data_detail->nm_mesin : '-' }}</div>
+                                                                                                                    <div><hr style='margin:0px;'></div>
+                                                                                                                    <div>{{ !empty($data_detail->lokasi_mesin) ? $data_detail->lokasi_mesin : '-' }}</div>
+                                                                                                                </td>
+                                                                                                                <td style='padding:5px;'>{{ !empty($data_detail->jam_absensi) ? $data_detail->jam_absensi : '-' }}</td>
+                                                                                                                <td class='{{ $color }}' style='padding:5px;font-weight:700;'>{{ !empty($data_detail->hasil_status_absensi_text) ? $data_detail->hasil_status_absensi_text : '-' }}</td>
+                                                                                                                <td style='padding:5px;'>{{ !empty($cara_absen) ? $cara_absen : '' }}</td>
+                                                                                                            </tr>
+                                                                                                        </tbody>
+                                                                                                    </table>
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                        @endforeach
+                                                                                    </tbody>
+                                                                                </table>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </td>
-                                    </tr>
-                                @endforeach
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @endif
                             @endforeach
                         @endif
                     </tbody>
                 </table>
             </div>
+
+            @if(!empty($list_data))
+                <div class="d-flex justify-content-end">
+                    {{ $list_data->withQueryString()->onEachSide(0)->links() }}
+                </div>
+            @endif
         </div>
     </div>
 </div>

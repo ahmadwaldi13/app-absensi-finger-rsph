@@ -104,7 +104,7 @@ class DataAbsensiKaryawanService extends BaseService
                         from ref_karyawan_user 
                         where id_user in ('.$list_id_user.') 
                     ) utama 
-                    inner join (
+                    left join (
                         select 
                             utama.*,
                             nm_jabatan,
