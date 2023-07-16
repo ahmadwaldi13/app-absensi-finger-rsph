@@ -41,7 +41,6 @@ class AbsensiPerKaryawanController extends \App\Http\Controllers\MyAuthControlle
         if(!empty($get_user->data_user_sistem)){
             if(!empty($get_user->data_user_sistem->id_karyawan)){
                 $list_data=$this->dataAbsensiKaryawanService->get_data_by_jadwal_rutin($request);
-                dd($list_data);
             }
         }
 

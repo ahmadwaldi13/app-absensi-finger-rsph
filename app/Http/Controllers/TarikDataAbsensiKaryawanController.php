@@ -603,11 +603,9 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
             }
 
         } catch (\Illuminate\Database\QueryException $e) {
-            dd($e);
             return $this->sent_error('proses'.$urut_proses.' 5');
             die;
         } catch (\Throwable $e) {
-            dd($e);
             return $this->sent_error('proses'.$urut_proses.' 6');
             die;
         }
