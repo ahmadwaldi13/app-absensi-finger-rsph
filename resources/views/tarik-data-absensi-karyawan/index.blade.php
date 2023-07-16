@@ -28,6 +28,7 @@
                         </div>
                     </div> -->
 
+                    {{--
                     <div class="col-lg-3 col-md-10">
                         <div class='input-date-range-bagan'>
                             <label for="tanggal_data" class="form-label">Tanggal</label>
@@ -37,11 +38,12 @@
                             <input type="hidden" id="tgl_end" name="tanggal_filter_end" value="{{ !empty($tanggal_filter_end) ? $tanggal_filter_end : date('Y-m-d') }}">
                         </div>
                     </div>
+                    --}}
 
                     <div class="col-lg-1 col-md-1">
                         <div class="d-grid grap-2">
                             <button type="submit" name='search' id='proses' class="btn btn-primary" value=1>
-                                <i class="fa-sharp fa-solid fa-magnifying-glass"></i>
+                                <i class="fa-sharp fa-solid fa-magnifying-glass"></i><span>Proses</span>
                             </button>
                         </div>
                     </div>

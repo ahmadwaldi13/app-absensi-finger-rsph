@@ -5,14 +5,16 @@ namespace App\Services;
 use Illuminate\Support\Facades\DB;
 
 use App\Models\DataAbsensiKaryawan;
+use App\Services\RefJadwalService;
 
 class DataAbsensiKaryawanService extends BaseService
 {
-    public $dataAbsensiKaryawan;
+    public $dataAbsensiKaryawan,$refJadwalService;
     
     public function __construct(){
         parent::__construct();
         $this->dataAbsensiKaryawan = new DataAbsensiKaryawan;
+        $this->refJadwalService = new RefJadwalService;
     }
 
     function getListKaryawanByJadwal($params=[],$type){
@@ -146,6 +148,95 @@ class DataAbsensiKaryawanService extends BaseService
         ];
     }
 
+    function get_data_by_jadwal_rutin($request){
+        $form_filter_text=!empty($request->form_filter_text) ? $request->form_filter_text : '';
+        $filter_date_start=!empty($request->filter_date_start) ? $request->filter_date_start : date('Y-m-d');
+        $filter_date_end=!empty($request->filter_date_end) ? $request->filter_date_end : date('Y-m-d');
+
+        $filter_id_jabatan=!empty($request->filter_id_jabatan) ? $request->filter_id_jabatan : '';
+        $filter_id_departemen=!empty($request->filter_id_departemen) ? $request->filter_id_departemen : '';
+        $filter_id_ruangan=!empty($request->filter_id_ruangan) ? $request->filter_id_ruangan : '';
+        
+        $filter_status_absensi=!empty($request->filter_status_absensi) ? $request->filter_status_absensi : '';
+        $filter_cara_absensi=!empty($request->filter_cara_absensi) ? $request->filter_cara_absensi : '';
+        
+        $paramater_data_karyawan_rutin=[
+            'search'=>$form_filter_text,
+            'id_jenis_jadwal_tmp'=>1,
+        ];
+
+        if(!empty($filter_id_jabatan)){
+            $paramater_data_karyawan_rutin['id_jabatan']=$filter_id_jabatan;
+        }
+
+        if(!empty($filter_id_departemen)){
+            $paramater_data_karyawan_rutin['id_departemen']=$filter_id_departemen;
+        }
+
+        $list_data_karyawan_rutin = $this->getListKaryawanByJadwal($paramater_data_karyawan_rutin, 1)->select(DB::raw('group_concat(id_karyawan) as id_karyawan'),DB::raw('group_concat(id_user) as id_user'))->first();
+        
+        $parameter_first=[
+            'tanggal'=>[$filter_date_start,$filter_date_end],
+            'list_id_karyawan'=>!empty($list_data_karyawan_rutin->id_karyawan) ? $list_data_karyawan_rutin->id_karyawan : '',
+            'list_id_user'=>!empty($list_data_karyawan_rutin->id_user) ? $list_data_karyawan_rutin->id_user : '',
+        ];
+
+        $list_absensi=$this->getDataAbsensi($parameter_first,1)->get();
+
+        $data_jadwal_rutin=[];
+        $get_jadwal_rutin = $this->refJadwalService->getList(['ref_jadwal.id_jenis_jadwal'=>1], 1)->get();
+        if(!empty($get_jadwal_rutin)){
+            foreach($get_jadwal_rutin as $val){
+                $data_jadwal_rutin[$val->id_jadwal]=(object)$val->getAttributes();
+            }
+        }
+
+        $data_absensi=[];
+        foreach($list_absensi as $value){
+            $hasil=$this->proses_absensi_rutin($get_jadwal_rutin,$value);
+            $tgl_filter=trim($value->tanggal);
+
+            if(empty($data_absensi[$tgl_filter]['tgl'])){
+                $data_absensi[$tgl_filter]['tgl']=$tgl_filter;
+            }
+
+            if(empty($data_absensi[$tgl_filter]['data'][$value->id_user]['data_karyawan'])){
+                $paramter_data=(object)[
+                    'id_user'=>!empty($value->id_user) ? $value->id_user : '',
+                    'username'=>!empty($value->username) ? $value->username : '',
+                    'id_karyawan'=>!empty($value->id_karyawan) ? $value->id_karyawan : '',
+                    'nm_karyawan'=>!empty($value->nm_karyawan) ? $value->nm_karyawan : '',
+                    'alamat'=>!empty($value->alamat) ? $value->alamat : '',
+                    'nip'=>!empty($value->nip) ? $value->nip : '',
+                    'id_jabatan'=>!empty($value->id_jabatan) ? $value->id_jabatan : '',
+                    'nm_jabatan'=>!empty($value->nm_jabatan) ? $value->nm_jabatan : '',
+                    'id_departemen'=>!empty($value->id_departemen) ? $value->id_departemen : '',
+                    'nm_departemen'=>!empty($value->nm_departemen) ? $value->nm_departemen : '',
+                    'id_ruangan'=>!empty($value->id_ruangan) ? $value->id_ruangan : '',
+                    'nm_ruangan'=>!empty($value->nm_ruangan) ? $value->nm_ruangan : '',
+                ];
+                $data_absensi[$tgl_filter]['data'][$value->id_user]['data_karyawan']=$paramter_data;
+            }
+
+            if(empty($data_absensi[$tgl_filter]['data'][$value->id_user]['data_jadwal'])){
+                $data_absensi[$tgl_filter]['data'][$value->id_user]['data_jadwal']=$data_jadwal_rutin;
+            }
+
+            if(empty($data_absensi[$tgl_filter]['data'][$value->id_user]['absensi'][$hasil->id_jadwal])){
+                $data_absensi[$tgl_filter]['data'][$value->id_user]['absensi'][$hasil->id_jadwal]=$hasil;
+            }
+
+            if($hasil->id_jadwal==0){
+                $data_absensi[$tgl_filter]['data'][$value->id_user]['absensi_luar_jadwal'][]=!empty($hasil->jam_absensi) ? $hasil->jam_absensi : '';
+            }
+
+            $data_absensi[$tgl_filter]['data'][$value->id_user]['absensi_log'][]=!empty($hasil->jam_absensi) ? $hasil->jam_absensi : '';
+
+        }
+        
+        return $data_absensi;
+    }
+
     function proses_absensi_rutin($get_jadwal_rutin,$data){
         ini_set("memory_limit","800M");
         set_time_limit(0);
@@ -161,7 +252,6 @@ class DataAbsensiKaryawanService extends BaseService
                 $jadwal_tutup_str = strtotime($jam_akhir);
                 $absensi_str = strtotime($jam_absensi);
 
-                $hasil_absensi=[];
                 if(($jadwal_masuk_str <= $absensi_str) and ($jadwal_tutup_str >= $absensi_str)){
                     $type_status=1;
                     $selisih_waktu=(array)$this->hitung_waktu_absensi($absensi_str,$jadwal_tutup_str);
@@ -187,6 +277,7 @@ class DataAbsensiKaryawanService extends BaseService
                 ];
             }
         }
+
         $hasil_absensi=[];
         if(!empty($check_nilai_jadwal[1])){
             $index_me=1;
@@ -207,6 +298,10 @@ class DataAbsensiKaryawanService extends BaseService
         }else{
             $index_me=3;
             $hasil_absensi=$check_nilai_jadwal[$index_me];
+            $hasil_absensi['id_jadwal']=0;
+            $hasil_absensi['nm_jadwal']='';
+            $hasil_absensi['jam_mulai']='';
+            $hasil_absensi['jam_akhir']='';
             $hasil_absensi_tmp=[
                 'hasil_status_absensi'=>$index_me,
                 'hasil_status_absensi_text'=>'Di Luar Jadwal',

@@ -32,39 +32,23 @@ class AbsensiPerKaryawanController extends \App\Http\Controllers\MyAuthControlle
 
     function actionIndex(Request $request){
     
-        $filter_date_start=!empty($request->filter_date_start) ? $request->filter_date_start : date('Y-m-d');
-        $filter_date_end=!empty($request->filter_date_end) ? $request->filter_date_end : date('Y-m-d');
-
-        $filter_status_absensi=!empty($request->filter_status_absensi) ? $request->filter_status_absensi : '';
-        $filter_cara_absensi=!empty($request->filter_cara_absensi) ? $request->filter_cara_absensi : '';
+        ini_set("memory_limit","800M");
+        set_time_limit(0);
 
         $get_user=(new \App\Http\Traits\AuthFunction)->getUser();
         
+        $list_data=[];
         if(!empty($get_user->data_user_sistem)){
             if(!empty($get_user->data_user_sistem->id_karyawan)){
-                
-                $paramater = [
-                    'id_karyawan'=>$get_user->data_user_sistem->id_karyawan,
-                    'where_between'=>['tgl_absensi'=>[$filter_date_start,$filter_date_end ]],
-                    'hasil_status_absensi'=>['!=',3],
-                ];
-
-                if(!empty($filter_status_absensi)){
-                    $paramater['hasil_status_absensi']=$filter_status_absensi;
-                }
-
-                if(!empty($filter_cara_absensi)){
-                    $paramater['verified_mesin']=$filter_cara_absensi;
-                }
-
-                $data_tmp_tmp=( new \App\Models\DataAbsensiKaryawan() );
-                $where_like=['where_or' => ['nm_karyawan', 'username']];
-                $list_data=$data_tmp_tmp->set_where($data_tmp_tmp,$paramater,$where_like)->orderBy('nm_karyawan','ASC')->orderByRaw('UNIX_TIMESTAMP( waktu_absensi )','ASC')->paginate(!empty($request->per_page) ? $request->per_page : 15);
+                $list_data=$this->dataAbsensiKaryawanService->get_data_by_jadwal_rutin($request);
+                dd($list_data);
             }
-        }else{
-            $list_data=[];
         }
-            
+
+        $page = isset($request->page) ? $request->page : 1;
+        $option=['path' => $request->url(), 'query' => $request->query()];
+        $list_data = (new \App\Http\Traits\GlobalFunction)->paginate($list_data,5,$page,$option);
+
         $parameter_view = [
             'title' => $this->title,
             'breadcrumbs' => $this->breadcrumbs,

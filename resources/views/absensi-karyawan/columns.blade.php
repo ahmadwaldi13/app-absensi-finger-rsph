@@ -155,8 +155,9 @@
                             <th class="py-3" style="width: 10%">Tanggal</th>
                             <th class="py-3" style="width: 10%">Nama</th>
                             <th class="py-3" style="width: 10%">Bidang/Ruangan</th>
-                            <th class="py-3" style="width: 10%">Jabatan</th>
-                            <th class="py-3" style="width: 70%">Absensi</th>
+                            <th class="py-3" style="width: 5%">Jabatan</th>
+                            <th class="py-3" style="width: 15%">Log Absensi</th>
+                            <th class="py-3" style="width: 50%">Absensi</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -170,7 +171,6 @@
                                     $tanggal=(new \App\Http\Traits\GlobalFunction)->set_format_tanggal($item_tgl->tgl);
                                     $tanggal=!empty($tanggal->tanggal) ? $tanggal->tanggal : '';
 
-                                    
                                 ?>
                                 @if(!empty($item_tgl->data))
                                     @foreach($item_tgl->data as $key => $data)
@@ -178,6 +178,18 @@
                                             $data=(object)$data;
                                             $data_karyawan=!empty($data->data_karyawan) ? $data->data_karyawan : '';
                                             $data_jadwal=!empty($data->data_jadwal) ? $data->data_jadwal : [];
+                                            $data_absensi_luar_jadwal=!empty($data->absensi_luar_jadwal) ? $data->absensi_luar_jadwal : [];
+                                            $data_absensi_luar_jadwal_text='';
+                                            if($data_absensi_luar_jadwal){
+                                                $data_absensi_luar_jadwal_text=implode(', ',$data_absensi_luar_jadwal);
+                                            }
+
+                                            $data_absensi_log=!empty($data->absensi_log) ? $data->absensi_log : [];
+                                            $data_absensi_log_text='';
+                                            if($data_absensi_log){
+                                                $data_absensi_log_text=implode(', ',$data_absensi_log);
+                                            }
+                                            
                                             $jml_jadwal=count($data_jadwal);
                                             if($jml_jadwal<=0){
                                                 $jml_jadwal=1;
@@ -199,6 +211,7 @@
                                                 <div>{{ !empty($data_karyawan->nm_ruangan) ? $data_karyawan->nm_ruangan : '' }}</div>
                                             </td>
                                             <td style='width:10%; vertical-align: middle;'>{{ !empty($data_karyawan->nm_jabatan) ? $data_karyawan->nm_jabatan : '' }}</td>
+                                            <td style='width:10%; vertical-align: middle;'>{{ !empty( $data_absensi_log_text ) ? $data_absensi_log_text : '' }}</td>
                                             <td style='width:10%; vertical-align: middle;'>
                                                 <table class="table table-responsive-tablet" style='width:100%'>
                                                     <tbody>
@@ -220,17 +233,19 @@
                                                                         $selisih_waktu_list=!empty($val_absensi->selisih_waktu) ? (object)$val_absensi->selisih_waktu : '';
 
                                                                         $selisih_waktu='';
+                                                                        if(!empty($selisih_waktu_list)){
+                                                                            $selisih_waktu.=$selisih_waktu_list->jam.' jam, ';
+                                                                            $selisih_waktu.=$selisih_waktu_list->menit.' menit, ';
+                                                                            $selisih_waktu.=$selisih_waktu_list->detik.' detik';
+                                                                        }
+
+                                                                        $hasil_jadwal=$selisih_waktu;
+                                                                        
                                                                         if($val_absensi->hasil_status_absensi==1){
                                                                             $style_absensi='absensi_green';
                                                                         }elseif($val_absensi->hasil_status_absensi==2){
                                                                             $style_absensi='absensi_red';
                                                                         }
-
-                                                                        $selisih_waktu.=$selisih_waktu_list->jam.' jam, ';
-                                                                        $selisih_waktu.=$selisih_waktu_list->menit.' menit, ';
-                                                                        $selisih_waktu.=$selisih_waktu_list->detik.' detik';
-
-                                                                        $hasil_jadwal=$selisih_waktu;
                                                                     }
                                                                 ?>
                                                                 <td style='{!! $width_td !!}'>
@@ -329,6 +344,15 @@
                                                                                                 </td>
                                                                                             </tr>
                                                                                         @endforeach
+                                                                                        
+                                                                                        @if(!empty($data_absensi_log_text))
+                                                                                            <tr>
+                                                                                                <td colspan='2' style="vertical-align: middle; text-align: center; font-size: 25px; font-weight: 700;">Absensi log</td>
+                                                                                            </tr>
+                                                                                            <tr style='background: #ebebeb;'>
+                                                                                                <td colspan='2' style="width: 100%; vertical-align: middle;">{{ $data_absensi_log_text }}</td>
+                                                                                            </tr>
+                                                                                        @endif
                                                                                     </tbody>
                                                                                 </table>
                                                                             </div>

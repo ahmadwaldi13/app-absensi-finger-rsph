@@ -280,7 +280,7 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
 
         $proses_selesai=0;
         $hasil=504;
-        $end_proses=2;
+        $end_proses=1;
         $end_proses=$end_proses+1;
         $calcu=floor(100/$end_proses);
         $progres_bar=0;
@@ -309,86 +309,127 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
                     $proses_gagal++;
                     $message=$get_data_log[1];
                 }else{
-                    if($get_data_log){
-                        $get_data_log=json_decode($get_data_log);
-                        if(!empty($get_data_log)){
+                    // if($get_data_log){
+                    //     $get_data_log=json_decode($get_data_log);
+                    //     if(!empty($get_data_log)){
 
-                            DB::beginTransaction();
+                    //         DB::beginTransaction();
 
-                            // (new \App\Models\RefDataAbsensiTmp)->whereRaw('date(waktu) BETWEEN "'.$tanggal_start.'" and "'.$tanggal_end.'"')->where('id_mesin_absensi','=',$id_mesin)->delete();
+                    //         // (new \App\Models\RefDataAbsensiTmp)->whereRaw('date(waktu) BETWEEN "'.$tanggal_start.'" and "'.$tanggal_end.'"')->where('id_mesin_absensi','=',$id_mesin)->delete();
                             
-                            try{
-                                $jml_waktu_dicari=0;
-                                $jml_save=0;
-                                foreach($get_data_log as $value){
-                                    // $waktu_data=$value->date_time;
-                                    // $waktu_data = new \DateTime($waktu_data);
-                                    // $tgl_waktu_data=$waktu_data->format('Y-m-d');
-                                    // $jam_waktu_data=$waktu_data->format('H:i:s');
+                    //         try{
+                    //             $jml_waktu_dicari=0;
+                    //             $jml_save=0;
+                    //             foreach($get_data_log as $value){
+                    //                 // $waktu_data=$value->date_time;
+                    //                 // $waktu_data = new \DateTime($waktu_data);
+                    //                 // $tgl_waktu_data=$waktu_data->format('Y-m-d');
+                    //                 // $jam_waktu_data=$waktu_data->format('H:i:s');
 
-                                    // $paymentDate=date('Y-m-d', strtotime($tgl_waktu_data));
-                                    // $contractDateBegin = date('Y-m-d', strtotime($tanggal_start));
-                                    // $contractDateEnd = date('Y-m-d', strtotime($tanggal_end));
+                    //                 // $paymentDate=date('Y-m-d', strtotime($tgl_waktu_data));
+                    //                 // $contractDateBegin = date('Y-m-d', strtotime($tanggal_start));
+                    //                 // $contractDateEnd = date('Y-m-d', strtotime($tanggal_end));
                                        
-                                    // $tgl_antara=0;
-                                    // if (($paymentDate >= $contractDateBegin) && ($paymentDate <= $contractDateEnd)){
-                                    //     $tgl_antara=1;
-                                    // }
-                                    $tgl_antara=1;
+                    //                 // $tgl_antara=0;
+                    //                 // if (($paymentDate >= $contractDateBegin) && ($paymentDate <= $contractDateEnd)){
+                    //                 //     $tgl_antara=1;
+                    //                 // }
+                    //                 $tgl_antara=1;
 
-                                    if(!empty($tgl_antara)){
-                                        $check=(new \App\Models\RefDataAbsensiTmp)->where('id_mesin_absensi','=',$id_mesin)->where('id_user','=',$value->id)->where('waktu','=',$value->date_time)->where('verified','=',$value->verified)->where('status','=',$value->status)->first();
-                                        if(empty($check)){
-                                            $model_tmp = (new \App\Models\RefDataAbsensiTmp);
-                                            $model_tmp->id_mesin_absensi = $id_mesin;
-                                            $model_tmp->id_user = $value->id;
-                                            $model_tmp->waktu = $value->date_time;
-                                            $model_tmp->verified = $value->verified;
-                                            $model_tmp->status = $value->status;
+                    //                 if(!empty($tgl_antara)){
+                    //                     $check=(new \App\Models\RefDataAbsensiTmp)->where('id_mesin_absensi','=',$id_mesin)->where('id_user','=',$value->id)->where('waktu','=',$value->date_time)->where('verified','=',$value->verified)->where('status','=',$value->status)->first();
+                    //                     if(empty($check)){
+                    //                         $model_tmp = (new \App\Models\RefDataAbsensiTmp);
+                    //                         $model_tmp->id_mesin_absensi = $id_mesin;
+                    //                         $model_tmp->id_user = $value->id;
+                    //                         $model_tmp->waktu = $value->date_time;
+                    //                         $model_tmp->verified = $value->verified;
+                    //                         $model_tmp->status = $value->status;
 
-                                            if ($model_tmp->save()) {
-                                                $jml_save++;
-                                            }
-                                        }else{
-                                            $jml_save++;
-                                        }
-                                    }else{
-                                        $jml_waktu_dicari++;
-                                    }
+                    //                         if ($model_tmp->save()) {
+                    //                             $jml_save++;
+                    //                         }
+                    //                     }else{
+                    //                         $jml_save++;
+                    //                     }
+                    //                 }else{
+                    //                     $jml_waktu_dicari++;
+                    //                 }
+                    //             }
+
+                    //             if($jml_save>0){
+                    //                 $is_save = 1;
+                    //             }
+
+                    //             if (!empty($is_save)) {
+                    //                 DB::commit();
+                    //                 $proses_gagal=0;
+                    //             } else {
+                    //                 DB::rollBack();
+                    //                 if($jml_waktu_dicari>0){
+                    //                     $proses_gagal++;
+                    //                     $message='Data Tidak Ada';
+                    //                 }else{
+                    //                     return $this->sent_error('proses'.$urut_proses.' 2');
+                    //                     die;
+                    //                 }
+                    //             }
+                    //         } catch (\Illuminate\Database\QueryException $e) {
+                    //             DB::rollBack();
+                    //             if ($e->errorInfo[1] == '1062') {
+                    //             }
+                    //             return $this->sent_error('proses'.$urut_proses.' 3');
+                    //             die;
+                    //         } catch (\Throwable $e) {
+                    //             DB::rollBack();
+                    //             $return=[
+                    //                 'success' => false,
+                    //                 'message'=>'',
+                    //                 'hasil'=>504,
+                    //             ];
+                    //             return $this->sent_error('proses'.$urut_proses.' 4');
+                    //             die;
+                    //         }
+                    //     }else{
+                    //         $proses_gagal++;
+                    //     }
+                    // }else{
+                    //     $proses_gagal++;
+                    // }
+                    DB::beginTransaction();
+                    if($get_data_log){
+                        $jml_save=0;
+                        $get_data_log=json_decode($get_data_log);
+                        $jml_hasil_data_log=count($get_data_log);
+                        
+                        if(!empty($get_data_log)){
+                            $data_save=[];
+                            foreach($get_data_log as $value){
+                                $data_save[]=[
+                                    'id_mesin_absensi'=>$id_mesin,
+                                    'id_user'=>$value->id,
+                                    'waktu' => $value->date_time,
+                                    'verified' => $value->verified,
+                                    'status' => $value->status,
+                                ];
+                            }
+                            if(!empty($data_save)){
+                                $model_save = (new \App\Models\RefDataAbsensiTmp);
+                                if($model_save::insertOrIgnore($data_save)){
+                                    $jml_save++;
                                 }
 
-                                if($jml_save>0){
-                                    $is_save = 1;
-                                }
-
-                                if (!empty($is_save)) {
+                                if(!empty($jml_save)){
                                     DB::commit();
                                     $proses_gagal=0;
-                                } else {
+                                }else{
                                     DB::rollBack();
-                                    if($jml_waktu_dicari>0){
-                                        $proses_gagal++;
-                                        $message='Data Tidak Ada';
-                                    }else{
-                                        return $this->sent_error('proses'.$urut_proses.' 2');
-                                        die;
+                                    $proses_gagal++;
+                                    $message='Data Tidak Ada';
+                                    if(!empty($jml_hasil_data_log)){
+                                        $message='Semua Data Sudah Tersimpan';
                                     }
                                 }
-                            } catch (\Illuminate\Database\QueryException $e) {
-                                DB::rollBack();
-                                if ($e->errorInfo[1] == '1062') {
-                                }
-                                return $this->sent_error('proses'.$urut_proses.' 3');
-                                die;
-                            } catch (\Throwable $e) {
-                                DB::rollBack();
-                                $return=[
-                                    'success' => false,
-                                    'message'=>'',
-                                    'hasil'=>504,
-                                ];
-                                return $this->sent_error('proses'.$urut_proses.' 4');
-                                die;
                             }
                         }else{
                             $proses_gagal++;
@@ -414,145 +455,145 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
                 $end_query=$exs_query;
             }
 
-            if($urut_proses==2){
-                try{
-                    $parameter=[
-                        'tanggal'=>['start'=>$tanggal_start,'end'=>$tanggal_end],
-                        'id_mesin_absensi'=>$id_mesin
-                    ];
+            // if($urut_proses==2){
+            //     try{
+            //         $parameter=[
+            //             'tanggal'=>['start'=>$tanggal_start,'end'=>$tanggal_end],
+            //             'id_mesin_absensi'=>$id_mesin
+            //         ];
 
-                    $list_data=$this->refDataAbsensiTmpService->getListCount($parameter)->first();
-                    $jml_hasil_query=!empty($list_data->jml) ? $list_data->jml : 0;
-                } catch (\Illuminate\Database\QueryException $e) {
-                    $jml_hasil_query='error';
-                } catch (\Throwable $e) {
-                    $jml_hasil_query='error';
-                }
+            //         $list_data=$this->refDataAbsensiTmpService->getListCount($parameter)->first();
+            //         $jml_hasil_query=!empty($list_data->jml) ? $list_data->jml : 0;
+            //     } catch (\Illuminate\Database\QueryException $e) {
+            //         $jml_hasil_query='error';
+            //     } catch (\Throwable $e) {
+            //         $jml_hasil_query='error';
+            //     }
 
-                if($jml_hasil_query==='error'){
-                    $return=[
-                        'success' => false,
-                        'message'=>'',
-                        'hasil'=>504,
-                    ];
-                    return $this->sent_error('proses'.$urut_proses.' 1');
-                }
+            //     if($jml_hasil_query==='error'){
+            //         $return=[
+            //             'success' => false,
+            //             'message'=>'',
+            //             'hasil'=>504,
+            //         ];
+            //         return $this->sent_error('proses'.$urut_proses.' 1');
+            //     }
 
-                $proses_gagal=0;
-                if(!empty($jml_hasil_query)){
-                    DB::beginTransaction();
-                    try{
-                        $params=[
-                            'tanggal_cari'=>['start'=>$tanggal_start,'end'=>$tanggal_end],
-                            'limit_query'=>['start'=>$start_query,'end'=>$end_query],
-                            'id_mesin_absensi'=>$id_mesin
-                        ];
-                        $hasil_proses=$this->proses($params);
-                        if($hasil_proses){
-                            $jml_save=0;
-                            foreach($hasil_proses as $item){
-                                $data_save=(array)$item;
-                                $model=(new \App\Models\DataAbsensiKaryawan())->where([
-                                    'id_user'=>$item->id_user,
-                                    'id_mesin_absensi'=>$item->id_mesin_absensi,
-                                    'waktu_absensi'=>$item->waktu_absensi
-                                ])->first();
-                                if(!empty($model)){
-                                    unset($data_save['id_user']);
-                                    unset($data_save['id_mesin_absensi']);
-                                }else{
-                                    $model=(new \App\Models\DataAbsensiKaryawan());
-                                }
+            //     $proses_gagal=0;
+            //     if(!empty($jml_hasil_query)){
+            //         DB::beginTransaction();
+            //         try{
+            //             $params=[
+            //                 'tanggal_cari'=>['start'=>$tanggal_start,'end'=>$tanggal_end],
+            //                 'limit_query'=>['start'=>$start_query,'end'=>$end_query],
+            //                 'id_mesin_absensi'=>$id_mesin
+            //             ];
+            //             $hasil_proses=$this->proses($params);
+            //             if($hasil_proses){
+            //                 $jml_save=0;
+            //                 foreach($hasil_proses as $item){
+            //                     $data_save=(array)$item;
+            //                     $model=(new \App\Models\DataAbsensiKaryawan())->where([
+            //                         'id_user'=>$item->id_user,
+            //                         'id_mesin_absensi'=>$item->id_mesin_absensi,
+            //                         'waktu_absensi'=>$item->waktu_absensi
+            //                     ])->first();
+            //                     if(!empty($model)){
+            //                         unset($data_save['id_user']);
+            //                         unset($data_save['id_mesin_absensi']);
+            //                     }else{
+            //                         $model=(new \App\Models\DataAbsensiKaryawan());
+            //                     }
                                 
-                                if(!empty($data_save['waktu_absensi'])){
-                                    $waktu_absensi=$data_save['waktu_absensi'];
-                                    $waktu_tmp=new \DateTime($waktu_absensi);
-                                    $tanggal_absensi = $waktu_tmp->format('Y-m-d');
-                                    $jam_absensi = $waktu_tmp->format('H:i:s');
+            //                     if(!empty($data_save['waktu_absensi'])){
+            //                         $waktu_absensi=$data_save['waktu_absensi'];
+            //                         $waktu_tmp=new \DateTime($waktu_absensi);
+            //                         $tanggal_absensi = $waktu_tmp->format('Y-m-d');
+            //                         $jam_absensi = $waktu_tmp->format('H:i:s');
 
-                                    $data_save['tgl_absensi']=$tanggal_absensi;
-                                    $data_save['jam_absensi']=$jam_absensi;
-                                }
-                                $model->set_model_with_data($data_save);
+            //                         $data_save['tgl_absensi']=$tanggal_absensi;
+            //                         $data_save['jam_absensi']=$jam_absensi;
+            //                     }
+            //                     $model->set_model_with_data($data_save);
 
-                                if ($model->save()) {
-                                    $jml_save++;
-                                }
-                            }
+            //                     if ($model->save()) {
+            //                         $jml_save++;
+            //                     }
+            //                 }
 
-                            if($jml_save>0){
-                                $is_save = 1;
-                            }
+            //                 if($jml_save>0){
+            //                     $is_save = 1;
+            //                 }
 
-                            if (!empty($is_save)) {
-                                DB::commit();
-                                $paramater=[
-                                    'query_status'=>'success',
-                                    'exs_query'=> $exs_query,
-                                    'calcu'=>$calcu,
-                                    'urut_proses'=>$urut_proses,
-                                    'jml_hasil_query'=>$jml_hasil_query,
-                                    'start_query'=>$start_query,
-                                    'end_query'=>$end_query,
-                                ];
+            //                 if (!empty($is_save)) {
+            //                     DB::commit();
+            //                     $paramater=[
+            //                         'query_status'=>'success',
+            //                         'exs_query'=> $exs_query,
+            //                         'calcu'=>$calcu,
+            //                         'urut_proses'=>$urut_proses,
+            //                         'jml_hasil_query'=>$jml_hasil_query,
+            //                         'start_query'=>$start_query,
+            //                         'end_query'=>$end_query,
+            //                     ];
 
-                                $return_hasil=$this->proses_regenerate_return($paramater);
+            //                     $return_hasil=$this->proses_regenerate_return($paramater);
 
-                                $urut_proses_tmp=$return_hasil->urut_proses;
-                                $hasil=$return_hasil->hasil;
-                                $progres_bar=$return_hasil->progres_bar;
-                                $start_query=$return_hasil->start_query;
-                                $end_query=$return_hasil->end_query;
-                                $urut_proses=$urut_proses_tmp;
+            //                     $urut_proses_tmp=$return_hasil->urut_proses;
+            //                     $hasil=$return_hasil->hasil;
+            //                     $progres_bar=$return_hasil->progres_bar;
+            //                     $start_query=$return_hasil->start_query;
+            //                     $end_query=$return_hasil->end_query;
+            //                     $urut_proses=$urut_proses_tmp;
 
-                            }else{
-                                DB::rollBack();
-                                return $this->sent_error('proses'.$urut_proses.' tidak simpan');
-                                die;
-                            }
-                        }else{
-                            $paramater=[
-                                'query_status'=>'success',
-                                'exs_query'=> $exs_query,
-                                'calcu'=>$calcu,
-                                'urut_proses'=>$urut_proses,
-                                'jml_hasil_query'=>$jml_hasil_query,
-                                'start_query'=>$start_query,
-                                'end_query'=>$end_query,
-                            ];
+            //                 }else{
+            //                     DB::rollBack();
+            //                     return $this->sent_error('proses'.$urut_proses.' tidak simpan');
+            //                     die;
+            //                 }
+            //             }else{
+            //                 $paramater=[
+            //                     'query_status'=>'success',
+            //                     'exs_query'=> $exs_query,
+            //                     'calcu'=>$calcu,
+            //                     'urut_proses'=>$urut_proses,
+            //                     'jml_hasil_query'=>$jml_hasil_query,
+            //                     'start_query'=>$start_query,
+            //                     'end_query'=>$end_query,
+            //                 ];
 
-                            $return_hasil=$this->proses_regenerate_return($paramater);
+            //                 $return_hasil=$this->proses_regenerate_return($paramater);
 
-                            $urut_proses_tmp=$return_hasil->urut_proses;
-                            $hasil=$return_hasil->hasil;
-                            $progres_bar=$return_hasil->progres_bar;
-                            $start_query=$return_hasil->start_query;
-                            $end_query=$return_hasil->end_query;
-                            $urut_proses=$urut_proses_tmp;
-                        }
+            //                 $urut_proses_tmp=$return_hasil->urut_proses;
+            //                 $hasil=$return_hasil->hasil;
+            //                 $progres_bar=$return_hasil->progres_bar;
+            //                 $start_query=$return_hasil->start_query;
+            //                 $end_query=$return_hasil->end_query;
+            //                 $urut_proses=$urut_proses_tmp;
+            //             }
 
-                    } catch (\Illuminate\Database\QueryException $e) {
-                        DB::rollBack();
-                        if ($e->errorInfo[1] == '1062') {
-                        }
-                        return $this->sent_error('proses'.$urut_proses.' 3');
-                        die;
-                    } catch (\Throwable $e) {
-                        DB::rollBack();
-                        $return=[
-                            'success' => false,
-                            'message'=>'',
-                            'hasil'=>504,
-                        ];
-                        return $this->sent_error('proses'.$urut_proses.' 4');
-                        die;
-                    }
-                }else{
-                    $status_mesin=1;
-                    $message='Tidak ada data';
-                    $urut_proses=$end_proses;
-                }
-            }
+            //         } catch (\Illuminate\Database\QueryException $e) {
+            //             DB::rollBack();
+            //             if ($e->errorInfo[1] == '1062') {
+            //             }
+            //             return $this->sent_error('proses'.$urut_proses.' 3');
+            //             die;
+            //         } catch (\Throwable $e) {
+            //             DB::rollBack();
+            //             $return=[
+            //                 'success' => false,
+            //                 'message'=>'',
+            //                 'hasil'=>504,
+            //             ];
+            //             return $this->sent_error('proses'.$urut_proses.' 4');
+            //             die;
+            //         }
+            //     }else{
+            //         $status_mesin=1;
+            //         $message='Tidak ada data';
+            //         $urut_proses=$end_proses;
+            //     }
+            // }
 
             if($urut_proses==$end_proses){
                 $progres_bar=100;
@@ -562,9 +603,11 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
             }
 
         } catch (\Illuminate\Database\QueryException $e) {
+            dd($e);
             return $this->sent_error('proses'.$urut_proses.' 5');
             die;
         } catch (\Throwable $e) {
+            dd($e);
             return $this->sent_error('proses'.$urut_proses.' 6');
             die;
         }
