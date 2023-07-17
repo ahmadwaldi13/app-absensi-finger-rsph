@@ -1,6 +1,6 @@
 <form action="{{ url($action_form) }}" method="{{ !empty($method_form) ? $method_form : 'POST' }}">
     @csrf
-    <?php 
+    <?php
         $kode=!empty($model->id_jadwal) ? $model->id_jadwal : '';
     ?>
     <input type="hidden" name="key_old" value="{{ $kode }}">
@@ -16,10 +16,12 @@
                         <div class="button-icon-inside">
                             <input type="text" class="input-text" id='jenis_jadwal' required value="{{ !empty($model->nm_jenis_jadwal) ? $model->nm_jenis_jadwal : '' }}" />
                             <input type="hidden" id="id_jenis_jadwal" name="id_jenis_jadwal" value="{{ !empty($model->id_jenis_jadwal) ? $model->id_jenis_jadwal : '' }}" />
+                            {{--
                             <span class="modal-remote-data" data-modal-src="{{ url('ajax?action=get_jenis_jadwal') }}" data-modal-key="" data-modal-pencarian='true' data-modal-title='Jenis' data-modal-width='40%' data-modal-action-change="function=.set-data-list-from-modal@data-target=#id_jenis_jadwal|#jenis_jadwal@data-key-bagan=0@data-btn-close=#closeModalData">
                                 <img class="iconify hover-pointer text-primary" src="{{ asset('') }}icon/selected.png" alt="">
                             </span>
                             <a href="#" id='reset_input'><i class="fa-solid fa-square-xmark"></i></a>
+                            --}}
                         </div>
                         <div class="message"></div>
                     </div>

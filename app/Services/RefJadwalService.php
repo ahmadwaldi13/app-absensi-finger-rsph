@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\RefJadwal;
 use Illuminate\Support\Facades\DB;
 
-class RefjadwalService extends BaseService
+class RefJadwalService extends BaseService
 {
     public $refJadwal='';
 
@@ -15,7 +15,7 @@ class RefjadwalService extends BaseService
     }
 
     function getList($params=[],$type=''){
-        
+
         $query = $this->refJadwal
             ->select('ref_jadwal.*','nm_jenis_jadwal')
             ->Leftjoin('ref_jenis_jadwal','ref_jadwal.id_jenis_jadwal','=','ref_jenis_jadwal.id_jenis_jadwal')

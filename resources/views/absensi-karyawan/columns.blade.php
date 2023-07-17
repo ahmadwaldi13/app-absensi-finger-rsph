@@ -30,6 +30,10 @@
         background-color: #f39791;
     }
 
+    .absensi_yellow{
+        background-color: #f7d44e;
+    }
+
     .absensi_gray{
         background-color: #e6e6e6;
     }
@@ -40,6 +44,10 @@
 
     .absensi_red_color{
         color: #ff1000;
+    }
+
+    .absensi_yellow_color{
+        color: #eebd02;
     }
 
     .absensi_gray_color{
@@ -78,7 +86,7 @@
                     <div class="col-lg-12 col-md-12">
                         <div class="row justify-content-start align-items-end mb-3">
 
-                            <div class="col-lg-2 col-md-10">
+                            <div class="col-lg-5 col-md-10">
                                 <div class='bagan_form'>
                                     <label for="filter_nm_jabatan" class="form-label">Jabatan </label>
                                     <div class="button-icon-inside">
@@ -93,7 +101,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-2 col-md-10">
+                            <div class="col-lg-5 col-md-10">
                                 <div class='bagan_form'>
                                     <label for="filter_nm_departemen" class="form-label">Departemen </label>
                                     <div class="button-icon-inside">
@@ -189,7 +197,7 @@
                                             if($data_absensi_log){
                                                 $data_absensi_log_text=implode(', ',$data_absensi_log);
                                             }
-                                            
+
                                             $jml_jadwal=count($data_jadwal);
                                             if($jml_jadwal<=0){
                                                 $jml_jadwal=1;
@@ -201,6 +209,11 @@
                                             $jml_j=0;
 
                                             $btn_item_collapse="btn-collapse-data-".($no_item_collapse++);
+
+                                            $get_jam_kerja=(new \App\Http\Traits\AbsensiFunction)->get_total_jam_kerja_rutin($data_absensi,$data_jadwal);
+                                            $get_jam_kerja_text=!empty($get_jam_kerja->total_waktu_kerja_text) ? $get_jam_kerja->total_waktu_kerja_text : '';
+                                            $get_point_kerja=!empty($get_jam_kerja->total_point) ? $get_jam_kerja->total_point : 0;
+                                            $get_keterangan_kerja=!empty($get_jam_kerja->keterangan) ? $get_jam_kerja->keterangan : 0;
                                         ?>
                                         <tr>
                                             <td style='width:10%; vertical-align: middle;'>{{ $tanggal  }}</td>
@@ -240,11 +253,13 @@
                                                                         }
 
                                                                         $hasil_jadwal=$selisih_waktu;
-                                                                        
+
                                                                         if($val_absensi->hasil_status_absensi==1){
                                                                             $style_absensi='absensi_green';
                                                                         }elseif($val_absensi->hasil_status_absensi==2){
                                                                             $style_absensi='absensi_red';
+                                                                        }elseif($val_absensi->hasil_status_absensi==4){
+                                                                            $style_absensi='absensi_yellow';
                                                                         }
                                                                     }
                                                                 ?>
@@ -255,6 +270,32 @@
                                                                     </div>
                                                                 </td>
                                                             @endforeach
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="{{ $jml_jadwal }}" style="width: 15%; vertical-align: middle;">
+                                                                <div class='card'>
+                                                                    <div class='card-body' style="padding:5px;">
+                                                                        <div style="overflow-x: auto; max-width: auto;">
+                                                                            <table class="table table-bordered table-responsive-tablet" style='margin:0px'>
+                                                                                <tbody>
+                                                                                    <tr style='background: #ebebeb;'>
+                                                                                        <td style="width: 30%; vertical-align: middle;">Total Jam Kerja</td>
+                                                                                        <td style="width: 70%; vertical-align: middle;">{{ !empty($get_jam_kerja_text) ? $get_jam_kerja_text : '-' }}</td>
+                                                                                    </tr>
+                                                                                    <tr style='background: #ebebeb;'>
+                                                                                        <td style="width: 30%; vertical-align: middle;">Total Point</td>
+                                                                                        <td style="width: 70%; vertical-align: middle;">{{ !empty($get_point_kerja) ? $get_point_kerja : 0 }}</td>
+                                                                                    </tr>
+                                                                                    <tr style='background: #ebebeb;'>
+                                                                                        <td style="width: 30%; vertical-align: middle;">Keterangan</td>
+                                                                                        <td style="width: 70%; vertical-align: middle;">{{ !empty($get_keterangan_kerja) ? $get_keterangan_kerja : '-' }}</td>
+                                                                                    </tr>
+                                                                                </tbody>
+                                                                            </table>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
                                                         </tr>
                                                         <tr>
                                                             <td colspan="{{ $jml_jadwal }}" style="width: 15%; vertical-align: middle;">
@@ -327,6 +368,9 @@
                                                                                                                     if($data_detail->hasil_status_absensi==3){
                                                                                                                         $color='absensi_gray_color';
                                                                                                                     }
+                                                                                                                    if($data_detail->hasil_status_absensi==4){
+                                                                                                                        $color='absensi_yellow_color';
+                                                                                                                    }
                                                                                                                 }
                                                                                                             ?>
                                                                                                             <tr>
@@ -344,7 +388,7 @@
                                                                                                 </td>
                                                                                             </tr>
                                                                                         @endforeach
-                                                                                        
+
                                                                                         @if(!empty($data_absensi_log_text))
                                                                                             <tr>
                                                                                                 <td colspan='2' style="vertical-align: middle; text-align: center; font-size: 25px; font-weight: 700;">Absensi log</td>
