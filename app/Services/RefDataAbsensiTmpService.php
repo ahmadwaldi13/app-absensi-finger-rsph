@@ -9,31 +9,31 @@ class RefDataAbsensiTmpService extends BaseService
         parent::__construct();
     }
 
-    public function getList2($params=[]){
-        ini_set("memory_limit","800M");
+    // public function getList2($params=[]){
+    //     ini_set("memory_limit","800M");
 
-        $query=DB::table(DB::raw(
-            '(
-                select
-                    ref_data_absensi_tmp.id_mesin_absensi,
-                    nm_mesin,
-                    lokasi_mesin,
-                    id_user,
-                    waktu as waktu_absensi,
-                    verified as verified_mesin,
-                    status as status_absensi_mesin
-                from
-                    ref_data_absensi_tmp
-                    inner join ref_mesin_absensi rma on rma.id_mesin_absensi = ref_data_absensi_tmp.id_mesin_absensi
-                where date(waktu) BETWEEN "'.$params['tanggal']['start'].'" and "'.$params['tanggal']['end'].'"
-                order by
-                UNIX_TIMESTAMP( waktu_absensi )
-            ) utama'
-            ))
-        ;
+    //     $query=DB::table(DB::raw(
+    //         '(
+    //             select
+    //                 ref_data_absensi_tmp.id_mesin_absensi,
+    //                 nm_mesin,
+    //                 lokasi_mesin,
+    //                 id_user,
+    //                 waktu as waktu_absensi,
+    //                 verified as verified_mesin,
+    //                 status as status_absensi_mesin
+    //             from
+    //                 ref_data_absensi_tmp
+    //                 inner join ref_mesin_absensi rma on rma.id_mesin_absensi = ref_data_absensi_tmp.id_mesin_absensi
+    //             where date(waktu) BETWEEN "'.$params['tanggal']['start'].'" and "'.$params['tanggal']['end'].'"
+    //             order by
+    //             UNIX_TIMESTAMP( waktu_absensi )
+    //         ) utama'
+    //         ))
+    //     ;
 
-        return $query;
-    }
+    //     return $query;
+    // }
 
     public function getList($params=[]){
         ini_set("memory_limit","800M");

@@ -120,9 +120,9 @@ class DataJadwalKaryawanController extends \App\Http\Controllers\MyAuthControlle
 
         if ($request->ajax()) {
             try {
-                $model=( new \App\Models\RefKaryawanJadwal() )->where('id_karyawan','=',$id_karyawan)->first();
+                $model=( new \App\Models\RefKaryawanJadwalRutin() )->where('id_karyawan','=',$id_karyawan)->first();
                 if(empty($model)){
-                    $model=new \App\Models\RefKaryawanJadwal();
+                    $model=new \App\Models\RefKaryawanJadwalRutin();
                     $model->id_karyawan=$id_karyawan;
                     
                 }

@@ -26,9 +26,12 @@
                     <thead>
                         <tr>
                             <th class="py-3" style="width: 5%">Jenis Jadwal</th>
+                            <th class="py-3" style="width: 5%">Status Jadwal</th>
                             <th class="py-3" style="width: 5%">Nama Uraian</th>
-                            <th class="py-3" style="width: 5%">Jam Masuk</th>
-                            <th class="py-3" style="width: 5%">Jam Keluar</th>
+                            <th class="py-3" style="width: 5%">Toleransi <br>Presensi Awal <br> / Cepat Pulang</th>
+                            <th class="py-3" style="width: 5%">Buka Presensi</th>
+                            <th class="py-3" style="width: 5%">Tutup Presensi</th>
+                            <th class="py-3" style="width: 5%">Toleransi Telat</th>
                             <th class="py-3" style="width: 5%">Action</th>
                         </tr>
                     </thead>
@@ -39,12 +42,59 @@
                                 $paramater_url=[
                                     'data_sent'=>$item->id_jadwal
                                 ];
+
+                                $kode_status_text=['Tidak Aktif','Aktif'];
+
+                                $status_jadwal_text=!empty($kode_status_text[$item->status_jadwal]) ? $kode_status_text[$item->status_jadwal] : '';
+                                
+                                $torensi_awal=$item->status_toren_jam_cepat;
+                                $torensi_awal_text=!empty($kode_status_text[$torensi_awal]) ? $kode_status_text[$torensi_awal] : '';
+
+                                $toren_jam_cepat_tmp=(new \App\Http\Traits\AbsensiFunction)->his_to_seconds($item->toren_jam_cepat);
+                                $toren_jam_cepat=(new \App\Http\Traits\AbsensiFunction)->hitung_waktu_by_seccond($toren_jam_cepat_tmp);
+                                $toren_jam_cepat_text=$toren_jam_cepat->jam.' jam'.', '.$toren_jam_cepat->menit.' Menit'.', '.$toren_jam_cepat->detik.' Detik';
+
+                            
+                                $jam_awal_tmp=(new \App\Http\Traits\AbsensiFunction)->his_to_seconds($item->jam_awal);
+                                $toren_jam_cepat_masuk_tmp=$jam_awal_tmp-$toren_jam_cepat_tmp;
+                                $toren_jam_cepat_masuk=gmdate("H:i:s", $toren_jam_cepat_masuk_tmp);
+                                
+                                if(!$torensi_awal){
+                                    $toren_jam_cepat_text='';
+                                    $toren_jam_cepat_masuk='';
+                                }
+
+                                $torensi_telat=$item->status_toren_jam_telat;
+                                $torensi_telat_text=!empty($kode_status_text[$torensi_telat]) ? $kode_status_text[$torensi_telat] : '';
+
+                                $toren_jam_telat_tmp=(new \App\Http\Traits\AbsensiFunction)->his_to_seconds($item->toren_jam_telat);
+                                $toren_jam_telat=(new \App\Http\Traits\AbsensiFunction)->hitung_waktu_by_seccond($toren_jam_telat_tmp);
+                                $toren_jam_telat_text=$toren_jam_telat->jam.' jam'.', '.$toren_jam_telat->menit.' Menit'.', '.$toren_jam_telat->detik.' Detik';
+
+                                $jam_akhir_tmp=(new \App\Http\Traits\AbsensiFunction)->his_to_seconds($item->jam_akhir);
+                                $toren_jam_telat_masuk_tmp=$jam_akhir_tmp+$toren_jam_telat_tmp;
+                                $toren_jam_telat_masuk=gmdate("H:i:s", $toren_jam_telat_masuk_tmp);
+                                
+                                if(!$torensi_telat){
+                                    $toren_jam_telat_text='';
+                                    $toren_jam_telat_masuk='';
+                                }
+
                             ?>
                             <tr>
                                 <td>{{ !empty($item->nm_jenis_jadwal) ? $item->nm_jenis_jadwal : ''  }}</td>
+                                <td>{{ $status_jadwal_text  }}</td>
                                 <td>{{ !empty($item->uraian) ? $item->uraian : ''  }}</td>
+                                <td>
+                                    <div>{{ $toren_jam_cepat_masuk  }}</div>
+                                    <div>{{ $toren_jam_cepat_text  }}</div>
+                                </td>
                                 <td>{{ !empty($item->jam_awal) ? $item->jam_awal : ''  }}</td>
                                 <td>{{ !empty($item->jam_akhir) ? $item->jam_akhir : ''  }}</td>
+                                <td>
+                                    <div>{{ $toren_jam_telat_masuk  }}</div>
+                                    <div>{{ $toren_jam_telat_text  }}</div>
+                                </td>
                                 <td class='text-right'>
                                     {!! (new
                                     \App\Http\Traits\AuthFunction)->setPermissionButton([$router_name->uri.'/update',$paramater_url,'update'])

@@ -104,6 +104,8 @@ class JenisJadwalAbsensiController extends \App\Http\Controllers\MyAuthControlle
     private function proses($request)
     {
         $req = $request->all();
+        DB::statement("ALTER TABLE ".( new \App\Models\RefJenisJadwal )->table." AUTO_INCREMENT = 1");
+        DB::statement("ALTER TABLE ".( new \App\Models\RefJadwal )->table." AUTO_INCREMENT = 1");
         $kode = !empty($req['key_old']) ? $req['key_old'] : '';
         $action_is_create = (str_contains($request->getPathInfo(), $this->url_index . '/create')) ? 1 : 0;
         $link_back_redirect = ($action_is_create) ? $this->url_name : $this->url_name . '/update';
@@ -121,7 +123,6 @@ class JenisJadwalAbsensiController extends \App\Http\Controllers\MyAuthControlle
             'error' => !empty($kode) ? 'Data tidak berhasil diubah' : 'Data tidak berhasil disimpan'
         ];
         
-        
         try {
             $model = (new \App\Models\RefJenisJadwal)->where('id_jenis_jadwal', '=', $kode)->first();
             if (empty($model)) {
@@ -129,13 +130,35 @@ class JenisJadwalAbsensiController extends \App\Http\Controllers\MyAuthControlle
             }
             $data_save = $req;
             $model->set_model_with_data($data_save);
-            
             $is_save = 0;
 
             if ($model->save()) {
-                $is_save = 1;
+                $get_ref_jadwal=(new \App\Models\RefJadwal)->referensi_data();
+                if(!empty($get_ref_jadwal)){
+                    foreach($get_ref_jadwal as $val_rj){
+                        $model_jadwal = (new \App\Models\RefJadwal)->where('id_jenis_jadwal', '=', $kode)->where('kd_jadwal', '=', $val_rj->kd_jadwal)->first();
+                        if (empty($model_jadwal)) {
+                            $model_jadwal = (new \App\Models\RefJadwal);
+                            $model_jadwal->kd_jadwal=$val_rj->kd_jadwal;
+                            $model_jadwal->id_jenis_jadwal=$model->id_jenis_jadwal;
+                            $model_jadwal->uraian=$val_rj->uraian;
+                            $model_jadwal->alias=$val_rj->alias;
+                            $model_jadwal->status_toren_jam_cepat=$val_rj->status_toren_jam_cepat;
+                            $model_jadwal->status_toren_jam_telat=$val_rj->status_toren_jam_telat;
+                            $model_jadwal->status_jadwal=$val_rj->status_jadwal;
+
+                            if ($model_jadwal->save()) {
+                                $is_save++;
+                            }
+                        }else{
+                            $is_save = 1;
+                        }
+                    }
+                }else{
+                    $is_save = 1;
+                }
             }
-            
+
             if ($is_save) {
                 DB::commit();
                 $link_back_param = $this->clear_request($link_back_param, $request);

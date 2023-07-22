@@ -26,6 +26,11 @@
                     <thead>
                         <tr>
                             <th class="py-3" style="width: 10%">Nama Jenis Jadwal</th>
+                            <th class="py-3" style="width: 5%">Jam Masuk Kerja</th>
+                            <th class="py-3" style="width: 5%">Jam Pulang Kerja</th>
+                            <th class="py-3" style="width: 5%">Istirahat</th>
+                            <th class="py-3" style="width: 5%">Akhir Istirahat</th>
+                            <th class="py-3" style="width: 5%">Total Jam Kerja</th>
                             <th class="py-3" style="width: 5%">Action</th>
                         </tr>
                     </thead>
@@ -33,20 +38,43 @@
                         @if(!empty($list_data))
                             @foreach($list_data as $key => $item)
                             <?php
+                                $disable_button=0;
+                                if($item->id_jenis_jadwal==1){
+                                    $disable_button=1;
+                                }
 
                                 $paramater_url=[
                                     'data_sent'=>$item->id_jenis_jadwal
                                 ];
+
+                                $waktu_masuk=(new \App\Http\Traits\AbsensiFunction)->his_to_seconds($item->masuk_kerja);
+                                $waktu_pulang=(new \App\Http\Traits\AbsensiFunction)->his_to_seconds($item->pulang_kerja);
+
+                                $mulai_istirahat=(new \App\Http\Traits\AbsensiFunction)->his_to_seconds($item->awal_istirahat);
+                                $akhir_istirahat=(new \App\Http\Traits\AbsensiFunction)->his_to_seconds($item->akhir_istirahat);
+
+                                $total_istirahat=$akhir_istirahat-$mulai_istirahat;
+
+                                $total_waktu_kerja=($waktu_pulang-$waktu_masuk)-$total_istirahat;
+                                $total_waktu_kerja=(new \App\Http\Traits\AbsensiFunction)->hitung_waktu_by_seccond($total_waktu_kerja);
+                                $total_waktu_kerja_text=$total_waktu_kerja->jam.' jam'.', '.$total_waktu_kerja->menit.' Menit'.', '.$total_waktu_kerja->detik.' Detik';
+
                             ?>
                             <tr>
                                 <td>{{ !empty($item->nm_jenis_jadwal) ? $item->nm_jenis_jadwal : ''  }}</td>
+                                <td>{{ !empty($item->masuk_kerja) ? $item->masuk_kerja : ''  }}</td>
+                                <td>{{ !empty($item->pulang_kerja) ? $item->pulang_kerja : ''  }}</td>
+                                <td>{{ !empty($item->awal_istirahat) ? $item->awal_istirahat : ''  }}</td>
+                                <td>{{ !empty($item->akhir_istirahat) ? $item->akhir_istirahat : ''  }}</td>
+                                <td>{{ $total_waktu_kerja_text  }}</td>
                                 <td class='text-right'>
                                     {!! (new
                                     \App\Http\Traits\AuthFunction)->setPermissionButton([$router_name->uri.'/update',$paramater_url,'update'])
                                     !!}
-                                    {!! (new
-                                    \App\Http\Traits\AuthFunction)->setPermissionButton([$router_name->uri.'/delete',$paramater_url,'delete'],['modal'])
-                                    !!}
+                                    @if(empty($disable_button))
+                                        {!! (new \App\Http\Traits\AuthFunction)->setPermissionButton([$router_name->uri.'/delete',$paramater_url,'delete'],['modal'])!!}
+                                    @endif
+                                    
                                 </td>
                             </tr>
                             @endforeach

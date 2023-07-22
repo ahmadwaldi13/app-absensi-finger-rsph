@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
             UxuiUserCreateUserDefaultSeeder::class,
             UxuiUserAksesSeeder::class,
             UxuiSettingAppVariabelSeeder::class,
-            RefJadwalPhitungSeeder::class
+            DataJadwalSeeder::class
         ]);
     }
 }

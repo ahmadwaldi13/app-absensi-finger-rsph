@@ -21,9 +21,21 @@ class RefJenisJadwal extends Migration
                 $table->collation = 'latin1_swedish_ci';
                 $table->increments('id_jenis_jadwal');
                 $table->string('nm_jenis_jadwal');
+                $table->time('masuk_kerja');
+                $table->time('pulang_kerja');
+                $table->time('awal_istirahat');
+                $table->time('akhir_istirahat');
             });
         }
-        
+
+        $another_create=['masuk_kerja','pulang_kerja','awal_istirahat','akhir_istirahat'];
+        foreach($another_create as $value){
+            if (!Schema::hasColumn($table_name, $value)){
+                Schema::table($table_name, function (Blueprint $table) use ($value){
+                    $table->time($value);
+                });
+            }
+        }
     }
 
     /**

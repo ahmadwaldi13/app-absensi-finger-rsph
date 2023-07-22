@@ -6,14 +6,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 use App\Services\GlobalService;
-
-use App\Services\DataAbsensiKaryawanService;
+use PhpOffice\PhpSpreadsheet\Calculation\Web\Service;
 
 class AbsensiKaryawanController extends \App\Http\Controllers\MyAuthController
 {
 
     public $part_view, $url_index, $url_name, $title, $breadcrumbs, $globalService;
-    public $dataAbsensiKaryawanService;
 
     public function __construct()
     {
@@ -29,14 +27,13 @@ class AbsensiKaryawanController extends \App\Http\Controllers\MyAuthController
         ];
 
         $this->globalService = new GlobalService;
-        $this->dataAbsensiKaryawanService = new DataAbsensiKaryawanService;
     }
 
     function actionIndex(Request $request){
         ini_set("memory_limit","800M");
         set_time_limit(0);
 
-        $list_data=$this->dataAbsensiKaryawanService->get_data_by_jadwal_rutin($request);
+        $list_data=(new \App\Services\DataPresensiRutinService)->getData($request->all(),1);
 
         $page = isset($request->page) ? $request->page : 1;
         $option=['path' => $request->url(), 'query' => $request->query()];
