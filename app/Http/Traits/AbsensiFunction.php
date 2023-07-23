@@ -7,14 +7,6 @@ use Hamcrest\Type\IsObject;
 
 trait AbsensiTraits {
 
-    // public function list_presensi(){
-    //     $data[1]=[
-    //         0=>'',
-    //         1=>'',
-    //         2=>,
-    //     ]
-    // }
-
     public function hitung_selisih_waktu($awal,$akhir){
         $diff  = $akhir - $awal;
 
@@ -62,19 +54,15 @@ trait AbsensiTraits {
             $pre_toren_cepat_sec=$this->his_to_seconds($pre_toren_cepat);
             $pre_toren_telat_sec=$this->his_to_seconds($pre_toren_telat);
             
-            $pre_cepat="00:00:00";
-            $pre_telat="00:00:00";
             $pre_cepat_sec=0;
             $pre_telat_sec=0;
 
             if($pre_status_toren_cepat==1){
                 $pre_cepat_sec=$pre_awal_sec-$pre_toren_cepat_sec;
-                $pre_cepat=gmdate("H:i:s", $pre_cepat_sec);
             }
             
             if($pre_status_toren_telat==1){
                 $pre_telat_sec=$pre_akhir_sec+$pre_toren_telat_sec;
-                $pre_telat=gmdate("H:i:s", $pre_telat_sec);
             }
 
             $user_presensi_sec=$this->his_to_seconds($user_presensi);

@@ -48,6 +48,35 @@ trait PresensiHitungRutinTraits {
 
     public function rumus_3_jadwal($hasil_presensi,$data_jadwal_kerja){
         $list_kd_jadwal=[1,2,4];
+
+        $list_status=[
+            1=>[
+                'text'=>"Hadir",
+                'alias'=>"H",
+            ],
+            2=>[
+                'text'=>"Terlambat",
+                'alias'=>"T",
+            ],
+            3=>[
+                'text'=>"Tidak Absen Masuk",
+                'alias'=>"TAM",
+            ],
+            4=>[
+                'text'=>"Tidak Absen Pulang",
+                'alias'=>"TAP",
+            ],
+            5=>[
+                'text'=>"Pulang Cepat",
+                'alias'=>"P",
+            ],
+            6=>[
+                'text'=>"Alpa",
+                'alias'=>"A",
+            ],
+            
+        ];
+
         if($hasil_presensi and $data_jadwal_kerja){
             $masuk_kerja=!empty($data_jadwal_kerja->masuk_kerja) ? $data_jadwal_kerja->masuk_kerja : '';
             $pulang_kerja=!empty($data_jadwal_kerja->pulang_kerja) ? $data_jadwal_kerja->pulang_kerja : '';
@@ -114,17 +143,18 @@ trait PresensiHitungRutinTraits {
                 'list_p3'=>[
                     [2,2,'a'],[2,3,'a'],[2,1,'a'],[1,2,'a'],[1,3,'a'],[1,1,'a'],
                 ],
-                // 'list_p4'=>[
-                //     [3,2,'a'],[3,3,'a'],[3,1,'a'],
-                // ],
-                // 'list_p5'=>[
-                //     [2,2,1],[2,'a',1],[2,3,1],[2,1,1],[1,2,1],[1,'a',1],[1,3,1],[1,1,1],
-                // ],
-                // 'list_p6'=>[
-                    
-                // ],
-                
-                
+                'list_p4'=>[
+                    [3,2,'a'],[3,3,'a'],[3,1,'a'],
+                ],
+                'list_p5'=>[
+                    [2,2,1],[2,'a',1],[2,3,1],[2,1,1],[1,2,1],[1,'a',1],[1,3,1],[1,1,1],
+                ],
+                'list_p6'=>[
+                    [3,2,1],[3,'a',1],[3,3,1],[3,1,1],
+                ],
+                'list_p7'=>[
+                    ['a',2,1],['a',3,1],['a',1,1],
+                ],
             ];
 
             $get_hasil_rumus=[];
@@ -149,6 +179,11 @@ trait PresensiHitungRutinTraits {
                 $mulai_kerja_sec=0;
                 $pulang_kerja_sec=0;
                 $total_kerja_sec=0;
+                $status_kerja_text=[
+                    'text'=>$list_status[6]['text'],
+                    'alias'=>$list_status[6]['alias'],
+                ];
+                
             }elseif(!empty($get_hasil_rumus['list_normal'])){
                 /* 
                     masuk= hadir,cepat,
@@ -158,6 +193,10 @@ trait PresensiHitungRutinTraits {
                 $mulai_kerja_sec=$masuk_kerja_sec;
                 $pulang_kerja_sec=$pulang_kerja_sec;
                 $total_kerja_sec=$total_kerja_default_sec;
+                $status_kerja_text=[
+                    'text'=>$list_status[1]['text'],
+                    'alias'=>$list_status[1]['alias'],
+                ];
             }elseif(!empty($get_hasil_rumus['list_p1'])){
                 /* 
                     masuk= telat,
@@ -167,6 +206,10 @@ trait PresensiHitungRutinTraits {
                 $mulai_kerja_sec=$user_presensi_masuk_sec;
                 $pulang_kerja_sec=$pulang_kerja_sec;
                 $total_kerja_sec=($pulang_kerja_sec-$masuk_kerja_sec)-$total_istirahat_sec;
+                $status_kerja_text=[
+                    'text'=>$list_status[2]['text'],
+                    'alias'=>$list_status[2]['alias'],
+                ];
             }elseif(!empty($get_hasil_rumus['list_p2'])){
                 /* 
                     masuk= alpa,
@@ -176,6 +219,10 @@ trait PresensiHitungRutinTraits {
                 $mulai_kerja_sec=$akhir_istirahat_sec;
                 $pulang_kerja_sec=$pulang_kerja_sec;
                 $total_kerja_sec=$pulang_kerja_sec-$masuk_kerja_sec;
+                $status_kerja_text=[
+                    'text'=>$list_status[3]['text'],
+                    'alias'=>$list_status[3]['alias'],
+                ];
             }elseif(!empty($get_hasil_rumus['list_p3'])){
                 /* 
                     masuk= hadir,cepat,
@@ -185,54 +232,78 @@ trait PresensiHitungRutinTraits {
                 $mulai_kerja_sec=$masuk_kerja_sec;
                 $pulang_kerja_sec=$awal_istirahat_sec;
                 $total_kerja_sec=$pulang_kerja_sec-$masuk_kerja_sec;
-            }
-            // elseif(!empty($get_hasil_rumus['list_p4'])){
-            //     /* 
-            //         masuk= telat,
-            //         istirahat= hadir,telat,cepat,
-            //         pulang= alpa,
-            //     */
-            //     $mulai_kerja_sec=$user_presensi_masuk_sec;
-            //     $pulang_kerja_sec=$awal_istirahat_sec;
-            //     $total_kerja_sec=$pulang_kerja_sec-$masuk_kerja_sec;
-            // }
-            // elseif(!empty($get_hasil_rumus['list_p5'])){
-            //     /* 
-            //         masuk= hadir,cepat,
-            //         istirahat= hadir,alpa,telat,cepat,
-            //         pulang= cepat,
-            //     */
-            //     $mulai_kerja_sec=$masuk_kerja_sec;
-            //     $pulang_kerja_sec=$user_presensi_pulang_sec;
-            //     $total_kerja_sec=$pulang_kerja_sec-$masuk_kerja_sec;
-            // }
-            // elseif(!empty($get_hasil_rumus['list_p6'])){
+                $status_kerja_text=[
+                    'text'=>$list_status[4]['text'],
+                    'alias'=>$list_status[4]['alias'],
+                ];
+            }elseif(!empty($get_hasil_rumus['list_p4'])){
+                /* 
+                    masuk= telat,
+                    istirahat= hadir,telat,cepat,
+                    pulang= alpa,
+                */
+                $mulai_kerja_sec=$user_presensi_masuk_sec;
+                $pulang_kerja_sec=$awal_istirahat_sec;
+                $total_kerja_sec=$pulang_kerja_sec-$masuk_kerja_sec;
+                $status_kerja_text=[
+                    'text'=>$list_status[2]['text'].','.$list_status[4]['text'],
+                    'alias'=>$list_status[2]['alias'].$list_status[4]['text'],
+                ];
                 
-            // }
+            }elseif(!empty($get_hasil_rumus['list_p5'])){
+                /* 
+                    masuk= hadir,cepat,
+                    istirahat= hadir,alpa,telat,cepat,
+                    pulang= cepat,
+                */
+                $mulai_kerja_sec=$masuk_kerja_sec;
+                $pulang_kerja_sec=$user_presensi_pulang_sec;
+                $total_kerja_sec=$pulang_kerja_sec-$masuk_kerja_sec;
+                
+                $status_kerja_text=[
+                    'text'=>$list_status[5]['text'],
+                    'alias'=>$list_status[5]['alias'],
+                ];
+            }elseif(!empty($get_hasil_rumus['list_p6'])){
+                /* 
+                    masuk= telat,
+                    istirahat= hadir,alpa,telat,cepat,
+                    pulang= cepat,
+                */
+                $mulai_kerja_sec=$user_presensi_masuk_sec;
+                $pulang_kerja_sec=$user_presensi_pulang_sec;
+                $total_kerja_sec=($pulang_kerja_sec-$masuk_kerja_sec)-$total_istirahat_sec;
+
+                $status_kerja_text=[
+                    'text'=>$list_status[2]['text'].','.$list_status[5]['text'],
+                    'alias'=>$list_status[2]['alias'].$list_status[5]['text'],
+                ];
+            }elseif(!empty($get_hasil_rumus['list_p7'])){
+                /* 
+                    masuk= alpa,
+                    istirahat= hadir,telat,cepat,
+                    pulang= cepat,
+                */
+                $mulai_kerja_sec=$akhir_istirahat_sec;
+                $pulang_kerja_sec=$user_presensi_pulang_sec;
+                $total_kerja_sec=($pulang_kerja_sec-$masuk_kerja_sec);
+                
+                $status_kerja_text=[
+                    'text'=>$list_status[3]['text'].','.$list_status[5]['text'],
+                    'alias'=>$list_status[3]['alias'].$list_status[5]['text'],
+                ];
+            }
             
-
-
-    
-            $hasil_jam_kerja=[
+            return (object)[
                 'mulai_kerja_sec'=>!empty($mulai_kerja_sec) ? $mulai_kerja_sec : 0,
                 'mulai_kerja'=>!empty($mulai_kerja_sec) ? gmdate("H:i:s", $mulai_kerja_sec) : '00:00:00',
                 'pulang_kerja_sec'=>!empty($pulang_kerja_sec) ? $pulang_kerja_sec : 0,
                 'pulang_kerja'=>!empty($pulang_kerja_sec) ? gmdate("H:i:s", $pulang_kerja_sec) : '00:00:00',
                 'total_kerja_sec'=>!empty($total_kerja_sec) ? $total_kerja_sec : 0,
                 'total_kerja'=>!empty($total_kerja_sec) ? gmdate("H:i:s", $total_kerja_sec) : '00:00:00',
+                'status_kerja_text'=>!empty($status_kerja_text) ? $status_kerja_text : ''
             ];
-            dd($list_hasil_user_prensensi,$hasil_jam_kerja);
             
-
-            // if(!empty($hasil_presensi[2])){
-
-            // }
-
-            // if(!empty($hasil_presensi[3])){
-
-            // }
-
-            dd($hasil_presensi,$data_jadwal_kerja);
 
         }
     }
