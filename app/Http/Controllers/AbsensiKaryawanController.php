@@ -33,11 +33,11 @@ class AbsensiKaryawanController extends \App\Http\Controllers\MyAuthController
         ini_set("memory_limit","800M");
         set_time_limit(0);
 
-        $list_data=(new \App\Services\DataPresensiRutinService)->getData($request->all(),1);
-
+        $list_data=(new \App\Services\DataPresensiRutinService)->getData($request->all());
+        
         $page = isset($request->page) ? $request->page : 1;
         $option=['path' => $request->url(), 'query' => $request->query()];
-        $list_data = (new \App\Http\Traits\GlobalFunction)->paginate($list_data,5,$page,$option);
+        $list_data = (new \App\Http\Traits\GlobalFunction)->paginate($list_data,15,$page,$option);
 
         $parameter_view = [
             'title' => $this->title,

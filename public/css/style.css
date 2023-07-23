@@ -425,7 +425,15 @@ div.content-wrapper {
 }
 
 tbody tr:nth-child(1) {
-    border-top: hidden;
+    /* border-top: hidden; */
+}
+
+.table-bordered-bottom > tbody tr{
+    border-bottom: 1px solid #dee2e6;
+}
+
+.table-no-bordered > tbody tr{
+    border: 0px;
 }
 
 input[type="time"]::-webkit-calendar-picker-indicator {

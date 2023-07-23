@@ -103,7 +103,7 @@ class DataPresensiRutinService extends BaseService
     }
 
 
-    public function getData($params=[],$type){
+    public function getData($params=[]){
         $form_filter_text=!empty($params['form_filter_text']) ? $params['form_filter_text'] : '';
         $filter_date_start=!empty($params['filter_date_start']) ? $params['filter_date_start'] : date('Y-m-d');
         $filter_date_end=!empty($params['filter_date_end']) ? $params['filter_date_end'] : date('Y-m-d');
@@ -137,18 +137,31 @@ class DataPresensiRutinService extends BaseService
             'search_karyawan'=>$paramater_data_karyawan_rutin
         ];
         $list_data=$this->getListKaryawanPresensi($parameter_search,1)->get();
+        
         if($list_data){
-            $hasil=[];
-            foreach($list_data as $value){
+            foreach($list_data as $key => $value){
+                $change_value=$list_data[$key];
+                $change_value=(array)$change_value;
                 $data_proses=[
                     'list_presensi'=>!empty($value->presensi) ? $value->presensi : '',
                     'list_data'=>!empty($value->presensi_data) ? $value->presensi_data : '',
                     'data_jadwal_kerja'=>!empty($data_jadwal) ? $data_jadwal  : ''
                 ];
                 
-                $hasil[]=(new \App\Http\Traits\PresensiHitungRutinFunction)->getProses($data_proses);
+                $hasil_proses=(new \App\Http\Traits\PresensiHitungRutinFunction)->getProses($data_proses);
+                $change_value['status_nilai_kerja']=$hasil_proses;
+                
+                if(!empty($change_value['presensi_data'])){
+                    unset($change_value['presensi_data']);
+                }
+                if(!empty($change_value['created'])){
+                    unset($change_value['created']);
+                }
+                $change_value=(object)$change_value;
+                $list_data[$key]=$change_value;
             }
-            dd($hasil);
         }
+
+        return $list_data;
     }
 }

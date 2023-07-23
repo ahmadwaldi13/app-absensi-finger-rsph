@@ -50,7 +50,7 @@ class DataAbsensiKaryawanService extends BaseService
         ];
 
         $list_absensi=(new \App\Services\RefDataAbsensiTmpService)->getAbsensiRutin($parameter_first,1)->get();
-        dd($list_absensi);
+        
 
         $data_jadwal_rutin=[];
         $get_jadwal_rutin = $this->refJadwalService->getList(['ref_jadwal.id_jenis_jadwal'=>1], 1)->get();

@@ -33,6 +33,18 @@ trait AbsensiTraits {
         ];
     }
 
+    public function set_format_waktu_indo($waktu_sec){
+        $_sec=$this->his_to_seconds($waktu_sec);
+        $_sec_data=$this->hitung_waktu_by_seccond($_sec);
+
+        $text='';
+        $text.=(!empty($_sec_data->jam) ? $_sec_data->jam : 0).' Jam, ';
+        $text.=(!empty($_sec_data->menit) ? $_sec_data->menit : 0).' Menit, ';
+        $text.=(!empty($_sec_data->detik) ? $_sec_data->detik : 0).' Detik ';
+
+        return $text;
+    }
+
     public function his_to_seconds($time){
         $str_time = preg_replace("/^([\d]{1,2})\:([\d]{2})$/", "00:$1:$2", $time);
         sscanf($str_time, "%d:%d:%d", $hours, $minutes, $seconds);
@@ -64,26 +76,46 @@ trait AbsensiTraits {
             if($pre_status_toren_telat==1){
                 $pre_telat_sec=$pre_akhir_sec+$pre_toren_telat_sec;
             }
-
+            
             $user_presensi_sec=$this->his_to_seconds($user_presensi);
             $status_presensi='';
+            $selisih_waktu_sec=0;
+            $selisih_waktu='';
+            $type_waktu='a';
             if($pre_status_toren_cepat){
                 if( ( $user_presensi_sec >= $pre_cepat_sec ) and ( $user_presensi_sec < $pre_awal_sec  ) ){
-                    $status_presensi='-'.$jadwal_presensi->kd_jadwal;
+                    $type_waktu="-";
+                    $index='-';
+                    $status_presensi=$index.$jadwal_presensi->kd_jadwal;
+                    $selisih_waktu_sec=$pre_awal_sec-$user_presensi_sec;
+                    $selisih_waktu=$this->hitung_waktu_by_seccond($selisih_waktu_sec);
                 }
             }
-
+            
             if( ( $user_presensi_sec >= $pre_awal_sec ) and ( $user_presensi_sec <= $pre_akhir_sec  ) ){
-                $status_presensi=$jadwal_presensi->kd_jadwal;
+                $type_waktu='h';
+                $index='';
+                $status_presensi=$index.$jadwal_presensi->kd_jadwal;
+                $selisih_waktu_sec=0;
+                $selisih_waktu=$this->hitung_waktu_by_seccond($selisih_waktu_sec);
             }
-
+            
             if($pre_status_toren_telat){
                 if( ( $user_presensi_sec > $pre_akhir_sec ) and ( $user_presensi_sec <= $pre_telat_sec  ) ){
-                    $status_presensi='+'.$jadwal_presensi->kd_jadwal;
+                    $type_waktu='+';
+                    $index='+';
+                    $status_presensi=$index.$jadwal_presensi->kd_jadwal;
+                    $selisih_waktu_sec=$pre_telat_sec-$user_presensi_sec;
+                    $selisih_waktu=$this->hitung_waktu_by_seccond($selisih_waktu_sec);
                 }
             }
 
-            return $status_presensi;
+            return (object)[
+                'status_presensi'=>$status_presensi,
+                'selisih_waktu_sec'=>$selisih_waktu_sec,
+                'selisih_waktu'=>$selisih_waktu,
+                'type_waktu'=>$type_waktu,
+            ];
         }
     }
 
@@ -123,7 +155,8 @@ trait AbsensiTraits {
                 if(!empty($get_jadwal)){
                     foreach($get_jadwal as $key_jp => $val_jp){
                         $check=$this->index_rumus_jadwal($user_presensi,$val_jp);
-                        if($check){
+                        $check_status=!empty($check->status_presensi) ? $check->status_presensi : '';
+                        if($check_status){
                             //abaikan jika presensi sudah ketemu dengan jadwal
                             if(empty($hasil[$key_jp])){
                                 $hasil[$key_jp]=(object)[
@@ -141,6 +174,32 @@ trait AbsensiTraits {
             'hasil_presensi'=>$hasil,
             'jadwal_mesin'=>$get_jadwal
         ];
+    }
+
+    public function set_list_log_text($list_log,$max_log_per,$type='raw'){
+        $pre_tmp=explode(',',$list_log);
+        $max_pre_baris=$max_log_per;
+        $first=1;
+        $h_tmp=[];
+        foreach($pre_tmp as $key_pre => $val_pre){
+            if(( $key_pre+1) > $max_pre_baris ){
+                $first++;
+                $max_pre_baris=$max_pre_baris+$max_pre_baris;
+            }
+            $h_tmp[$first][]=$val_pre;
+        }
+        if($type=='array'){
+            return $h_tmp;
+        }
+
+        $html='';
+        if($type=='raw'){
+            foreach($h_tmp as $key_pre => $val_pre){
+                $tmp_=implode(', ',$val_pre);
+                $html.="<div>".$tmp_."</div>";
+            }
+        }
+        return $html;
     }
 
     // function proses_absensi_rutin($get_jadwal_rutin,$data){

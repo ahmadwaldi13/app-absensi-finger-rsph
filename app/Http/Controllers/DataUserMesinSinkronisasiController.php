@@ -307,12 +307,10 @@ class DataUserMesinSinkronisasiController extends \App\Http\Controllers\MyAuthCo
                 }
             } catch (\Illuminate\Database\QueryException $e) {
                 DB::rollBack();
-                dd($e);
                 if ($e->errorInfo[1] == '1062') {
                 }
                 $pesan = ['error', $message_default['error'], 3];
             } catch (\Throwable $e) {
-                dd($e);
                 DB::rollBack();
                 $pesan = ['error', $message_default['error'], 3];
             }
