@@ -119,20 +119,6 @@
                             {{--
                             <div class="col-lg-2 col-md-10">
                                 <div class='bagan_form'>
-                                    <label for="filter_status_absensi" class="form-label">Status Absensi : </label>
-                                    <select class="form-select" id="filter_status_absensi" name="filter_status_absensi"  aria-label="Default select ">
-                                        <option value=""  {{ (Request::get('filter_status_absensi')=='') ? 'selected' : '' }}>Semua</option>
-                                        <option value="1" {{ (Request::get('filter_status_absensi')=='1') ? 'selected' : '' }}>Tepat Waktu</option>
-                                        <option value="2" {{ (Request::get('filter_status_absensi')=='2') ? 'selected' : '' }}>Terlambat</option>
-                                    </select>
-                                    <div class="message"></div>
-                                </div>
-                            </div>
-                            --}}
-
-                            {{--
-                            <div class="col-lg-2 col-md-10">
-                                <div class='bagan_form'>
                                     <label for="filter_cara_absensi" class="form-label">Cara Absen : </label>
                                     <select class="form-select" id="filter_cara_absensi" name="filter_cara_absensi"  aria-label="Default select ">
                                         <option value=""  {{ (Request::get('filter_cara_absensi')=='') ? 'selected' : '' }}>Semua</option>
@@ -143,6 +129,58 @@
                                 </div>
                             </div>
                             --}}
+                        </div>
+                    </div>
+
+                    <div class="col-lg-12 col-md-12">
+                        <div class="row justify-content-start align-items-end mb-3">    
+                            <div class="col-lg-4 col-md-10">
+                                <div class='bagan_form'>
+                                    <label for="filter_presensi_masuk" class="form-label">Status Presensi Masuk : </label>
+                                    <select class="form-select" id="filter_presensi_masuk" name="filter_presensi_masuk"  aria-label="Default select ">
+                                        <option value=""  {{ (Request::get('filter_presensi_masuk')=='') ? 'selected' : '' }}>Semua</option>
+                                        @if(!empty($get_presensi_masuk))
+                                            @foreach($get_presensi_masuk as $key => $val)
+                                                <?php $val=(object)$val; ?>
+                                                <option value='{{ $key }}' {{ (Request::get('filter_presensi_masuk')==$key) ? 'selected' : '' }}>{{ $val->text }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                    <div class="message"></div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-10">
+                                <div class='bagan_form'>
+                                    <label for="filter_presensi_istirahat" class="form-label">Status Presensi istirahat : </label>
+                                    <select class="form-select" id="filter_presensi_istirahat" name="filter_presensi_istirahat"  aria-label="Default select ">
+                                        <option value=""  {{ (Request::get('filter_presensi_istirahat')=='') ? 'selected' : '' }}>Semua</option>
+                                        @if(!empty($get_presensi_istirahat))
+                                            @foreach($get_presensi_istirahat as $key => $val)
+                                                <?php $val=(object)$val; ?>
+                                                <option value='{{ $key }}' {{ (Request::get('filter_presensi_istirahat')==$key) ? 'selected' : '' }}>{{ $val->text }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                    <div class="message"></div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-10">
+                                <div class='bagan_form'>
+                                    <label for="filter_presensi_pulang" class="form-label">Status Presensi pulang : </label>
+                                    <select class="form-select" id="filter_presensi_pulang" name="filter_presensi_pulang"  aria-label="Default select ">
+                                        <option value=""  {{ (Request::get('filter_presensi_pulang')=='') ? 'selected' : '' }}>Semua</option>
+                                        @if(!empty($get_presensi_pulang))
+                                            @foreach($get_presensi_pulang as $key => $val)
+                                                <?php $val=(object)$val; ?>
+                                                <option value='{{ $key }}' {{ (Request::get('filter_presensi_pulang')==$key) ? 'selected' : '' }} >{{ $val->text }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                    <div class="message"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 

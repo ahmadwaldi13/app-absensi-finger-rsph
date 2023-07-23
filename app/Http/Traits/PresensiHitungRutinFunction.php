@@ -48,34 +48,9 @@ trait PresensiHitungRutinTraits {
 
     public function rumus_3_jadwal($hasil_presensi,$data_jadwal_kerja){
         $list_kd_jadwal=[1,2,4];
-
-        $list_status=[
-            1=>[
-                'text'=>"Hadir",
-                'alias'=>"H",
-            ],
-            2=>[
-                'text'=>"Terlambat",
-                'alias'=>"T",
-            ],
-            3=>[
-                'text'=>"Tidak Absen Masuk",
-                'alias'=>"TAM",
-            ],
-            4=>[
-                'text'=>"Tidak Absen Pulang",
-                'alias'=>"TAP",
-            ],
-            5=>[
-                'text'=>"Pulang Cepat",
-                'alias'=>"P",
-            ],
-            6=>[
-                'text'=>"Alpa",
-                'alias'=>"A",
-            ],
-            
-        ];
+        
+        $list_status=$this->absensif->get_list_data_presensi();
+        
 
         if($hasil_presensi and $data_jadwal_kerja){
             $masuk_kerja=!empty($data_jadwal_kerja->masuk_kerja) ? $data_jadwal_kerja->masuk_kerja : '';
@@ -304,7 +279,8 @@ trait PresensiHitungRutinTraits {
                 'pulang_kerja'=>!empty($pulang_kerja_sec) ? gmdate("H:i:s", $pulang_kerja_sec) : '00:00:00',
                 'total_kerja_sec'=>!empty($total_kerja_sec) ? $total_kerja_sec : 0,
                 'total_kerja'=>!empty($total_kerja_sec) ? gmdate("H:i:s", $total_kerja_sec) : '00:00:00',
-                'status_kerja_text'=>!empty($status_kerja_text) ? (object)$status_kerja_text : ''
+                'status_kerja_text'=>!empty($status_kerja_text) ? (object)$status_kerja_text : '',
+                'kode_uniq_perhitungan'=>!empty($list_hasil_user_prensensi) ? $list_hasil_user_prensensi : [],
             ];
             
 

@@ -176,6 +176,33 @@ trait AbsensiTraits {
         ];
     }
 
+    public function check_bolean_array($array_1,$array_2){
+        $check_3=0;
+        $hasil=0;
+
+        $get_index_kombinasi=[];
+        foreach($array_1 as $key => $value){
+            if(!empty($value)){
+                $get_index_kombinasi[]=$key;
+            }
+        }
+
+        $check_ready=0;
+        foreach($get_index_kombinasi as $value){
+            $val_1=!empty($array_1[$value]) ? $array_1[$value] : '';
+            $val_2=!empty($array_2[$value]) ? $array_2[$value] : '';
+            if($val_1==$val_2){
+                $check_ready++;
+            }else{
+                $check_ready--;
+            }
+        }
+        if($check_ready==count($get_index_kombinasi)){
+            return 1;
+        }
+        return 0;
+    }
+
     public function set_list_log_text($list_log,$max_log_per,$type='raw'){
         $pre_tmp=explode(',',$list_log);
         $max_pre_baris=$max_log_per;
@@ -200,6 +227,103 @@ trait AbsensiTraits {
             }
         }
         return $html;
+    }
+
+    public function get_list_data_presensi($type=''){
+        $list_status=[
+            1=>[
+                'text'=>"Hadir",
+                'alias'=>"H",
+            ],
+            2=>[
+                'text'=>"Terlambat",
+                'alias'=>"T",
+            ],
+            3=>[
+                'text'=>"Tidak Absen Masuk",
+                'alias'=>"TAM",
+            ],
+            4=>[
+                'text'=>"Tidak Absen Pulang",
+                'alias'=>"TAP",
+            ],
+            5=>[
+                'text'=>"Pulang Cepat",
+                'alias'=>"P",
+            ],
+            6=>[
+                'text'=>"Alpa",
+                'alias'=>"A",
+            ],  
+        ];
+
+        $data_type=[];
+        if($type==1){
+            $data_type[1]=[
+                'text'=>"Cepat Hadir",
+                'alias'=>"HC",
+            ];
+            $data_type[2]=[
+                'text'=>"Tepat Waktu",
+                'alias'=>"H",
+            ];
+            $data_type[3]=[
+                'text'=>"Terlambat",
+                'alias'=>"T",
+            ];
+            $data_type['a']=[
+                'text'=>"Tidak Absen Masuk",
+                'alias'=>"A",
+            ];
+        }
+
+        if($type==2){
+            $data_type[1]=[
+                'text'=>"Cepat Istirahat",
+                'alias'=>"CI",
+            ];
+            $data_type[2]=[
+                'text'=>"Tepat Waktu",
+                'alias'=>"H",
+            ];
+            $data_type[3]=[
+                'text'=>"Terlambat",
+                'alias'=>"T",
+            ];
+            $data_type['a']=[
+                'text'=>"Tidak Absen Istirahat",
+                'alias'=>"A",
+            ];
+        }
+
+        if($type==3){
+            /* Masuk setelah istirahat */
+        }
+
+        if($type==4){
+            $data_type[1]=[
+                'text'=>"Pulang Cepat",
+                'alias'=>"P",
+            ];
+            $data_type[2]=[
+                'text'=>"Tepat Waktu",
+                'alias'=>"H",
+            ];
+            $data_type[3]=[
+                'text'=>"Terlambat",
+                'alias'=>"T",
+            ];
+            $data_type['a']=[
+                'text'=>"Tidak Absen Pulang",
+                'alias'=>"A",
+            ];
+        }
+
+        if(!empty($type)){
+            return $data_type;    
+        }
+
+        return $list_status;
     }
 
     // function proses_absensi_rutin($get_jadwal_rutin,$data){

@@ -33,7 +33,11 @@ class AbsensiKaryawanController extends \App\Http\Controllers\MyAuthController
         ini_set("memory_limit","800M");
         set_time_limit(0);
 
-        $list_data=(new \App\Services\DataPresensiRutinService)->getData($request->all());
+        $get_presensi_masuk=(new \App\Http\Traits\AbsensiFunction)->get_list_data_presensi(1);
+        $get_presensi_istirahat=(new \App\Http\Traits\AbsensiFunction)->get_list_data_presensi(2);
+        $get_presensi_pulang=(new \App\Http\Traits\AbsensiFunction)->get_list_data_presensi(4);
+
+        $list_data=(new \App\Services\DataPresensiRutinService)->getDataRumus3($request->all());
         
         $page = isset($request->page) ? $request->page : 1;
         $option=['path' => $request->url(), 'query' => $request->query()];
@@ -42,7 +46,10 @@ class AbsensiKaryawanController extends \App\Http\Controllers\MyAuthController
         $parameter_view = [
             'title' => $this->title,
             'breadcrumbs' => $this->breadcrumbs,
-            'list_data'=>$list_data
+            'list_data'=>$list_data,
+            'get_presensi_masuk'=>$get_presensi_masuk,
+            'get_presensi_istirahat'=>$get_presensi_istirahat,
+            'get_presensi_pulang'=>$get_presensi_pulang
         ];
 
         return view($this->part_view . '.index', $parameter_view);
