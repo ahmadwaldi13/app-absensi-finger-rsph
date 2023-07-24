@@ -346,17 +346,15 @@
                                 </tr>
                                 <tr style='padding:0px;'>
                                     <td colspan=20 style='padding:0px;'>
-                                        <div class="collapse mb-2" id="{{ $btn_item_collapse }}">
+                                        <div class="collapse mb-2 show" id="{{ $btn_item_collapse }}">
                                             <?php
                                                 $jam_kerja=!empty($item_kerja->jadwal_kerja) ? $item_kerja->jadwal_kerja : [];
                                                 $jadwal_open_mesin=!empty($item_kerja->jadwal_open_mesin) ? $item_kerja->jadwal_open_mesin : [];
 
                                                 $total_kerja_sec=!empty($jam_kerja->total_kerja_sec) ? $jam_kerja->total_kerja_sec : 0;
-                                                $total_kerja=(new \App\Http\Traits\AbsensiFunction)->hitung_waktu_by_seccond($total_kerja_sec);
-                                                $total_kerja_text='';
-                                                $total_kerja_text.=(!empty($total_kerja->jam) ? $total_kerja->jam : 0).' Jam ';
-                                                $total_kerja_text.=(!empty($total_kerja->menit) ? $total_kerja->menit : 0).' Menit ';
-                                                $total_kerja_text.=(!empty($total_kerja->detik) ? $total_kerja->detik : 0).' Detik ';
+                                                $total_kerja_text=(new \App\Http\Traits\AbsensiFunction)->set_format_waktu_indo(gmdate("H:i:s", $total_kerja_sec));
+
+                                                $get_log_presensi_user=!empty($item->presensi_data) ? (array)$item->presensi_data : [];
                                             ?>
                                             <div class='card'>
                                                 <div class='card-body'>
@@ -392,7 +390,7 @@
                                                                             </tr>
 
                                                                             <tr>
-                                                                                <td style="width: 20%">Total Kerja</td>
+                                                                                <td style="width: 20%">Total Jam Kerja</td>
                                                                                 <td style="width: 1%">:</td>
                                                                                 <td style="width: 50%">{{ $total_kerja_text }}</td>
                                                                             </tr>
@@ -434,18 +432,26 @@
                                                                             <th colspan=2 class="py-3" style="width: 15%">Uraian</th>
                                                                             <th class="py-3" style="width: 20%">Presensi</th>
                                                                             <th class="py-3" style="width: 15%">Status</th>
-                                                                            <th class="py-3" style="width: 50%">Ket. Waktu</th>
+                                                                            <th class="py-3" style="width: 25%">Ket. Waktu</th>
+                                                                            <th class="py-3" style="width: 5%">Cara Presensi</th>
+                                                                            <th class="py-3" style="width: 20%">Info Mesin</th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
                                                                         @foreach($jadwal_open_mesin as $key_oj => $val_oj)
                                                                             <?php 
                                                                                 $get_user_presensi=!empty($val_oj->user_presensi) ? (object)$val_oj->user_presensi : '';
+                                                                                $presensi_user=!empty($get_user_presensi->user_presensi) ? $get_user_presensi->user_presensi : '00:00:00';
+                                                                                $presensi_user_detail=!empty($get_log_presensi_user[$presensi_user]) ? $get_log_presensi_user[$presensi_user] : [];
+                                                                                
+                                                                                $user_type_verif=!empty($presensi_user_detail->verif) ? $presensi_user_detail->verif : '';
+                                                                                $get_type_verif=(new \App\Services\DataPresensiService)->get_type_verified($user_type_verif);
+                                                                                
                                                                                 $type_waktu_presensi=!empty($get_user_presensi->type_waktu) ? $get_user_presensi->type_waktu : '';
-
+                                                                                
                                                                                 $style_column_t='absensi_gray';
-
                                                                                 $type_waktu_presensi_text='Alpa';
+
                                                                                 if($type_waktu_presensi=='h'){
                                                                                     $style_column_t='absensi_green';
                                                                                     $type_waktu_presensi_text='Tepat Waktu';
@@ -456,18 +462,22 @@
                                                                                     $style_column_t='absensi_red';
                                                                                     $type_waktu_presensi_text='Telat';
                                                                                 }
-                                                                                $selisih_waktu=!empty($get_user_presensi->selisih_waktu) ? (object)$get_user_presensi->selisih_waktu : [];
-                                                                                $selisih_waktu_text='';
-                                                                                $selisih_waktu_text.=(!empty($selisih_waktu->jam) ? $selisih_waktu->jam : 0).' Jam ';
-                                                                                $selisih_waktu_text.=(!empty($selisih_waktu->menit) ? $selisih_waktu->menit : 0).' Menit ';
-                                                                                $selisih_waktu_text.=(!empty($selisih_waktu->detik) ? $selisih_waktu->detik : 0).' Detik ';
+
+                                                                                $selisih_waktu_sec=!empty($get_user_presensi->selisih_waktu_sec) ? $get_user_presensi->selisih_waktu_sec : 0;
+                                                                                $selisih_waktu_text=(new \App\Http\Traits\AbsensiFunction)->set_format_waktu_indo(gmdate("H:i:s", $selisih_waktu_sec));
                                                                             ?>
                                                                             <tr class='{{ $style_column_t }}'>
                                                                                 <td>{{ !empty($val_oj->uraian) ? $val_oj->uraian : '' }}</td>
                                                                                 <td>:</td>
-                                                                                <td>{{ !empty($get_user_presensi->user_presensi) ? $get_user_presensi->user_presensi : '00:00:00'  }}</td>
+                                                                                <td>{{ $presensi_user }}</td>
                                                                                 <td>{{ $type_waktu_presensi_text  }}</td>
                                                                                 <td>{{ $selisih_waktu_text  }}</td>
+                                                                                <td>{{ $get_type_verif }}</td>
+                                                                                <td>
+                                                                                    <div>{{ !empty($presensi_user_detail->mesin) ? $presensi_user_detail->mesin : '' }}</div>
+                                                                                    <hr style='margin:2px 0px'>
+                                                                                    <div>{{ !empty($presensi_user_detail->lokasi) ? $presensi_user_detail->lokasi : '' }}</div>
+                                                                                </td>
                                                                             </tr>
                                                                         @endforeach
                                                                     </tbody>

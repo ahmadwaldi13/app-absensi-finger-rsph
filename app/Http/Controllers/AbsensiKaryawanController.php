@@ -22,7 +22,7 @@ class AbsensiKaryawanController extends \App\Http\Controllers\MyAuthController
 
         $this->title = 'Data Absensi';
         $this->breadcrumbs = [
-            ['title' => 'Mesin Absensi', 'url' => url('/') . "/sub-menu?type=5"],
+            ['title' => 'Manajemen Absensi', 'url' => url('/') . "/sub-menu?type=5"],
             ['title' => $this->title, 'url' => url('/') . "/" . $this->url_index],
         ];
 

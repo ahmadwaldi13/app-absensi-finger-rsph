@@ -471,6 +471,19 @@ class ListRoutes
                     ],
                 ]
             ],
+            [
+                'title' => 'Manajemen | Laporan Data Absensi',
+                'item' => [
+                    [
+                        'type' => 'index',
+                        'method' => 'get',
+                        'url' => '/laporan-absensi-karyawan',
+                        'controller' => 'LaporanAbsensiKaryawanController@actionIndex',
+                        'name' => 'laporan_absensi_karyawan',
+                        'middleware' => '',
+                    ],
+                ]
+            ],
 
             [
                 'title' => 'Absensi | Data Absensi Perkaryawan ',

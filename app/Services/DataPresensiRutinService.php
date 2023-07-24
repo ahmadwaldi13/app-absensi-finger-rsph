@@ -137,6 +137,8 @@ class DataPresensiRutinService extends BaseService
             'search_karyawan'=>$paramater_data_karyawan_rutin
         ];
 
+        $list_data=$this->getListKaryawanPresensi($parameter_search,1)->get();
+
         $filter_presensi_masuk=!empty($params['filter_presensi_masuk']) ? $params['filter_presensi_masuk'] : '';
         $filter_presensi_istirahat=!empty($params['filter_presensi_istirahat']) ? $params['filter_presensi_istirahat'] : '';
         $filter_presensi_pulang=!empty($params['filter_presensi_pulang']) ? $params['filter_presensi_pulang'] : '';
@@ -156,9 +158,6 @@ class DataPresensiRutinService extends BaseService
         if($filter_presensi_pulang){
             $filter_status++;
         }
-
-        $list_data=$this->getListKaryawanPresensi($parameter_search,1)->get();
-        // $list_data_tmp=[];
         
         if($list_data){
             foreach($list_data as $key => $value){
@@ -176,12 +175,12 @@ class DataPresensiRutinService extends BaseService
 
                 $change_value['status_nilai_kerja']=$hasil_proses;
                 
-                if(!empty($change_value['presensi_data'])){
-                    unset($change_value['presensi_data']);
-                }
+                $change_value['presensi_data']=!empty($change_value['presensi_data']) ? json_decode($change_value['presensi_data']) : '';
+                    
                 if(!empty($change_value['created'])){
                     unset($change_value['created']);
                 }
+            
                 $change_value=(object)$change_value;
                 $list_data[$key]=$change_value;
 
@@ -194,10 +193,6 @@ class DataPresensiRutinService extends BaseService
                 
             }
         }
-
-        // if(!empty($list_data_tmp)){
-        //     return $list_data_tmp;
-        // }
 
         return $list_data;
     }

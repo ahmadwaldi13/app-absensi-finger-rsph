@@ -11,12 +11,12 @@ class DataPresensiService extends BaseService
 
     public function get_log_per_tgl($params=[],$type){
         ini_set("memory_limit","800M");
+        DB::statement("SET GLOBAL group_concat_max_len = 15000;");
 
         $tgl_awal=!empty($params['tanggal'][0]) ? $params['tanggal'][0] : date('Y-m-d');
         $tgl_akhir=!empty($params['tanggal'][1]) ? $params['tanggal'][1] : date('Y-m-d');
         $list_id_user=!empty($params['list_id_user']) ? $params['list_id_user'] : 0;
-        // $list_id_user=0;
-        DB::statement("SET GLOBAL group_concat_max_len = 15000;");
+        
         $query=DB::table(DB::raw(
             '(
                 SELECT 
@@ -26,7 +26,10 @@ class DataPresensiService extends BaseService
                         id_user,
                         date(waktu) tgl_presensi,
                         GROUP_CONCAT( TIME_FORMAT(waktu,"%H:%i:%s") ORDER BY UNIX_TIMESTAMP( time(waktu) ) ASC ) AS presensi,
-                        CONCAT("[", GROUP_CONCAT( JSON_OBJECT(TIME_FORMAT(waktu,"%H:%i:%s"), JSON_OBJECT( "idmesin",utama.id_mesin_absensi,"mesin",nm_mesin,"lokasi",lokasi_mesin,"verif",verified,"sts",status )  ) ORDER BY UNIX_TIMESTAMP( time(waktu) ) ASC ) ,"]" ) AS presensi_data
+                        JSON_OBJECTAGG(
+                            TIME_FORMAT(waktu,"%H:%i:%s"),
+                            JSON_OBJECT( "idmesin",utama.id_mesin_absensi,"mesin",nm_mesin,"lokasi",lokasi_mesin,"verif",verified,"sts",status )
+                        )AS presensi_data
                     FROM
                         ref_data_absensi_tmp utama
                         INNER JOIN ref_mesin_absensi rma on rma.id_mesin_absensi = utama.id_mesin_absensi
@@ -43,6 +46,19 @@ class DataPresensiService extends BaseService
             return $query->get();
         }else{
             return $query;
+        }
+    }
+
+    public function get_type_verified($type=null){
+        $list_data=[
+            1=>'Finger',
+            3=>'Password',
+        ];
+        
+        if(!isset($type)){
+            return $list_data;
+        }else{
+            return !empty($list_data[$type]) ? $list_data[$type] : '';
         }
     }
 }
