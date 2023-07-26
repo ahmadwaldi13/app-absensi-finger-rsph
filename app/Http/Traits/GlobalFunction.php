@@ -138,34 +138,22 @@ trait GlobalTraits {
             'path_base'=>$path_base
         ];
     }
-    public function hari($hari){
-        switch($hari){
-            case 'Sun':
-                $hari_ini = "Minggu";
-            break;
-            case 'Mon':
-                $hari_ini = "Senin";
-            break;
-            case 'Tue':
-                $hari_ini = "Selasa";
-            break;
-            case 'Wed':
-                $hari_ini = "Rabu";
-            break;
-            case 'Thu':
-                $hari_ini = "Kamis";
-            break;
-            case 'Fri':
-                $hari_ini = "Jumat";
-            break;
-            case 'Sat':
-                $hari_ini = "Sabtu";
-            break;
-            default:
-                $hari_ini = "Tidak di ketahui";
-            break;
+    
+    public function hari($hari=''){
+        $data=[
+            'Mon'=>"Senin",
+            'Tue'=>"Selasa",
+            'Wed'=>"Rabu",
+            'Thu'=>"Kamis",
+            'Fri'=>"Jumat",
+            'Sat'=>"Sabtu",
+            'Sun'=>"Minggu",
+        ];
+        if(!empty($hari)){
+            return !empty($data[$hari]) ? $data[$hari] : "Tidak di ketahui";
+        }else{
+            return $data;
         }
-        return  $hari_ini ;
     }
 
     public function set_format_tanggal($tanggal,$format=[]){
@@ -230,11 +218,38 @@ trait GlobalTraits {
         ];
     }
 
-    public function paginate($items, $perPage = 5, $page = null, $options = [])
+    public function paginate($items, $perPage = 5, $page = null, $options = [],$option_custom=[])
     {
         $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
         $items = $items instanceof Collection ? $items : Collection::make($items);
-        return new LengthAwarePaginator($items->forPage($page, $perPage), $items->count(), $perPage, $page, $options);
+        
+        $total_list_data=!empty($option_custom['total_list_data']) ? $option_custom['total_list_data'] : 0;
+        $total_list_data=!empty($total_list_data) ? $total_list_data : $items->count();
+        
+        $page_if_limit_query=!empty($option_custom['page_if_limit_query']) ? $option_custom['page_if_limit_query'] : 0;
+        $page_loop=$page;
+        if(!empty($page_if_limit_query)){
+            $page_loop=1;
+        }
+        return new LengthAwarePaginator($items->forPage($page_loop, $perPage), $total_list_data, $perPage, $page, $options);
+    }
+
+    public function limit_mysql_manual($limit_data)
+    {
+        if(!empty($limit_data[0])){
+            if($limit_data[0]<0){
+                $limit_data[0]=0;
+            }
+        }
+            
+        if(!empty($limit_data[0]) && !empty($limit_data[1]) ){
+            $limit_data[0]=$limit_data[0] * $limit_data[1];
+        }
+
+        if(empty($limit_data[0]) && empty($limit_data[1])){
+            $limit_data=[];
+        }
+        return $limit_data;
     }
 }
 

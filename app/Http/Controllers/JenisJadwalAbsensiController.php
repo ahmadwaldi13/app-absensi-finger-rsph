@@ -129,6 +129,7 @@ class JenisJadwalAbsensiController extends \App\Http\Controllers\MyAuthControlle
                 $model = (new \App\Models\RefJenisJadwal);
             }
             $data_save = $req;
+            dd($data_save);
             $model->set_model_with_data($data_save);
             $is_save = 0;
 

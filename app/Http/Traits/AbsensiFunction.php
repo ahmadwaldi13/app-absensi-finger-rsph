@@ -33,22 +33,58 @@ trait AbsensiTraits {
         ];
     }
 
-    public function set_format_waktu_indo($waktu_sec){
-        $_sec=$this->his_to_seconds($waktu_sec);
-        $_sec_data=$this->hitung_waktu_by_seccond($_sec);
-
+    public function change_format_waktu_indo($waktu_sec,$format=''){
+        $waktu_sec=$this->hitung_waktu_by_seccond($waktu_sec);
         $text='';
-        $text.=(!empty($_sec_data->jam) ? $_sec_data->jam : 0).' Jam, ';
-        $text.=(!empty($_sec_data->menit) ? $_sec_data->menit : 0).' Menit, ';
-        $text.=(!empty($_sec_data->detik) ? $_sec_data->detik : 0).' Detik ';
+        if(!empty($format)){
+            $text=implode($format,(array)$waktu_sec);
+        }else{
+            $text.=(!empty($waktu_sec->jam) ? $waktu_sec->jam : 0).' Jam, ';
+            $text.=(!empty($waktu_sec->menit) ? $waktu_sec->menit : 0).' Menit, ';
+            $text.=(!empty($waktu_sec->detik) ? $waktu_sec->detik : 0).' Detik ';
+        }
 
         return $text;
+    }
+
+    public function set_format_waktu_indo($waktu_sec){
+        $_sec=$this->his_to_seconds($waktu_sec);
+        return $this->change_format_waktu_indo($_sec);
     }
 
     public function his_to_seconds($time){
         $str_time = preg_replace("/^([\d]{1,2})\:([\d]{2})$/", "00:$1:$2", $time);
         sscanf($str_time, "%d:%d:%d", $hours, $minutes, $seconds);
         return  $hours * 3600 + $minutes * 60 + $seconds;
+    }
+
+    function get_tgl_per_bulan($tahun_bulan) {
+        $get_data=explode('-',$tahun_bulan);
+        $tahun=!empty($get_data[0]) ? $get_data[0] : date('Y');
+        $bulan=!empty($get_data[1]) ? $get_data[1] : date('m');
+        
+        $jumlahHari = cal_days_in_month(CAL_GREGORIAN, $bulan, $tahun);
+    
+        $get_date=[];
+        $get_date_star_end=[];
+        for ($tanggal = 1; $tanggal <= $jumlahHari; $tanggal++) {
+            // Format tanggal dalam bentuk YYYY-MM-DD
+            $tanggalFormat = sprintf('%04d-%02d-%02d', $tahun, $bulan, $tanggal);
+            $get_date[]=$tanggalFormat;
+            if($tanggal==1){
+                $get_date_star_end[]=$tanggalFormat;
+            }
+
+            if($tanggal==$jumlahHari){
+                $get_date_star_end[]=$tanggalFormat;
+            }
+        }
+
+        return (object)[
+            'list_tgl'=>$get_date,
+            'tgl_start_end'=>$get_date_star_end,
+        ];
+
     }
 
     public function index_rumus_jadwal($user_presensi,$jadwal_presensi){

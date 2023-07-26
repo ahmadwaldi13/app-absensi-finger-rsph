@@ -6,14 +6,14 @@
 @include('layouts.breadcrumbs')
 @endsection
 
-<?php
+<?php 
     $router_name=(new \App\Http\Traits\GlobalFunction)->getRouterIndex();
 ?>
 
 @section('content')
 
-@include('absensi-karyawan.tab_absensi', ["active"=>2])
+@include('absensi-karyawan.tab_absensi', ["active"=>3])
 
 @include($router_name->path_base.'.columns')
-    
+
 @endsection

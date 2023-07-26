@@ -3,7 +3,7 @@
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class DataJadwalSeeder extends Seeder
+class CreateDataJenisJadwalSeeder extends Seeder
 {
 
     public function __construct() {
@@ -33,6 +33,7 @@ class DataJadwalSeeder extends Seeder
                     'pulang_kerja'=>'16:45:00',
                     'awal_istirahat'=>'12:00:00',
                     'akhir_istirahat'=>'14:00:00',
+                    'hari_kerja'=>'Mon,Tue,Wed,Thu,Fri',
                 ]);
             }
         } catch(\Illuminate\Database\QueryException $e){

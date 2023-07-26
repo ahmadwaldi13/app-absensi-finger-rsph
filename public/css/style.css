@@ -501,6 +501,35 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 
 }
 
+/* daterangepicker year and mount------------------- */
+
+.monthly select.monthselect, 
+.monthly select.yearselect,
+.yearly select.monthselect, 
+.yearly select.yearselect {
+    font-size: 16px !important;
+}
+
+
+.yearly table.table-condensed .monthselect,
+.yearly table.table-condensed thead tr:nth-child(2),
+.yearly table.table-condensed tbody,
+.monthly table.table-condensed thead tr:nth-child(2),
+.monthly table.table-condensed tbody {
+  display: none;
+}
+
+.daterangepicker.monthly .drp-calendar,
+.daterangepicker.yearly .drp-calendar {
+  width: 1000px !important;
+}
+
+.yearly table.table-condensed .yearselect {
+  width: 100%;
+}
+/* ------------------- */
+
+
 /* .input-test:checked ~ .sidebar {
       display: none;
   } */

@@ -7,19 +7,22 @@
                     <div class="col-lg-12 col-md-12">
                         <div class="row justify-content-start align-items-end mb-3">
 
-                            <div class="col-lg-3 col-md-10">
-                                <div class='input-date-range-bagan'>
-                                    <label for="tanggal_data" class="form-label">Tanggal</label>
-                                    <span class='icon-bagan-date'></span>
-                                    <input type="text" class="form-control input-date-range" id="tanggal_data" placeholder="Tanggal">
-                                    <input type="hidden" id="tgl_start" name="filter_date_start" value="{{ Request::get('filter_date_start') }}">
-                                    <input type="hidden" id="tgl_end" name="filter_date_end" value="{{ Request::get('filter_date_end') }}">
+                            <div class="col-lg-3">
+                                <div class='bagan_form'>
+                                    <div class='input-month-year-bagan'>
+                                        <label for="filter_tahun_bulan" class="form-label">Tahun & Bulan</label>
+                                        <span class='icon-bagan-date'></span>
+                                        <input type="text" class="form-control input-month" id="filter_tahun_bulan" name='filter_tahun_bulan' placeholder="tahun & bulan" value="{{ !empty(Request::get('filter_tahun_bulan')) ? Request::get('filter_tahun_bulan') : date('Y-m') }}">
+                                    </div>
+                                    <div class="message"></div>
                                 </div>
                             </div>
 
-                            <div class="col-lg-4 col-md-10">
-                                <label for="filter_search_text" class="form-label">Pencarian Dengan Keyword</label>
-                                <input type="text" class="form-control" name='form_filter_text' value="{{ Request::get('form_filter_text') }}" id='filter_search_text' placeholder="Masukkan Kata">
+                            <div class="col-lg-7">
+                                <div class='bagan_form'>
+                                    <label for="filter_search_text" class="form-label">Pencarian Dengan Keyword</label>
+                                    <input type="text" class="form-control" name='form_filter_text' value="{{ Request::get('form_filter_text') }}" id='filter_search_text' placeholder="Masukkan Kata">
+                                <div class="message"></div>
                             </div>
 
                         </div>
@@ -57,25 +60,11 @@
                                     <div class="message"></div>
                                 </div>
                             </div>
-
-                            {{--
-                            <div class="col-lg-2 col-md-10">
-                                <div class='bagan_form'>
-                                    <label for="filter_cara_absensi" class="form-label">Cara Absen : </label>
-                                    <select class="form-select" id="filter_cara_absensi" name="filter_cara_absensi"  aria-label="Default select ">
-                                        <option value=""  {{ (Request::get('filter_cara_absensi')=='') ? 'selected' : '' }}>Semua</option>
-                                        <option value="1" {{ (Request::get('filter_cara_absensi')=='1') ? 'selected' : '' }}>Finger</option>
-                                        <option value="3" {{ (Request::get('filter_cara_absensi')=='3') ? 'selected' : '' }}>Password</option>
-                                    </select>
-                                    <div class="message"></div>
-                                </div>
-                            </div>
-                            --}}
                         </div>
                     </div>
 
                     <div class="col-lg-12 col-md-12">
-                        <div class="row justify-content-start align-items-end mb-3">
+                        <div class="row justify-content-start align-items-end mb-3">    
                             <div class="col-lg-4 col-md-10">
                                 <div class='bagan_form'>
                                     <label for="filter_presensi_masuk" class="form-label">Status Presensi Masuk : </label>
@@ -137,13 +126,85 @@
             </form>
         </div>
 
-        <input type="hidden" id='url_data' value="{{ url('absensi-karyawan/ajax') }}" />
-        <textarea id="list_data" style="display:none">{{ $hasil_data }}</textarea>
-        
-        <div id="list_columns"></div>
+        <div style="overflow-x: auto; max-width: auto;">
+            <table class="table table-bordered table-responsive-tablet">
+                <thead>
+                    <tr>
+                        <th rowspan="2" class="py-3" style="width: 1%; vertical-align: middle;">No</th>
+                        <th rowspan="2" class="py-3" style="width: 20%; vertical-align: middle;">Nama</th>
+                        @if(!empty($list_tgl))
+                            <?php 
+                                $data_tgl=[];
+                                $data_hari_e=[];
+                                $data_hari_indo=[];
+                            ?>
+                            @foreach($list_tgl as $key_tgl => $item_tgl)
+                                <?php
+                                    $tgl_format_tmp = new \DateTime($item_tgl);
+                                    $tgl_format=$tgl_format_tmp->format('d/m');
+                                    $hari_format=$tgl_format_tmp->format('D');
+                                    $hari_format_indo=(new \App\Http\Traits\GlobalFunction)->hari($hari_format);
+                                    $data_tgl[$key_tgl]=$tgl_format;
+                                    $data_hari_e[$key_tgl]=$hari_format;
+                                    $data_hari_indo[$key_tgl]=$hari_format_indo;
+                                ?>
+                                <th class="py-3" style="width: 1%">{{ $tgl_format }}</th>
+                            @endforeach
+                        @endif
+                        <th rowspan="2" class="py-3" style="width: 30%; vertical-align: middle;">Total Jam Kerja</th>
+                        <th rowspan="2" class="py-3" style="width: 30%; vertical-align: middle;">Total Kerja</th>
+                        <th rowspan="2" class="py-3" style="width: 30%; vertical-align: middle;">Selisih</th>
+                    </tr>
+                    <tr>
+                        @foreach($list_tgl as $key_tgl => $item_tgl)
+                            <th class="py-3" style="width: 1%">{{ !empty($data_hari_indo[$key_tgl]) ? $data_hari_indo[$key_tgl] : '' }}</th>
+                        @endforeach
+                    </tr>
+                </thead>
+                <tbody>
+                    @if(!empty($list_data))
+                        @foreach($list_data as $key => $item)
+                            <?php
+                                // dd($item);
+
+                                $data_presensi=!empty($item->presensi_jadwal) ? (array)json_decode($item->presensi_jadwal) : [];
+
+                                $static_waktu_kerja_sistem_sec=(new \App\Http\Traits\AbsensiFunction)->his_to_seconds('06:45:0');
+                                $total_waktu_kerja_sistem_sec=!empty($static_waktu_kerja_sistem_sec) ? $static_waktu_kerja_sistem_sec : 0;
+                                $total_waktu_kerja_sistem_sec=$total_waktu_kerja_sistem_sec*(count($list_tgl)-7);
+                                $total_waktu_kerja_sistem_text=(new \App\Http\Traits\AbsensiFunction)->change_format_waktu_indo($total_waktu_kerja_sistem_sec,':');
+
+                                
+                                $total_waktu_kerja_user_sec=!empty($item->sum_waktu_kerja_user_sec) ? $item->sum_waktu_kerja_user_sec : 0;
+                                $total_waktu_kerja_user_text=(new \App\Http\Traits\AbsensiFunction)->change_format_waktu_indo($total_waktu_kerja_user_sec,':');
+
+                                $total_waktu_kerja_selisih_sec=$total_waktu_kerja_sistem_sec-$total_waktu_kerja_user_sec;
+                                $total_waktu_kerja_selisih_text=(new \App\Http\Traits\AbsensiFunction)->change_format_waktu_indo($total_waktu_kerja_selisih_sec,':');
+                            ?>
+                            <tr>
+                                <td style='vertical-align: middle;'>{{ $key+1 }}</td>
+                                <td style='vertical-align: middle;'>{{ !empty($item->nm_karyawan) ? $item->nm_karyawan : '' }}</td>
+                                @foreach($list_tgl as $key_tgl => $item_tgl)
+                                    <?php 
+                                        $presensi_user=!empty($data_presensi[$item_tgl]) ? $data_presensi[$item_tgl] : '';
+                                        $presensi_user_text=str_replace(',','<br>',$presensi_user);
+                                    ?>
+                                    <td style='vertical-align: middle;'>{!! $presensi_user_text !!}</td>
+                                @endforeach
+                                <td style='vertical-align: middle;'>{{ $total_waktu_kerja_sistem_text }}</td>
+                                <td style='vertical-align: middle;'>{{ $total_waktu_kerja_user_text }}</td>
+                                <td style='vertical-align: middle;'>{{ $total_waktu_kerja_selisih_text }}</td>
+                            </tr>
+                        @endforeach
+                    @endif
+                </tbody>
+            </table>
+        </div>
+
+        @if(!empty($list_data))
+            <div class="d-flex justify-content-end">
+                {{ $list_data->withQueryString()->onEachSide(0)->links() }}
+            </div>
+        @endif
     </div>
 </div>
-
-@push('script-end-2')
-    <script src="{{ asset('js/absensi-karyawan/columns.js') }}"></script>
-@endpush

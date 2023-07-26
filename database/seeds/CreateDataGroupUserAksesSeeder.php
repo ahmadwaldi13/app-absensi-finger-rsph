@@ -11,13 +11,11 @@ use App\Services\UserManagement\UserAksesAppService;
 
 use App\Classes\ListRoutes;
 
-class UxuiUserAksesSeeder extends Seeder
+class CreateDataGroupUserAksesSeeder extends Seeder
 {
-
-	public function __construct(
-		UserAksesAppService $userAksesAppService
-	) {
-		$this->userAksesAppService = $userAksesAppService;
+	public $userAksesAppService;
+	public function __construct() {
+		$this->userAksesAppService = new UserAksesAppService;
 	}
 	/**
 	 * Run the database seeds.

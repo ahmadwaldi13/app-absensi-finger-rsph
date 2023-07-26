@@ -12,10 +12,10 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
-            UxuiUserCreateUserDefaultSeeder::class,
-            UxuiUserAksesSeeder::class,
-            UxuiSettingAppVariabelSeeder::class,
-            DataJadwalSeeder::class
+            CreateDataUxuiSettingAppVariabelSeeder::class,
+            CreateDataUserDefaultSeeder::class,
+            CreateDataGroupUserAksesSeeder::class,
+            CreateDataJenisJadwalSeeder::class
         ]);
     }
 }

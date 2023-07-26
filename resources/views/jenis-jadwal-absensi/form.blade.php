@@ -54,6 +54,30 @@
             </div>
         </div>
 
+        <div class="col-lg-12 mt-3">
+            <div class="row justify-content-start align-items-end">
+                <div class="col-lg-9">
+                    <div class='bagan_form'>
+                        <label for="akhir_istirahat" class="form-label">Hari Kerja</label>
+                            <div class="row justify-content-start">
+                                <?php 
+                                    $get_hari=(new \App\Http\Traits\GlobalFunction)->hari();
+                                ?>
+                                @foreach($get_hari as $key_hari => $item_hari)
+                                    <div class="col">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name='hari_kerja[]' value="{{ $key_hari }}" id="hari_{{ $key_hari }}">
+                                            <label class="form-check-label" style='margin-top: 7px;margin-left: 5px;' for="hari_{{ $key_hari }}">{{ $item_hari }}</label>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        <div class="message"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <div class="row justify-content-start align-items-end">

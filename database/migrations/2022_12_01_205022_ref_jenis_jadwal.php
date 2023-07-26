@@ -28,11 +28,19 @@ class RefJenisJadwal extends Migration
             });
         }
 
-        $another_create=['masuk_kerja','pulang_kerja','awal_istirahat','akhir_istirahat'];
-        foreach($another_create as $value){
+        $another_create_time=['masuk_kerja','pulang_kerja','awal_istirahat','akhir_istirahat'];
+        foreach($another_create_time as $value){
             if (!Schema::hasColumn($table_name, $value)){
                 Schema::table($table_name, function (Blueprint $table) use ($value){
                     $table->time($value);
+                });
+            }
+        }
+        $another_create_string=['hari_kerja'=>50];
+        foreach($another_create_string as $value => $length){
+            if (!Schema::hasColumn($table_name, $value)){
+                Schema::table($table_name, function (Blueprint $table) use ($value,$length){
+                    $table->string($value,$length);
                 });
             }
         }

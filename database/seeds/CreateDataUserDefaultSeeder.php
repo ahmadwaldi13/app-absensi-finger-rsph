@@ -4,7 +4,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
-class UxuiUserCreateUserDefaultSeeder extends Seeder
+class CreateDataUserDefaultSeeder extends Seeder
 {
 
 	public function __construct() {

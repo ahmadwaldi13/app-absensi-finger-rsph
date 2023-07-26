@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\DB;
 
 use App\Models\UxuiSettinganAppVariable;
 
-class UxuiSettingAppVariabelSeeder extends Seeder
+class CreateDataUxuiSettingAppVariabelSeeder extends Seeder
 {
     /**
      * Run the database seeds.

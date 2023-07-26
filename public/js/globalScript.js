@@ -239,6 +239,74 @@ $(document).find(".input-date").on("change keyup", function () {
     }
 });
 
+
+$(document).find('.input-month').each(function () {
+
+    let parent = $(this).parent('.input-month-year-bagan');
+    let form_value=$(this).val();
+
+    var currentDate = new Date();
+    var month = currentDate.getMonth() + 1; // Menggunakan +1 karena nilai bulan dimulai dari 0 (Januari) hingga 11 (Desember)
+    var year = currentDate.getFullYear();
+
+    let date_this = '';
+    if ((!form_value)) {
+        date_this = year+'-'+month;
+    } else {
+        date_this = form_value;
+    }
+
+    $(this).daterangepicker({
+        singleDatePicker: true,
+        startDate: date_this,
+        locale: {
+            format: "YYYY-MM",
+        },
+        showDropdowns: true,
+        linkedCalendars: false,
+    }).on('show.daterangepicker', function (ev, picker) {
+        picker.container.addClass('monthly');
+    }).on('hide.daterangepicker', function (ev, picker) {
+        $td = $(picker.container).find('.table-condensed tbody tr:nth-child(3) td:first-child');
+        setTimeout(function() {
+            $td.trigger('mousedown');
+        }, 1);
+    });
+});
+
+$(document).find('.input-year').each(function () {
+
+    let parent = $(this).parent('.input-month-year-bagan');
+    let form_value=$(this).val();
+
+    var currentDate = new Date();
+    var year = currentDate.getFullYear();
+
+    let date_this = '';
+    if ((!form_value)) {
+        date_this = year;
+    } else {
+        date_this = form_value;
+    }
+
+    $(this).daterangepicker({
+        singleDatePicker: true,
+        startDate: date_this,
+        locale: {
+            format: "YYYY",
+        },
+        showDropdowns: true,
+        linkedCalendars: false,
+    }).on('show.daterangepicker', function (ev, picker) {
+        picker.container.addClass('yearly');
+    }).on('hide.daterangepicker', function (ev, picker) {
+        $td = $(picker.container).find('.table-condensed tbody tr:nth-child(3) td:first-child');
+        setTimeout(function() {
+            $td.trigger('mousedown');
+        }, 1);
+    });
+});
+
 $(document).find(".get-data-by-date").on("change keyup", function () {
 
     let url = (typeof $(this).data("url") != "undefined" || $(this).data("url") != null) ? $(this).data("url") : '';
@@ -838,7 +906,7 @@ function validate_form($parent=null) {
             $bagan=$parent.find('[required]');
         }
     }
-    
+
     $bagan.each(function (idx, elem) {
         $parent = $(elem).parents('.bagan_form');
         $target = $parent.find('.message');

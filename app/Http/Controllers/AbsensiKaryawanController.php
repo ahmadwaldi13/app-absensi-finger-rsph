@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 use App\Services\GlobalService;
 use PhpOffice\PhpSpreadsheet\Calculation\Web\Service;
+use Log;
 
 class AbsensiKaryawanController extends \App\Http\Controllers\MyAuthController
 {
@@ -37,21 +38,44 @@ class AbsensiKaryawanController extends \App\Http\Controllers\MyAuthController
         $get_presensi_istirahat=(new \App\Http\Traits\AbsensiFunction)->get_list_data_presensi(2);
         $get_presensi_pulang=(new \App\Http\Traits\AbsensiFunction)->get_list_data_presensi(4);
 
-        $list_data=(new \App\Services\DataPresensiRutinService)->getDataRumus3($request->all());
+        $paramter_search=$request->all();
         
-        $page = isset($request->page) ? $request->page : 1;
-        $option=['path' => $request->url(), 'query' => $request->query()];
-        $list_data = (new \App\Http\Traits\GlobalFunction)->paginate($list_data,15,$page,$option);
+        $list_data_tmp=(new \App\Services\DataPresensiRutinService)->getDataRumus3($paramter_search);
+        $list_data=!empty($list_data_tmp->list_data) ? $list_data_tmp->list_data : [];
+        $hasil_data=json_encode($list_data);
 
         $parameter_view = [
             'title' => $this->title,
             'breadcrumbs' => $this->breadcrumbs,
-            'list_data'=>$list_data,
             'get_presensi_masuk'=>$get_presensi_masuk,
             'get_presensi_istirahat'=>$get_presensi_istirahat,
-            'get_presensi_pulang'=>$get_presensi_pulang
+            'get_presensi_pulang'=>$get_presensi_pulang,
+            'hasil_data'=>$hasil_data,
         ];
 
         return view($this->part_view . '.index', $parameter_view);
+    }
+
+    function getListData(Request $request)
+    {
+        if($request->ajax()){
+            $get_req = $request->all();
+            $list_data=!empty($get_req['list_data']) ? $get_req['list_data'] : '';
+            $page=!empty($get_req['page']) ? $get_req['page'] : 1;
+            $list_data=!empty($list_data) ? json_decode($list_data) : [];
+            $list_data=(array)$list_data;
+            $list_data=array_values($list_data);
+            $list_data = (new \App\Http\Traits\GlobalFunction)->paginate($list_data,15,$page);
+            return view($this->part_view . '.columns_ajax', compact('list_data'))->render();
+        }
+    }
+
+    function ajax(Request $request){
+        $get_req = $request->all();
+        if (!empty($get_req['action'])) {
+            if ($get_req['action'] == 'get_list_data') {
+                return $this->getListData($request);
+            }
+        }
     }
 }
