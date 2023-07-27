@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Services\GlobalService;
 use App\Http\Traits\GlobalFunction;
 
-class JenisJadwalAbsensiController extends \App\Http\Controllers\MyAuthController
+class HariLiburUmumController extends \App\Http\Controllers\MyAuthController
 {
     public $part_view, $url_index, $url_name, $title, $breadcrumbs, $globalService, $globalFunction;
 
@@ -19,9 +19,9 @@ class JenisJadwalAbsensiController extends \App\Http\Controllers\MyAuthControlle
         $this->url_index = $router_name->uri;
         $this->url_name = $router_name->router_name;
 
-        $this->title = 'Jenis Jadwal Absensi';
+        $this->title = 'Hari Libur Umum';
         $this->breadcrumbs = [
-            ['title' => 'Manajemen Absensi', 'url' => url('/') . "/sub-menu?type=6"],
+            ['title' => 'Manajemen Absensi', 'url' => url('/') . "/sub-menu?type=5"],
             ['title' => $this->title, 'url' => url('/') . "/" . $this->url_index],
         ];
 
@@ -31,20 +31,29 @@ class JenisJadwalAbsensiController extends \App\Http\Controllers\MyAuthControlle
 
     function actionIndex(Request $request)
     {
-        DB::statement("ALTER TABLE ".( new \App\Models\RefJenisJadwal() )->table." AUTO_INCREMENT = 1");
         $form_filter_text = !empty($request->form_filter_text) ? $request->form_filter_text : '';
 
-        $paramater=[
-            'search' => $form_filter_text
+        $form_filter_text=!empty($request->form_filter_text) ? $request->form_filter_text : '';
+        $filter_tahun_bulan=!empty($request->filter_tahun_bulan) ? $request->filter_tahun_bulan : date('Y-m');
+
+        $get_tgl_per_bulan=(new \App\Http\Traits\AbsensiFunction)->get_tgl_per_bulan($filter_tahun_bulan);
+        $list_tgl=!empty($get_tgl_per_bulan->list_tgl) ? $get_tgl_per_bulan->list_tgl : [];
+        $filter_tgl=!empty($get_tgl_per_bulan->tgl_start_end) ? $get_tgl_per_bulan->tgl_start_end : [];
+        $filter_tgl[0]=!empty($filter_tgl[0]) ? $filter_tgl[0] : date('Y-m-d');
+        $filter_tgl[1]=!empty($filter_tgl[1]) ? $filter_tgl[1] : date('Y-m-d');
+
+        $paramater_where=[
+            'search' => $form_filter_text,
+            'tanggal'=>[$filter_tgl[0],$filter_tgl[1]],
         ];
 
-        $data_tmp_tmp=( new \App\Models\RefJenisJadwal() );
-        $list_data=$data_tmp_tmp->set_where($data_tmp_tmp,$paramater)->paginate(!empty($request->per_page) ? $request->per_page : 15);
+        $list_hari_libur=(new \App\Services\DataPresensiService)->get_data_hari_libur($paramater_where);
 
         $parameter_view = [
             'title' => $this->title,
             'breadcrumbs' => $this->breadcrumbs,
-            'list_data' => $list_data
+            'list_hari_libur' => $list_hari_libur,
+            'list_tgl'=>$list_tgl
         ];
 
         return view($this->part_view . '.index', $parameter_view);
@@ -54,9 +63,9 @@ class JenisJadwalAbsensiController extends \App\Http\Controllers\MyAuthControlle
     {
         $kode = !empty($request->data_sent) ? $request->data_sent : '';
         $paramater = [
-            'id_jenis_jadwal' => $kode
+            'tanggal' => $kode
         ];
-        $model = (new \App\Models\RefJenisJadwal())->where('id_jenis_jadwal', '=', $kode)->first();
+        $model = (new \App\Models\RefHariLiburUmum())->where('tanggal', '=', $kode)->first();
         if ($model) {
             $action_form = $this->part_view . '/update';
         } else {
@@ -104,11 +113,10 @@ class JenisJadwalAbsensiController extends \App\Http\Controllers\MyAuthControlle
     private function proses($request)
     {
         $req = $request->all();
-        DB::statement("ALTER TABLE ".( new \App\Models\RefJenisJadwal )->table." AUTO_INCREMENT = 1");
-        DB::statement("ALTER TABLE ".( new \App\Models\RefJadwal )->table." AUTO_INCREMENT = 1");
         $kode = !empty($req['key_old']) ? $req['key_old'] : '';
         $action_is_create = (str_contains($request->getPathInfo(), $this->url_index . '/create')) ? 1 : 0;
-        $link_back_redirect = ($action_is_create) ? $this->url_name : $this->url_name . '/update';
+        // $link_back_redirect = ($action_is_create) ? $this->url_name : $this->url_name . '/update';
+        $link_back_redirect = $this->url_name . '';
         DB::beginTransaction();
         $pesan = [];
         $link_back_param = [];
@@ -117,57 +125,33 @@ class JenisJadwalAbsensiController extends \App\Http\Controllers\MyAuthControlle
         } else {
             $link_back_param = ['data_sent' => $kode];
         }
-        $link_back_param = array_merge($link_back_param, $request->all());
+        $params_reg=$request->all();
+        $params_reg_tgl=!empty($params_reg['tanggal']) ? $params_reg['tanggal'] : date('Y-m-d');
+        $params_reg_tahun_bulan_tmp=new \DateTime($params_reg_tgl);
+        $params_reg_tahun_bulan=$params_reg_tahun_bulan_tmp->format('Y-m');
+        $params_reg['filter_tahun_bulan']=$params_reg_tahun_bulan;
+        $link_back_param = array_merge($link_back_param,$params_reg );
         $message_default = [
             'success' => !empty($kode) ? 'Data berhasil diubah' : 'Data berhasil disimpan',
             'error' => !empty($kode) ? 'Data tidak berhasil diubah' : 'Data tidak berhasil disimpan'
         ];
 
         try {
-            $model = (new \App\Models\RefJenisJadwal)->where('id_jenis_jadwal', '=', $kode)->first();
+
+            $model = (new \App\Models\RefHariLiburUmum)->where('tanggal', '=', $kode)->first();
             if (empty($model)) {
-                $model = (new \App\Models\RefJenisJadwal);
+                $model = (new \App\Models\RefHariLiburUmum);
             }
             $data_save = $req;
-            $hari_kerja_tmp=!empty($data_save['hari_kerja']) ? $data_save['hari_kerja'] : '';
-            $hari_kerja='';
-            if($hari_kerja_tmp){
-                $hari_kerja=implode(',',$hari_kerja_tmp);
-            }
-            $data_save['hari_kerja']=$hari_kerja;
             $model->set_model_with_data($data_save);
             $is_save = 0;
 
             if ($model->save()) {
-                $get_ref_jadwal=(new \App\Models\RefJadwal)->referensi_data();
-                if(!empty($get_ref_jadwal)){
-                    foreach($get_ref_jadwal as $val_rj){
-                        $model_jadwal = (new \App\Models\RefJadwal)->where('id_jenis_jadwal', '=', $kode)->where('kd_jadwal', '=', $val_rj->kd_jadwal)->first();
-                        if (empty($model_jadwal)) {
-                            $model_jadwal = (new \App\Models\RefJadwal);
-                            $model_jadwal->kd_jadwal=$val_rj->kd_jadwal;
-                            $model_jadwal->id_jenis_jadwal=$model->id_jenis_jadwal;
-                            $model_jadwal->uraian=$val_rj->uraian;
-                            $model_jadwal->alias=$val_rj->alias;
-                            $model_jadwal->status_toren_jam_cepat=$val_rj->status_toren_jam_cepat;
-                            $model_jadwal->status_toren_jam_telat=$val_rj->status_toren_jam_telat;
-                            $model_jadwal->status_jadwal=$val_rj->status_jadwal;
-
-                            if ($model_jadwal->save()) {
-                                $is_save++;
-                            }
-                        }else{
-                            $is_save = 1;
-                        }
-                    }
-                }else{
-                    $is_save = 1;
-                }
+                $is_save = 1;
             }
 
             if ($is_save) {
                 DB::commit();
-                $link_back_param = $this->clear_request($link_back_param, $request);
                 $pesan = ['success', $message_default['success'], 2];
             } else {
                 DB::rollBack();
@@ -176,8 +160,10 @@ class JenisJadwalAbsensiController extends \App\Http\Controllers\MyAuthControlle
         } catch (\Illuminate\Database\QueryException $e) {
             DB::rollBack();
             if ($e->errorInfo[1] == '1062') {
+                $pesan = ['error', 'Data Sudah Input Sebelumnya', 3];
+            }else{
+                $pesan = ['error', $message_default['error'], 3];
             }
-            $pesan = ['error', $message_default['error'], 3];
         } catch (\Throwable $e) {
             DB::rollBack();
             $pesan = ['error', $message_default['error'], 3];
@@ -200,7 +186,7 @@ class JenisJadwalAbsensiController extends \App\Http\Controllers\MyAuthControlle
         $kode = !empty($request->data_sent) ? $request->data_sent : null;
 
         try {
-            $model = (new \App\Models\RefJenisJadwal)->where('id_jenis_jadwal', '=', $kode)->first();
+            $model = (new \App\Models\RefHariLiburUmum)->where('tanggal', '=', $kode)->first();
             if (empty($model)) {
                 return redirect()->route($this->url_name, $link_back_param)->with(['error', 'Data tidak ditemukan']);
             }
@@ -212,7 +198,7 @@ class JenisJadwalAbsensiController extends \App\Http\Controllers\MyAuthControlle
 
             if ($is_save) {
                 DB::commit();
-                DB::statement("ALTER TABLE ".( new \App\Models\RefJenisJadwal )->table." AUTO_INCREMENT = 1");
+                DB::statement("ALTER TABLE ".( new \App\Models\RefHariLiburUmum )->table." AUTO_INCREMENT = 1");
                 $pesan = ['success', $message_default['success'], 2];
             } else {
                 DB::rollBack();

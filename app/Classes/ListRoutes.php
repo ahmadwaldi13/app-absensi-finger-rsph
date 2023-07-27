@@ -422,6 +422,43 @@ class ListRoutes
                 ]
             ],
             [
+                'title' => 'Absensi | Hari Libur Umum',
+                'item' => [
+                    [
+                        'type' => 'index',
+                        'method' => 'get',
+                        'url' => '/hari-libur-umum',
+                        'controller' => 'HariLiburUmumController@actionIndex',
+                        'name' => 'hari_libur_umum',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'create',
+                        'method' => ['get', 'post'],
+                        'url' => '/hari-libur-umum/create',
+                        'controller' => 'HariLiburUmumController@actionCreate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'update',
+                        'method' => ['get', 'post'],
+                        'url' => '/hari-libur-umum/update',
+                        'controller' => 'HariLiburUmumController@actionUpdate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'delete',
+                        'method' => 'delete',
+                        'url' => '/hari-libur-umum/delete',
+                        'controller' => 'HariLiburUmumController@actionDelete',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                ]
+            ],
+            [
                 'title' => 'Manajemen Absensi | Tarik Log Absensi Karyawan',
                 'item' => [
                     [

@@ -1,6 +1,6 @@
 <form action="{{ url($action_form) }}" method="{{ !empty($method_form) ? $method_form : 'POST' }}">
     @csrf
-    <?php 
+    <?php
         $kode=!empty($model->id_jenis_jadwal) ? $model->id_jenis_jadwal : '';
     ?>
     <input type="hidden" name="key_old" value="{{ $kode }}">
@@ -60,13 +60,24 @@
                     <div class='bagan_form'>
                         <label for="akhir_istirahat" class="form-label">Hari Kerja</label>
                             <div class="row justify-content-start">
-                                <?php 
+                                <?php
                                     $get_hari=(new \App\Http\Traits\GlobalFunction)->hari();
+                                    $get_vhktmp=!empty($model->hari_kerja) ? $model->hari_kerja : '';
+                                    $get_vhktmp_array=explode(',',$get_vhktmp);
+                                    $hari_kerja_me=[];
+                                    if(!empty($get_vhktmp_array)){
+                                        foreach($get_vhktmp_array as $value){
+                                            $hari_kerja_me[$value]=$value;
+                                        }
+                                    }
                                 ?>
                                 @foreach($get_hari as $key_hari => $item_hari)
+                                    <?php
+                                        $checked=!empty($hari_kerja_me[$key_hari]) ? 'checked' : '';
+                                    ?>
                                     <div class="col">
                                         <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name='hari_kerja[]' value="{{ $key_hari }}" id="hari_{{ $key_hari }}">
+                                            <input class="form-check-input" type="checkbox" {{ $checked }} name='hari_kerja[]' value="{{ $key_hari }}" id="hari_{{ $key_hari }}">
                                             <label class="form-check-label" style='margin-top: 7px;margin-left: 5px;' for="hari_{{ $key_hari }}">{{ $item_hari }}</label>
                                         </div>
                                     </div>

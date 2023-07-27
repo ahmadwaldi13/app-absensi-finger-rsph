@@ -30,7 +30,8 @@
                             <th class="py-3" style="width: 5%">Jam Pulang Kerja</th>
                             <th class="py-3" style="width: 5%">Istirahat</th>
                             <th class="py-3" style="width: 5%">Akhir Istirahat</th>
-                            <th class="py-3" style="width: 5%">Total Jam Kerja</th>
+                            <th class="py-3" style="width: 12%">Total Jam Kerja</th>
+                            <th class="py-3" style="width: 20%">Hari Kerja</th>
                             <th class="py-3" style="width: 5%">Action</th>
                         </tr>
                     </thead>
@@ -59,6 +60,15 @@
                                 $total_waktu_kerja=(new \App\Http\Traits\AbsensiFunction)->hitung_waktu_by_seccond($total_waktu_kerja);
                                 $total_waktu_kerja_text=$total_waktu_kerja->jam.' jam'.', '.$total_waktu_kerja->menit.' Menit'.', '.$total_waktu_kerja->detik.' Detik';
 
+                                $get_hari_kerja_tmp=!empty($item->hari_kerja) ? $item->hari_kerja : '';
+                                $get_hari_kerja_tmp=!empty($get_hari_kerja_tmp) ? explode(',',$get_hari_kerja_tmp) : [];
+                                $hari_kerja=[];
+                                if(!empty($get_hari_kerja_tmp)){
+                                    foreach($get_hari_kerja_tmp as $value){
+                                        $hari_kerja[]=(new \App\Http\Traits\GlobalFunction)->hari($value);
+                                    }
+                                }
+                                $hari_kerja=!empty($hari_kerja) ? implode(',',$hari_kerja) : '';
                             ?>
                             <tr>
                                 <td>{{ !empty($item->nm_jenis_jadwal) ? $item->nm_jenis_jadwal : ''  }}</td>
@@ -67,6 +77,7 @@
                                 <td>{{ !empty($item->awal_istirahat) ? $item->awal_istirahat : ''  }}</td>
                                 <td>{{ !empty($item->akhir_istirahat) ? $item->akhir_istirahat : ''  }}</td>
                                 <td>{{ $total_waktu_kerja_text  }}</td>
+                                <td>{{ $hari_kerja  }}</td>
                                 <td class='text-right'>
                                     {!! (new
                                     \App\Http\Traits\AuthFunction)->setPermissionButton([$router_name->uri.'/update',$paramater_url,'update'])
@@ -74,7 +85,6 @@
                                     @if(empty($disable_button))
                                         {!! (new \App\Http\Traits\AuthFunction)->setPermissionButton([$router_name->uri.'/delete',$paramater_url,'delete'],['modal'])!!}
                                     @endif
-                                    
                                 </td>
                             </tr>
                             @endforeach

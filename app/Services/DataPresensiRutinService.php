@@ -70,15 +70,15 @@ class DataPresensiRutinService extends BaseService
             '(
                 '.(new \App\Services\DataPresensiService)->get_log_per_tgl($parameter_first,1)->toSql().'
                 LEFT JOIN (
-                    select 
+                    select
                         karyawan.*,
                         utama.id_user id_user_karyawan,
                         nm_jabatan,
                         nm_departemen,
                         nm_ruangan
                     from (
-                        select id_user,id_karyawan from ref_karyawan_user where id_user in ('.$list_id_user.') 
-                    ) utama 
+                        select id_user,id_karyawan from ref_karyawan_user where id_user in ('.$list_id_user.')
+                    ) utama
                     INNER JOIN ref_karyawan karyawan on utama.id_karyawan=karyawan.id_karyawan
                     LEFT JOIN ref_jabatan rj on rj.id_jabatan=karyawan.id_jabatan
                     LEFT JOIN ref_departemen rd on rd.id_departemen=karyawan.id_departemen
@@ -125,12 +125,11 @@ class DataPresensiRutinService extends BaseService
         if(!empty($filter_id_departemen)){
             $paramater_data_karyawan_rutin['id_departemen']=$filter_id_departemen;
         }
-        
+
         $list_data_karyawan_rutin = $this->getListKaryawan($paramater_data_karyawan_rutin, 1)->select(DB::raw('group_concat(id_karyawan) as id_karyawan'),DB::raw('group_concat(id_user) as id_user'))->first();
-        
+
         $data_jadwal=(new \App\Http\Traits\PresensiHitungRutinFunction)->getWaktuKerja(['id_jenis_jadwal'=>1])->first();
 
-        
         $parameter_search=[
             'search_parameter'=>[
                 'tanggal'=>[$filter_date_start,$filter_date_end],
@@ -162,7 +161,7 @@ class DataPresensiRutinService extends BaseService
         if($filter_presensi_pulang){
             $filter_status++;
         }
-        
+
         $list_db=[];
         if($list_data){
             foreach($list_data as $key => $value){
@@ -173,19 +172,19 @@ class DataPresensiRutinService extends BaseService
                     'list_data'=>!empty($value->presensi_data) ? $value->presensi_data : '',
                     'data_jadwal_kerja'=>!empty($data_jadwal) ? $data_jadwal  : ''
                 ];
-                
+
                 $hasil_proses=(new \App\Http\Traits\PresensiHitungRutinFunction)->getProses($data_proses);
                 $get_hasil_proses_hitung_kerja=!empty($hasil_proses['hasil_hitung_kerja']) ? $hasil_proses['hasil_hitung_kerja'] : [];
                 $kode_uniq_perhitungan_user=!empty($get_hasil_proses_hitung_kerja->kode_uniq_perhitungan) ? $get_hasil_proses_hitung_kerja->kode_uniq_perhitungan : [];
 
                 $change_value['status_nilai_kerja']=$hasil_proses;
-                
+
                 $change_value['presensi_data']=!empty($change_value['presensi_data']) ? json_decode($change_value['presensi_data']) : '';
-                    
+
                 if(!empty($change_value['created'])){
                     unset($change_value['created']);
                 }
-            
+
                 $change_value=(object)$change_value;
                 $list_data[$key]=$change_value;
 
@@ -233,7 +232,7 @@ class DataPresensiRutinService extends BaseService
                 }
             }
         }
-        
+
         return (object)[
             'list_data'=>$list_data,
             'list_db'=>$list_db

@@ -138,17 +138,31 @@ trait GlobalTraits {
             'path_base'=>$path_base
         ];
     }
-    
-    public function hari($hari=''){
-        $data=[
-            'Mon'=>"Senin",
-            'Tue'=>"Selasa",
-            'Wed'=>"Rabu",
-            'Thu'=>"Kamis",
-            'Fri'=>"Jumat",
-            'Sat'=>"Sabtu",
-            'Sun'=>"Minggu",
-        ];
+
+    public function hari($hari='',$type=''){
+        $data=[];
+        if(empty($type)){
+            $data_tmp=[
+                'Mon'=>"Senin",
+                'Tue'=>"Selasa",
+                'Wed'=>"Rabu",
+                'Thu'=>"Kamis",
+                'Fri'=>"Jumat",
+                'Sat'=>"Sabtu",
+                'Sun'=>"Minggu",
+            ];
+        }else{
+            $data_tmp=[
+                'Mon'=>"Sen",
+                'Tue'=>"Sel",
+                'Wed'=>"Rab",
+                'Thu'=>"Kam",
+                'Fri'=>"Jum",
+                'Sat'=>"Sab",
+                'Sun'=>"Min",
+            ];
+        }
+        $data=$data_tmp;
         if(!empty($hari)){
             return !empty($data[$hari]) ? $data[$hari] : "Tidak di ketahui";
         }else{
@@ -222,10 +236,10 @@ trait GlobalTraits {
     {
         $page = $page ?: (Paginator::resolveCurrentPage() ?: 1);
         $items = $items instanceof Collection ? $items : Collection::make($items);
-        
+
         $total_list_data=!empty($option_custom['total_list_data']) ? $option_custom['total_list_data'] : 0;
         $total_list_data=!empty($total_list_data) ? $total_list_data : $items->count();
-        
+
         $page_if_limit_query=!empty($option_custom['page_if_limit_query']) ? $option_custom['page_if_limit_query'] : 0;
         $page_loop=$page;
         if(!empty($page_if_limit_query)){
@@ -241,7 +255,7 @@ trait GlobalTraits {
                 $limit_data[0]=0;
             }
         }
-            
+
         if(!empty($limit_data[0]) && !empty($limit_data[1]) ){
             $limit_data[0]=$limit_data[0] * $limit_data[1];
         }

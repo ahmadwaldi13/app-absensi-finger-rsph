@@ -16,17 +16,17 @@ class DataPresensiService extends BaseService
         $tgl_awal=!empty($params['tanggal'][0]) ? $params['tanggal'][0] : date('Y-m-d');
         $tgl_akhir=!empty($params['tanggal'][1]) ? $params['tanggal'][1] : date('Y-m-d');
         $list_id_user=!empty($params['list_id_user']) ? $params['list_id_user'] : 0;
-        
+
         $limit_data=!empty($params['limit']) ? $params['limit'] : [];
         $limit_data=(new \App\Http\Traits\GlobalFunction)->limit_mysql_manual($limit_data);
         $limit='';
         if(!empty($limit_data)){
             $limit="LIMIT ".implode(',',$limit_data);
         }
-        
+
         $query=DB::table(DB::raw(
             '(
-                SELECT 
+                SELECT
                     utama.*
                 FROM(
                     SELECT
@@ -39,11 +39,11 @@ class DataPresensiService extends BaseService
                         )AS presensi_data
                     FROM
                         (
-                            select 
-                                * 
-                            from ref_data_absensi_tmp 
+                            select
+                                *
+                            from ref_data_absensi_tmp
                             where
-                                date( waktu ) BETWEEN "'.$tgl_awal.'" AND "'.$tgl_akhir.'" 
+                                date( waktu ) BETWEEN "'.$tgl_awal.'" AND "'.$tgl_akhir.'"
                                 and id_user in ( '.$list_id_user.' )
                         ) utama
                     INNER JOIN ref_mesin_absensi rma on rma.id_mesin_absensi = utama.id_mesin_absensi
@@ -66,7 +66,7 @@ class DataPresensiService extends BaseService
             1=>'Finger',
             3=>'Password',
         ];
-        
+
         if(!isset($type)){
             return $list_data;
         }else{
@@ -101,7 +101,7 @@ class DataPresensiService extends BaseService
                     }
                 }
             }
-            
+
             if ($is_save) {
                 DB::commit();
                 $pesan = ['success',2];
@@ -120,5 +120,48 @@ class DataPresensiService extends BaseService
         }
 
         return $pesan;
+    }
+
+    public function get_data_hari_libur($params=[]){
+
+        $tanggal=!empty($params['tanggal']) ? $params['tanggal'] : [];
+        $tanggal[0]=!empty($tanggal[0]) ? $tanggal[0] : date('Y-m-d');
+        $tanggal[1]=!empty($tanggal[1]) ? $tanggal[1] : date('Y-m-d');
+
+        $paramater_where=[
+            'search' => !empty($params['search']) ? $params['search'] : '',
+            'where_between'=>['tanggal'=>[$tanggal[0],$tanggal[1] ]],
+        ];
+
+        $data_tmp_tmp=( new \App\Models\RefHariLiburUmum() );
+        $list_data_array=$data_tmp_tmp->set_where($data_tmp_tmp,$paramater_where)->get();
+        $list_data=[];
+        if($list_data_array){
+            foreach($list_data_array as $value){
+                $tanggal_awal=$value->tanggal;
+                $jumlah=$value->jumlah;
+                $jumlah=$jumlah-1;
+                if($jumlah<=0){
+                    $jumlah=0;
+                }
+                $get_next=$tanggal_awal." +".$jumlah." days";
+                $tanggal_akhir=date('Y-m-d', strtotime($get_next));
+
+                $tanggal_awal_str = new \DateTime($tanggal_awal);
+                $tanggal_akhir_str = new \DateTime($tanggal_akhir);
+
+
+                for ($tanggal = $tanggal_awal_str; $tanggal <= $tanggal_akhir_str; $tanggal->modify("+1 day")) {
+                    $this_tanggal=$tanggal->format("Y-m-d");
+                    $list_data[$this_tanggal]=(object)[
+                        'asal_tanggal'=>$tanggal_awal,
+                        'uraian'=>$value->uraian
+                    ];
+                }
+            }
+        }
+
+        return $list_data;
+
     }
 }

@@ -34,14 +34,14 @@ trait AbsensiTraits {
     }
 
     public function change_format_waktu_indo($waktu_sec,$format=''){
-        $waktu_sec=$this->hitung_waktu_by_seccond($waktu_sec);
+        $waktu_sec_tmp=$this->hitung_waktu_by_seccond($waktu_sec);
         $text='';
         if(!empty($format)){
-            $text=implode($format,(array)$waktu_sec);
+            $text=implode($format,(array)$waktu_sec_tmp);
         }else{
-            $text.=(!empty($waktu_sec->jam) ? $waktu_sec->jam : 0).' Jam, ';
-            $text.=(!empty($waktu_sec->menit) ? $waktu_sec->menit : 0).' Menit, ';
-            $text.=(!empty($waktu_sec->detik) ? $waktu_sec->detik : 0).' Detik ';
+            $text.=(!empty($waktu_sec_tmp->jam) ? $waktu_sec_tmp->jam : 0).' Jam, ';
+            $text.=(!empty($waktu_sec_tmp->menit) ? $waktu_sec_tmp->menit : 0).' Menit, ';
+            $text.=(!empty($waktu_sec_tmp->detik) ? $waktu_sec_tmp->detik : 0).' Detik ';
         }
 
         return $text;
@@ -62,9 +62,9 @@ trait AbsensiTraits {
         $get_data=explode('-',$tahun_bulan);
         $tahun=!empty($get_data[0]) ? $get_data[0] : date('Y');
         $bulan=!empty($get_data[1]) ? $get_data[1] : date('m');
-        
+
         $jumlahHari = cal_days_in_month(CAL_GREGORIAN, $bulan, $tahun);
-    
+
         $get_date=[];
         $get_date_star_end=[];
         for ($tanggal = 1; $tanggal <= $jumlahHari; $tanggal++) {
@@ -101,18 +101,18 @@ trait AbsensiTraits {
             $pre_akhir_sec=$this->his_to_seconds($pre_akhir);
             $pre_toren_cepat_sec=$this->his_to_seconds($pre_toren_cepat);
             $pre_toren_telat_sec=$this->his_to_seconds($pre_toren_telat);
-            
+
             $pre_cepat_sec=0;
             $pre_telat_sec=0;
 
             if($pre_status_toren_cepat==1){
                 $pre_cepat_sec=$pre_awal_sec-$pre_toren_cepat_sec;
             }
-            
+
             if($pre_status_toren_telat==1){
                 $pre_telat_sec=$pre_akhir_sec+$pre_toren_telat_sec;
             }
-            
+
             $user_presensi_sec=$this->his_to_seconds($user_presensi);
             $status_presensi='';
             $selisih_waktu_sec=0;
@@ -127,7 +127,7 @@ trait AbsensiTraits {
                     $selisih_waktu=$this->hitung_waktu_by_seccond($selisih_waktu_sec);
                 }
             }
-            
+
             if( ( $user_presensi_sec >= $pre_awal_sec ) and ( $user_presensi_sec <= $pre_akhir_sec  ) ){
                 $type_waktu='h';
                 $index='';
@@ -135,7 +135,7 @@ trait AbsensiTraits {
                 $selisih_waktu_sec=0;
                 $selisih_waktu=$this->hitung_waktu_by_seccond($selisih_waktu_sec);
             }
-            
+
             if($pre_status_toren_telat){
                 if( ( $user_presensi_sec > $pre_akhir_sec ) and ( $user_presensi_sec <= $pre_telat_sec  ) ){
                     $type_waktu='+';
@@ -290,7 +290,7 @@ trait AbsensiTraits {
             6=>[
                 'text'=>"Alpa",
                 'alias'=>"A",
-            ],  
+            ],
         ];
 
         $data_type=[];
@@ -356,7 +356,7 @@ trait AbsensiTraits {
         }
 
         if(!empty($type)){
-            return $data_type;    
+            return $data_type;
         }
 
         return $list_status;

@@ -35,14 +35,16 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
         set_time_limit(0);
 
         if(!empty($request->page)){
-            $check_first_akses=1;    
+            $check_first_akses=1;
         }
 
         $form_filter_text=!empty($request->form_filter_text) ? $request->form_filter_text : '';
         $filter_tahun_bulan=!empty($request->filter_tahun_bulan) ? $request->filter_tahun_bulan : date('Y-m');
 
         $get_tgl_per_bulan=(new \App\Http\Traits\AbsensiFunction)->get_tgl_per_bulan($filter_tahun_bulan);
+
         $list_tgl=!empty($get_tgl_per_bulan->list_tgl) ? $get_tgl_per_bulan->list_tgl : [];
+
         $filter_tgl=!empty($get_tgl_per_bulan->tgl_start_end) ? $get_tgl_per_bulan->tgl_start_end : [];
         $filter_tgl[0]=!empty($filter_tgl[0]) ? $filter_tgl[0] : date('Y-m-d');
         $filter_tgl[1]=!empty($filter_tgl[1]) ? $filter_tgl[1] : date('Y-m-d');
@@ -53,7 +55,7 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
 
         $get_data_query=(new \App\Services\DataPresensiRutinService)->getDataRumus3($paramter_search);
         $list_db=!empty($get_data_query->list_db) ? $get_data_query->list_db : [];
-        
+
         if(empty($check_first_akses)){
             $save_update=(new \App\Services\DataPresensiService)->save_update_rekap($list_db);
         }
@@ -75,6 +77,14 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
         $get_presensi_istirahat=(new \App\Http\Traits\AbsensiFunction)->get_list_data_presensi(2);
         $get_presensi_pulang=(new \App\Http\Traits\AbsensiFunction)->get_list_data_presensi(4);
 
+        $paramater_where=[
+            'tanggal'=>[$filter_tgl[0],$filter_tgl[1]],
+        ];
+
+        $list_hari_libur=(new \App\Services\DataPresensiService)->get_data_hari_libur($paramater_where);
+
+        $data_jadwal_rutin=(new \App\Http\Traits\PresensiHitungRutinFunction)->get_jadwal_rutin();
+
         $parameter_view = [
             'title' => $this->title,
             'breadcrumbs' => $this->breadcrumbs,
@@ -83,7 +93,9 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
             'get_presensi_pulang'=>$get_presensi_pulang,
             'list_tgl'=>$list_tgl,
             'list_data'=>$list_data,
-            
+            'list_hari_libur'=>$list_hari_libur,
+            'data_jadwal_rutin'=>$data_jadwal_rutin,
+
         ];
 
         return view($this->part_view . '.index', $parameter_view);
