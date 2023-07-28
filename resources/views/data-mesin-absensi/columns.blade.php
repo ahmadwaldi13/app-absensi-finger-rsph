@@ -30,6 +30,7 @@
                             <th class="py-3" style="width: 15%">Comm Key Mesin</th>
                             <th class="py-3" style="width: 15%">Nama/Alias Mesin</th>
                             <th class="py-3" style="width: 15%">Lokasi Mesin</th>
+                            <th class="py-3" style="width: 10%">Serial Number(SN)</th>
                             <th class="py-3" style="width: 15%">Action</th>
                         </tr>
                     </thead>
@@ -46,6 +47,7 @@
                                 <td>{{ !empty($item->comm_key) ? $item->comm_key : ''  }}</td>
                                 <td>{{ !empty($item->nm_mesin) ? $item->nm_mesin : ''  }}</td>
                                 <td>{{ !empty($item->lokasi_mesin) ? $item->lokasi_mesin : ''  }}</td>
+                                <td>{{ !empty($item->sn) ? $item->sn : ''  }}</td>
                                 <td class='text-right'>
                                     {!! (new
                                     \App\Http\Traits\AuthFunction)->setPermissionButton([$router_name->uri.'/update',$paramater_url,'update'])

@@ -106,6 +106,7 @@ class DataMesinAbsensiController extends \App\Http\Controllers\MyAuthController
 
     private function proses($request)
     {
+        DB::statement("ALTER TABLE ".( new \App\Models\RefMesinAbsensi )->table." AUTO_INCREMENT = 1");
         $req = $request->all();
         $kode = !empty($req['key_old']) ? $req['key_old'] : '';
         $action_is_create = (str_contains($request->getPathInfo(), $this->url_index . '/create')) ? 1 : 0;

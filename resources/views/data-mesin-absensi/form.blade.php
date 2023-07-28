@@ -5,9 +5,9 @@
     ?>
     <input type="hidden" name="key_old" value="{{ $kode }}">
 
-    <div class="row justify-content-start align-items-end mb-3">
+    <div class="row justify-content-start  mb-3">
         <div class="col-lg-6">
-            <div class="row justify-content-start align-items-end">
+            <div class="row justify-content-start ">
                 <div class="col-lg-12 mb-3">
                     <div class='bagan_form'>
                         <label for="ip_address" class="form-label">Ip Address</label>
@@ -23,16 +23,24 @@
                         <div class="message"></div>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="col-lg-6">
-            <div class="row justify-content-start align-items-end">
 
                 <div class="col-lg-12 mb-3">
                     <div class='bagan_form'>
                         <label for="nm_mesin" class="form-label">Nama/Alias Mesin</label>
                         <input type="text" class="form-control" id="nm_mesin" name='nm_mesin' value="{{ !empty($model->nm_mesin) ? $model->nm_mesin : '' }}">
+                        <div class="message"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="row justify-content-start ">
+
+                <div class="col-lg-12 mb-3">
+                    <div class='bagan_form'>
+                        <label for="sn" class="form-label">Serial Number (SN)</label>
+                        <input type="text" class="form-control" id="sn" name='sn' value="{{ !empty($model->sn) ? $model->sn : '' }}">
                         <div class="message"></div>
                     </div>
                 </div>
@@ -51,7 +59,7 @@
         
     </div>
 
-    <div class="row justify-content-start align-items-end">
+    <div class="row justify-content-start">
         <div class="col-lg-5">
             <button class="btn btn-primary" type="submit">{{ !empty($kode) ? 'Ubah' : 'Simpan'  }}</button>
         </div>
