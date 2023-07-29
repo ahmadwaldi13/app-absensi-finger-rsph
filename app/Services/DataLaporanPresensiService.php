@@ -25,6 +25,9 @@ class DataLaporanPresensiService extends BaseService
             $limit="LIMIT ".implode(',',$limit_data);
         }
 
+        unset($params['tanggal']);
+        unset($params['id_jenis_jadwal']);
+
         $query=DB::table(DB::raw(
             '(
                 select 
@@ -72,6 +75,14 @@ class DataLaporanPresensiService extends BaseService
                     id_departemen ASC
             ) utama'
         ));
+
+        $list_search=[
+            'where_or'=>['nm_karyawan'],
+        ];
+
+        if($params){
+            $query=(new \App\Models\MyModel)->set_where($query,$params,$list_search);
+        }
 
         if(empty($type)){
             return $query->get();

@@ -1,4 +1,4 @@
-function fetch_user_data(page)
+function get_list_data(page)
 {
     $url_data = typeof $(document).find("#url_data") != "undefined" || $(document).find("#url_data") != null ? $(document).find("#url_data") : "";
     $list_data = typeof $(document).find("#list_data") != "undefined" || $(document).find("#list_data") != null ? $(document).find("#list_data") : '';
@@ -18,17 +18,19 @@ function fetch_user_data(page)
         },
         success:function(data){
             $('#list_columns').html(data);
+            $(document).find('#loading_black_screen').hide();
         }
     });
 }
 
 $(document).ready(function(){
 
-    fetch_user_data(1);
+    $(document).find('#loading_black_screen').show();
+    get_list_data(1);
 
     $(document).on('click', '.pagination a', function(event){
         event.preventDefault();
         var page = $(this).attr('href').split('page=')[1];
-        fetch_user_data(page);
+        get_list_data(page);
     });
 });

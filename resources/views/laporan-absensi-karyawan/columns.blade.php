@@ -92,6 +92,7 @@
     <div class="row d-flex justify-content-between">
         <div>
             <form action="" method="GET">
+                <!-- <input type="hidden" class="form-control" id="filter_tahun_bulan_tmp" name='filter_tahun_bulan_tmp' value="{{ !empty(Request::get('filter_tahun_bulan_tmp')) ? Request::get('filter_tahun_bulan_tmp') : '' }}"> -->
                 <div class="row justify-content-start align-items-end mb-3">
                     <div class="col-lg-12 col-md-12">
                         <div class="row justify-content-start align-items-end mb-3">

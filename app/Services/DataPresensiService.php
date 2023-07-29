@@ -76,6 +76,9 @@ class DataPresensiService extends BaseService
 
     public function save_update_rekap($data_save)
     {
+        ini_set("memory_limit","800M");
+        set_time_limit(0);
+        
         DB::beginTransaction();
         $pesan = [];
         try {
@@ -87,17 +90,24 @@ class DataPresensiService extends BaseService
                 $is_save = 1;
             }
 
+            $check_tidak_update=0;
             if($is_save<=0){
                 foreach($data_save as $value){
-                    $model = (new \App\Models\DataAbsensiKaryawanRekap)->where(
-                        ['id_user'=>$value['id_user'],
+                    $model = (new \App\Models\DataAbsensiKaryawanRekap)->where([
+                        'id_user'=>$value['id_user'],
                         'id_karyawan'=>$value['id_karyawan'],
                         'tgl_presensi'=>$value['tgl_presensi'],
-                        'id_jenis_jadwal'=>$value['id_jenis_jadwal']
+                        'id_jenis_jadwal'=>$value['id_jenis_jadwal'],
                     ])->first();
-                    $model->set_model_with_data($value);
-                    if ($model->save()) {
-                        $is_save++;
+                    
+                    $hasil_check = array_diff_assoc($model->getOriginal(), $value);
+                    if(!empty($hasil_check)){
+                        $model->set_model_with_data($value);
+                        if ($model->save()) {
+                            $is_save++;
+                        }
+                    }else{
+                        $check_tidak_update++;
                     }
                 }
             }
@@ -107,7 +117,11 @@ class DataPresensiService extends BaseService
                 $pesan = ['success',2];
             } else {
                 DB::rollBack();
-                $pesan = ['error',3];
+                if(!empty($check_tidak_update)){
+                    $pesan = ['success',2];    
+                }else{
+                    $pesan = ['error',3];
+                }
             }
         } catch (\Illuminate\Database\QueryException $e) {
             DB::rollBack();

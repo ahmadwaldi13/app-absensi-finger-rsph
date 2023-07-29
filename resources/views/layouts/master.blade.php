@@ -25,6 +25,9 @@
 
 <body>
     <div class="wrapper">
+        <div id="loading_black_screen">
+            <div id="icon_loading"></div>
+        </div>
         <input type='hidden' id='base_url'  value="{{ url('/') }}" />
         @include('layouts.sidebar')
         <div class="content-wrapper px-4 pb-5">

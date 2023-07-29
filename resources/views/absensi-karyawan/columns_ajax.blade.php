@@ -79,6 +79,8 @@
                             $get_status_kerja_user_alias_class='';
                             if($get_status_kerja_user_alias=='A'){
                                 $get_status_kerja_user_alias_class='absensi_red';
+                            }else if($get_status_kerja_user_alias==''){
+                                $get_status_kerja_user_alias_class='absensi_gray';
                             }
 
                             $selisih_kurang_kerja_sec=$get_total_kerja_sec-$get_total_kerja_user_sec;
@@ -120,7 +122,6 @@
                                         $jml_loop_tbl_jadwal=0;
 
                                         $btn_item_collapse="btn-collapse-data-".($no_item_collapse++);
-
                                     ?>
                                     @if($jadwal_open_mesin)
                                         <table class="table table-no-bordered table-responsive-tablet" style='width:100%'>

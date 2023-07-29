@@ -282,7 +282,7 @@ trait PresensiHitungRutinTraits {
 
                 $status_kerja_text=[
                     'text'=>$list_status[2]['text'].','.$list_status[5]['text'],
-                    'alias'=>$list_status[2]['alias'].$list_status[5]['text'],
+                    'alias'=>$list_status[2]['alias'].$list_status[5]['alias'],
                 ];
             }elseif(!empty($get_hasil_rumus['list_p7'])){
                 /*
@@ -296,7 +296,7 @@ trait PresensiHitungRutinTraits {
 
                 $status_kerja_text=[
                     'text'=>$list_status[3]['text'].','.$list_status[5]['text'],
-                    'alias'=>$list_status[3]['alias'].$list_status[5]['text'],
+                    'alias'=>$list_status[3]['alias'].$list_status[5]['alias'],
                 ];
             }
 
@@ -310,8 +310,6 @@ trait PresensiHitungRutinTraits {
                 'status_kerja_text'=>!empty($status_kerja_text) ? (object)$status_kerja_text : '',
                 'kode_uniq_perhitungan'=>!empty($list_hasil_user_prensensi) ? $list_hasil_user_prensensi : [],
             ];
-
-
         }
     }
 

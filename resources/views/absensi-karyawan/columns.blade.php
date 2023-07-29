@@ -139,7 +139,7 @@
 
         <input type="hidden" id='url_data' value="{{ url('absensi-karyawan/ajax') }}" />
         <textarea id="list_data" style="display:none">{{ $hasil_data }}</textarea>
-        
+
         <div id="list_columns"></div>
     </div>
 </div>
