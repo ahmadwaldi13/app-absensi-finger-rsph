@@ -92,7 +92,6 @@
     <div class="row d-flex justify-content-between">
         <div>
             <form action="" method="GET">
-                <!-- <input type="hidden" class="form-control" id="filter_tahun_bulan_tmp" name='filter_tahun_bulan_tmp' value="{{ !empty(Request::get('filter_tahun_bulan_tmp')) ? Request::get('filter_tahun_bulan_tmp') : '' }}"> -->
                 <div class="row justify-content-start align-items-end mb-3">
                     <div class="col-lg-12 col-md-12">
                         <div class="row justify-content-start align-items-end mb-3">
@@ -308,6 +307,22 @@
             </div>
         </div>
 
+        @if( (new \App\Http\Traits\AuthFunction)->checkAkses($router_name->uri.'/cetak') )
+            @if(!empty($list_data->total()))
+                <?php
+                    $params_filter=Request::all();
+                    $parameter_sent=[
+                        'data_sent'=>json_encode($params_filter)
+                    ];
+                    $url_cetak=(new \App\Http\Traits\GlobalFunction)->set_paramter_url($router_name->uri.'/cetak',$parameter_sent);
+                ?>
+                <div class="row">
+                    <div class="col-md-12 text-end">
+                        <a href="{{ url($url_cetak) }}" class="btn" style='color:#fff;background-color:#7912e0;'><i class="fa-solid fa-file-excel"></i> Print</a>
+                    </div>
+                </div>
+            @endif
+        @endif
         <div style="overflow-x: auto; max-width: auto;">
             <table class="table table-bordered table-responsive-tablet">
                 <thead>
@@ -326,6 +341,7 @@
                     @if(!empty($list_data))
                         <?php
                             $list_departemen=[];
+                            $list_ruangan=[];
                         ?>
                         @foreach($list_data as $key => $item)
                             <?php
@@ -342,6 +358,13 @@
                                 <?php $list_departemen[$item->id_departemen]=1; ?>
                                 <tr style='background: #ccc;'>
                                     <td colspan="50" style='vertical-align: middle;'>{{ !empty($item->nm_departemen) ? $item->nm_departemen : '' }}</td>
+                                </tr>
+                            @endif
+                            @if(empty($list_ruangan[$item->id_ruangan]))
+                                <?php $list_ruangan[$item->id_ruangan]=1; ?>
+                                <tr style='background: #eaeaea;'>
+                                    <td>-</td>
+                                    <td colspan="50" style='vertical-align: middle;'>{{ !empty($item->nm_ruangan) ? $item->nm_ruangan : '' }}</td>
                                 </tr>
                             @endif
                             <tr>

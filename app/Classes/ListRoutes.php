@@ -519,6 +519,14 @@ class ListRoutes
                         'name' => 'laporan_absensi_karyawan',
                         'middleware' => '',
                     ],
+                    [
+                        'type' => 'cetak',
+                        'method' => 'get',
+                        'url' => '/laporan-absensi-karyawan/cetak',
+                        'controller' => 'LaporanAbsensiKaryawanController@actionCetak',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
                 ]
             ],
 
