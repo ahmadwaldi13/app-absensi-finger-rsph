@@ -38,6 +38,15 @@ class RefUserInfo extends Migration
             });
         }
 
+        $another_create_integer=['pin'];
+        foreach($another_create_integer as $value){
+            if (!Schema::hasColumn($table_name, $value)){
+                Schema::table($table_name, function (Blueprint $table) use ($value){
+                    $table->integer($value);
+                });
+            }
+        }
+
         $table_name='ref_user_info_detail';
         if (!Schema::hasTable($table_name)) {
             Schema::create($table_name, function (Blueprint $table) use ($table_name) {
@@ -55,6 +64,15 @@ class RefUserInfo extends Migration
             });
         }
 
+        $another_create_integer=['pin'];
+        foreach($another_create_integer as $value){
+            if (!Schema::hasColumn($table_name, $value)){
+                Schema::table($table_name, function (Blueprint $table) use ($value){
+                    $table->integer($value);
+                });
+            }
+        }
+
 
         $table_name='user_mesin_tmp';
         if (!Schema::hasTable($table_name)) {
@@ -67,6 +85,15 @@ class RefUserInfo extends Migration
                 $table->integer('group')->nullable(true);
                 $table->integer('privilege')->nullable(true);
             });
+        }
+
+        $another_create_integer=['pin','pin2'];
+        foreach($another_create_integer as $value){
+            if (!Schema::hasColumn($table_name, $value)){
+                Schema::table($table_name, function (Blueprint $table) use ($value){
+                    $table->integer($value);
+                });
+            }
         }
 
 

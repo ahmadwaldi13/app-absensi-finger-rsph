@@ -130,6 +130,7 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
                         'group'=>$this->parse_data($data, "<Group>", "</Group>"),
                         'privilege'=>$this->parse_data($data, "<Privilege>", "</Privilege>"),
                         'card'=>$this->parse_data($data, "<Card>", "</Card>"),
+                        'pin'=>$this->parse_data($data, "<PIN>", "</PIN>"),
                         'pin2'=>$this->parse_data($data, "<PIN2>", "</PIN2>"),
                         'tz1'=>$this->parse_data($data, "<TZ1>", "</TZ1>"),
                         'tz2'=>$this->parse_data($data, "<TZ2>", "</TZ2>"),
@@ -150,14 +151,17 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
         return '';
     }
 
-    function get_user_tamplate($id_user){
+    function get_user_tamplate($pin){
         $connect_ip=$this->connect_sock();
 
         if(empty($connect_ip[2]==3)){
             $pin_x='';
-            if($id_user){
-                $pin_x=$this->lib($id_user)->pin;
+            if($pin){
+                $pin_x=$this->lib($pin)->pin;
             }
+            // if($id_user){
+            //     $pin_x=$this->lib($id_user)->pin;
+            // }
             $soap_request='';
             $soap_request.=$this->lib($this->comm_key)->arg_com_key;
             $soap_request.="<Arg>".$pin_x."</Arg>";
@@ -173,7 +177,7 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
                 if($data){
                     $jml++;
                     $data_tmp[]=[
-                        'id'=>$this->parse_data($data, "<PIN>", "</PIN>"),
+                        'pin'=>$this->parse_data($data, "<PIN>", "</PIN>"),
                         'finger_id'=>$this->parse_data($data, "<FingerID>", "</FingerID>"),
                         'size'=>$this->parse_data($data, "<Size>", "</Size>"),
                         'valid'=>$this->parse_data($data, "<Valid>", "</Valid>"),
@@ -248,23 +252,23 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
         return '';
     }
 
-    function get_user_with_tamplate($id_user=''){
-        $data_tmp=[];
-        $get_user=$this->get_user($id_user);
-        if($get_user){
-            $get_user=json_decode($get_user);
-            foreach($get_user as $value){
-                $tamplate=$this->get_user_tamplate($value->id);
-                $data_tmp[]=array_merge((array)$value,['tamplate'=>$tamplate]);
+    // function get_user_with_tamplate($id_user=''){
+    //     $data_tmp=[];
+    //     $get_user=$this->get_user($id_user);
+    //     if($get_user){
+    //         $get_user=json_decode($get_user);
+    //         foreach($get_user as $value){
+    //             $tamplate=$this->get_user_tamplate($value->id);
+    //             $data_tmp[]=array_merge((array)$value,['tamplate'=>$tamplate]);
 
-            }
-        }
+    //         }
+    //     }
 
-        if($data_tmp){
-            return json_encode($data_tmp);
-        }
-        return '';
-    }
+    //     if($data_tmp){
+    //         return json_encode($data_tmp);
+    //     }
+    //     return '';
+    // }
 
     function upload_user_to_mesin($data_user){
         $connect_ip=$this->connect_sock();

@@ -137,6 +137,8 @@ class DataUserMesinSinkronisasiController extends \App\Http\Controllers\MyAuthCo
                     $model->name = $value->name;
                     $model->group = $value->group;
                     $model->privilege = $value->privilege;
+                    $model->pin = $value->pin;
+                    $model->pin2 = $value->pin2;
 
                     if ($model->save()) {
                         $jml_save++;
@@ -198,6 +200,7 @@ class DataUserMesinSinkronisasiController extends \App\Http\Controllers\MyAuthCo
                         'group'=>$value_user->group,
                         'privilege'=>$value_user->privilege,
                         'card'=>$value_user->card,
+                        'pin'=>$value_user->pin,
                         'pin2'=>$value_user->pin2,
                         'tz1'=>$value_user->tz1,
                         'tz2'=>$value_user->tz2,
@@ -214,6 +217,8 @@ class DataUserMesinSinkronisasiController extends \App\Http\Controllers\MyAuthCo
                         $jml_save_user++;
                         
                         $get_user_finger=$mesin->get_user_tamplate($value_user->id);
+                        // $get_user_finger=$mesin->get_user_tamplate($value_user->pin);
+
                         if($get_user_finger){
                             (new \App\Models\RefUserInfoDetail())->where(['id_user'=>$value_user->id])->delete();
                             foreach($get_user_finger as $value_finger){
@@ -232,7 +237,6 @@ class DataUserMesinSinkronisasiController extends \App\Http\Controllers\MyAuthCo
                                 }
                             }
                         }
-                        
                     }
                 }
 
