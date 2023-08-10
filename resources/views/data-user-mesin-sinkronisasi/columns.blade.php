@@ -3,7 +3,7 @@
     <div class="row d-flex justify-content-between">
         <div>
             <form action="" method="GET">
-                
+
                 <div class="row justify-content-start align-items-end mb-3">
                     <div class="col-lg-3 col-md-10">
                         <label for="filter_search_text" class="form-label">Pencarian Dengan Keyword</label>
@@ -66,6 +66,7 @@
                 <table class="table border table-responsive-tablet">
                     <thead>
                         <tr>
+                            <th class="py-3" style="width: 1%">No.</th>
                             <th class="py-3" style="width: 15%">Nama Mesin</th>
                             <th class="py-3" style="width: 15%">Id User</th>
                             <th class="py-3" style="width: 15%">Username</th>
@@ -84,7 +85,7 @@
                                 if(!empty($item->db)){
                                     $check_database="<span style='color:#128628'>Ada</span>";
                                 }
-                                
+
                                 $status_dup=0;
                                 $data_duplicate_text="";
                                 $data_duplicate_id='';
@@ -113,6 +114,7 @@
                                 $kode_change=$id_mesin_absensi.'@'.$id_user_mesin;
                             ?>
                             <tr>
+                                <td>{{ ($key+1)  }}</td>
                                 <td>
                                     <div>{{ !empty($item->nm_mesin) ? $item->nm_mesin : ''  }}</div>
                                     <div>IP : {{ !empty($item->ip_address) ? $item->ip_address : ''  }}</div>
