@@ -64,6 +64,8 @@ class RefUserInfo extends Migration
             });
         }
 
+        DB::statement("ALTER TABLE ".$table_name." MODIFY finger longtext");
+
         $another_create_integer=['pin'];
         foreach($another_create_integer as $value){
             if (!Schema::hasColumn($table_name, $value)){
@@ -95,7 +97,6 @@ class RefUserInfo extends Migration
                 });
             }
         }
-
 
         $table_name='ref_karyawan_user';
         if (!Schema::hasTable($table_name)) {

@@ -1,0 +1,38 @@
+format harud di hilangkan di finger
+AAAAAAAA
+
+
+-- ambil user id
+select GROUP_CONCAT(USERID) from (
+select  USERID from CHECKINOUT
+where sn='BJ36193960290'
+group by USERID
+)utama
+
+
+
+
+set @id_mesin = 5;
+
+select 
+	@userid_mdb_list := group_concat(USERID)
+from(
+	select 
+		log.*,
+		mesin.id_mesin_absensi,
+		nm_mesin,
+		lokasi_mesin 
+	from (
+		select 
+			USERID,sn 
+		from sik_atam_absensi_mdb.CHECKINOUT 
+	)log
+	left join ref_mesin_absensi mesin  on mesin.sn=log.sn
+	where id_mesin_absensi=@id_mesin
+	group by USERID
+)utama
+;
+
+select @userid_mdb_list;
+
+
