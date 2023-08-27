@@ -50,7 +50,7 @@ class DataUserMesinController extends \App\Http\Controllers\MyAuthController
             $paramater['id_departemen']=$filter_id_departemen;
         }
     
-        $list_data = $this->refUserInfoService->getList($paramater, 1)->paginate(!empty($request->per_page) ? $request->per_page : 30);
+        $list_data = $this->refUserInfoService->getList($paramater, 1)->orderBy(DB::raw("CONVERT ( REPLACE (utama.id_user, '-', '' ), UNSIGNED INTEGER )"),'ASC')->paginate(!empty($request->per_page) ? $request->per_page : 30);
         
         $params_json=json_encode($request->all());
         $parameter_view = [
