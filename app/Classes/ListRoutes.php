@@ -345,6 +345,14 @@ class ListRoutes
                         'name' => '',
                         'middleware' => '',
                     ],
+                    [
+                        'type' => 'system',
+                        'method' => 'get',
+                        'url' => '/data-user-mesin-copy/ajax',
+                        'controller' => 'DataUserMesinCopyController@ajax',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
                 ]
             ],
             [

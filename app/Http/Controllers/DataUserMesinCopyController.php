@@ -7,12 +7,13 @@ use Illuminate\Support\Facades\DB;
 
 use App\Services\GlobalService;
 use App\Services\UserMesinTmpService;
+use App\Services\RefUserInfoService;
 
 class DataUserMesinCopyController extends \App\Http\Controllers\MyAuthController
 {
 
     public $part_view, $url_index, $url_name, $title, $breadcrumbs, $globalService;
-    public $userMesinTmpService;
+    public $userMesinTmpService,$refUserInfoService;
 
     public function __construct()
     {
@@ -29,18 +30,21 @@ class DataUserMesinCopyController extends \App\Http\Controllers\MyAuthController
 
         $this->globalService = new GlobalService;
         $this->userMesinTmpService = new UserMesinTmpService;
+        $this->refUserInfoService = new RefUserInfoService;
     }
 
     function actionIndex(Request $request){
-
-        if($request->isMethod('post')){
-            return $this->proses($request);
-        }
 
         $parameter_view = [
             'title' => $this->title,
             'breadcrumbs' => $this->breadcrumbs,
         ];
+
+        if($request->isMethod('post')){
+            if($request->get('proses')=='1'){
+                return $this->proses($request);
+            }
+        }
 
         return view($this->part_view . '.index', $parameter_view);
     }
@@ -58,11 +62,18 @@ class DataUserMesinCopyController extends \App\Http\Controllers\MyAuthController
 
         try {
 
-            $get_data=( new \App\Models\RefUserInfo() )->orderBy('id_user','ASC')->get();
-            if(empty($get_data[0])){
-                return redirect()->route($this->url_name, $link_back_param)->with(['error'=>'Data tidak ditemukan']);
+            $item_list_user=!empty($req['item_list_terpilih']) ? $req['item_list_terpilih'] : '';
+            $item_list_user=!empty($item_list_user) ? json_decode($item_list_user,true) : [];
+
+            if(empty($item_list_user)){
+                return redirect()->route($this->url_name, $link_back_param)->with(['error'=>'List User Tidak ada']);
             }
 
+            // $get_data=( new \App\Models\RefUserInfo() )->orderBy('id_user','ASC')->get();
+            // if(empty($get_data[0])){
+            //     return redirect()->route($this->url_name, $link_back_param)->with(['error'=>'Data tidak ditemukan']);
+            // }
+            
             $data_mesin_tujuan=(new \App\Models\RefMesinAbsensi)->where(['id_mesin_absensi'=>$id_mesin_tujuan])->first();
             if(empty($data_mesin_tujuan)){
                 return redirect()->route($this->url_name, $link_back_param)->with(['error'=>'Data Mesin Tujuan Tidak ditemukan']);
@@ -93,7 +104,10 @@ class DataUserMesinCopyController extends \App\Http\Controllers\MyAuthController
             
             $jml_user=0;
             $jml_user_detail=0;
-            foreach($get_data as $user){
+            foreach($item_list_user as $key_u => $user){
+                $user['id_user']=$key_u;
+                $user=(object)$user;
+
                 $hasil_user=$model_mesin_tujuan->upload_user_to_mesin($user);
                 $check_hasil=!empty($hasil_user[1]) ? $hasil_user[1] : '';
                 if($check_hasil==1){
@@ -133,5 +147,114 @@ class DataUserMesinCopyController extends \App\Http\Controllers\MyAuthController
         }
 
         return redirect()->route($this->url_name, $link_back_param)->with([$pesan[0] => $pesan[1]]);
+    }
+
+    function getListUser(Request $request){
+
+        $hasil_data=[];
+        try{
+
+            $filter_kd_jenis='';
+            $form_filter_text='';
+            $search = !empty($request->search) ? $request->search : '';
+            $filter=!empty($search['value']) ? $search['value'] : '';
+            if($filter){
+                $filter=json_decode($filter);
+                if(!empty($filter)){
+                    foreach($filter as $value){
+                        if( trim(strtolower($value->name))=='filter_kd_jenis' ){
+                            $filter_kd_jenis=$value->value;
+                        }
+                        if( trim(strtolower($value->name))=='form_filter_text' ){
+                            $form_filter_text=$value->value;
+                        }
+                    }
+                }
+            }
+
+            $start_page=!empty($request->start) ? $request->start : 0;
+            $end_page=!empty($request->end) ? $request->end : 20;
+
+            $paramater=[
+                'search'=>$form_filter_text
+            ];
+            
+            // if(!empty($filter_kd_jenis)){
+            //     $paramater['jenis']=$filter_kd_jenis;
+            // }
+
+            // $paramater=[];
+            // $data_tmp=( new \App\Services\BarangNonMedisService )->getBarangList($paramater,1)->where("ipsrsbarang.stok", ">", "0")->offset($start_page)->limit($end_page)->get();
+            $data_tmp=$this->refUserInfoService->getList($paramater, 1)
+            ->orderBy(DB::raw("CONVERT ( REPLACE (utama.id_user, '-', '' ), UNSIGNED INTEGER )"),'ASC')
+            // ->orderBy(DB::raw('nm_karyawan'),'ASC')
+            ->offset($start_page)->limit($end_page)->get();
+            
+            $data_count=$this->refUserInfoService->getList($paramater, 1)->count();
+            if(!empty($data_tmp)){
+                foreach($data_tmp as $item){
+
+                    $get_privil=(new \App\Models\RefUserInfo())->get_privilege($item->privilege);
+
+                    $nama_karyawan="<span style='color:RED'>Belum Disetting</span>";
+                    if(!empty($item->status_id_user)){
+                        $nama_karyawan="<span style='color:#128628'>".$item->nm_karyawan."</span>";
+                    }
+
+                    $div_un='';
+                    $div_un.="<span>( ".( !empty($item->id_user) ? $item->id_user : '' )." )</span>";
+                    $div_un.="<span> ".( !empty($item->name) ? $item->name : '' )."</span>";
+
+                    $div_gp="<span>".( !empty($item->group) ? $item->group : '' )."</span>/<span>".$get_privil."</span>";
+
+                    $data_json=[
+                        $div_un,
+                        $div_gp,
+                        (!empty($item->nm_karyawan) ? $item->nm_karyawan : '' ),
+                        !empty($item->nm_departemen) ? $item->nm_departemen : '',
+                        !empty($item->nm_ruangan) ? $item->nm_ruangan : '',
+                    ];
+
+                    $data_json=json_encode($data_json);
+                    
+                    $data=[
+                        $div_un,
+                        $div_gp,
+                        $nama_karyawan,
+                        !empty($item->nm_departemen) ? $item->nm_departemen : '',
+                        !empty($item->nm_ruangan) ? $item->nm_ruangan : '',
+                        "<input class='form-check-input hover-pointer checked_b' style='border-radius: 0px;' type='checkbox' data-me='".$data_json."' data-kode='" . $item->id_user . "'>",
+                    ];
+                    $hasil_data[]=$data;
+                }
+            }
+
+        } catch (\Throwable $e) {
+            $hasil_data=[];
+        }
+
+        return [
+            'data'=>!empty($hasil_data) ? $hasil_data : [],
+            'recordsTotal'=>!empty($data_count) ? $data_count : 0,
+            'recordsFiltered'=>!empty($data_count) ? $data_count : 0,
+        ];
+    }
+
+    function ajax(Request $request){
+        $get_req = $request->all();
+        if(!empty($get_req['action'])){
+            if($get_req['action']=='list_user'){
+                $hasil=$this->getListUser($request);
+                if($request->ajax()){
+                    $return='';
+                    if($hasil){
+                        $return =json_encode($hasil);
+                    }
+                    return $return;
+                    // return response()->json(array('success' => true, 'content'=>$hasil));
+                }
+                return $hasil;
+            }
+        }
     }
 }

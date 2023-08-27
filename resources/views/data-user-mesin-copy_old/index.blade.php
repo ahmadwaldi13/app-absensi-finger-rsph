@@ -52,63 +52,22 @@
                                 <div class="message"></div>
                             </div>
                         </div>
-
-                        <hr>
-                        <div class="card card-body" style='background:#bbe7fa'>
-                            <div id="data-terpilih">
-                                <h4>List Data Terpilih</h4>
-                                <div style="overflow-x: auto; max-width: auto;">
-                                    <table class="table border table-responsive-tablet">
-                                        <thead>
-                                            <tr>
-                                                <th class="py-3" style="width: 25%">User Mesin</th>
-                                                <th class="py-3" style="width: 10%">Group/Privilege</th>
-                                                <th class="py-3" style="width: 15%">Nama Karyawan</th>
-                                                <th class="py-3" style="width: 15%">Departemen</th>
-                                                <th class="py-3" style="width: 15%">Ruangan</th>
-                                                <th class="py-3" style="width: 1%">action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody></tbody>
-                                    </table>
+                        
+                        @if( (new \App\Http\Traits\AuthFunction)->checkAkses($router_name->uri.'/update') )
+                            <div class="col-lg-1 col-md-1">
+                                <div class="d-grid grap-2">
+                                    <button type="submit" name='proses' class="btn btn-primary" value=1>
+                                        <span>Proses</span>
+                                    </button>
                                 </div>
-                                
                             </div>
-                        </div>
-
-                        <textarea id='item_list_terpilih' name='item_list_terpilih' >{{ !empty($item_list_terpilih) ? $item_list_terpilih : '' }}</textarea>
+                        @endif
                         
                     </div>
                 </div>
-
-                @if( (new \App\Http\Traits\AuthFunction)->checkAkses($router_name->uri.'/update') )
-                    <div class="col-lg-12 col-md-12">
-                        <div class="row align-items-end">
-                            <div class="d-flex justify-content-end">
-                                <button type="submit" name='proses' class="btn btn-primary validate_submit" value=1>
-                                    <span>Proses</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                @endif
             </form>
         </div>
     </div>
 </div>
-    
-
-    
-<hr>
-<div class="card card-body mt-5">
-    <h4>List User Mesin</h4>
-    <div id="list-data">
-        @include($router_name->path_base.'.columns')
-    </div>
-</div>
-
-@push('script-end-2')
-    <script src="{{ asset('js/data-user-mesin-copy/form.js') }}"></script>
-@endpush
 
 @endsection

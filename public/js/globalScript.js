@@ -51,17 +51,22 @@ function is_valid_json_string(str) {
 }
 
 function decode_html_raw(str) {
-    pos = str.indexOf('&lt;');
-    while (pos >= 0) {
-        str = str.replace('&lt;', '<')
+    if(!$.isNumeric(str)){
         pos = str.indexOf('&lt;');
-    }
-    pos = str.indexOf('&gt;');
-    while (pos >= 0) {
-        str = str.replace('&gt;', '>')
+        while (pos >= 0) {
+            str = str.replace('&lt;', '<')
+            pos = str.indexOf('&lt;');
+        }
         pos = str.indexOf('&gt;');
+        while (pos >= 0) {
+            str = str.replace('&gt;', '>')
+            pos = str.indexOf('&gt;');
+        }
+
+        return $.trim(str);
     }
-    return $.trim(str);
+    
+    return str;
 }
 
 $(document).ready(function () {
