@@ -94,7 +94,9 @@ class DataUserMesinSinkronisasiController extends \App\Http\Controllers\MyAuthCo
             }
         }
 
-        $list_data = $this->userMesinTmpService->getList($paramater_search, 1)->paginate(!empty($request->per_page) ? $request->per_page : 30);
+        $list_data = $this->userMesinTmpService->getList($paramater_search, 1)
+        ->orderBy(DB::raw("CONVERT ( REPLACE (id_user, '-', '' ), UNSIGNED INTEGER )"),'ASC')
+        ->paginate(!empty($request->per_page) ? $request->per_page : 30);
 
         $parameter_view = [
             'title' => $this->title,
