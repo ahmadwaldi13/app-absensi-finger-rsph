@@ -48,6 +48,7 @@
                                 <td>{{ !empty($item->nm_mesin) ? $item->nm_mesin : ''  }}</td>
                                 <td>{{ !empty($item->lokasi_mesin) ? $item->lokasi_mesin : ''  }}</td>
                                 <td>{{ !empty($item->sn) ? $item->sn : ''  }}</td>
+                                <td>{{ !empty($item->status_mesin) ? 'Aktif' : 'Tidak'  }}</td>
                                 <td class='text-right'>
                                     {!! (new
                                     \App\Http\Traits\AuthFunction)->setPermissionButton([$router_name->uri.'/update',$paramater_url,'update'])

@@ -27,6 +27,15 @@ class RefMesinAbsensi extends Migration
             });
         }
 
+        $another_create_smallInteger=['status_mesin'];
+        foreach($another_create_smallInteger as $value){
+            if (!Schema::hasColumn($table_name, $value)){
+                Schema::table($table_name, function (Blueprint $table) use ($value){
+                    $table->smallInteger($value);
+                });
+            }
+        }
+
         $another_create_time=['sn'];
         foreach($another_create_time as $value){
             if (!Schema::hasColumn($table_name, $value)){

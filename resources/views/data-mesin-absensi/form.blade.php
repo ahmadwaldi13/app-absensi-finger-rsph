@@ -48,8 +48,19 @@
                 <div class="col-lg-12 mb-3">
                     <div class='bagan_form'>
                         <label for="lokasi_mesin" class="form-label">Lokasi Mesin</label>
-                        <textarea class="form-control" id="lokasi_mesin" name="lokasi_mesin" rows="3">{{!empty($model->lokasi_mesin) ? $model->lokasi_mesin : ''}}</textarea>
+                        <textarea class="form-control" id="lokasi_mesin" name="lokasi_mesin" rows="2">{{!empty($model->lokasi_mesin) ? $model->lokasi_mesin : ''}}</textarea>
                         <div class="message"></div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class='bagan_form'>
+                        <label for="prefix" class="form-label">Status Aktif</label>
+                        <div class="form-check form-switch">
+                            <?php $checked=!empty($model->status_mesin) ? ($model->status_mesin == 1 ? 'checked' : '') : ''; ?>
+                            <input class="form-check-input" type="checkbox" name="status_mesin" value="1" {{ $checked }} id="flexSwitchCheckChecked">
+                            <div class="message"></div>
+                        </div>
                     </div>
                 </div>
 

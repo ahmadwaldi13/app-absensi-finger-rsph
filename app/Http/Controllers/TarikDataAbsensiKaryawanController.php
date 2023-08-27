@@ -208,7 +208,7 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
     }
 
     private function get_data_mesin(){
-        $list_data_tmp=(new \App\Models\RefMesinAbsensi)->orderByRaw("CONVERT ( REPLACE ( ip_address, '.', '' ), UNSIGNED INTEGER )",'ASC')->get();
+        $list_data_tmp=(new \App\Models\RefMesinAbsensi)->where(['status_mesin'=>1])->orderByRaw("CONVERT ( REPLACE ( ip_address, '.', '' ), UNSIGNED INTEGER )",'ASC')->get();
 
         $list_data=[];
         foreach($list_data_tmp as $value){

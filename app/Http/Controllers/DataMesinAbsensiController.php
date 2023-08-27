@@ -131,8 +131,12 @@ class DataMesinAbsensiController extends \App\Http\Controllers\MyAuthController
                 $model = (new \App\Models\RefMesinAbsensi);
             }
             $data_save = $req;
+            $data_save['status_mesin']=!empty($data_save['status_mesin']) ? $data_save['status_mesin'] : 0;
+            $data_save['ip_address']=trim(str_replace(' ','',$data_save['ip_address']));
+            $data_save['comm_key']=trim(str_replace(' ','',$data_save['comm_key']));
+            $data_save['sn']=trim(str_replace(' ','',$data_save['sn']));
             $model->set_model_with_data($data_save);
-
+            
             $is_save = 0;
 
             if ($model->save()) {
