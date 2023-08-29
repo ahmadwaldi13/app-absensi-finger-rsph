@@ -69,10 +69,10 @@ function import_data($key,$urut_proses,$start_query,$end_query,$tgl_first,$tgl_p
         success: function(hasil){
             $tampil_console={
                 'callback':hasil.hasil,
+                'mesin':hasil.id_mesin,
                 'proses_ke':hasil.no_proses,
                 // 'limit_ke':hasil.start_query+' - '+hasil.end_query,
                 'tgl_proses':hasil.tanggal_proses_tmp,
-                'tgl_range':$tgl_first+' - '+$tgl_max,
                 'message':hasil.message
             }
             console.log($tampil_console);
