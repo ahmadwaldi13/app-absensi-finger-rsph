@@ -321,21 +321,29 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
                     }
                 }
 
+                $lanjut_proses=0;
+                $tanggal_proses_start = date('Y-m-d', strtotime('+1 days', strtotime($tanggal_proses_start))); 
+                if(strtotime($tanggal_max)>=strtotime($tanggal_proses_start)){
+                    $lanjut_proses=1;
+                }
+
                 if($proses_gagal){
                     $status_mesin=1;
                     $urut_proses=$end_proses;
+                    if(!empty($lanjut_prose)){
+                        $status_mesin=0;
+                        $urut_proses=1;
+                    }
                 }else{
                     $status_mesin=0;
                     $message='';
                     $progres_bar=$calcu*$urut_proses;
                     $urut_proses_succ=$urut_proses+1;
                     $urut_proses_tmp=$urut_proses_succ;
-                    $urut_proses=$urut_proses_tmp;
-
-                    $tanggal_proses_start = date('Y-m-d', strtotime('+1 days', strtotime($tanggal_proses_start))); 
-                    if(strtotime($tanggal_max)>=strtotime($tanggal_proses_start)){
+                    if(!empty($lanjut_prose)){
                         $urut_proses=1;
                     }
+                    // $urut_proses=$urut_proses_tmp;
 
                     $tgl1 = new \DateTime($tanggal_proses_start);
                     $tgl2 = new \DateTime($tanggal_first);
