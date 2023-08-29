@@ -262,13 +262,12 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
             $tad=$this->connect_tad();
             $logs = $tad->get_att_log();
 
-            $w_start=date('2023-08-01');
-            $w_end=date('2023-08-01');
+            $w_start=date('2000-08-01');
+            $w_end=date('2000-08-01');
             $logs=$logs->filter_by_date(['start' => $w_start,'end' =>$w_end]);
             $data = $logs->to_json();
 
             $hasil=json_decode($data,true);
-            dd($hasil);
             if(!empty($data['row'])){
                 $jml_hasil=count($data['row']);
             }else{
