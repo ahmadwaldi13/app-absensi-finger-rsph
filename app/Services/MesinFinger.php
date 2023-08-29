@@ -269,11 +269,12 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
             $data = $logs->to_json();
 
             $data=json_decode($data,true);
-            if(!empty($data['row'])){
-                $data=$data['row'];
+            if(!empty($data['Row'])){
+                $data=$data['Row'];
             }else{
                 $data=[];
             }
+            dd($data);
 
             return ['data',$data];
         }else{
