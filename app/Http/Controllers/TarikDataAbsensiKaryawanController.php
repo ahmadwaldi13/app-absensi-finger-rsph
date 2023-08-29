@@ -340,11 +340,11 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
                     $progres_bar=$calcu*$urut_proses;
                     $urut_proses_succ=$urut_proses+1;
                     $urut_proses_tmp=$urut_proses_succ;
+                    $urut_proses=$urut_proses_tmp;
                     if(!empty($lanjut_proses)){
                         $urut_proses=1;
                     }
-                    // $urut_proses=$urut_proses_tmp;
-
+                    
                     $tgl1 = new \DateTime($tanggal_proses_start);
                     $tgl2 = new \DateTime($tanggal_first);
                     $get_diff = $tgl2->diff($tgl1);
