@@ -330,7 +330,7 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
                 if($proses_gagal){
                     $status_mesin=1;
                     $urut_proses=$end_proses;
-                    if(!empty($lanjut_prose)){
+                    if(!empty($lanjut_proses)){
                         $status_mesin=0;
                         $urut_proses=1;
                     }
@@ -340,7 +340,7 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
                     $progres_bar=$calcu*$urut_proses;
                     $urut_proses_succ=$urut_proses+1;
                     $urut_proses_tmp=$urut_proses_succ;
-                    if(!empty($lanjut_prose)){
+                    if(!empty($lanjut_proses)){
                         $urut_proses=1;
                     }
                     // $urut_proses=$urut_proses_tmp;
