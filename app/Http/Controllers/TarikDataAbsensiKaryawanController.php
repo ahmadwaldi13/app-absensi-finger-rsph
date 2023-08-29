@@ -261,6 +261,7 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
                 $mesin=(new \App\Services\MesinFinger($data_mesin->ip_address));
                 // $get_data_log=$mesin->get_log_data_absensi();
                 $get_data_log=$mesin->get_log_data_absensi_tad();
+                dd($get_data_log);
                 $check_hasil=!empty($get_data_log[0]) ? $get_data_log[0] : '';
                 $proses_gagal=0;
                 if($check_hasil=='error'){
@@ -338,6 +339,7 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
             return $this->sent_error('proses'.$urut_proses.' 5');
             die;
         } catch (\Throwable $e) {
+            dd($e);
             return $this->sent_error('proses'.$urut_proses.' 6');
             die;
         }
