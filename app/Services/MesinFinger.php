@@ -267,16 +267,14 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
             $logs=$logs->filter_by_date(['start' => $w_start,'end' =>$w_end]);
             $data = $logs->to_json();
 
-            $hasil=json_decode($data,true);
+            $data=json_decode($data,true);
             if(!empty($data['row'])){
-                $jml_hasil=count($data['row']);
+                $data=$data['row'];
             }else{
-                $jml_hasil=0;
+                $data=[];
             }
 
-            dd($data,$jml_hasil);die;
-
-            // return 
+            return ['data',$data];
         }else{
             return ['error','Tidak Terkoneksi'];
         }

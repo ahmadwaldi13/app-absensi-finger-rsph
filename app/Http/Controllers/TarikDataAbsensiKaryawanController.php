@@ -246,11 +246,23 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
         try {
             $urut_proses=!empty($params['urut_proses']) ? $params['urut_proses'] : 0;
             $id_mesin=!empty($params['key']) ? $params['key'] : 0;
-            $tanggal_start=!empty($params['tanggal_start']) ? $params['tanggal_start'] : date('Y-m-d');
-            $tanggal_end=!empty($params['tanggal_end']) ? $params['tanggal_end'] : date('Y-m-d');
+            $tanggal_first=!empty($params['tanggal_first']) ? $params['tanggal_first'] : '';
+            $tanggal_proses_start=!empty($params['tanggal_proses_start']) ? $params['tanggal_proses_start'] : '';
+            $tanggal_max=!empty($params['tanggal_max']) ? $params['tanggal_max'] : '';
             $start_query=!empty($params['start_query']) ? $params['start_query'] : 0;
             $end_query=!empty($params['end_query']) ? $params['end_query'] : $exs_query;
 
+            $tanggal_proses_end=$tanggal_proses_start;
+            
+            $tgl1 = new \DateTime($tanggal_first);
+            $tgl2 = new \DateTime($tanggal_max);
+            $get_diff = $tgl2->diff($tgl1);
+            $get_diff=$get_diff->d;
+            $calcu=100;
+            if(!empty($get_diff)){
+                $calcu=floor(100/$get_diff);
+            }
+            
             if($urut_proses==1){
                 $data_mesin=(new \App\Models\RefMesinAbsensi)->where(['id_mesin_absensi'=>$id_mesin])->first();
                 if(empty($data_mesin)){
@@ -261,7 +273,6 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
                 $mesin=(new \App\Services\MesinFinger($data_mesin->ip_address));
                 // $get_data_log=$mesin->get_log_data_absensi();
                 $get_data_log=$mesin->get_log_data_absensi_tad();
-                dd($get_data_log);
                 $check_hasil=!empty($get_data_log[0]) ? $get_data_log[0] : '';
                 $proses_gagal=0;
                 if($check_hasil=='error'){
@@ -269,15 +280,15 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
                     $message=$get_data_log[1];
                 }else{
                     DB::beginTransaction();
-                    if($get_data_log){
+                    if(!empty($get_data_log[1])){
                         $jml_save=0;
-                        // $get_data_log=json_decode($get_data_log);
-                        $get_data_log=[];
+                        $get_data_log=$get_data_log[1];
                         $jml_hasil_data_log=count($get_data_log);
                         
                         if(!empty($get_data_log)){
                             $data_save=[];
                             foreach($get_data_log as $value){
+                                dd($value);die;
                                 $data_save[]=[
                                     'id_mesin_absensi'=>$id_mesin,
                                     'id_user'=>$value->id,
@@ -311,6 +322,7 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
                         $proses_gagal++;
                     }
                 }
+
                 if($proses_gagal){
                     $status_mesin=1;
                     $urut_proses=$end_proses;
@@ -321,6 +333,17 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
                     $urut_proses_succ=$urut_proses+1;
                     $urut_proses_tmp=$urut_proses_succ;
                     $urut_proses=$urut_proses_tmp;
+
+                    $tanggal_proses_start = date('Y-m-d', strtotime('+1 days', strtotime($tanggal_proses_start))); 
+                    if(strtotime($tanggal_max)>=strtotime($tanggal_proses_start)){
+                        $urut_proses=1;
+                    }
+
+                    $tgl1 = new \DateTime($tanggal_proses_start);
+                    $tgl2 = new \DateTime($tanggal_first);
+                    $get_diff = $tgl2->diff($tgl1);
+                    $get_diff=$get_diff->d;
+                    $progres_bar=$calcu*$get_diff;
                 }
 
                 $hasil=200;
@@ -337,6 +360,7 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
 
         } catch (\Illuminate\Database\QueryException $e) {
             return $this->sent_error('proses'.$urut_proses.' 5');
+            dd($e);
             die;
         } catch (\Throwable $e) {
             dd($e);
@@ -353,7 +377,8 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
             'end_query'=>$end_query,
             'message'=>!empty($message) ? $message : '',
             'status_mesin'=>!empty($status_mesin) ? $status_mesin : '',
-            'id_mesin'=>$id_mesin
+            'id_mesin'=>$id_mesin,
+            'tanggal_proses_start'=>!empty($tanggal_proses_start) ? $tanggal_proses_start : '',
         ];
     }
 
