@@ -284,42 +284,36 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
                     DB::beginTransaction();
                     if(!empty($get_data_log[1])){
                         $jml_save=0;
-                        $get_data_log=$get_data_log[1];
-                        dd($get_data_log);die;
-                        $jml_hasil_data_log=count($get_data_log);
+                        $get_data_item=$get_data_log[1];
+                        $jml_hasil_data_log=count($get_data_item);
                         
-                        if(!empty($get_data_log)){
-                            $data_save=[];
-                            foreach($get_data_log as $key => $value){
-                                dd($value,$key);die;
-                                $data_save[]=[
-                                    'id_mesin_absensi'=>$id_mesin,
-                                    'id_user'=>$value->id,
-                                    'waktu' => $value->date_time,
-                                    'verified' => $value->verified,
-                                    'status' => $value->status,
-                                ];
+                        $data_save=[];
+                        foreach($get_data_item as $key_item => $value_item){
+                            $data_save[]=[
+                                'id_mesin_absensi'=>$id_mesin,
+                                'id_user'=>$key_item->id,
+                                'waktu' => $key_item->date_time,
+                                'verified' => $key_item->verified,
+                                'status' => $key_item->status,
+                            ];
+                        }
+                        if(!empty($data_save)){
+                            $model_save = (new \App\Models\RefDataAbsensiTmp);
+                            if($model_save::insertOrIgnore($data_save)){
+                                $jml_save++;
                             }
-                            if(!empty($data_save)){
-                                $model_save = (new \App\Models\RefDataAbsensiTmp);
-                                if($model_save::insertOrIgnore($data_save)){
-                                    $jml_save++;
-                                }
 
-                                if(!empty($jml_save)){
-                                    DB::commit();
-                                    $proses_gagal=0;
-                                }else{
-                                    DB::rollBack();
-                                    $proses_gagal++;
-                                    $message='Data Tidak Ada';
-                                    if(!empty($jml_hasil_data_log)){
-                                        $message='Semua Data Sudah Tersimpan';
-                                    }
+                            if(!empty($jml_save)){
+                                DB::commit();
+                                $proses_gagal=0;
+                            }else{
+                                DB::rollBack();
+                                $proses_gagal++;
+                                $message='Data Tidak Ada';
+                                if(!empty($jml_hasil_data_log)){
+                                    $message='Semua Data Sudah Tersimpan';
                                 }
                             }
-                        }else{
-                            $proses_gagal++;
                         }
                     }else{
                         $proses_gagal++;
