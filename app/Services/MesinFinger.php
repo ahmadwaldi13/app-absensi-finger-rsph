@@ -259,12 +259,13 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
         $connect_ip=$this->connect_sock();
 
         if(empty($connect_ip[2]==3)){
+            $tgl_start=!empty($params['tgl_start']) ? $params['tgl_start'] : date('Y-m-d');
+            $tgl_end=!empty($params['tgl_end']) ? $params['tgl_end'] : date('Y-m-d');
+
             $tad=$this->connect_tad();
             $logs = $tad->get_att_log();
 
-            $w_start=date('2000-08-01');
-            $w_end=date('2000-08-01');
-            $logs=$logs->filter_by_date(['start' => $w_start,'end' =>$w_end]);
+            $logs=$logs->filter_by_date(['start' => $tgl_start,'end' =>$tgl_end]);
             $data = $logs->to_json();
 
             $data=json_decode($data,true);

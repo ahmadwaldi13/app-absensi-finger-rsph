@@ -246,14 +246,12 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
         try {
             $urut_proses=!empty($params['urut_proses']) ? $params['urut_proses'] : 0;
             $id_mesin=!empty($params['key']) ? $params['key'] : 0;
-            $tanggal_first=!empty($params['tanggal_first']) ? $params['tanggal_first'] : '';
-            $tanggal_proses_start=!empty($params['tanggal_proses_start']) ? $params['tanggal_proses_start'] : '';
-            $tanggal_max=!empty($params['tanggal_max']) ? $params['tanggal_max'] : '';
+            $tanggal_first=!empty($params['tanggal_first']) ? $params['tanggal_first'] : date('Y-m-d');
+            $tanggal_proses_start=!empty($params['tanggal_proses_start']) ? $params['tanggal_proses_start'] : date('Y-m-d');
+            $tanggal_max=!empty($params['tanggal_max']) ? $params['tanggal_max'] : date('Y-m-d');
             $start_query=!empty($params['start_query']) ? $params['start_query'] : 0;
             $end_query=!empty($params['end_query']) ? $params['end_query'] : $exs_query;
 
-            $tanggal_proses_end=$tanggal_proses_start;
-            
             $tgl1 = new \DateTime($tanggal_first);
             $tgl2 = new \DateTime($tanggal_max);
             $get_diff = $tgl2->diff($tgl1);
@@ -272,7 +270,11 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
 
                 $mesin=(new \App\Services\MesinFinger($data_mesin->ip_address));
                 // $get_data_log=$mesin->get_log_data_absensi();
-                $get_data_log=$mesin->get_log_data_absensi_tad();
+                $paramter=[
+                    'tgl_start'=>$tanggal_proses_start,
+                    'tgl_end'=>$tanggal_proses_start,
+                ];
+                $get_data_log=$mesin->get_log_data_absensi_tad($paramter);
                 $check_hasil=!empty($get_data_log[0]) ? $get_data_log[0] : '';
                 $proses_gagal=0;
                 if($check_hasil=='error'){
