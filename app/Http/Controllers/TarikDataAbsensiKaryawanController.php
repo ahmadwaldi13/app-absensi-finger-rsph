@@ -290,8 +290,8 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
                         
                         if(!empty($get_data_log)){
                             $data_save=[];
-                            foreach($get_data_log as $value){
-                                dd($value);die;
+                            foreach($get_data_log as $key => $value){
+                                dd($value,$key);die;
                                 $data_save[]=[
                                     'id_mesin_absensi'=>$id_mesin,
                                     'id_user'=>$value->id,
