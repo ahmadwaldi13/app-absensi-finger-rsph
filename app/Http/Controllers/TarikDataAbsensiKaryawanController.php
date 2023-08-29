@@ -285,6 +285,7 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
                     if(!empty($get_data_log[1])){
                         $jml_save=0;
                         $get_data_log=$get_data_log[1];
+                        dd($get_data_log);die;
                         $jml_hasil_data_log=count($get_data_log);
                         
                         if(!empty($get_data_log)){
