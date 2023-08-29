@@ -252,6 +252,28 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
         return '';
     }
 
+    function get_log_data_absensi_tad($params=[]){
+        ini_set("memory_limit","800M");
+        set_time_limit(0);
+
+        $connect_ip=$this->connect_sock();
+
+        if(empty($connect_ip[2]==3)){
+            $tad=$this->connect_tad();
+            $logs = $tad->get_att_log();
+
+            $w_start=date('2023-01-01');
+            $w_end=date('2023-01-31');
+            $logs=$logs->filter_by_date(['start' => $w_start,'end' =>$w_end]);
+            $data = $logs->to_json();
+            dd($data);die;
+
+            $conv = json_decode($data,true);
+        }else{
+            return ['error','Tidak Terkoneksi'];
+        }
+    }
+
     // function get_user_with_tamplate($id_user=''){
     //     $data_tmp=[];
     //     $get_user=$this->get_user($id_user);

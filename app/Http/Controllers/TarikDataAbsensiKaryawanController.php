@@ -259,7 +259,9 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
                 }
 
                 $mesin=(new \App\Services\MesinFinger($data_mesin->ip_address));
-                $get_data_log=$mesin->get_log_data_absensi();
+                // $get_data_log=$mesin->get_log_data_absensi();
+                $get_data_log=$mesin->get_log_data_absensi_tad();
+                var_dump($get_data_log);die;
                 $check_hasil=!empty($get_data_log[0]) ? $get_data_log[0] : '';
                 $proses_gagal=0;
                 if($check_hasil=='error'){
