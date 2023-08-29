@@ -12,7 +12,7 @@ $('#proses').click(function(e) {
             $bagan.html(hasil.html);
             setTimeout(function(){
                 proses_data();
-            }, 1000);
+            }, 500);
         },
         error: function(xhr, status, error){
             console.log(error);
@@ -36,7 +36,7 @@ function proses_data(){
             if($key && $status==0){
                 setTimeout(function(){
                     import_data($key,1,0,0,$tanggal_start,$tanggal_start,$tanggal_max);
-                }, 1000);
+                }, 500);
                 return false;
             }
         });
@@ -44,7 +44,7 @@ function proses_data(){
         setTimeout(function(){
             alert('Proses Selesai');
             $('#proses').prop('disabled', false);
-        }, 800);
+        }, 400);
         return false;
     }
 
@@ -95,7 +95,7 @@ function import_data($key,$urut_proses,$start_query,$end_query,$tgl_first,$tgl_p
                 $get_html.find('.status_mesin').html('Proses');
                 setTimeout(function(){
                     import_data($key,hasil.no_proses,hasil.start_query,hasil.end_query,$tgl_first,hasil.tanggal_proses_start,$tgl_max);
-                }, 1000);
+                }, 500);
             }else{
                 $get_html.find('.status_mesin').html('Selesai');
                 if(hasil.status_mesin==1){
@@ -105,7 +105,7 @@ function import_data($key,$urut_proses,$start_query,$end_query,$tgl_first,$tgl_p
 
                 setTimeout(function(){
                     proses_data();
-                }, 1000);
+                }, 500);
                 return false;
             }
         },

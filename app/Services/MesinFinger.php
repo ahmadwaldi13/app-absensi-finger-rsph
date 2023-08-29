@@ -274,7 +274,6 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
             }else{
                 $data=[];
             }
-            dd($data);
 
             return ['data',$data];
         }else{
