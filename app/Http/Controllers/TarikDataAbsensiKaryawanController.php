@@ -5,9 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-use TADPHP\TAD;
-use TADPHP\TADFactory;
-
 use App\Services\GlobalService;
 use App\Services\UserMesinTmpService;
 use App\Services\RefDataAbsensiTmpService;
@@ -50,154 +47,6 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
 
         return view($this->part_view . '.index', $parameter_view);
     }
-
-    private function hitung_waktu($awal,$akhir){
-        $diff  = $akhir - $awal;
-
-        $jam   = floor($diff / (60 * 60));
-        $menit = $diff - ( $jam * (60 * 60) );
-        $detik = $diff % 60;
-
-        return (object)[
-            'jam'=>$jam,
-            'menit'=>floor( $menit / 60 ),
-            'detik'=>$detik,
-        ];
-    }
-
-    // private function status_absensi($tanggal,$absensi_tmp,$jadwal_masuk_tmp,$jadwal_tutup_tmp){
-    //     $waktu_mulai=$tanggal.' '.$jadwal_masuk_tmp;
-    //     $waktu_tutup=$tanggal.' '.$jadwal_tutup_tmp;
-    //     $waktu_absensi=$tanggal.' '.$absensi_tmp;
-
-    //     $jadwal_masuk = strtotime($waktu_mulai);
-    //     $jadwal_tutup = strtotime($waktu_tutup);
-    //     $absensi = strtotime($waktu_absensi);
-
-    //     $return=[];
-    //     if(($jadwal_masuk <= $absensi) and ($jadwal_tutup >= $absensi)){
-    //         $hasil=(array)$this->hitung_waktu($absensi,$jadwal_tutup);
-    //         $return=[
-    //             'hasil_status_absensi'=>1,
-    //             'hasil_status_absensi_text'=>'Tidak Telat',
-    //         ];
-    //         $return=array_merge($return,$hasil);
-    //     }elseif($absensi > $jadwal_tutup ){
-    //         $hasil=(array)$this->hitung_waktu($jadwal_tutup,$absensi);
-    //         $return=[
-    //             'hasil_status_absensi'=>2,
-    //             'hasil_status_absensi_text'=>'Telat',
-    //         ];
-    //         $return=array_merge($return,$hasil);
-    //     }else{
-    //         $return=[
-    //             'hasil_status_absensi'=>3,
-    //             'hasil_status_absensi_text'=>'Di luar Jadwal',
-    //         ];
-    //     }
-
-    //     return (object)$return;
-    // }
-
-    // function proses($params=[]){
-    //     $jenis_jadwal=[1,2,3];
-    //     $data_jadwal=[];
-    //     foreach($jenis_jadwal as $value){
-    //         $get_jadwal=(new \App\Models\RefJadwal())->where('id_jenis_jadwal','=',$value)->get();
-    //         foreach($get_jadwal as $key_jadwal =>$value_jadwal){
-    //             $key_jadwal++;
-    //             $get_jenis_jadwal=(new \App\Models\RefJenisJadwal())->where('id_jenis_jadwal','=',$value)->first();
-    //             $value_jadwal=(array)$value_jadwal->getAttributes();
-    //             if(!empty($get_jenis_jadwal)){
-    //                 $value_jadwal['nm_jenis_jadwal']=$get_jenis_jadwal->nm_jenis_jadwal;
-    //             }else{
-    //                 $value_jadwal['nm_jenis_jadwal']='tidak diketahui';
-    //             }
-    //             $data_jadwal[$value][$key_jadwal]=(object)$value_jadwal;
-    //         }
-    //     }
-
-    //     $parameter=[
-    //         'tanggal'=>$params['tanggal_cari'],
-    //         'limit'=>$params['limit_query'],
-    //         'id_mesin_absensi'=>$params['id_mesin_absensi'],
-    //     ];
-
-    //     $list_data=$this->refDataAbsensiTmpService->getList($parameter)->get();
-    //     $select_user=[];
-    //     $select_user_jam=[];
-    //     $hasil_ditemukan=[];
-    //     foreach($list_data as $data_user){
-    //         $waktu_check=new \DateTime($data_user->waktu_absensi);
-    //         $tgl_absensi_check = $waktu_check->format('Y-m-d');
-
-    //         $get_jadwal_shift_karyawan=(new \App\Models\RefKaryawanJadwalShift())->where('id_karyawan','=',$data_user->id_karyawan)
-    //             ->where('tgl_mulai','<=',$tgl_absensi_check)->where('tgl_akhir','>=',$tgl_absensi_check)->first();
-    //         if($get_jadwal_shift_karyawan){
-    //             $data_user=(array)$data_user;
-    //             $data_user['id_jenis_jadwal']=$get_jadwal_shift_karyawan->id_jenis_jadwal;
-    //             $data_user=(object)$data_user;
-    //         }
-            
-    //         if(empty($select_user[$data_user->id_user][$tgl_absensi_check])){
-    //             $select_user[$data_user->id_user][$tgl_absensi_check]=1;
-    //         }else{
-    //             $select_user[$data_user->id_user][$tgl_absensi_check]++;
-    //         }
-    //         $data_absensi_ke=$select_user[$data_user->id_user][$tgl_absensi_check];
-            
-    //         $get_jadwal=!empty($data_jadwal[$data_user->id_jenis_jadwal][$data_absensi_ke]) ? $data_jadwal[$data_user->id_jenis_jadwal][$data_absensi_ke] : '';
-            
-    //         $get_waktu_ab=!empty($data_user->waktu_absensi) ? $data_user->waktu_absensi : '';
-    //         if(!empty($get_waktu_ab)){
-    //             $waktu_tmp=new \DateTime($get_waktu_ab);
-    //             $tanggal_absensi = $waktu_tmp->format('Y-m-d');
-    //             $jam_absensi = $waktu_tmp->format('H:i:s');
-
-    //             $hasil=[];
-    //             if(!empty($get_jadwal)){
-    //                 $waktu_mulai=$get_jadwal->jam_awal;
-    //                 $waktu_tutup=$get_jadwal->jam_akhir;
-    //                 $hasil=$this->status_absensi($tanggal_absensi,$jam_absensi,$waktu_mulai,$waktu_tutup);
-    //             }else{
-    //                 $hasil=(object)[
-    //                     'hasil_status_absensi'=>3,
-    //                     'hasil_status_absensi_text'=>'Di luar Jadwal',
-    //                 ];
-    //             }
-
-    //             if(!empty($hasil)){
-    //                 $hasil=(array)$hasil;
-    //                 $set_data_jadwal=[];
-
-    //                 if(!empty($get_jadwal)){
-    //                     $set_data_jadwal=[
-    //                         'id_jadwal'=>$get_jadwal->id_jadwal,
-    //                         'nm_jadwal'=>$get_jadwal->uraian,
-    //                         'waktu_buka'=>$get_jadwal->jam_awal,
-    //                         'waktu_tutup'=>$get_jadwal->jam_akhir,
-    //                         'nm_jenis_jadwal'=>$get_jadwal->nm_jenis_jadwal
-    //                     ];
-    //                 }else{
-    //                     $set_data_jadwal=[
-    //                         'id_jadwal'=>0,
-    //                         'nm_jadwal'=>'Tidak ditemukan',
-    //                         'waktu_buka'=>'',
-    //                         'waktu_tutup'=>'',
-    //                         'nm_jenis_jadwal'=>''
-    //                     ];
-    //                 }
-                    
-    //                 $hasil=array_merge($hasil,$set_data_jadwal);
-    //                 $user_tmp_data=(array)$data_user;
-    //                 $user_tmp_data=array_merge($user_tmp_data,$hasil);
-    //                 $hasil_ditemukan[]=(object)$user_tmp_data;
-    //             }
-    //         }
-    //     }
-        
-    //     return $hasil_ditemukan;
-    // }
 
     private function get_data_mesin(){
         $list_data_tmp=(new \App\Models\RefMesinAbsensi)->where(['status_mesin'=>1])->orderByRaw("CONVERT ( REPLACE ( ip_address, '.', '' ), UNSIGNED INTEGER )",'ASC')->get();
@@ -252,6 +101,7 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
             $start_query=!empty($params['start_query']) ? $params['start_query'] : 0;
             $end_query=!empty($params['end_query']) ? $params['end_query'] : $exs_query;
 
+            $tanggal_proses_tmp=$tanggal_proses_start;
             $tgl1 = new \DateTime($tanggal_first);
             $tgl2 = new \DateTime($tanggal_max);
             $get_diff = $tgl2->diff($tgl1);
@@ -333,6 +183,7 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
                     if(!empty($lanjut_proses)){
                         $status_mesin=0;
                         $urut_proses=1;
+                        $progres_bar=$calcu*$urut_proses;
                     }
                 }else{
                     $status_mesin=0;
@@ -383,6 +234,7 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
             'status_mesin'=>!empty($status_mesin) ? $status_mesin : '',
             'id_mesin'=>$id_mesin,
             'tanggal_proses_start'=>!empty($tanggal_proses_start) ? $tanggal_proses_start : '',
+            'tanggal_proses_tmp'=>!empty($tanggal_proses_tmp) ? $tanggal_proses_tmp : '',
         ];
     }
 
