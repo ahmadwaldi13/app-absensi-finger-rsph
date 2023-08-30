@@ -45,7 +45,8 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
         $filter_tgl[1]=!empty($filter_tgl[1]) ? $filter_tgl[1] : date('Y-m-d');
 
         /*simpan data jika bulan dan tahun berbeda---------------------*/
-        
+        if(!empty($request->cari_data)){
+            
             $paramter_search=[
                 'filter_date_start'=>$filter_tgl[0],
                 'filter_date_end'=>$filter_tgl[1]
@@ -53,24 +54,28 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
             $get_data_query=(new \App\Services\DataPresensiRutinService)->getDataRumus3($paramter_search);
             $list_db=!empty($get_data_query->list_db) ? $get_data_query->list_db : [];
             $save_update=(new \App\Services\DataPresensiService)->save_update_rekap($list_db);
+        }
         
         /*------------------------------------------*/
         
-        $parameter_where=[
-            'search'=>$form_filter_text,
-            'tanggal'=>[$filter_tgl[0],$filter_tgl[1]],
-            'id_jenis_jadwal'=>1,
-        ];
+        $list_data=$collection = collect([]);
+        if(!empty($request->cari_data)){
+            $parameter_where=[
+                'search'=>$form_filter_text,
+                'tanggal'=>[$filter_tgl[0],$filter_tgl[1]],
+                'id_jenis_jadwal'=>1,
+            ];
 
-        $filter_id_departemen=!empty($request->filter_id_departemen) ? $request->filter_id_departemen : '';
-        if(!empty($filter_id_departemen)){
-            $parameter_where['id_departemen']=$filter_id_departemen;
+            $filter_id_departemen=!empty($request->filter_id_departemen) ? $request->filter_id_departemen : '';
+            if(!empty($filter_id_departemen)){
+                $parameter_where['id_departemen']=$filter_id_departemen;
+            }
+
+            $list_data=$this->dataLaporanPresensiService->getRekapPresensi($parameter_where,1)
+            ->orderBy('id_departemen','ASC')
+            ->orderBy('id_ruangan','ASC')
+            ->get();
         }
-
-        $list_data=$this->dataLaporanPresensiService->getRekapPresensi($parameter_where,1)
-        ->orderBy('id_departemen','ASC')
-        ->orderBy('id_ruangan','ASC')
-        ->get();
 
         $page = isset($request->page) ? $request->page : 1;
         $option=['path' => $request->url(), 'query' => $request->query()];

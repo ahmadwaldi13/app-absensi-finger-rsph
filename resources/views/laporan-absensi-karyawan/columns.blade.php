@@ -206,7 +206,7 @@
 
                     <div class="col-lg-1 col-md-1">
                         <div class="d-grid grap-2">
-                            <button type="submit" class="btn btn-primary" value=1>
+                            <button type="submit" class="btn btn-primary" name='cari_data' value=1>
                                 <i class="fa-sharp fa-solid fa-magnifying-glass"></i>
                             </button>
                         </div>
