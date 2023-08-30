@@ -121,6 +121,7 @@ $(document).find('.input-date-range').each(function () {
     let form_start = (typeof parent.find('#tgl_start')) ? parent.find('#tgl_start').val() : null;
     let form_end = (typeof parent.find('#tgl_end')) ? parent.find('#tgl_end').val() : null;
 
+    let max_range = (typeof $(this).attr('data-max-range') != "undefined" || $(this).attr('data-max-range') != null) ? $(this).attr('data-max-range') : '';
 
     var formattedDate = new Date();
     var d = formattedDate.getDate();
@@ -141,7 +142,7 @@ $(document).find('.input-date-range').each(function () {
     parent.find('#tgl_start').val(form_start);
     parent.find('#tgl_end').val(form_end);
 
-    $(this).daterangepicker({
+    $option={
         startDate: form_start,
         endDate: form_end,
         locale: {
@@ -149,8 +150,16 @@ $(document).find('.input-date-range').each(function () {
         },
         showDropdowns: true,
         linkedCalendars: false,
-    });
+    };
 
+    if(max_range.length){
+        $option_extend={
+            maxSpan: { days: max_range }
+        };
+        $.extend($option,$option_extend );
+    }
+
+    $(this).daterangepicker($option);
 });
 
 $(document).find(".input-date-range").on("change keyup", function () {
