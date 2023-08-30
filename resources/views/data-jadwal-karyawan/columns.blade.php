@@ -116,7 +116,7 @@
                             <th class="py-3" style="width: 10%">Jabatan</th>
                             <th class="py-3" style="width: 10%">Departemen</th>
                             <th class="py-3" style="width: 10%">Ruangan</th>
-                            <th class="py-3" style="width: 5%">Data Connect ke Mesin Finger</th>
+                            <th class="py-3" style="width: 5%">Id User Mesin</th>
                             <th class="py-3" style="width: 5%">Jenis Jadwal</th>
                         </tr>
                     </thead>
@@ -131,7 +131,7 @@
                                 $status_user_mesin=$item->status_akun_mesin;
                                 $status_user_mesin_text="<span style='color:RED'>Tidak ada</span>";
                                 if(!empty($status_user_mesin)){
-                                    $status_user_mesin_text="<span style='color:GREEN'>Ada</span>";
+                                    $status_user_mesin_text="<div style='color:GREEN'>".(!empty($item->id_user) ? $item->id_user : '')."</div>";
                                 }
                             ?>
                             <tr>

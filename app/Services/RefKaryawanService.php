@@ -24,7 +24,7 @@ class RefKaryawanService extends BaseService
             ->Leftjoin('ref_jabatan','ref_jabatan.id_jabatan','=','ref_karyawan.id_jabatan')
             ->Leftjoin('ref_departemen','ref_departemen.id_departemen','=','ref_karyawan.id_departemen')
             ->Leftjoin('ref_ruangan','ref_ruangan.id_ruangan','=','ref_karyawan.id_ruangan')
-            ->orderBy('nm_karyawan','DESC')
+            ->orderBy('nm_karyawan','ASC')
         ;
 
         $list_search=[
