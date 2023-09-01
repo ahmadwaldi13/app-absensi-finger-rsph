@@ -87,9 +87,9 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
             }
 
             $list_data=$this->dataLaporanPresensiService->getRekapPresensi($parameter_where,1)
-            ->orderBy('nm_karyawan','ASC')
             ->orderBy('id_departemen','ASC')
             ->orderBy('id_ruangan','ASC')
+            ->orderBy('nm_karyawan','ASC')
             ->get();
         }
 
@@ -166,9 +166,9 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
         }
 
         $list_data=$this->dataLaporanPresensiService->getRekapPresensi($parameter_where,1)
-        ->orderBy('nm_karyawan','ASC')
         ->orderBy('id_departemen','ASC')
         ->orderBy('id_ruangan','ASC')
+        ->orderBy('nm_karyawan','ASC')
         ->get();
 
         $paramater_where=[
