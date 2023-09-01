@@ -113,6 +113,7 @@ class DataPresensiRutinService extends BaseService
 
         $filter_id_jabatan=!empty($params['filter_id_jabatan']) ? $params['filter_id_jabatan'] : '';
         $filter_id_departemen=!empty($params['filter_id_departemen']) ? $params['filter_id_departemen'] : '';
+        $filter_id_ruangan=!empty($params['filter_id_ruangan']) ? $params['filter_id_ruangan'] : '';
 
         $paramater_data_karyawan_rutin=[
             'search'=>$form_filter_text
@@ -124,6 +125,10 @@ class DataPresensiRutinService extends BaseService
 
         if(!empty($filter_id_departemen)){
             $paramater_data_karyawan_rutin['id_departemen']=$filter_id_departemen;
+        }
+
+        if(!empty($filter_id_ruangan)){
+            $paramater_data_karyawan_rutin['id_ruangan']=$filter_id_ruangan;
         }
 
         $list_data_karyawan_rutin = $this->getListKaryawan($paramater_data_karyawan_rutin, 1)->select(DB::raw('group_concat(id_karyawan) as id_karyawan'),DB::raw('group_concat(id_user) as id_user'))->first();

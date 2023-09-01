@@ -40,7 +40,6 @@
                             </div>
                         </div>
 
-
                         <div class="col-lg-3 col-md-10">
                             <div class='bagan_form'>
                                 <label for="filter_nm_ruangan" class="form-label">Ruangan <span class="text-danger">*</span></label>

@@ -93,7 +93,11 @@
                         <tr>
                             <td style='vertical-align: middle;'>{{ $key+1 }}</td>
                             <td style='vertical-align: middle;'>{{ $tgl_user_presensi }}</td>
-                            <td style='vertical-align: middle;'>{{ !empty($item->nm_karyawan) ? $item->nm_karyawan : '' }}</td>
+                            <td style='vertical-align: middle;'>
+                                <div>{{ !empty($item->id_user) ? $item->id_user : '' }}</div>
+                                <div><hr style='margin:0px;'></div>
+                                <div>{{ !empty($item->nm_karyawan) ? $item->nm_karyawan : '' }}</div>
+                            </td>
                             <td style='vertical-align: middle;'>
                                 <div>{{ !empty($item->nm_departemen) ? $item->nm_departemen : '' }}</div>
                                 <div><hr style='margin:0px;'></div>

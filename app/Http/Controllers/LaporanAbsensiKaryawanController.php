@@ -44,13 +44,25 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
         $filter_tgl[0]=!empty($filter_tgl[0]) ? $filter_tgl[0] : date('Y-m-d');
         $filter_tgl[1]=!empty($filter_tgl[1]) ? $filter_tgl[1] : date('Y-m-d');
 
+        $filter_id_departemen=!empty($request->filter_id_departemen) ? $request->filter_id_departemen : '';
+        $filter_id_ruangan=!empty($request->filter_id_ruangan) ? $request->filter_id_ruangan : '';
+
         /*simpan data jika bulan dan tahun berbeda---------------------*/
         if(!empty($request->cari_data)){
             
             $paramter_search=[
                 'filter_date_start'=>$filter_tgl[0],
-                'filter_date_end'=>$filter_tgl[1]
+                'filter_date_end'=>$filter_tgl[1],
             ];
+
+            if(!empty($filter_id_departemen)){
+                $paramter_search['filter_id_departemen']=$filter_id_departemen;
+            }
+
+            if(!empty($filter_id_ruangan)){
+                $paramter_search['filter_id_ruangan']=$filter_id_ruangan;
+            }
+
             $get_data_query=(new \App\Services\DataPresensiRutinService)->getDataRumus3($paramter_search);
             $list_db=!empty($get_data_query->list_db) ? $get_data_query->list_db : [];
             $save_update=(new \App\Services\DataPresensiService)->save_update_rekap($list_db);
@@ -66,12 +78,16 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
                 'id_jenis_jadwal'=>1,
             ];
 
-            $filter_id_departemen=!empty($request->filter_id_departemen) ? $request->filter_id_departemen : '';
             if(!empty($filter_id_departemen)){
                 $parameter_where['id_departemen']=$filter_id_departemen;
             }
 
+            if(!empty($filter_id_ruangan)){
+                $parameter_where['id_ruangan']=$filter_id_ruangan;
+            }
+
             $list_data=$this->dataLaporanPresensiService->getRekapPresensi($parameter_where,1)
+            ->orderBy('nm_karyawan','ASC')
             ->orderBy('id_departemen','ASC')
             ->orderBy('id_ruangan','ASC')
             ->get();
@@ -141,7 +157,16 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
             $get_nm_departemen=!empty($get_nm_departemen->nm_departemen) ? $get_nm_departemen->nm_departemen : '';
         }
 
+        $get_nm_ruangan='';
+        $filter_id_ruangan=!empty($data_sent->filter_id_ruangan) ? $data_sent->filter_id_ruangan : '';
+        if(!empty($filter_id_ruangan)){
+            $parameter_where['id_ruangan']=$filter_id_ruangan;
+            $get_nm_ruangan=(new \App\Models\RefRuangan())->where('id_ruangan',$filter_id_ruangan)->first();
+            $get_nm_ruangan=!empty($get_nm_ruangan->nm_ruangan) ? $get_nm_ruangan->nm_ruangan : '';
+        }
+
         $list_data=$this->dataLaporanPresensiService->getRekapPresensi($parameter_where,1)
+        ->orderBy('nm_karyawan','ASC')
         ->orderBy('id_departemen','ASC')
         ->orderBy('id_ruangan','ASC')
         ->get();
@@ -215,6 +240,7 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
             $nama_excel="rekap_absensi_jadwal_rutin";
             $nama_excel.="_".$tahun."_".$bulan;
             $nama_excel.=!empty($get_nm_departemen) ? "_".strtolower( str_replace(" ","_",$get_nm_departemen) ) : '';
+            $nama_excel.=!empty($get_nm_ruangan) ? "_".strtolower( str_replace(" ","_",$get_nm_ruangan) ) : '';
             $nama_excel.=".xlsx";
 
             $objPHPExcel = IOFactory::load(resource_path('views/'.$this->part_view . '/'.$file_));
@@ -291,6 +317,7 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
 
             $header_text="Rekap Absensi Karyawan Tahun ".$tahun." Bulan ".$bulan_text;
             $header_text.=" ".$get_nm_departemen;
+            $header_text.=" ".$get_nm_ruangan;
             $header_1=strtoupper($header_text);
             $header_1_index='A';
             $header_1_posi=2;
@@ -356,8 +383,9 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
                     $position_++;
                 }
                 
+                $nm_id_karyawan=( !empty($item->id_user) ? "( ".$item->id_user." ) " : '' ).''.( !empty($item->nm_karyawan) ? $item->nm_karyawan : '' );
                 $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A'.$position_,$jml_item );
-                $objPHPExcel->setActiveSheetIndex(0)->setCellValue('B'.$position_, !empty($item->nm_karyawan) ? $item->nm_karyawan : '' );
+                $objPHPExcel->setActiveSheetIndex(0)->setCellValue('B'.$position_,$nm_id_karyawan  );
                 if(empty($style_column_nama)){
                     $style_column_nama[]=['B',$position_];
                 }else{

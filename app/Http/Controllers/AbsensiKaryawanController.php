@@ -56,8 +56,10 @@ class AbsensiKaryawanController extends \App\Http\Controllers\MyAuthController
         return view($this->part_view . '.index', $parameter_view);
     }
 
-    function getListData(Request $request)
-    {
+    function getListData(Request $request){
+        ini_set("memory_limit","800M");
+        set_time_limit(0);
+
         if($request->ajax()){
             $get_req = $request->all();
             $list_data=!empty($get_req['list_data']) ? $get_req['list_data'] : '';
@@ -71,6 +73,9 @@ class AbsensiKaryawanController extends \App\Http\Controllers\MyAuthController
     }
 
     function ajax(Request $request){
+        ini_set("memory_limit","800M");
+        set_time_limit(0);
+        
         $get_req = $request->all();
         if (!empty($get_req['action'])) {
             if ($get_req['action'] == 'get_list_data') {

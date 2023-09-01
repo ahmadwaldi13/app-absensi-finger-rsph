@@ -120,7 +120,7 @@
                     <div class="col-lg-12 col-md-12">
                         <div class="row justify-content-start align-items-end mb-3">
 
-                            <div class="col-lg-5 col-md-10">
+                            <div class="col-lg-3 col-md-10">
                                 <div class='bagan_form'>
                                     <label for="filter_nm_jabatan" class="form-label">Jabatan </label>
                                     <div class="button-icon-inside">
@@ -135,20 +135,36 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-5 col-md-10">
+                            <div class="col-lg-3 col-md-10">
                                 <div class='bagan_form'>
-                                    <label for="filter_nm_departemen" class="form-label">Departemen </label>
+                                    <label for="filter_nm_departemen" class="form-label">Departemen</label>
                                     <div class="button-icon-inside">
                                         <input type="text" class="input-text" id='filter_nm_departemen' name="filter_nm_departemen" readonly value="{{ Request::get('filter_nm_departemen') }}" />
-                                        <input type="hidden" id="filter_id_departemen" name='filter_id_departemen' readonly required value="{{ Request::get('filter_id_departemen') }}">
+                                        <input type="hidden" id="filter_id_departemen" name='filter_id_departemen' readonly value="{{ Request::get('filter_id_departemen') }}">
                                         <span class="modal-remote-data" data-modal-src="{{ url('ajax?action=get_list_departemen') }}" data-modal-key="" data-modal-pencarian='true' data-modal-title='Departemen' data-modal-width='30%' data-modal-action-change="function=.set-data-list-from-modal@data-target=#filter_id_departemen|#filter_nm_departemen@data-key-bagan=0@data-btn-close=#closeModalData">
                                             <img class="iconify hover-pointer text-primary" src="{{ asset('') }}icon/selected.png" alt="">
                                         </span>
-                                        <a href="#" id='reset_input'><i class="fa-solid fa-square-xmark"></i></a>
+                                        <a href="#" id='reset_input'><i class="fa-solid fa-square-xmark"></i></a>                            
                                     </div>
                                     <div class="message"></div>
                                 </div>
                             </div>
+
+                            <div class="col-lg-3 col-md-10">
+                                <div class='bagan_form'>
+                                    <label for="filter_nm_ruangan" class="form-label">Ruangan</label>
+                                    <div class="button-icon-inside">
+                                        <input type="text" class="input-text" id='filter_nm_ruangan' name="filter_nm_ruangan" readonly value="{{ Request::get('filter_nm_ruangan') }}" />
+                                        <input type="hidden" id="filter_id_ruangan" name='filter_id_ruangan' readonly value="{{ Request::get('filter_id_ruangan') }}">
+                                        <span class="modal-remote-data" data-modal-src="{{ url('ajax?action=get_list_ruangan') }}" data-modal-key-with-form="#filter_id_departemen" data-modal-pencarian='true' data-modal-title='ruangan' data-modal-width='30%' data-modal-action-change="function=.set-data-list-from-modal@data-target=#filter_id_ruangan|#filter_nm_ruangan@data-key-bagan=0@data-btn-close=#closeModalData">
+                                            <img class="iconify hover-pointer text-primary" src="{{ asset('') }}icon/selected.png" alt="">
+                                        </span>
+                                        <a href="#" id='reset_input'><i class="fa-solid fa-square-xmark"></i></a>                            
+                                    </div>
+                                    <div class="message"></div>
+                                </div>
+                            </div>
+                            
                         </div>
                     </div>
 
@@ -369,7 +385,10 @@
                             @endif
                             <tr>
                                 <td style='vertical-align: middle;'>{{ $key+1 }}</td>
-                                <td style='vertical-align: middle;'>{{ !empty($item->nm_karyawan) ? $item->nm_karyawan : '' }}</td>
+                                <td style='vertical-align: middle;'>
+                                    <div>( {{ !empty($item->id_user) ? $item->id_user : '' }} )</div>
+                                    <div>{{ !empty($item->nm_karyawan) ? $item->nm_karyawan : '' }}</div>
+                                </td>
                                 @foreach($list_tgl as $key_tgl => $item_tgl)
                                     <?php
                                         $presensi_user=!empty($data_presensi[$item_tgl]) ? $data_presensi[$item_tgl] : '';
