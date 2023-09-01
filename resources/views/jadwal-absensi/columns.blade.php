@@ -26,12 +26,12 @@
                     <thead>
                         <tr>
                             <th class="py-3" style="width: 5%">Jenis Jadwal</th>
-                            <th class="py-3" style="width: 5%">Status Jadwal</th>
                             <th class="py-3" style="width: 5%">Nama Uraian</th>
                             <th class="py-3" style="width: 5%">Toleransi <br>Presensi Awal <br> / Cepat Pulang</th>
                             <th class="py-3" style="width: 5%">Buka Presensi</th>
                             <th class="py-3" style="width: 5%">Tutup Presensi</th>
                             <th class="py-3" style="width: 5%">Toleransi Telat</th>
+                            <th class="py-3" style="width: 5%">Status Jadwal</th>
                             <th class="py-3" style="width: 5%">Action</th>
                         </tr>
                     </thead>
@@ -83,7 +83,6 @@
                             ?>
                             <tr>
                                 <td>{{ !empty($item->nm_jenis_jadwal) ? $item->nm_jenis_jadwal : ''  }}</td>
-                                <td>{{ $status_jadwal_text  }}</td>
                                 <td>{{ !empty($item->uraian) ? $item->uraian : ''  }}</td>
                                 <td>
                                     <div>{{ $toren_jam_cepat_masuk  }}</div>
@@ -95,6 +94,7 @@
                                     <div>{{ $toren_jam_telat_masuk  }}</div>
                                     <div>{{ $toren_jam_telat_text  }}</div>
                                 </td>
+                                <td>{{ $status_jadwal_text  }}</td>
                                 <td class='text-right'>
                                     {!! (new
                                     \App\Http\Traits\AuthFunction)->setPermissionButton([$router_name->uri.'/update',$paramater_url,'update'])

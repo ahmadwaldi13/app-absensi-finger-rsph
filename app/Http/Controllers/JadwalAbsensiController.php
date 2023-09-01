@@ -41,7 +41,7 @@ class JadwalAbsensiController extends \App\Http\Controllers\MyAuthController
             'search' => $form_filter_text
         ];
 
-        $list_data = $this->refJadwalService->getList($paramater, 1)->paginate(!empty($request->per_page) ? $request->per_page : 15);
+        $list_data = $this->refJadwalService->getList($paramater, 1)->orderBy('kd_jadwal','ASC')->paginate(!empty($request->per_page) ? $request->per_page : 15);
 
         $parameter_view = [
             'title' => $this->title,
@@ -131,6 +131,21 @@ class JadwalAbsensiController extends \App\Http\Controllers\MyAuthController
             }
             $data_save = $req;
             $data_save['alias'] = strtolower(str_replace(" ", "_", $this->globalFunction->remove_multiplespace($data_save['uraian'])));
+            
+            $toren_jam_cepat=!empty($data_save['toren_jam_cepat']) ? $data_save['toren_jam_cepat'] : '00:00';
+            $status_toren_jam_cepat=0;
+            if((new \App\Http\Traits\AbsensiFunction)->his_to_seconds($toren_jam_cepat)>0){
+                $status_toren_jam_cepat=1;
+            }
+            $data_save['status_toren_jam_cepat']=$status_toren_jam_cepat;
+
+            $toren_jam_telat=!empty($data_save['toren_jam_telat']) ? $data_save['toren_jam_telat'] : '00:00';
+            $status_toren_jam_telat=0;
+            if((new \App\Http\Traits\AbsensiFunction)->his_to_seconds($toren_jam_telat)>0){
+                $status_toren_jam_telat=1;
+            }
+            $data_save['status_toren_jam_telat']=$status_toren_jam_telat;
+
             $model->set_model_with_data($data_save);
             
             $is_save = 0;

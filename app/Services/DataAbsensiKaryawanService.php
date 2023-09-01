@@ -53,7 +53,7 @@ class DataAbsensiKaryawanService extends BaseService
         
 
         $data_jadwal_rutin=[];
-        $get_jadwal_rutin = $this->refJadwalService->getList(['ref_jadwal.id_jenis_jadwal'=>1], 1)->get();
+        $get_jadwal_rutin = $this->refJadwalService->getList(['ref_jadwal.id_jenis_jadwal'=>1], 1)->orderBy('kd_jadwal','ASC')->get();
         if(!empty($get_jadwal_rutin)){
             foreach($get_jadwal_rutin as $val){
                 $data_jadwal_rutin[$val->id_jadwal]=(object)$val->getAttributes();
