@@ -467,6 +467,43 @@ class ListRoutes
                 ]
             ],
             [
+                'title' => 'Absensi | Cuti Karyawan',
+                'item' => [
+                    [
+                        'type' => 'index',
+                        'method' => 'get',
+                        'url' => '/cuti-karyawan',
+                        'controller' => 'CutiKaryawanController@actionIndex',
+                        'name' => 'cuti_karyawan',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'create',
+                        'method' => ['get', 'post'],
+                        'url' => '/cuti-karyawan/create',
+                        'controller' => 'CutiKaryawanController@actionCreate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'update',
+                        'method' => ['get', 'post'],
+                        'url' => '/cuti-karyawan/update',
+                        'controller' => 'CutiKaryawanController@actionUpdate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'delete',
+                        'method' => 'delete',
+                        'url' => '/cuti-karyawan/delete',
+                        'controller' => 'CutiKaryawanController@actionDelete',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                ]
+            ],
+            [
                 'title' => 'Manajemen Absensi | Tarik Log Absensi Karyawan',
                 'item' => [
                     [
