@@ -174,6 +174,12 @@ $(document).find(".input-date-range").on("change keyup", function () {
 
         parent.find("#tgl_start").val(start);
         parent.find("#tgl_end").val(end);
+
+        let startDate = moment(start, "YYYY-MM-DD");
+        let endDate = moment(end, "YYYY-MM-DD");
+        let days = endDate.diff(startDate, 'days') + 1;
+        console.log(days);
+        $("#jumlah").val(days);
     }
 });
 
