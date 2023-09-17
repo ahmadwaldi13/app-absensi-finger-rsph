@@ -58,6 +58,56 @@ trait AbsensiTraits {
         return  $hours * 3600 + $minutes * 60 + $seconds;
     }
 
+    function get_tgl_cuti_with_data($params=null) {
+
+        $tgl_awal=$params['tgl_awal'];
+        $tgl_akhir=$params['tgl_akhir'];
+        $data_sent=!empty($params['data_sent']) ? $params['data_sent'] : '';
+        $list_libur_kerja=!empty($params['list_libur_kerja']) ? $params['list_libur_kerja'] : [] ;
+        $list_libur_nasional=!empty($params['list_libur_nasional']) ? $params['list_libur_nasional'] : [] ;
+
+        $jml=0;    
+        $hasil_data=[];
+        if(is_numeric($tgl_akhir)){
+            $jml=$tgl_akhir;
+            $tgl_akhir='';
+        }else{
+            $start_date = new \DateTime($tgl_awal);
+            $end_date = new \DateTime($tgl_akhir);
+
+            $interval = $start_date->diff($end_date);
+            $jml=$interval->days;
+        }
+        $jml_cuti=1;
+        $hasil_data[$tgl_awal]=!empty($data_sent) ? $data_sent : '';
+        if(!empty($list_libur_kerja[$tgl_awal])){
+            $jml_cuti--;
+        }else if(!empty($list_libur_nasional[$tgl_awal])){
+            $jml_cuti--;
+        }
+        
+        if(!empty($jml)){
+            $indate = new \DateTime($tgl_awal);
+            for ($i=1; $i <= $jml; $i++) { 
+                $indate->format('Y-m-d');
+                $indate->modify('+1 day');
+                $hasil = $indate->format('Y-m-d');
+                $hasil_data[$hasil]=!empty($data_sent) ? $data_sent : '';
+                $jml_cuti++;
+
+                if(!empty($list_libur_kerja[$hasil])){
+                    $jml_cuti--;
+                }else if(!empty($list_libur_nasional[$hasil])){
+                    $jml_cuti--;
+                }
+            }
+        }
+        return [
+            'hasil_data'=>$hasil_data,
+            'jml_cuti'=>$jml_cuti
+        ];
+    }
+
     function get_tgl_per_bulan($tahun_bulan) {
         $get_data=explode('-',$tahun_bulan);
         $tahun=!empty($get_data[0]) ? $get_data[0] : date('Y');

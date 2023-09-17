@@ -91,6 +91,15 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
             ->orderBy('id_ruangan','ASC')
             ->orderBy('nm_karyawan','ASC')
             ->get();
+
+            $parameter_cuti=$parameter_where;
+            unset($parameter_cuti['id_jenis_jadwal']);
+            unset($parameter_cuti['id_departemen']);
+            unset($parameter_cuti['id_ruangan']);
+            
+            $list_cuti=(new \App\Services\CutiKaryawanService)->getDataCuti($parameter_cuti,1)->first();
+            $list_cuti=!empty($list_cuti->hasil) ? json_decode($list_cuti->hasil,true) : [];
+            
         }
 
         $page = isset($request->page) ? $request->page : 1;
@@ -120,6 +129,7 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
             'list_data'=>$list_data,
             'list_hari_libur'=>$list_hari_libur,
             'data_jadwal_rutin'=>$data_jadwal_rutin,
+            'list_cuti'=>$list_cuti
 
         ];
 

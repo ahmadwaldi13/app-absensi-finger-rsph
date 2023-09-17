@@ -1,12 +1,6 @@
 <form action="{{ url($action_form) }}" method="{{ !empty($method_form) ? $method_form : 'POST' }}">
     @csrf
-    <?php
-        $id=!empty($model->id_karyawan) ? $model->id_karyawan : '';
-        $start=!empty($model->tgl_mulai) ? $model->tgl_mulai : '';
-        $end=!empty($model->tgl_selesai) ? $model->tgl_selesai : '';
-        $kode= $id .'@'. $start .'@'. $end;
-    ?>
-    <input type="hidden" name="key_old" value="{{ $kode }}">
+    <input type="hidden" name="key_old" value="{{ !empty($model->id_cuti_kary) ? $model->id_cuti_kary : '' }}">
 
     <div class="row justify-content-start align-items-end mb-3">
         <div class="col-lg-12">

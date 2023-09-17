@@ -163,12 +163,13 @@ class AjaxController extends Controller
                 ],
                 $value->nm_jabatan,
                 $value->nm_departemen,
+                $value->nm_ruangan,
             ];
         }
     
         $table=[
             'header'=>[
-               'title'=> ['NIP','Nama','Jabatan','Departemen'],
+               'title'=> ['NIP','Nama','Jabatan','Departemen','Ruangan'],
                'parameter'=>[' class="w-5" ',' class="w-5" ',' class="w-25" ',' class="w-25" ',' class="w-25" ']
             ],
         ];

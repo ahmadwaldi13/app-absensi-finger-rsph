@@ -77,10 +77,8 @@ class CutiKaryawanController extends \App\Http\Controllers\MyAuthController
     private function form(Request $request)
     {
         $kode = !empty($request->data_sent) ? $request->data_sent : '';
-        $exp = explode('@', $kode);
-        $id_karyawan = !empty($exp[0]) ? $exp[0] : '';
         $paramater = [
-            'ref_cuti_karyawan.id_karyawan' => $id_karyawan
+            'ref_cuti_karyawan.id_cuti_kary' => $kode
         ];
         $model = (new \App\Services\CutiKaryawanService())->getList($paramater,1)->first();
         if ($model) {
@@ -130,15 +128,11 @@ class CutiKaryawanController extends \App\Http\Controllers\MyAuthController
     private function proses($request)
     {
         $req = $request->all();
+        DB::statement("ALTER TABLE ".(new \App\Models\CutiKaryawan())->table." AUTO_INCREMENT = 1");
         $kode = !empty($req['key_old']) ? $req['key_old'] : '';
-        $exp = explode('@', $kode);
-        $id_karyawan = !empty($exp[0]) ? $exp[0] : '';
-        $start = !empty($exp[1]) ? $exp[1] : '';
-        $end = !empty($exp[2]) ? $exp[2] : '';
-
         $action_is_create = (str_contains($request->getPathInfo(), $this->url_index . '/create')) ? 1 : 0;
-        // $link_back_redirect = ($action_is_create) ? $this->url_name : $this->url_name . '/update';
-        $link_back_redirect = $this->url_name . '';
+        $link_back_redirect = ($action_is_create) ? $this->url_name : $this->url_name . '/update';
+
         DB::beginTransaction();
         $pesan = [];
         $link_back_param = [];
@@ -160,7 +154,7 @@ class CutiKaryawanController extends \App\Http\Controllers\MyAuthController
 
         try {
 
-            $model = (new \App\Models\CutiKaryawan)->where('id_karyawan', '=', $id_karyawan)->where([['id_karyawan',$id_karyawan],['tgl_mulai',$start], ['tgl_selesai',$end]])->first();
+            $model = (new \App\Models\CutiKaryawan)->where('id_cuti_kary', '=', $kode)->first();
             if (empty($model)) {
                 $model = (new \App\Models\CutiKaryawan);
             }
@@ -196,7 +190,6 @@ class CutiKaryawanController extends \App\Http\Controllers\MyAuthController
 
     function actionDelete(Request $request)
     {
-
         DB::beginTransaction();
         $pesan = [];
         $link_back_param = [];
@@ -205,14 +198,10 @@ class CutiKaryawanController extends \App\Http\Controllers\MyAuthController
             'error' => 'Maaf data tidak berhasil dihapus'
         ];
 
-        $kode = !empty($request['data_sent']) ? $request['data_sent'] : '';
-        $exp = explode('@', $kode);
-        $id_karyawan = !empty($exp[0]) ? $exp[0] : '';
-        $start = !empty($exp[1]) ? $exp[1] : '';
-        $end = !empty($exp[2]) ? $exp[2] : '';
+        $kode = !empty($request->data_sent) ? $request->data_sent : null;
 
         try {
-            $model = (new \App\Models\CutiKaryawan)->where('id_karyawan', '=', $id_karyawan)->where([['id_karyawan',$id_karyawan],['tgl_mulai',$start], ['tgl_selesai',$end]])->first();
+            $model = (new \App\Models\CutiKaryawan())->where('id_cuti_kary', '=', $kode)->first();
             if (empty($model)) {
                 return redirect()->route($this->url_name, $link_back_param)->with(['error', 'Data tidak ditemukan']);
             }

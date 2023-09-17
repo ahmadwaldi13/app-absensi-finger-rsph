@@ -3,6 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class RefCutiKaryawan extends Migration
 {
@@ -19,6 +20,7 @@ class RefCutiKaryawan extends Migration
                 $table->charset = 'latin1';
                 $table->collation = 'latin1_swedish_ci';
 
+                $table->increments('id_cuti_kary');
                 $table->integer('id_karyawan')->length(10)->unsigned();
                 $table->date('tgl_mulai');
                 $table->date('tgl_selesai');
@@ -27,6 +29,11 @@ class RefCutiKaryawan extends Migration
 
                 $table->unique(['id_karyawan','tgl_mulai','tgl_selesai'],$table_name.'_uniq');
             });
+        }
+
+        $field='id_cuti_kary';
+        if (!Schema::hasColumn($table_name,$field)){
+            DB::statement("ALTER TABLE ".$table_name." ADD ".$field." INT(10) PRIMARY KEY AUTO_INCREMENT");
         }
     }
 

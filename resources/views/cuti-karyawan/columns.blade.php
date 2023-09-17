@@ -124,7 +124,7 @@
                         @foreach($list_cuti as $key => $item)
                         <?php
                             $paramater_url=[
-                                'data_sent'=>$item->id_karyawan .'@'. $item->tgl_mulai .'@'. $item->tgl_selesai
+                                'data_sent'=>$item->id_cuti_kary
                             ];
                         ?>
                         <tr>
