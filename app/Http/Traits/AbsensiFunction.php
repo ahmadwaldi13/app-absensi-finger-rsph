@@ -66,7 +66,7 @@ trait AbsensiTraits {
         $list_libur_kerja=!empty($params['list_libur_kerja']) ? $params['list_libur_kerja'] : [] ;
         $list_libur_nasional=!empty($params['list_libur_nasional']) ? $params['list_libur_nasional'] : [] ;
 
-        $jml=0;    
+        $jml=0;
         $hasil_data=[];
         if(is_numeric($tgl_akhir)){
             $jml=$tgl_akhir;
@@ -85,10 +85,10 @@ trait AbsensiTraits {
         }else if(!empty($list_libur_nasional[$tgl_awal])){
             $jml_cuti--;
         }
-        
+
         if(!empty($jml)){
             $indate = new \DateTime($tgl_awal);
-            for ($i=1; $i <= $jml; $i++) { 
+            for ($i=1; $i <= $jml; $i++) {
                 $indate->format('Y-m-d');
                 $indate->modify('+1 day');
                 $hasil = $indate->format('Y-m-d');
@@ -411,6 +411,25 @@ trait AbsensiTraits {
 
         return $list_status;
     }
+
+    public function get_list_simbol_text(){
+
+        $list_simbol_text=[];
+        $list_simbol_tmp=$this->get_list_data_presensi();
+        if(!empty($list_simbol_tmp)){
+            foreach($list_simbol_tmp as $item){
+                $item=(object)$item;
+                $list_simbol_text[]='('.$item->alias.') = '.$item->text;
+            }
+        }
+        $text='';
+        if(!empty($list_simbol_text)){
+            $text=implode(', ',$list_simbol_text);
+        }
+        return $text;
+
+    }
+
 
     // function proses_absensi_rutin($get_jadwal_rutin,$data){
     //     /*

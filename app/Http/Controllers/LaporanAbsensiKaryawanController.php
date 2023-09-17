@@ -99,7 +99,6 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
             
             $list_cuti=(new \App\Services\CutiKaryawanService)->getDataCuti($parameter_cuti,1)->first();
             $list_cuti=!empty($list_cuti->hasil) ? json_decode($list_cuti->hasil,true) : [];
-            
         }
 
         $page = isset($request->page) ? $request->page : 1;
@@ -118,7 +117,9 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
         $list_hari_libur=(new \App\Services\DataPresensiService)->get_data_hari_libur($paramater_where);
 
         $data_jadwal_rutin=(new \App\Http\Traits\PresensiHitungRutinFunction)->get_jadwal_rutin();
-
+        
+        $list_simbol_text=(new \App\Http\Traits\AbsensiFunction)->get_list_simbol_text();
+        
         $parameter_view = [
             'title' => $this->title,
             'breadcrumbs' => $this->breadcrumbs,
@@ -129,8 +130,8 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
             'list_data'=>$list_data,
             'list_hari_libur'=>$list_hari_libur,
             'data_jadwal_rutin'=>$data_jadwal_rutin,
-            'list_cuti'=>$list_cuti
-
+            'list_simbol_text'=>$list_simbol_text,
+            'list_cuti'=>$list_cuti,
         ];
 
         return view($this->part_view . '.index', $parameter_view);

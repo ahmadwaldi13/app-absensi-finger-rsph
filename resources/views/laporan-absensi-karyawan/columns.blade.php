@@ -320,6 +320,11 @@
                                     <td style='width: 1%; vertical-align: middle;'>:</td>
                                     <td style='width: 79%; vertical-align: middle;'><span>{{ (new \App\Http\Traits\AbsensiFunction)->change_format_waktu_indo($total_kerja_bulan_sec) }}</span></td>
                                 </tr>
+                                <tr>
+                                    <td style='width: 20%; vertical-align: middle;'>Ket. Simbol</td>
+                                    <td style='width: 1%; vertical-align: middle;'>:</td>
+                                    <td style='width: 79%; vertical-align: middle;'><span>{{ $list_simbol_text }}</span></td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -366,6 +371,7 @@
                         @foreach($list_data as $key => $item)
                             <?php
                                 $data_presensi=!empty($item->presensi_jadwal) ? (array)json_decode($item->presensi_jadwal) : [];
+                                $data_presensi_type=!empty($item->detail_hitung) ? (array)json_decode($item->detail_hitung) : [];
 
                                 $list_cuti_karyawan=[];
                                 $total_cuti=0;
@@ -392,8 +398,10 @@
 
                                 $total_waktu_kerja_user_sec=!empty($item->sum_waktu_kerja_user_sec) ? $item->sum_waktu_kerja_user_sec : 0;
                                 $total_waktu_kerja_user_text=(new \App\Http\Traits\AbsensiFunction)->change_format_waktu_indo($total_waktu_kerja_user_sec,':');
-                                // dd($total_waktu_kerja_user_sec,$total_waktu_kerja_user_text);
 
+                                $total_waktu_kerja_kurang_cuti=$total_kerja_sec_sistem_sec*$total_cuti;
+                                $total_kerja_bulan_sec=$total_kerja_bulan_sec-$total_waktu_kerja_kurang_cuti;
+                                
                                 $total_waktu_kerja_selisih_sec=$total_kerja_bulan_sec-$total_waktu_kerja_user_sec;
                                 $tanda=($total_waktu_kerja_selisih_sec<0) ? '+' : '-';
                                 $total_waktu_kerja_selisih_text=$tanda.' '.(new \App\Http\Traits\AbsensiFunction)->change_format_waktu_indo(abs($total_waktu_kerja_selisih_sec),':');
@@ -423,13 +431,31 @@
                                         $presensi_user=!empty($data_presensi[$item_tgl]) ? $data_presensi[$item_tgl] : '';
                                         $presensi_user_text=str_replace(',','<br>',$presensi_user);
 
+                                        $text_show="(A)";
+                                        if(!empty($data_presensi_type[$item_tgl])){
+                                            $get_type_data=$data_presensi_type[$item_tgl];
+                                            $get_status_kerja=!empty($get_type_data->status_kerja) ? json_decode($get_type_data->status_kerja,true) : '';
+                                            
+                                            
+                                            if(!empty($get_status_kerja['alias'])){
+                                                $hasil_alias=$get_status_kerja['alias'];
+                                                if($hasil_alias!='A'){
+                                                    $text_show=$presensi_user_text.'<br>('.$get_status_kerja['alias'].')';
+                                                }
+                                            }
+                                        }
+
+                                        $presensi_user_text=$text_show;
+
                                         $class_hari='hari_default';
                                         if(!empty($get_hari_minggu[$item_tgl])){
                                             $class_hari='hari_red';
+                                            $presensi_user_text='';
                                         }
 
                                         if(!empty($list_hari_libur[$item_tgl])){
                                             $class_hari='hari_yellow';
+                                            $presensi_user_text=!empty($list_hari_libur[$item_tgl]->uraian) ? $list_hari_libur[$item_tgl]->uraian : '';
                                         }
 
                                         if(!empty($list_cuti_karyawan[$item_tgl])){

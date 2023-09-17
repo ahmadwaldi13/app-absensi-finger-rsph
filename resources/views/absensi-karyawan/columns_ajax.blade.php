@@ -255,15 +255,43 @@
                                                                 <tbody>
                                                                     @if($jadwal_open_mesin)
                                                                         @foreach($jadwal_open_mesin as $key_oj => $val_oj)
+                                                                            <?php  
+                                                                                $uraian=!empty($val_oj->uraian) ? $val_oj->uraian : '';
+
+                                                                                $toren_uraian='Toleransi Presensi Lebih Awal';
+                                                                                if($uraian=='Pulang'){
+                                                                                    $toren_uraian='Toleransi Cepat Pulang';
+                                                                                }
+                                                                            ?>
                                                                             <tr>
-                                                                                <td style="width: 20%">{{ !empty($val_oj->uraian) ? $val_oj->uraian : '' }}</td>
+                                                                                <td style="width: 15%">{{ $uraian }}</td>
                                                                                 <td style="width: 1%">:</td>
-                                                                                <td style="width: 50%">
+                                                                                <td colspan='3' style="width: 84%">
                                                                                     <span>
                                                                                         {{ !empty($val_oj->jam_awal) ? $val_oj->jam_awal : '00:00:00'  }}
                                                                                         s/d
                                                                                         {{ !empty($val_oj->jam_akhir) ? $val_oj->jam_akhir : '00:00:00'  }}
                                                                                     </span>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <?php  ?>
+                                                                                <td></td>
+                                                                                <td style="width: 1%">:</td>
+                                                                                <td style="width: 20%">{{ $toren_uraian }}</td>
+                                                                                <td style="width: 1%">:</td>
+                                                                                <td style="width: 10%">
+                                                                                    <?php if(!empty($val_oj->status_toren_jam_cepat)){ ?>
+                                                                                        {{ !empty($val_oj->toren_jam_cepat) ? $val_oj->toren_jam_cepat : '00:00:00'  }} 
+                                                                                    <?php } ?>
+                                                                                </td>
+
+                                                                                <td style="width: 20%">Toleransi Telat</td>
+                                                                                <td style="width: 1%">:</td>
+                                                                                <td style="width: 10%">
+                                                                                    <?php if(!empty($val_oj->status_toren_jam_telat)){ ?>
+                                                                                        {{ !empty($val_oj->toren_jam_telat) ? $val_oj->toren_jam_telat : '00:00:00'  }} 
+                                                                                    <?php } ?>
                                                                                 </td>
                                                                             </tr>
                                                                         @endforeach
