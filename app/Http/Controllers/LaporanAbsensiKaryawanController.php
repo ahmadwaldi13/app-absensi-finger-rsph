@@ -49,7 +49,7 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
 
         /*simpan data jika bulan dan tahun berbeda---------------------*/
         if(!empty($request->cari_data)){
-            
+
             $paramter_search=[
                 'filter_date_start'=>$filter_tgl[0],
                 'filter_date_end'=>$filter_tgl[1],
@@ -67,9 +67,9 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
             $list_db=!empty($get_data_query->list_db) ? $get_data_query->list_db : [];
             $save_update=(new \App\Services\DataPresensiService)->save_update_rekap($list_db);
         }
-        
+
         /*------------------------------------------*/
-        
+
         $list_data=$collection = collect([]);
         if(!empty($request->cari_data)){
             $parameter_where=[
@@ -96,7 +96,7 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
             unset($parameter_cuti['id_jenis_jadwal']);
             unset($parameter_cuti['id_departemen']);
             unset($parameter_cuti['id_ruangan']);
-            
+
             $list_cuti=(new \App\Services\CutiKaryawanService)->getDataCuti($parameter_cuti,1)->first();
             $list_cuti=!empty($list_cuti->hasil) ? json_decode($list_cuti->hasil,true) : [];
         }
@@ -117,9 +117,9 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
         $list_hari_libur=(new \App\Services\DataPresensiService)->get_data_hari_libur($paramater_where);
 
         $data_jadwal_rutin=(new \App\Http\Traits\PresensiHitungRutinFunction)->get_jadwal_rutin();
-        
+
         $list_simbol_text=(new \App\Http\Traits\AbsensiFunction)->get_list_simbol_text();
-        
+
         $parameter_view = [
             'title' => $this->title,
             'breadcrumbs' => $this->breadcrumbs,
@@ -153,7 +153,6 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
         $filter_tgl[0]=!empty($filter_tgl[0]) ? $filter_tgl[0] : date('Y-m-d');
         $filter_tgl[1]=!empty($filter_tgl[1]) ? $filter_tgl[1] : date('Y-m-d');
 
-
         $parameter_where=[
             'search'=>$form_filter_text,
             'tanggal'=>[$filter_tgl[0],$filter_tgl[1]],
@@ -182,6 +181,14 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
         ->orderBy('nm_karyawan','ASC')
         ->get();
 
+        $parameter_cuti=$parameter_where;
+        unset($parameter_cuti['id_jenis_jadwal']);
+        unset($parameter_cuti['id_departemen']);
+        unset($parameter_cuti['id_ruangan']);
+
+        $list_cuti=(new \App\Services\CutiKaryawanService)->getDataCuti($parameter_cuti,1)->first();
+        $list_cuti=!empty($list_cuti->hasil) ? json_decode($list_cuti->hasil,true) : [];
+
         $paramater_where=[
             'tanggal'=>[$filter_tgl[0],$filter_tgl[1]],
         ];
@@ -194,7 +201,7 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
 
             $hari_kerja_tmp=!empty($data_jadwal_rutin->hari_kerja) ? $data_jadwal_rutin->hari_kerja : '';
             $hari_kerja=[];
-        
+
             if(!empty($hari_kerja_tmp)){
                 $hari_kerja_t=explode(',',$hari_kerja_tmp);
                 if($hari_kerja_t){
@@ -245,9 +252,9 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
             $tahun=$get_tb->format('Y');
             $bulan=(int)$get_tb->format('m');
             $bulan_text=(new \App\Http\Traits\GlobalFunction)->get_bulan($bulan);
-            
+
             $file_='format_laporan_rekap_absensi_karyawan.xlsx';
-            
+
             $nama_excel="rekap_absensi_jadwal_rutin";
             $nama_excel.="_".$tahun."_".$bulan;
             $nama_excel.=!empty($get_nm_departemen) ? "_".strtolower( str_replace(" ","_",$get_nm_departemen) ) : '';
@@ -263,7 +270,7 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
             $get_hari_minggu=[];
             $hari_minggu=[];
             $jml_hari_libur=0;
-            
+
             $column_awal_tgl='E';
             $position_awal_tgl=7;
 
@@ -295,7 +302,7 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
                     $jml_hari_libur++;
                     $column_index_hari_libur_nasional[$column_awal_tgl]=$column_awal_tgl;
                 }
-                
+
                 if($key_tgl>=28){
                     $objPHPExcel->setActiveSheetIndex(0)->insertNewColumnBefore($column_awal_tgl);
                     $objPHPExcel->getActiveSheet()->getColumnDimension($column_awal_tgl)->setWidth(9);
@@ -322,7 +329,7 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
             $hari_libur_text=!empty($hari_libur_text) ? implode(', ',$hari_libur_text) : '';
 
             $set_end_column_index=end($column_index_tgl);
-            for ($i=0; $i < 2; $i++) { 
+            for ($i=0; $i < 2; $i++) {
                 $set_end_column_index++;
             }
 
@@ -334,7 +341,7 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
             $header_1_posi=2;
             $objPHPExcel->setActiveSheetIndex(0)->setCellValue($header_1_index.$header_1_posi,$header_1 );
             $objPHPExcel->getActiveSheet()->mergeCells($header_1_index.$header_1_posi.':'.$set_end_column_index.$header_1_posi );
-            
+
             $total_jml_hari_kerja_bulan=$jml_hari_kerja_bulan-$jml_hari_libur;
 
             $total_kerja_bulan_sec=$total_kerja_sec_sistem_sec * $total_jml_hari_kerja_bulan;
@@ -357,9 +364,10 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
             $jml_item=0;
 
             $style_column_nama=[];
+            $get_column_cuti=[];
             foreach($list_data as $key => $item){
                 $jml_item=$key+1;
-                
+
                 if(empty($list_departemen[$item->id_departemen])){
                     $list_departemen[$item->id_departemen]=1;
                     $cell_me='A';
@@ -373,7 +381,7 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
                         $this_style=$objPHPExcel->getActiveSheet()->getStyle($list_departemen_first[0]);
                         $objPHPExcel->getActiveSheet()->duplicateStyle($this_style,$cell_me.$position_);
                     }
-                    
+
                     $position_++;
                 }
 
@@ -393,7 +401,7 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
 
                     $position_++;
                 }
-                
+
                 $nm_id_karyawan=( !empty($item->id_user) ? "( ".$item->id_user." ) " : '' ).''.( !empty($item->nm_karyawan) ? $item->nm_karyawan : '' );
                 $objPHPExcel->setActiveSheetIndex(0)->setCellValue('A'.$position_,$jml_item );
                 $objPHPExcel->setActiveSheetIndex(0)->setCellValue('B'.$position_,$nm_id_karyawan  );
@@ -405,21 +413,77 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
                 }
 
                 $data_presensi=!empty($item->presensi_jadwal) ? (array)json_decode($item->presensi_jadwal) : [];
+                $data_presensi_type=!empty($item->detail_hitung) ? (array)json_decode($item->detail_hitung) : [];
+                
+                $list_cuti_karyawan=[];
+                $total_cuti=0;
+                if(!empty($list_cuti[$item->id_karyawan])){
+                    $data_cuti=(object)$list_cuti[$item->id_karyawan];
+                    if(!empty($data_cuti->waktu)){
+                        foreach($data_cuti->waktu as $wc){
+                            if(!empty($wc[0])){
+                                $parameter_get_cuti=[
+                                    'tgl_awal'=>!empty($wc[0]) ? $wc[0] : '',
+                                    'tgl_akhir'=>!empty($wc[1]) ? $wc[1] : '',
+                                    'data_sent'=>!empty($wc[3]) ? $wc[3] : '',
+                                    'list_libur_kerja'=>!empty($get_hari_minggu) ? $get_hari_minggu : '',
+                                    'list_libur_nasional'=>!empty($list_hari_libur) ? $list_hari_libur : '',
+                                ];
+                                $hasil_cuti_tmp=(new \App\Http\Traits\AbsensiFunction)->get_tgl_cuti_with_data($parameter_get_cuti);
+                                $hasil_cuti=!empty($hasil_cuti_tmp['hasil_data']) ? $hasil_cuti_tmp['hasil_data'] : [];
+                                $total_cuti+=!empty($hasil_cuti_tmp['jml_cuti']) ? $hasil_cuti_tmp['jml_cuti'] : 0;
+                                $list_cuti_karyawan=array_merge($list_cuti_karyawan,$hasil_cuti);
+                            }
+                        }
+                    }    
+                }
 
                 $total_waktu_kerja_user_sec=!empty($item->sum_waktu_kerja_user_sec) ? $item->sum_waktu_kerja_user_sec : 0;
                 $total_waktu_kerja_user_text=(new \App\Http\Traits\AbsensiFunction)->change_format_waktu_indo($total_waktu_kerja_user_sec,':');
 
+                $total_waktu_kerja_kurang_cuti=$total_kerja_sec_sistem_sec*$total_cuti;
+                $total_kerja_bulan_sec=$total_kerja_bulan_sec-$total_waktu_kerja_kurang_cuti;
+
                 $total_waktu_kerja_selisih_sec=$total_kerja_bulan_sec-$total_waktu_kerja_user_sec;
                 $tanda=($total_waktu_kerja_selisih_sec<0) ? '+' : '-';
                 $total_waktu_kerja_selisih_text=$tanda.' '.(new \App\Http\Traits\AbsensiFunction)->change_format_waktu_indo(abs($total_waktu_kerja_selisih_sec),':');
-                
+
                 foreach($list_tgl as $key_tgl => $item_tgl){
                     if(!empty($column_index_tgl[$item_tgl])){
                         $column_me=$column_index_tgl[$item_tgl];
-                        
+
                         $presensi_user=!empty($data_presensi[$item_tgl]) ? $data_presensi[$item_tgl] : '';
                         $presensi_user_text=str_replace(',',','.PHP_EOL,$presensi_user);
-                        
+
+                        $text_show="(A)";
+                        if(!empty($data_presensi_type[$item_tgl])){
+                            $get_type_data=$data_presensi_type[$item_tgl];
+                            $get_status_kerja=!empty($get_type_data->status_kerja) ? json_decode($get_type_data->status_kerja,true) : '';
+                            
+                            
+                            if(!empty($get_status_kerja['alias'])){
+                                $hasil_alias=$get_status_kerja['alias'];
+                                if($hasil_alias!='A'){
+                                    $text_show=$presensi_user_text.PHP_EOL.'( '.$get_status_kerja['alias'].' )';
+                                }
+                            }
+                        }
+
+                        $presensi_user_text=$text_show;
+
+                        if(!empty($get_hari_minggu[$item_tgl])){
+                            $presensi_user_text='';
+                        }
+
+                        if(!empty($list_hari_libur[$item_tgl])){
+                            $presensi_user_text='';
+                        }
+
+                        if(!empty($list_cuti_karyawan[$item_tgl])){
+                            $presensi_user_text=$list_cuti_karyawan[$item_tgl];
+                            $get_column_cuti[]=$column_me.$position_;
+                        }
+
                         $objPHPExcel->setActiveSheetIndex(0)->setCellValue($column_me.$position_,$presensi_user_text );
                     }
                 }
@@ -428,7 +492,7 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
                 $objPHPExcel->setActiveSheetIndex(0)->setCellValue($end_index_tgl.$position_, $total_waktu_kerja_user_text );
                 $end_index_tgl++;
                 $objPHPExcel->setActiveSheetIndex(0)->setCellValue($end_index_tgl.$position_, $total_waktu_kerja_selisih_text );
-                
+
                 $position_++;
             }
 
@@ -450,7 +514,7 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
                     $plus_=1;
                     $header_=$check_array_first[0][0].$check_array_first[0][1].":".$check_array_first[0][0].($check_array_first[0][1]+$plus_);
                     $data_=$check_array_first[0][0].($check_array_first[0][1]+$cell_t).":".$check_array_first[0][0].$check_array_first[0][2];
-                    
+
                     $header_item_=$item.$check_array_first[0][1].':'.$item.($check_array_first[0][1]+$plus_);
                     $data_item_=$item.$position_awal_tgl.':'.$item.$end_position;
                     $data_item_=$item.($check_array_first[0][1]+$cell_t).":".$item.$check_array_first[0][2];
@@ -464,7 +528,7 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
             }
 
             $check_array_first=[];
-            
+
             foreach($column_index_hari_libur_nasional as $item){
                 if(empty($check_array_first)){
                     $check_array_first[]=[$item,$position_awal_tgl,$end_position];
@@ -477,7 +541,7 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
                     $plus_=1;
                     $header_=$check_array_first[0][0].$check_array_first[0][1].":".$check_array_first[0][0].($check_array_first[0][1]+$plus_);
                     $data_=$check_array_first[0][0].($check_array_first[0][1]+$cell_t).":".$check_array_first[0][0].$check_array_first[0][2];
-                    
+
                     $header_item_=$item.$check_array_first[0][1].':'.$item.($check_array_first[0][1]+$plus_);
                     $data_item_=$item.$position_awal_tgl.':'.$item.$end_position;
                     $data_item_=$item.($check_array_first[0][1]+$cell_t).":".$item.$check_array_first[0][2];
@@ -487,6 +551,16 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
 
                     $this_style=$objPHPExcel->getActiveSheet()->getStyle($data_);
                     $objPHPExcel->getActiveSheet()->duplicateStyle($this_style,$data_item_);
+                }
+            }
+
+            if(!empty($get_column_cuti)){
+                foreach($get_column_cuti as $item){
+                    $objPHPExcel->getActiveSheet()->getStyle($item)
+                    ->getFill()
+                    ->setFillType($fill_solid)
+                    ->getStartColor()
+                    ->setARGB('79f6eb');
                 }
             }
 

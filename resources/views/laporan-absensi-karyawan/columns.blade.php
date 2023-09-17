@@ -455,7 +455,7 @@
 
                                         if(!empty($list_hari_libur[$item_tgl])){
                                             $class_hari='hari_yellow';
-                                            $presensi_user_text=!empty($list_hari_libur[$item_tgl]->uraian) ? $list_hari_libur[$item_tgl]->uraian : '';
+                                            $presensi_user_text='';
                                         }
 
                                         if(!empty($list_cuti_karyawan[$item_tgl])){
