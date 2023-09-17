@@ -131,7 +131,7 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
             'list_hari_libur'=>$list_hari_libur,
             'data_jadwal_rutin'=>$data_jadwal_rutin,
             'list_simbol_text'=>$list_simbol_text,
-            'list_cuti'=>$list_cuti,
+            'list_cuti'=>!empty($list_cuti) ? $list_cuti : '',
         ];
 
         return view($this->part_view . '.index', $parameter_view);
