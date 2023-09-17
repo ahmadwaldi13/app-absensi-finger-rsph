@@ -141,10 +141,10 @@
 
                             <div class="col-lg-3 col-md-10">
                                 <div class='bagan_form'>
-                                    <label for="filter_nm_departemen" class="form-label">Departemen</label>
+                                    <label for="filter_nm_departemen" class="form-label">Departemen <span class="text-danger">*</span></label>
                                     <div class="button-icon-inside">
-                                        <input type="text" class="input-text" id='filter_nm_departemen' name="filter_nm_departemen" readonly value="{{ Request::get('filter_nm_departemen') }}" />
-                                        <input type="hidden" id="filter_id_departemen" name='filter_id_departemen' readonly value="{{ Request::get('filter_id_departemen') }}">
+                                        <input type="text" class="input-text" id='filter_nm_departemen' name="filter_nm_departemen" required value="{{ Request::get('filter_nm_departemen') }}" />
+                                        <input type="hidden" id="filter_id_departemen" name='filter_id_departemen' required value="{{ Request::get('filter_id_departemen') }}">
                                         <span class="modal-remote-data" data-modal-src="{{ url('ajax?action=get_list_departemen') }}" data-modal-key="" data-modal-pencarian='true' data-modal-title='Departemen' data-modal-width='30%' data-modal-action-change="function=.set-data-list-from-modal@data-target=#filter_id_departemen|#filter_nm_departemen@data-key-bagan=0@data-btn-close=#closeModalData">
                                             <img class="iconify hover-pointer text-primary" src="{{ asset('') }}icon/selected.png" alt="">
                                         </span>
@@ -156,7 +156,7 @@
 
                             <div class="col-lg-3 col-md-10">
                                 <div class='bagan_form'>
-                                    <label for="filter_nm_ruangan" class="form-label">Ruangan</label>
+                                    <label for="filter_nm_ruangan" class="form-label">Ruangan </label>
                                     <div class="button-icon-inside">
                                         <input type="text" class="input-text" id='filter_nm_ruangan' name="filter_nm_ruangan" readonly value="{{ Request::get('filter_nm_ruangan') }}" />
                                         <input type="hidden" id="filter_id_ruangan" name='filter_id_ruangan' readonly value="{{ Request::get('filter_id_ruangan') }}">
@@ -226,7 +226,7 @@
 
                     <div class="col-lg-1 col-md-1">
                         <div class="d-grid grap-2">
-                            <button type="submit" class="btn btn-primary" name='cari_data' value=1>
+                            <button type="submit" class="btn btn-primary validasi_submit" name='cari_data' value=1>
                                 <i class="fa-sharp fa-solid fa-magnifying-glass"></i>
                             </button>
                         </div>
