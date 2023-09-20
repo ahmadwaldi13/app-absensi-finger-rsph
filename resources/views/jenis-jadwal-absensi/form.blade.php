@@ -37,7 +37,7 @@
 
         <div class="col-lg-12">
             <div class="row justify-content-start align-items-end">
-                <div class="col-lg-3">
+                <div class="col-lg-2">
                     <div class='bagan_form'>
                         <label for="masuk_kerja" class="form-label">Jam Masuk Kerja</label>
                         <input type="time" class="form-control input-daterange" id="masuk_kerja" name='masuk_kerja' required value="{{ !empty($model->masuk_kerja) ? $model->masuk_kerja : '' }}">
@@ -45,26 +45,56 @@
                     </div>
                 </div>
 
-                <div class="col-lg-3">
+                <div class="col-lg-4">
                     <div class='bagan_form'>
-                        <label for="pulang_kerja" class="form-label">Jam Pulang Kerja</label>
+                        <label for="pulang_kerja" class="form-label">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    Jam Pulang Kerja
+                                </div>
+                                <div class="col-md-6">
+                                    <?php 
+                                        $check_pk_next_day=!empty($model->pulang_kerja_next_day) ? "checked" : ''; 
+                                    ?>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" {{ $check_pk_next_day }} name='pulang_kerja_next_day' value="1" id="pulang_kerja_next_day">
+                                        <label class="form-check-label" style='margin-top: 7px;margin-left: 5px;' for="pulang_kerja_next_day">Besok</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
                         <input type="time" class="form-control input-daterange" id="pulang_kerja" name='pulang_kerja' required value="{{ !empty($model->pulang_kerja) ? $model->pulang_kerja : '' }}">
                         <div class="message"></div>
                     </div>
                 </div>
 
-                <div class="col-lg-3">
+                <div class="col-lg-2">
                     <div class='bagan_form'>
                         <label for="awal_istirahat" class="form-label">Awal Istirahat</label>
-                        <input type="time" class="form-control input-daterange" id="awal_istirahat" name='awal_istirahat' required value="{{ !empty($model->awal_istirahat) ? $model->awal_istirahat : '' }}">
+                        <input type="time" class="form-control input-daterange" id="awal_istirahat" name='awal_istirahat' value="{{ !empty($model->awal_istirahat) ? $model->awal_istirahat : '' }}">
                         <div class="message"></div>
                     </div>
                 </div>
 
-                <div class="col-lg-3">
+                <div class="col-lg-4">
                     <div class='bagan_form'>
-                        <label for="akhir_istirahat" class="form-label">Akhir Istirahat</label>
-                        <input type="time" class="form-control input-daterange" id="akhir_istirahat" name='akhir_istirahat' required value="{{ !empty($model->akhir_istirahat) ? $model->akhir_istirahat : '' }}">
+                        <label for="akhir_istirahat" class="form-label">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    Akhir Istirahat
+                                </div>
+                                <div class="col-md-6">
+                                    <?php 
+                                        $check_ais_next_day=!empty($model->akhir_istirahat_next_day) ? "checked" : ''; 
+                                    ?>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" {{ $check_ais_next_day }} name='akhir_istirahat_next_day' value="1" id="akhir_istirahat_next_day">
+                                        <label class="form-check-label" style='margin-top: 7px;margin-left: 5px;' for="akhir_istirahat_next_day">Besok</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+                        <input type="time" class="form-control input-daterange" id="akhir_istirahat" name='akhir_istirahat' value="{{ !empty($model->akhir_istirahat) ? $model->akhir_istirahat : '' }}">
                         <div class="message"></div>
                     </div>
                 </div>

@@ -55,9 +55,21 @@
                                 $mulai_istirahat=(new \App\Http\Traits\AbsensiFunction)->his_to_seconds($item->awal_istirahat);
                                 $akhir_istirahat=(new \App\Http\Traits\AbsensiFunction)->his_to_seconds($item->akhir_istirahat);
 
-                                $total_istirahat=$akhir_istirahat-$mulai_istirahat;
+                                $waktu_masuk_pulang=$waktu_pulang-$waktu_masuk;
+                                $besok_pulang='';
+                                if(!empty($item->pulang_kerja_next_day)){
+                                    $waktu_masuk_pulang=$waktu_masuk-$waktu_pulang;
+                                    $besok_pulang='Besok Hari';
+                                }
 
-                                $total_waktu_kerja=($waktu_pulang-$waktu_masuk)-$total_istirahat;
+                                $total_istirahat=$akhir_istirahat-$mulai_istirahat;
+                                $besok_akhir_istirahat='';
+                                if(!empty($item->akhir_istirahat_next_day)){
+                                    $total_istirahat=$mulai_istirahat-$akhir_istirahat;
+                                    $besok_akhir_istirahat='Besok Hari';
+                                }
+
+                                $total_waktu_kerja=$waktu_masuk_pulang-$total_istirahat;
                                 $total_waktu_kerja=(new \App\Http\Traits\AbsensiFunction)->hitung_waktu_by_seccond($total_waktu_kerja);
                                 $total_waktu_kerja_text=$total_waktu_kerja->jam.' jam'.', '.$total_waktu_kerja->menit.' Menit'.', '.$total_waktu_kerja->detik.' Detik';
 
@@ -77,9 +89,9 @@
                                 <td>{{ $nm_type_jenis }}</td>
                                 <td>{{ !empty($item->nm_jenis_jadwal) ? $item->nm_jenis_jadwal : ''  }}</td>
                                 <td>{{ !empty($item->masuk_kerja) ? $item->masuk_kerja : ''  }}</td>
-                                <td>{{ !empty($item->pulang_kerja) ? $item->pulang_kerja : ''  }}</td>
+                                <td>{{ !empty($item->pulang_kerja) ? $item->pulang_kerja : ''  }} {!! !empty($besok_pulang) ? "<hr style='margin:0px'>".$besok_pulang : ''  !!}</td>
                                 <td>{{ !empty($item->awal_istirahat) ? $item->awal_istirahat : ''  }}</td>
-                                <td>{{ !empty($item->akhir_istirahat) ? $item->akhir_istirahat : ''  }}</td>
+                                <td>{{ !empty($item->akhir_istirahat) ? $item->akhir_istirahat : ''  }} {!! !empty($besok_akhir_istirahat) ? "<hr style='margin:0px'>".$besok_akhir_istirahat : ''  !!}</td>
                                 <td>{{ $total_waktu_kerja_text  }}</td>
                                 <td>{{ $hari_kerja  }}</td>
                                 <td class='text-right'>
