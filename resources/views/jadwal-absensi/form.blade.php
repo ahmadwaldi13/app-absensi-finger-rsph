@@ -69,6 +69,23 @@
                 </div>
             </div>
         </div>
+
+        <div class="col-md-12">
+            <div class="row justify-content-start align-items-end mb-3">
+                <div class="col-lg-3 mb-3">
+                    <div class='bagan_form'>
+                        <label for="status_jadwal" class="form-label">Status Jadwal</label>
+                        <div class="form-check form-switch">
+                            <?php 
+                                $checked=!empty($model->status_jadwal) ? ($model->status_jadwal == 1 ? 'checked' : '') : '';
+                            ?>
+                            <input class="form-check-input" type="checkbox" name="status_jadwal" value="1" {{ $checked }} id="status_user">
+                            <div class="message"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="row justify-content-start align-items-end">

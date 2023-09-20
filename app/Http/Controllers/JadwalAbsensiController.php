@@ -145,9 +145,10 @@ class JadwalAbsensiController extends \App\Http\Controllers\MyAuthController
                 $status_toren_jam_telat=1;
             }
             $data_save['status_toren_jam_telat']=$status_toren_jam_telat;
+            $data_save['status_jadwal']=!empty($data_save['status_jadwal']) ? $data_save['status_jadwal'] : 0;
 
             $model->set_model_with_data($data_save);
-            
+
             $is_save = 0;
 
             if ($model->save()) {
