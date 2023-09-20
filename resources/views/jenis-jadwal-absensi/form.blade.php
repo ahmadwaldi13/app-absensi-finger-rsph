@@ -10,6 +10,23 @@
             <div class="row justify-content-start align-items-end">
                 <div class="col-lg-6 mb-3">
                     <div class='bagan_form'>
+                        <label for="type_jenis" class="form-label">Kelompok Jadwal</label>
+                        <select class="form-select" id="type_jenis" name="type_jenis" required aria-label="Default select ">
+                            @if(!empty($type_jenis_jadwal))
+                                @foreach($type_jenis_jadwal as $key => $val)
+                                    <?php
+                                        $model_type_jenis_jadwal=!empty($model->type_jenis) ? $model->type_jenis : 2;
+                                    ?>
+                                    <option value='{{ $key }}' {{ ($model_type_jenis_jadwal==$key) ? 'selected' : '' }}>{{ $val }}</option>
+                                @endforeach
+                            @endif
+                        </select>
+                        <div class="message"></div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 mb-3">
+                    <div class='bagan_form'>
                         <label for="nm_jenis_jadwal" class="form-label">Nama Jadwal</label>
                         <input type="text" class="form-control" id="nm_jenis_jadwal" name='nm_jenis_jadwal' required value="{{ !empty($model->nm_jenis_jadwal) ? $model->nm_jenis_jadwal : '' }}">
                         <div class="message"></div>

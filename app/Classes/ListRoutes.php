@@ -356,7 +356,7 @@ class ListRoutes
                 ]
             ],
             [
-                'title' => 'Absensi | Jenis Jadwal Absensi',
+                'title' => 'Manajemen  | Data Jadwal Kerja',
                 'item' => [
                     [
                         'type' => 'index',
@@ -393,7 +393,7 @@ class ListRoutes
                 ]
             ],
             [
-                'title' => 'Absensi | Jadwal Absensi',
+                'title' => 'Manajemen Absensi | Pengaturan Jadwal Presensi',
                 'item' => [
                     [
                         'type' => 'index',

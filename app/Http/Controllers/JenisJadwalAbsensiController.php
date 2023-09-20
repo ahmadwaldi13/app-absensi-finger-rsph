@@ -63,9 +63,12 @@ class JenisJadwalAbsensiController extends \App\Http\Controllers\MyAuthControlle
             $action_form = $this->part_view . '/create';
         }
 
+        $type_jenis_jadwal = (new \App\Models\RefJenisJadwal())->type_jenis_jadwal();
+        
         $parameter_view = [
             'action_form' => $action_form,
-            'model' => $model
+            'model' => $model,
+            'type_jenis_jadwal'=>$type_jenis_jadwal
         ];
 
         return view($this->part_view . '.form', $parameter_view);
@@ -136,35 +139,58 @@ class JenisJadwalAbsensiController extends \App\Http\Controllers\MyAuthControlle
             }
             $data_save['hari_kerja']=$hari_kerja;
             $model->set_model_with_data($data_save);
+            if(!empty($model->id_jenis_jadwal)){
+                if( $model->id_jenis_jadwal==1 ){
+                    $model->type_jenis=1;
+                }
+            }
+            
             $is_save = 0;
 
             if ($model->save()) {
                 $get_ref_jadwal=(new \App\Models\RefJadwal)->referensi_data();
+
+                $type_jadwal_istirahat=1;
+                if( ( $model->awal_istirahat=="00:00:00" or $model->awal_istirahat==null ) and ( $model->akhir_istirahat=="00:00:00" or $model->akhir_istirahat==null ) ){
+                    $type_jadwal_istirahat=0;
+                }
+                
                 if(!empty($get_ref_jadwal)){
                     foreach($get_ref_jadwal as $val_rj){
-                        $model_jadwal = (new \App\Models\RefJadwal)->where('id_jenis_jadwal', '=', $kode)->where('kd_jadwal', '=', $val_rj->kd_jadwal)->first();
-                        if (empty($model_jadwal)) {
-                            $model_jadwal = (new \App\Models\RefJadwal);
-                            $model_jadwal->kd_jadwal=$val_rj->kd_jadwal;
-                            $model_jadwal->id_jenis_jadwal=$model->id_jenis_jadwal;
-                            $model_jadwal->uraian=$val_rj->uraian;
-                            $model_jadwal->alias=$val_rj->alias;
-                            $model_jadwal->status_toren_jam_cepat=$val_rj->status_toren_jam_cepat;
-                            $model_jadwal->status_toren_jam_telat=$val_rj->status_toren_jam_telat;
-                            $model_jadwal->status_jadwal=$val_rj->status_jadwal;
-
-                            if ($model_jadwal->save()) {
-                                $is_save++;
+                        $check_istirahat=0;
+                        $model_jadwal = (new \App\Models\RefJadwal)->where('id_jenis_jadwal', '=', $kode)->where('kd_jadwal', '=', $val_rj->kd_jadwal);
+                        
+                        if(empty($type_jadwal_istirahat)){
+                            if($val_rj->kd_jadwal==2 or $val_rj->kd_jadwal==3){
+                                $check_istirahat=1;
+                                $model_jadwal->delete();
                             }
-                        }else{
-                            $is_save = 1;
+                        }
+
+                        if(empty($check_istirahat)){    
+                            if (empty($model_jadwal->first())) {
+                                $model_jadwal = (new \App\Models\RefJadwal);
+                                $model_jadwal->kd_jadwal=$val_rj->kd_jadwal;
+                                $model_jadwal->id_jenis_jadwal=$model->id_jenis_jadwal;
+                                $model_jadwal->uraian=$val_rj->uraian;
+                                $model_jadwal->alias=$val_rj->alias;
+                                $model_jadwal->status_toren_jam_cepat=$val_rj->status_toren_jam_cepat;
+                                $model_jadwal->status_toren_jam_telat=$val_rj->status_toren_jam_telat;
+                                $model_jadwal->status_jadwal=$val_rj->status_jadwal;
+
+                                if ($model_jadwal->save()) {
+                                    $is_save++;
+                                }
+                            }else{
+                                $is_save = 1;
+                            }
                         }
                     }
                 }else{
                     $is_save = 1;
                 }
             }
-
+            
             if ($is_save) {
                 DB::commit();
                 $link_back_param = $this->clear_request($link_back_param, $request);

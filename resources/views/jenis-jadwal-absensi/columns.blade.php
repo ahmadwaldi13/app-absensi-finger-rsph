@@ -25,6 +25,7 @@
                 <table class="table border table-responsive-tablet">
                     <thead>
                         <tr>
+                            <th class="py-3" style="width: 3%">Kel. Jadwal</th>
                             <th class="py-3" style="width: 10%">Nama Jenis Jadwal</th>
                             <th class="py-3" style="width: 5%">Jam Masuk Kerja</th>
                             <th class="py-3" style="width: 5%">Jam Pulang Kerja</th>
@@ -69,8 +70,11 @@
                                     }
                                 }
                                 $hari_kerja=!empty($hari_kerja) ? implode(',',$hari_kerja) : '';
+
+                                $nm_type_jenis = (new \App\Models\RefJenisJadwal())->type_jenis_jadwal($item->type_jenis);
                             ?>
                             <tr>
+                                <td>{{ $nm_type_jenis  }}</td>
                                 <td>{{ !empty($item->nm_jenis_jadwal) ? $item->nm_jenis_jadwal : ''  }}</td>
                                 <td>{{ !empty($item->masuk_kerja) ? $item->masuk_kerja : ''  }}</td>
                                 <td>{{ !empty($item->pulang_kerja) ? $item->pulang_kerja : ''  }}</td>

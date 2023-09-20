@@ -25,6 +25,7 @@ class RefJenisJadwal extends Migration
                 $table->time('pulang_kerja');
                 $table->time('awal_istirahat');
                 $table->time('akhir_istirahat');
+                $table->smallInteger('type_jenis');
             });
         }
 
@@ -41,6 +42,15 @@ class RefJenisJadwal extends Migration
             if (!Schema::hasColumn($table_name, $value)){
                 Schema::table($table_name, function (Blueprint $table) use ($value,$length){
                     $table->string($value,$length);
+                });
+            }
+        }
+
+        $another_create_smallInteger=['type_jenis'];
+        foreach($another_create_smallInteger as $value){
+            if (!Schema::hasColumn($table_name, $value)){
+                Schema::table($table_name, function (Blueprint $table) use ($value){
+                    $table->smallInteger($value);
                 });
             }
         }
