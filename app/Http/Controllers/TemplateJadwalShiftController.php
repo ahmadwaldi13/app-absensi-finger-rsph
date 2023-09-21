@@ -9,7 +9,7 @@ use App\Services\GlobalService;
 use App\Services\RefJadwalService;
 use App\Http\Traits\GlobalFunction;
 
-class JadwalAbsensiController extends \App\Http\Controllers\MyAuthController
+class TemplateJadwalShiftController extends \App\Http\Controllers\MyAuthController
 {
     public $part_view, $url_index, $url_name, $title, $breadcrumbs, $globalService, $globalFunction;
     public $refJadwalService;
@@ -21,7 +21,7 @@ class JadwalAbsensiController extends \App\Http\Controllers\MyAuthController
         $this->url_index = $router_name->uri;
         $this->url_name = $router_name->router_name;
 
-        $this->title = 'Pengaturan Jadwal Presensi';
+        $this->title = 'Template Jadwal Shift';
         $this->breadcrumbs = [
             ['title' => 'Jadwal', 'url' => url('/') . "/sub-menu?type=6"],
             ['title' => $this->title, 'url' => url('/') . "/" . $this->url_index],

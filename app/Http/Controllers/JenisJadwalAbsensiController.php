@@ -19,7 +19,7 @@ class JenisJadwalAbsensiController extends \App\Http\Controllers\MyAuthControlle
         $this->url_index = $router_name->uri;
         $this->url_name = $router_name->router_name;
 
-        $this->title = 'Jenis Jadwal Absensi';
+        $this->title = 'Data Jadwal Kerja';
         $this->breadcrumbs = [
             ['title' => 'Manajemen Absensi', 'url' => url('/') . "/sub-menu?type=6"],
             ['title' => $this->title, 'url' => url('/') . "/" . $this->url_index],
@@ -139,11 +139,15 @@ class JenisJadwalAbsensiController extends \App\Http\Controllers\MyAuthControlle
             }
             $data_save['hari_kerja']=$hari_kerja;
 
+            $data_save['pulang_kerja_next_day']=!empty($data_save['pulang_kerja_next_day']) ? 1 : 0;
+            $data_save['akhir_istirahat_next_day']=!empty($data_save['akhir_istirahat_next_day']) ? 1 : 0;
+
             if( empty($model->awal_istirahat) or empty($model->awal_istirahat) ){
                 $data_save['akhir_istirahat_next_day']=0;
             }
 
             $model->set_model_with_data($data_save);
+            
             if(!empty($model->id_jenis_jadwal)){
                 if( $model->id_jenis_jadwal==1 ){
                     $model->type_jenis=1;

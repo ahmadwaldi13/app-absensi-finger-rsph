@@ -356,7 +356,7 @@ class ListRoutes
                 ]
             ],
             [
-                'title' => 'Manajemen  | Data Jadwal Kerja',
+                'title' => 'Manajemen Absensi | Data Jadwal Kerja',
                 'item' => [
                     [
                         'type' => 'index',
@@ -427,6 +427,43 @@ class ListRoutes
                     // 	'name' => '',
                     // 	'middleware' => '',
                     // ],
+                ]
+            ],
+            [
+                'title' => 'Manajemen Absensi | Templat Jadwal Shift',
+                'item' => [
+                    [
+                        'type' => 'index',
+                        'method' => 'get',
+                        'url' => '/template-jadwal-shift',
+                        'controller' => 'TemplateJadwalShiftController@actionIndex',
+                        'name' => 'template_jadwal_shift',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'create',
+                        'method' => ['get', 'post'],
+                        'url' => '/template-jadwal-shift/create',
+                        'controller' => 'TemplateJadwalShiftController@actionCreate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'update',
+                        'method' => ['get', 'post'],
+                        'url' => '/template-jadwal-shift/update',
+                        'controller' => 'TemplateJadwalShiftController@actionUpdate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'delete',
+                        'method' => 'delete',
+                        'url' => '/template-jadwal-shift/delete',
+                        'controller' => 'TemplateJadwalShiftController@actionDelete',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
                 ]
             ],
             [

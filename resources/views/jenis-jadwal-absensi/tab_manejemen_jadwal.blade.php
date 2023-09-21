@@ -8,6 +8,10 @@ $item = [
     2 => (object) [
         'nama' => 'Pengaturan Jadwal Presensi',
         'key' => 'jadwal-absensi',
+    ],
+    3 => (object) [
+        'nama' => 'Template Jadwal Shift',
+        'key' => 'template-jadwal-shift',
     ]
 ];
 

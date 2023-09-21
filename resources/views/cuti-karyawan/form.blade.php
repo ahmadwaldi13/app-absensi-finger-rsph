@@ -38,10 +38,8 @@
 
                 <div class="col-lg-2">
                     <div class='bagan_form'>
-                        <div class="bagan_form">
-                            <label for="jumlah" class="form-label">Jumlah Hari<span class="text-danger">*</span></label>
-                            <input type="number" class="form-control" id="jumlah" name="jumlah" min='1' value="{{ !empty($model->jumlah) ? $model->jumlah : '0' }}" readonly>
-                        </div>
+                        <label for="jumlah" class="form-label">Jumlah Hari<span class="text-danger">*</span></label>
+                        <input type="number" class="form-control" id="jumlah" name="jumlah" min='1' value="{{ !empty($model->jumlah) ? $model->jumlah : '0' }}" readonly>
                         <div class="message"></div>
                     </div>
                 </div>
