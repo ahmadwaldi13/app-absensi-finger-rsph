@@ -14,7 +14,7 @@
     @include('jenis-jadwal-absensi.tab_manejemen_jadwal', ["active"=>3])
 
     @if( (new \App\Http\Traits\AuthFunction)->checkAkses($router_name->uri.'/create') )
-        <div class="collapse mb-2 show" id="bagan-form-tambah-collapse">
+        <div class="collapse mb-2" id="bagan-form-tambah-collapse">
             <div class="card card-body" style='background:#f2f2f2'>
                 <?php 
                     $bagan_form=\App::call($router_name->base_controller.'@actionCreate');

@@ -125,9 +125,9 @@ class JadwalAbsensiController extends \App\Http\Controllers\MyAuthController
         
         
         try {
-            $model = (new \App\Models\Refjadwal)->where('id_jadwal', '=', $kode)->first();
+            $model = (new \App\Models\RefJadwal)->where('id_jadwal', '=', $kode)->first();
             if (empty($model)) {
-                $model = (new \App\Models\Refjadwal);
+                $model = (new \App\Models\RefJadwal);
             }
             $data_save = $req;
             $data_save['alias'] = strtolower(str_replace(" ", "_", $this->globalFunction->remove_multiplespace($data_save['uraian'])));

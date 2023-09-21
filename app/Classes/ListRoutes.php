@@ -466,6 +466,44 @@ class ListRoutes
                     ],
                 ]
             ],
+
+            [
+                'title' => 'Manajemen Absensi | Templat Jadwal Shift Atur waktu',
+                'item' => [
+                    [
+                        'type' => 'index',
+                        'method' => 'get',
+                        'url' => '/template-jadwal-shift-waktu',
+                        'controller' => 'TemplateJadwalShiftWaktuController@actionIndex',
+                        'name' => 'template_jadwal_shift',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'create',
+                        'method' => ['get', 'post'],
+                        'url' => '/template-jadwal-shift-waktu/create',
+                        'controller' => 'TemplateJadwalShiftWaktuController@actionCreate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'update',
+                        'method' => ['get', 'post'],
+                        'url' => '/template-jadwal-shift-waktu/update',
+                        'controller' => 'TemplateJadwalShiftWaktuController@actionUpdate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'delete',
+                        'method' => 'delete',
+                        'url' => '/template-jadwal-shift-waktu/delete',
+                        'controller' => 'TemplateJadwalShiftWaktuController@actionDelete',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                ]
+            ],
             [
                 'title' => 'Absensi | Hari Libur Umum',
                 'item' => [
