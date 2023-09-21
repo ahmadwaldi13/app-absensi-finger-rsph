@@ -16,4 +16,12 @@ class RefTemplateJadwalShift extends \App\Models\MyModel
         }
         return $data;
     }
+
+    function list_type_periode_system($id=null){
+        $data=[1=>"day",2=>"week",3=>'month'];
+        if(!empty($id)){
+            return !empty($data[$id]) ? $data[$id] : '';
+        }
+        return $data;
+    }
 }
