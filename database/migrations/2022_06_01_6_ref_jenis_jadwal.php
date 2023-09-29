@@ -28,6 +28,7 @@ class RefJenisJadwal extends Migration
                 $table->time('akhir_istirahat')->nullable();
                 $table->smallInteger('akhir_istirahat_next_day');
                 $table->smallInteger('type_jenis');
+                $table->string('bg_color')->length(10);
             });
         }
 
@@ -53,7 +54,7 @@ class RefJenisJadwal extends Migration
             }
         }
 
-        $another_create_string=['hari_kerja'=>50];
+        $another_create_string=['hari_kerja'=>50,'bg_color'=>10];
         foreach($another_create_string as $value => $length){
             if (!Schema::hasColumn($table_name, $value)){
                 Schema::table($table_name, function (Blueprint $table) use ($value,$length){

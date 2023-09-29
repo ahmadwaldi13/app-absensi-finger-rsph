@@ -1,13 +1,4 @@
 <hr>
-<style>
-    .rutin{
-        background: #dbfff9;
-    }
-
-    .shift{
-        background: #fbffdb;
-    }
-</style>
 <div>
     <div class="row d-flex justify-content-between">
         <div>

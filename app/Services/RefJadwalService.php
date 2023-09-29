@@ -17,7 +17,7 @@ class RefJadwalService extends BaseService
     function getList($params=[],$type=''){
 
         $query = $this->refJadwal
-            ->select('ref_jadwal.*','nm_jenis_jadwal','type_jenis')
+            ->select('ref_jadwal.*','nm_jenis_jadwal','type_jenis','bg_color')
             ->Leftjoin('ref_jenis_jadwal','ref_jadwal.id_jenis_jadwal','=','ref_jenis_jadwal.id_jenis_jadwal')
             ->orderBy('ref_jadwal.id_jenis_jadwal','ASC')
             // ->orderBy(DB::raw(' UNIX_TIMESTAMP( concat( jam_awal, " ", jam_akhir ) ) '),'ASC');

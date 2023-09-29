@@ -1,13 +1,4 @@
 <hr>
-<style>
-    .rutin{
-        background: #dbfff9;
-    }
-
-    .shift{
-        background: #fbffdb;
-    }
-</style>
 <div>
     <div class="row d-flex justify-content-between">
         <div>
@@ -56,7 +47,7 @@
                                     if($key>=1){ 
                             ?>  
                                 <tr>
-                                    <td colspan="20"><hr></td>
+                                    <td colspan="20"><hr style="margin:1px"></td>
                                 </tr>
                             <?php } } ?>
                             <?php
@@ -102,17 +93,15 @@
                                 }
 
                                 $nm_type_jenis = (new \App\Models\RefJenisJadwal())->type_jenis_jadwal($item->type_jenis);
+                                $nm_type_jenis="";
 
-                                $class_style='';
-                                if($item->type_jenis==1){
-                                    $class_style='rutin';
+                                $bgcolor_style='background:#e9e9e9';
+                                if(!empty($item->bg_color)){
+                                    $bgcolor_style='background:'.$item->bg_color;
                                 }
-
-                                if($item->type_jenis==2){
-                                    $class_style='shift';
-                                }
+                                
                             ?>
-                            <tr class="{{ $class_style }}">
+                            <tr style="{{ $bgcolor_style }}">
                                 <td>{{ $nm_type_jenis }}</td>
                                 <td>{{ !empty($item->nm_jenis_jadwal) ? $item->nm_jenis_jadwal : ''  }}</td>
                                 <td>{{ !empty($item->uraian) ? $item->uraian : ''  }}</td>

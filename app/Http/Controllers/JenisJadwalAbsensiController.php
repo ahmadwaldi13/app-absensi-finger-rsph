@@ -65,10 +65,22 @@ class JenisJadwalAbsensiController extends \App\Http\Controllers\MyAuthControlle
 
         $type_jenis_jadwal = (new \App\Models\RefJenisJadwal())->type_jenis_jadwal();
         
+        $get_bgcolor = (new \App\Models\RefJenisJadwal())->get_bgcolor();
+
+        $get_bgcolor_use_tmp=(new \App\Models\RefJenisJadwal())->select('bg_color')->whereNotNull('bg_color')->where('bg_color','!=','')->groupBy("bg_color")->get();
+        $get_bgcolor_use=collect($get_bgcolor_use_tmp)->map(function ($model) {
+
+            if(!empty($model->bg_color)){
+                return $model->bg_color;
+            }
+        })->toArray();
+
         $parameter_view = [
             'action_form' => $action_form,
             'model' => $model,
-            'type_jenis_jadwal'=>$type_jenis_jadwal
+            'type_jenis_jadwal'=>$type_jenis_jadwal,
+            'get_bgcolor'=>$get_bgcolor,
+            'get_bgcolor_use'=>$get_bgcolor_use
         ];
 
         return view($this->part_view . '.form', $parameter_view);
@@ -144,6 +156,12 @@ class JenisJadwalAbsensiController extends \App\Http\Controllers\MyAuthControlle
 
             if( empty($model->awal_istirahat) or empty($model->awal_istirahat) ){
                 $data_save['akhir_istirahat_next_day']=0;
+            }
+
+            if(!empty($model->id_jenis_jadwal)){
+                if($model->id_jenis_jadwal==1){
+                    $data_save['bg_color']="#87b1f0";
+                }
             }
 
             $model->set_model_with_data($data_save);

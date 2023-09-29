@@ -41,7 +41,7 @@ class JadwalAbsensiController extends \App\Http\Controllers\MyAuthController
             'search' => $form_filter_text
         ];
 
-        $list_data = $this->refJadwalService->getList($paramater, 1)->orderBy('kd_jadwal','ASC')->paginate(!empty($request->per_page) ? $request->per_page : 15);
+        $list_data = $this->refJadwalService->getList($paramater, 1)->orderBy('kd_jadwal','ASC')->paginate(!empty($request->per_page) ? $request->per_page : 400);
 
         $parameter_view = [
             'title' => $this->title,

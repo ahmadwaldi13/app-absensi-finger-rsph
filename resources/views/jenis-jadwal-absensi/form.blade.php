@@ -1,3 +1,9 @@
+<style>
+    #color_view{
+        background-color: #456;
+        width: 80px;
+    }
+</style>
 <form action="{{ url($action_form) }}" method="{{ !empty($method_form) ? $method_form : 'POST' }}">
     @csrf
     <?php
@@ -136,6 +142,43 @@
             </div>
         </div>
 
+        <div class="col-lg-12 mt-3">
+            <div class="row justify-content-start align-items-end">
+                <div class="col-lg-3">
+                    <div class='bagan_form'>
+                        <label for="bg_color" class="form-label">Kelompok Warna</label>
+                        <div class="form-row align-items-center">
+                            <div class="col-auto">
+                                <!-- <label class="sr-only" for="inlineFormInputGroup">Username</label> -->
+                                <div class="input-group mb-2">
+                                    <div class="input-group-prepend">
+                                        <div class="input-group-text" id='color_view'>&nbsp;</div>
+                                    </div>
+                                    <!-- <input type="text" class="form-control" id="inlineFormInputGroup" placeholder="Username"> -->
+                                    <select class="form-control" id="bg_color"  name="bg_color"  aria-label="Default select ">
+                                        @if($get_bgcolor)
+                                            @foreach($get_bgcolor as $key_color => $item_color)
+                                                <?php 
+                                                    $check=!empty($model->bg_color) ? $model->bg_color : "";
+                                                    $checked=($check==$item_color) ? 'selected' : '';
+                                                ?>
+                                                
+                                                @if($checked)
+                                                    <option value='{{ $item_color }}' {{ $checked }}>{{ $item_color }}</option>
+                                                @elseif(!in_array($item_color,$get_bgcolor_use))
+                                                    <option value='{{ $item_color }}' {{ $checked }}>{{ $item_color }}</option>
+                                                @endif
+
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="row justify-content-start align-items-end">
@@ -144,3 +187,7 @@
         </div>
     </div>
 </form>
+
+@push('script-end-2')
+    <script src="{{ asset('js/jenis-jadwal-absensi/form.js') }}"></script>
+@endpush
