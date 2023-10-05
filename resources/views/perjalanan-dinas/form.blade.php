@@ -1,7 +1,7 @@
 <form action="{{ url($action_form) }}" method="{{ !empty($method_form) ? $method_form : 'POST' }}">
     @csrf
     <?php
-        $kode=!empty($model->id_cuti_kary) ? $model->id_cuti_kary : '';
+        $kode=!empty($model->id_spd) ? $model->id_spd : '';
     ?>
     <input type="hidden" name="key_old" value="{{ $kode }}">
 
@@ -23,8 +23,32 @@
                         <div class="message"></div>
                     </div>
                 </div>
-
                 <div class="col-lg-3">
+                    <label for="test" class="form-label">Jenis Perjalanan Dinas <span class="text-danger">*</span></label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input mt-2" type="radio" name="jenis_dinas" id="1" value="1" {{($model['jenis_dinas'] == '1') ? 'checked' : '1'}}>
+                        <label class="form-check-label mt-2" style="margin-left: 10px" for="1">Dinas Dalam Kota</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input mt-2" type="radio" name="jenis_dinas" id="2" value="2" {{($model['jenis_dinas'] == '2') ? 'checked' : '2'}}>
+                        <label class="form-check-label mt-2" style="margin-left: 10px" for="2">Dinas Luar Kota</label>
+                    </div>
+                </div>
+
+                <div class="col-lg-2" id="tanggalDalamKota" style="display: {{($model['jenis_dinas'] == '1') ? 'block' : 'none'}};">
+                    <div class='bagan_form'>
+                        <label for="tanggal" class="form-label">Tanggal <span class="text-danger">*</span></label>
+                        <div class="input-group input-date-bagan">
+                            <input type="text" class="form-control input-date" id='tanggal' autocomplete="off">
+                            <input type="hidden" id="tgl" name="tanggal" value="">
+                            <span class="input-group-text bg-primary">
+                                <i class="fa-solid fa-calendar-days text-white"></i>
+                            </span>
+                        </div>
+                        <div class="message"></div>
+                    </div>
+                </div>
+                <div class="col-lg-3" id="tanggalLuarKota" style="display: {{($model['jenis_dinas'] == '2') ? 'block' : 'none'}};">
                     <div class='bagan_form'>
                         <label for="tanggal_data" class="form-label">Tanggal <span class="text-danger">*</span></label>
                         <div class="input-group input-date-range-bagan">
@@ -38,21 +62,13 @@
                         <div class="message"></div>
                     </div>
                 </div>
-
-                <div class="col-lg-2">
+                
+                <div class="col-lg-1">
                     <div class='bagan_form'>
                         <div class="bagan_form">
-                            <label for="jumlah" class="form-label">Jumlah Hari<span class="text-danger">*</span></label>
+                            <label for="jumlah" class="form-label">Jumlah Hari</label>
                             <input type="number" class="form-control" id="jumlah" name="jumlah" min='1' value="{{ !empty($model->jumlah) ? $model->jumlah : '0' }}" readonly>
                         </div>
-                        <div class="message"></div>
-                    </div>
-                </div>
-
-                <div class="col-lg-4">
-                    <div class='bagan_form'>
-                        <label for="uraian" class="form-label">Nama Hari Cuti<span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="uraian" name='uraian'  required value="{{ !empty($model->uraian) ? $model->uraian : '' }}">
                         <div class="message"></div>
                     </div>
                 </div>
@@ -64,3 +80,7 @@
         <button class="btn btn-primary validate_submit" type="submit">{{ !empty($kode) ? 'Ubah' : 'Simpan'  }}</button>
     </div>
 </form>
+
+@push('script-end-2')
+    <script src="{{ asset('js/perjalanan-dinas/form.js') }}"></script>
+@endpush

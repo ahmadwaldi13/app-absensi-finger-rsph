@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Services\GlobalService;
 use App\Http\Traits\GlobalFunction;
 
-class HariLiburUmumController extends \App\Http\Controllers\MyAuthController
+class PerjalananDinasController extends \App\Http\Controllers\MyAuthController
 {
     public $part_view, $url_index, $url_name, $title, $breadcrumbs, $globalService, $globalFunction;
 
@@ -19,7 +19,7 @@ class HariLiburUmumController extends \App\Http\Controllers\MyAuthController
         $this->url_index = $router_name->uri;
         $this->url_name = $router_name->router_name;
 
-        $this->title = 'Hari Libur Umum';
+        $this->title = 'Perjalanan Dinas';
         $this->breadcrumbs = [
             ['title' => 'Manajemen Absensi', 'url' => url('/') . "/sub-menu?type=6"],
             ['title' => $this->title, 'url' => url('/') . "/" . $this->url_index],
@@ -31,9 +31,10 @@ class HariLiburUmumController extends \App\Http\Controllers\MyAuthController
 
     function actionIndex(Request $request)
     {
+        $filter_id_jabatan = !empty($request->filter_id_jabatan) ? $request->filter_id_jabatan : '';
+        $filter_id_departemen = !empty($request->filter_id_departemen) ? $request->filter_id_departemen : '';
+        $filter_id_ruangan = !empty($request->filter_id_ruangan) ? $request->filter_id_ruangan : '';
         $form_filter_text = !empty($request->form_filter_text) ? $request->form_filter_text : '';
-
-        $form_filter_text=!empty($request->form_filter_text) ? $request->form_filter_text : '';
         $filter_tahun_bulan=!empty($request->filter_tahun_bulan) ? $request->filter_tahun_bulan : date('Y-m');
 
         $get_tgl_per_bulan=(new \App\Http\Traits\AbsensiFunction)->get_tgl_per_bulan($filter_tahun_bulan);
@@ -42,17 +43,31 @@ class HariLiburUmumController extends \App\Http\Controllers\MyAuthController
         $filter_tgl[0]=!empty($filter_tgl[0]) ? $filter_tgl[0] : date('Y-m-d');
         $filter_tgl[1]=!empty($filter_tgl[1]) ? $filter_tgl[1] : date('Y-m-d');
 
-        $paramater_where=[
-            'search' => $form_filter_text,
-            'tanggal'=>[$filter_tgl[0],$filter_tgl[1]],
+        $paramater=[
+            'search' => !empty($form_filter_text) ? $form_filter_text : '',
+            'where_between' => [
+                'tgl_mulai' => [$filter_tgl[0],$filter_tgl[1]],
+            ],
         ];
 
-        $list_hari_libur=(new \App\Services\DataPresensiService)->get_data_hari_libur($paramater_where);
+        if($filter_id_jabatan){
+            $paramater['ref_karyawan.id_jabatan']=$filter_id_jabatan;
+        }
+
+        if($filter_id_departemen){
+            $paramater['ref_karyawan.id_departemen']=$filter_id_departemen;
+        }
+
+        if($filter_id_ruangan){
+            $paramater['ref_karyawan.id_ruangan']=$filter_id_ruangan;
+        }
+
+        $list_dinas=(new \App\Services\PerjalananDinasService())->getList($paramater,1)->paginate(!empty($request->per_page) ? $request->per_page : 15);
 
         $parameter_view = [
             'title' => $this->title,
             'breadcrumbs' => $this->breadcrumbs,
-            'list_hari_libur' => $list_hari_libur,
+            'list_dinas' => $list_dinas,
             'list_tgl'=>$list_tgl
         ];
 
@@ -63,9 +78,9 @@ class HariLiburUmumController extends \App\Http\Controllers\MyAuthController
     {
         $kode = !empty($request->data_sent) ? $request->data_sent : '';
         $paramater = [
-            'tanggal' => $kode
+            'ref_perjalanan_dinas.id_spd' => $kode
         ];
-        $model = (new \App\Models\RefHariLiburUmum())->where('tanggal', '=', $kode)->first();
+        $model = (new \App\Services\PerjalananDinasService())->getList($paramater,1)->first();
         if ($model) {
             $action_form = $this->part_view . '/update';
         } else {
@@ -113,10 +128,11 @@ class HariLiburUmumController extends \App\Http\Controllers\MyAuthController
     private function proses($request)
     {
         $req = $request->all();
+        DB::statement("ALTER TABLE ".(new \App\Models\PerjalananDinas())->table." AUTO_INCREMENT = 1");
         $kode = !empty($req['key_old']) ? $req['key_old'] : '';
         $action_is_create = (str_contains($request->getPathInfo(), $this->url_index . '/create')) ? 1 : 0;
-        // $link_back_redirect = ($action_is_create) ? $this->url_name : $this->url_name . '/update';
-        $link_back_redirect = $this->url_name . '';
+        $link_back_redirect = ($action_is_create) ? $this->url_name : $this->url_name . '/update';
+
         DB::beginTransaction();
         $pesan = [];
         $link_back_param = [];
@@ -124,6 +140,15 @@ class HariLiburUmumController extends \App\Http\Controllers\MyAuthController
             $link_back_param = [];
         } else {
             $link_back_param = ['data_sent' => $kode];
+        }
+
+        $jnsDinas=!empty($req['jenis_dinas']) ? $req['jenis_dinas'] : '';
+        if($jnsDinas=='1'){
+            $tglMulai = !empty($req['tanggal']) ? $req['tanggal'] : '';
+            $tglSelesai = !empty($req['tanggal']) ? $req['tanggal'] : '';
+        }else{
+            $tglMulai = !empty($req['tgl_mulai']) ? $req['tgl_mulai'] : '';
+            $tglSelesai = !empty($req['tgl_selesai']) ? $req['tgl_selesai'] : '';
         }
         $params_reg=$request->all();
         $params_reg_tgl=!empty($params_reg['tanggal']) ? $params_reg['tanggal'] : date('Y-m-d');
@@ -138,18 +163,19 @@ class HariLiburUmumController extends \App\Http\Controllers\MyAuthController
 
         try {
 
-            $model = (new \App\Models\RefHariLiburUmum)->where('tanggal', '=', $kode)->first();
+            $model = (new \App\Models\PerjalananDinas)->where('id_spd', '=', $kode)->first();
             if (empty($model)) {
-                $model = (new \App\Models\RefHariLiburUmum);
+                $model = (new \App\Models\PerjalananDinas);
             }
             $data_save = $req;
+            $data_save['tgl_mulai'] = $tglMulai;
+            $data_save['tgl_selesai'] = $tglSelesai;
             $model->set_model_with_data($data_save);
             $is_save = 0;
 
             if ($model->save()) {
                 $is_save = 1;
             }
-
             if ($is_save) {
                 DB::commit();
                 $pesan = ['success', $message_default['success'], 2];
@@ -174,7 +200,6 @@ class HariLiburUmumController extends \App\Http\Controllers\MyAuthController
 
     function actionDelete(Request $request)
     {
-
         DB::beginTransaction();
         $pesan = [];
         $link_back_param = [];
@@ -186,7 +211,7 @@ class HariLiburUmumController extends \App\Http\Controllers\MyAuthController
         $kode = !empty($request->data_sent) ? $request->data_sent : null;
 
         try {
-            $model = (new \App\Models\RefHariLiburUmum)->where('tanggal', '=', $kode)->first();
+            $model = (new \App\Models\PerjalananDinas())->where('id_spd', '=', $kode)->first();
             if (empty($model)) {
                 return redirect()->route($this->url_name, $link_back_param)->with(['error', 'Data tidak ditemukan']);
             }
@@ -198,7 +223,7 @@ class HariLiburUmumController extends \App\Http\Controllers\MyAuthController
 
             if ($is_save) {
                 DB::commit();
-                DB::statement("ALTER TABLE ".( new \App\Models\RefHariLiburUmum )->table." AUTO_INCREMENT = 1");
+                DB::statement("ALTER TABLE ".( new \App\Models\PerjalananDinas )->table." AUTO_INCREMENT = 1");
                 $pesan = ['success', $message_default['success'], 2];
             } else {
                 DB::rollBack();

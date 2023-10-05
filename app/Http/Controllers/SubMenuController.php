@@ -112,6 +112,11 @@ class SubMenuController extends Controller
                         'url'=>url('/')."/cuti-karyawan",
                     ],
                     [
+                        'title'=>'Perjalanan Dinas',
+                        'key'=>'perjalanan-dinas',
+                        'url'=>url('/')."/perjalanan-dinas",
+                    ],
+                    [
                         'title'=>'Absensi',
                         'key'=>'absensi-karyawan',
                         'url'=>url('/')."/absensi-karyawan",

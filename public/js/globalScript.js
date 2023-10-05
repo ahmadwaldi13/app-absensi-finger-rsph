@@ -255,7 +255,10 @@ $(document).find(".input-date").on("change keyup", function () {
         let date = $(this).val();
         let tgl = date.substring(0, 10);
 
+        let startDate = moment(date, "YYYY-MM-DD");
+        let days = startDate.diff(startDate, 'days')+1;
         parent.find("#tgl").val(tgl);
+        $("#jumlah").val(days);
     }
 });
 

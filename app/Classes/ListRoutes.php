@@ -504,6 +504,43 @@ class ListRoutes
                 ]
             ],
             [
+                'title' => 'Absensi | Perjalanan Dinas',
+                'item' => [
+                    [
+                        'type' => 'index',
+                        'method' => 'get',
+                        'url' => '/perjalanan-dinas',
+                        'controller' => 'PerjalananDinasController@actionIndex',
+                        'name' => 'perjalanan_dinas',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'create',
+                        'method' => ['get', 'post'],
+                        'url' => '/perjalanan-dinas/create',
+                        'controller' => 'PerjalananDinasController@actionCreate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'update',
+                        'method' => ['get', 'post'],
+                        'url' => '/perjalanan-dinas/update',
+                        'controller' => 'PerjalananDinasController@actionUpdate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'delete',
+                        'method' => 'delete',
+                        'url' => '/perjalanan-dinas/delete',
+                        'controller' => 'PerjalananDinasController@actionDelete',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                ]
+            ],
+            [
                 'title' => 'Manajemen Absensi | Tarik Log Absensi Karyawan',
                 'item' => [
                     [

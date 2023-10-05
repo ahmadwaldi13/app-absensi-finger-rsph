@@ -1,0 +1,52 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+
+class RefPerjalananDinas extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        $table_name='ref_perjalanan_dinas';
+        if (!Schema::hasTable($table_name)) {
+            Schema::create($table_name, function (Blueprint $table) use ($table_name) {
+                $table->charset = 'latin1';
+                $table->collation = 'latin1_swedish_ci';
+
+                $table->increments('id_spd');
+                $table->integer('id_karyawan')->length(10)->unsigned();
+                $table->smallInteger('jenis_dinas');
+                $table->date('tgl_mulai');
+                $table->date('tgl_selesai');
+                $table->smallInteger('jumlah');
+
+                $table->unique(['id_karyawan','tgl_mulai','tgl_selesai'],$table_name.'_uniq');
+            });
+        }
+
+        $field='id_spd';
+        if (!Schema::hasColumn($table_name,$field)){
+            DB::statement("ALTER TABLE ".$table_name." ADD ".$field." INT(10) PRIMARY KEY AUTO_INCREMENT");
+        }
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        $table_name='ref_perjalanan_dinas';
+        if (Schema::hasTable($table_name)) {
+            Schema::dropIfExists($table_name);
+        }
+    }
+}
