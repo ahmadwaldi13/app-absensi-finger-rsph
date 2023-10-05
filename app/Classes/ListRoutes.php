@@ -475,7 +475,7 @@ class ListRoutes
                         'method' => 'get',
                         'url' => '/template-jadwal-shift-waktu',
                         'controller' => 'TemplateJadwalShiftWaktuController@actionIndex',
-                        'name' => 'template_jadwal_shift',
+                        'name' => 'template_jadwal_shift_waktu',
                         'middleware' => '',
                     ],
                     [

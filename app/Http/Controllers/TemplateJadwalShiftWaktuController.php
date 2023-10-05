@@ -41,7 +41,6 @@ class TemplateJadwalShiftWaktuController extends \App\Http\Controllers\MyAuthCon
         ];
 
         $item_template_shift = (new \App\Services\RefTemplateJadwalShiftService)->getList($paramater, 1)->first();
-        
 
         $parameter_view = [
             'title' => $this->title,
@@ -56,28 +55,33 @@ class TemplateJadwalShiftWaktuController extends \App\Http\Controllers\MyAuthCon
     private function form(Request $request)
     {
         $kode = !empty($request->data_sent) ? $request->data_sent : '';
+        // $paramater = [
+        //     'id_template_jadwal_shift' => $kode
+        // ];
+        // $model = $this->refTemplateJadwalShiftService->getList($paramater, 1)->first();
+        $model=[];
+        
+        $action_form = $this->part_view . '/update';
+
         $paramater = [
             'id_template_jadwal_shift' => $kode
         ];
-        $model = $this->refTemplateJadwalShiftService->getList($paramater, 1)->first();
-        if ($model) {
-            $action_form = $this->part_view . '/update';
-        } else {
-            $action_form = $this->part_view . '/create';
-        }
 
-        $list_type_periode = (new \App\Models\RefTemplateJadwalShift())->list_type_periode();
+        $item_template_shift = (new \App\Services\RefTemplateJadwalShiftService)->getList($paramater, 1)->first();
 
+        $data_jadwal=( new \App\Models\RefJenisJadwal() )->where(['type_jenis'=>2])->get();
+        
         $parameter_view = [
             'action_form' => $action_form,
             'model' => $model,
-            'list_type_periode'=>$list_type_periode
+            'item_template_shift'=>$item_template_shift,
+            'data_jadwal'=>$data_jadwal,
         ];
 
         return view($this->part_view . '.form', $parameter_view);
     }
 
-    function actionCreate(Request $request)
+    function actionUpdate(Request $request)
     {
         if ($request->isMethod('get')) {
             return $this->form($request);
@@ -87,29 +91,11 @@ class TemplateJadwalShiftWaktuController extends \App\Http\Controllers\MyAuthCon
         }
     }
 
-    function actionUpdate(Request $request)
-    {
-        if ($request->isMethod('get')) {
-            $bagan_form = $this->form($request);
-
-            $parameter_view = [
-                'title' => $this->title,
-                'breadcrumbs' => $this->breadcrumbs,
-                'bagan_form' => $bagan_form,
-                'url_back' => $this->url_name
-            ];
-
-            return view('layouts.index_bagan_form', $parameter_view);
-        }
-
-        if ($request->isMethod('post')) {
-            return $this->proses($request);
-        }
-    }
-
     private function proses($request)
     {
         $req = $request->all();
+        dd('tes');
+        die;
         $kode = !empty($req['key_old']) ? $req['key_old'] : '';
         $action_is_create = (str_contains($request->getPathInfo(), $this->url_index . '/create')) ? 1 : 0;
         $link_back_redirect = ($action_is_create) ? $this->url_name : $this->url_name . '/update';

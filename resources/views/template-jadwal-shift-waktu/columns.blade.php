@@ -1,39 +1,8 @@
-<?php 
-    $nm_type_periode = (new \App\Models\RefTemplateJadwalShift())->list_type_periode($item_template_shift->type_periode);
-    $end_waktu=24;
-?>
 <style>
     .box_waktu{
         padding:10px;
     }
 </style>
-<hr>
-<div class="row d-flex justify-content-between">
-    <div class="col-lg-6">
-        <div style="overflow-x: auto; max-width: auto;">
-            <table class="table border table-responsive-tablet">
-                <tbody>
-                    <tr>
-                        <td style='width: 20%; vertical-align: middle;'>Nama Shift</td>
-                        <td style='width: 1%; vertical-align: middle;'>:</td>
-                        <td style='width: 69%; vertical-align: middle;'>{{ !empty($item_template_shift->nm_shift) ? $item_template_shift->nm_shift : '' }}</td>
-                    </tr>
-                    <tr>
-                        <td style='width: 20%; vertical-align: middle;'>Tgl. Mulai</td>
-                        <td style='width: 1%; vertical-align: middle;'>:</td>
-                        <td style='width: 69%; vertical-align: middle;'>{{ !empty($item_template_shift->tgl_mulai) ? $item_template_shift->tgl_mulai : '' }}</td>
-                    </tr>
-
-                    <tr>
-                        <td style='width: 20%; vertical-align: middle;'>Priode</td>
-                        <td style='width: 1%; vertical-align: middle;'>:</td>
-                        <td style='width: 69%; vertical-align: middle;'>{{ !empty($item_template_shift->jml_periode) ? $item_template_shift->jml_periode : '' }} {{ $nm_type_periode }}</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
 <hr>
 <div>
     <div class="row d-flex justify-content-between">
@@ -44,18 +13,11 @@
                         <tr>
                             <th style='width:10%'>*</th>
                             <th>Uraian</th>
-                            {{-- 
-                            @for($i=0; $i<=$end_waktu; $i++)
-                                <?php $formatted_time = sprintf("%02d:%02d", $i, 0); ?>
-                                <th>{{ $formatted_time }}</th>
-                            @endfor
-                            --}}
                         </tr>
                     </thead>
                     <tbody>
                         <?php 
                             $jml_periode=$item_template_shift->jml_periode;
-                            $jml_periode=1;
                             $type_periode = (new \App\Models\RefTemplateJadwalShift())->list_type_periode_system($item_template_shift->type_periode);
                         
                             $tgl_start=new \DateTime($item_template_shift->tgl_mulai);
@@ -78,6 +40,14 @@
                             ];
 
                             $data_shift[0][1]=[
+                                'start'=>'14:00',
+                                'end'=>'16:00',
+                                'besok'=>0,
+                                'nm_shift'=>'siang',
+                                'bgcolor'=>"#ede",
+                            ];
+
+                            $data_shift[0][2]=[
                                 'start'=>'14:00',
                                 'end'=>'16:00',
                                 'besok'=>0,
