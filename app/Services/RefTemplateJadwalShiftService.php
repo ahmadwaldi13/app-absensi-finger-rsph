@@ -2,29 +2,29 @@
 
 namespace App\Services;
 
-use App\Models\RefJadwal;
+use App\Models\RefTemplateJadwalShift;
 use Illuminate\Support\Facades\DB;
 
-class RefJadwalService extends BaseService
+class RefTemplateJadwalShiftService extends BaseService
 {
-    public $refJadwal='';
+    public $refTemplateJadwalShift='';
 
     public function __construct(){
         parent::__construct();
-        $this->refJadwal = new RefJadwal();
+        $this->refTemplateJadwalShift = new RefTemplateJadwalShift();
     }
 
     function getList($params=[],$type=''){
 
-        $query = $this->refJadwal
-            ->select('ref_jadwal.*','nm_jenis_jadwal','type_jenis','bg_color')
-            ->Leftjoin('ref_jenis_jadwal','ref_jadwal.id_jenis_jadwal','=','ref_jenis_jadwal.id_jenis_jadwal')
-            ->orderBy('ref_jadwal.id_jenis_jadwal','ASC')
+        $query = $this->refTemplateJadwalShift
+            ->select('*')
+            // ->Leftjoin('ref_jenis_jadwal','ref_jadwal.id_jenis_jadwal','=','ref_jenis_jadwal.id_jenis_jadwal')
+            // ->orderBy('id_template_jadwal_shift','ASC')
             // ->orderBy(DB::raw(' UNIX_TIMESTAMP( concat( jam_awal, " ", jam_akhir ) ) '),'ASC');
         ;
 
         $list_search=[
-            'where_or'=>['id_jadwal','uraian'],
+            'where_or'=>['id_template_jadwal_shift','nm_shift'],
         ];
 
         if($params){

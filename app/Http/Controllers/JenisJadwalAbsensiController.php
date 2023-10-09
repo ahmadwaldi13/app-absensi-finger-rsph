@@ -19,7 +19,7 @@ class JenisJadwalAbsensiController extends \App\Http\Controllers\MyAuthControlle
         $this->url_index = $router_name->uri;
         $this->url_name = $router_name->router_name;
 
-        $this->title = 'Jenis Jadwal Absensi';
+        $this->title = 'Data Jadwal Kerja';
         $this->breadcrumbs = [
             ['title' => 'Manajemen Absensi', 'url' => url('/') . "/sub-menu?type=6"],
             ['title' => $this->title, 'url' => url('/') . "/" . $this->url_index],
@@ -63,9 +63,24 @@ class JenisJadwalAbsensiController extends \App\Http\Controllers\MyAuthControlle
             $action_form = $this->part_view . '/create';
         }
 
+        $type_jenis_jadwal = (new \App\Models\RefJenisJadwal())->type_jenis_jadwal();
+        
+        $get_bgcolor = (new \App\Models\RefJenisJadwal())->get_bgcolor();
+
+        $get_bgcolor_use_tmp=(new \App\Models\RefJenisJadwal())->select('bg_color')->whereNotNull('bg_color')->where('bg_color','!=','')->groupBy("bg_color")->get();
+        $get_bgcolor_use=collect($get_bgcolor_use_tmp)->map(function ($model) {
+
+            if(!empty($model->bg_color)){
+                return $model->bg_color;
+            }
+        })->toArray();
+
         $parameter_view = [
             'action_form' => $action_form,
-            'model' => $model
+            'model' => $model,
+            'type_jenis_jadwal'=>$type_jenis_jadwal,
+            'get_bgcolor'=>$get_bgcolor,
+            'get_bgcolor_use'=>$get_bgcolor_use
         ];
 
         return view($this->part_view . '.form', $parameter_view);
@@ -135,36 +150,73 @@ class JenisJadwalAbsensiController extends \App\Http\Controllers\MyAuthControlle
                 $hari_kerja=implode(',',$hari_kerja_tmp);
             }
             $data_save['hari_kerja']=$hari_kerja;
+
+            $data_save['pulang_kerja_next_day']=!empty($data_save['pulang_kerja_next_day']) ? 1 : 0;
+            $data_save['akhir_istirahat_next_day']=!empty($data_save['akhir_istirahat_next_day']) ? 1 : 0;
+
+            if( empty($model->awal_istirahat) or empty($model->awal_istirahat) ){
+                $data_save['akhir_istirahat_next_day']=0;
+            }
+
+            if(!empty($model->id_jenis_jadwal)){
+                if($model->id_jenis_jadwal==1){
+                    $data_save['bg_color']="#87b1f0";
+                }
+            }
+
             $model->set_model_with_data($data_save);
+            
+            if(!empty($model->id_jenis_jadwal)){
+                if( $model->id_jenis_jadwal==1 ){
+                    $model->type_jenis=1;
+                }
+            }
+            
             $is_save = 0;
 
             if ($model->save()) {
                 $get_ref_jadwal=(new \App\Models\RefJadwal)->referensi_data();
+                $type_jadwal_istirahat=1;
+                if( empty($model->awal_istirahat) or empty($model->awal_istirahat) ){
+                    $type_jadwal_istirahat=0;
+                    $data_delete = (new \App\Models\RefJadwal)->where('id_jenis_jadwal', '=', $kode)->whereIn('kd_jadwal', [2, 3])->delete();
+                }
+                
                 if(!empty($get_ref_jadwal)){
                     foreach($get_ref_jadwal as $val_rj){
-                        $model_jadwal = (new \App\Models\RefJadwal)->where('id_jenis_jadwal', '=', $kode)->where('kd_jadwal', '=', $val_rj->kd_jadwal)->first();
-                        if (empty($model_jadwal)) {
-                            $model_jadwal = (new \App\Models\RefJadwal);
-                            $model_jadwal->kd_jadwal=$val_rj->kd_jadwal;
-                            $model_jadwal->id_jenis_jadwal=$model->id_jenis_jadwal;
-                            $model_jadwal->uraian=$val_rj->uraian;
-                            $model_jadwal->alias=$val_rj->alias;
-                            $model_jadwal->status_toren_jam_cepat=$val_rj->status_toren_jam_cepat;
-                            $model_jadwal->status_toren_jam_telat=$val_rj->status_toren_jam_telat;
-                            $model_jadwal->status_jadwal=$val_rj->status_jadwal;
-
-                            if ($model_jadwal->save()) {
-                                $is_save++;
+                        $check_istirahat=0;
+                        
+                        if(empty($type_jadwal_istirahat)){
+                            if($val_rj->kd_jadwal==2 or $val_rj->kd_jadwal==3){
+                                $check_istirahat=1;
                             }
-                        }else{
-                            $is_save = 1;
+                        }
+
+                        if(empty($check_istirahat)){    
+                            $model_jadwal = (new \App\Models\RefJadwal)->where('id_jenis_jadwal', '=', $kode)->where('kd_jadwal', '=', $val_rj->kd_jadwal)->first();
+                            if (empty($model_jadwal)) {
+                                $model_jadwal = (new \App\Models\RefJadwal);
+                                $model_jadwal->kd_jadwal=$val_rj->kd_jadwal;
+                                $model_jadwal->id_jenis_jadwal=$model->id_jenis_jadwal;
+                                $model_jadwal->uraian=$val_rj->uraian;
+                                $model_jadwal->alias=$val_rj->alias;
+                                $model_jadwal->status_toren_jam_cepat=$val_rj->status_toren_jam_cepat;
+                                $model_jadwal->status_toren_jam_telat=$val_rj->status_toren_jam_telat;
+                                $model_jadwal->status_jadwal=$val_rj->status_jadwal;
+
+                                if ($model_jadwal->save()) {
+                                    $is_save++;
+                                }
+                            }else{
+                                $is_save = 1;
+                            }
                         }
                     }
                 }else{
                     $is_save = 1;
                 }
             }
-
+            
             if ($is_save) {
                 DB::commit();
                 $link_back_param = $this->clear_request($link_back_param, $request);

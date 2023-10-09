@@ -25,6 +25,7 @@
                 <table class="table border table-responsive-tablet">
                     <thead>
                         <tr>
+                            <th class="py-3" style="width: 3%">Kel. Jadwal</th>
                             <th class="py-3" style="width: 5%">Jenis Jadwal</th>
                             <th class="py-3" style="width: 5%">Nama Uraian</th>
                             <th class="py-3" style="width: 5%">Toleransi <br>Presensi Awal <br> / Cepat Pulang</th>
@@ -37,7 +38,18 @@
                     </thead>
                     <tbody>
                         @if(!empty($list_data))
+                            <?php $list_id_jenis=[]; ?>
                             @foreach($list_data as $key => $item)
+                            <?php 
+                                if(empty($list_id_jenis[$item->id_jenis_jadwal])){ 
+                                    $list_id_jenis[$item->id_jenis_jadwal]=1;
+                                    
+                                    if($key>=1){ 
+                            ?>  
+                                <tr>
+                                    <td colspan="20"><hr style="margin:1px"></td>
+                                </tr>
+                            <?php } } ?>
                             <?php
                                 $paramater_url=[
                                     'data_sent'=>$item->id_jadwal
@@ -80,8 +92,17 @@
                                     $toren_jam_telat_masuk='';
                                 }
 
+                                $nm_type_jenis = (new \App\Models\RefJenisJadwal())->type_jenis_jadwal($item->type_jenis);
+                                $nm_type_jenis="";
+
+                                $bgcolor_style='background:#e9e9e9';
+                                if(!empty($item->bg_color)){
+                                    $bgcolor_style='background:'.$item->bg_color;
+                                }
+                                
                             ?>
-                            <tr>
+                            <tr style="{{ $bgcolor_style }}">
+                                <td>{{ $nm_type_jenis }}</td>
                                 <td>{{ !empty($item->nm_jenis_jadwal) ? $item->nm_jenis_jadwal : ''  }}</td>
                                 <td>{{ !empty($item->uraian) ? $item->uraian : ''  }}</td>
                                 <td>

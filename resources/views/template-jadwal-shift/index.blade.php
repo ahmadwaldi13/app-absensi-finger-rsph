@@ -6,17 +6,17 @@
 @include('layouts.breadcrumbs')
 @endsection
 
-<?php
+<?php 
     $router_name=(new \App\Http\Traits\GlobalFunction)->getRouterIndex();
 ?>
 
 @section('content')
-    @include('jenis-jadwal-absensi.tab_manejemen_jadwal', ["active"=>1])
+    @include('jenis-jadwal-absensi.tab_manejemen_jadwal', ["active"=>3])
 
     @if( (new \App\Http\Traits\AuthFunction)->checkAkses($router_name->uri.'/create') )
         <div class="collapse mb-2" id="bagan-form-tambah-collapse">
             <div class="card card-body" style='background:#f2f2f2'>
-                <?php
+                <?php 
                     $bagan_form=\App::call($router_name->base_controller.'@actionCreate');
                 ?>
                 @if(!empty($bagan_form))
@@ -33,6 +33,6 @@
         </div>
     @endif
 
-    @include($router_name->path_base.'.columns')
+@include($router_name->path_base.'.columns')
 
 @endsection

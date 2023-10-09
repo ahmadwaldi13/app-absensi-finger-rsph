@@ -6,13 +6,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 use App\Services\GlobalService;
-use App\Services\RefJadwalService;
+use App\Services\RefTemplateJadwalShiftService;
 use App\Http\Traits\GlobalFunction;
 
-class JadwalAbsensiController extends \App\Http\Controllers\MyAuthController
+class TemplateJadwalShiftController extends \App\Http\Controllers\MyAuthController
 {
     public $part_view, $url_index, $url_name, $title, $breadcrumbs, $globalService, $globalFunction;
-    public $refJadwalService;
+    public $refTemplateJadwalShiftService;
 
     public function __construct()
     {
@@ -21,7 +21,7 @@ class JadwalAbsensiController extends \App\Http\Controllers\MyAuthController
         $this->url_index = $router_name->uri;
         $this->url_name = $router_name->router_name;
 
-        $this->title = 'Pengaturan Jadwal Presensi';
+        $this->title = 'Template Jadwal Shift';
         $this->breadcrumbs = [
             ['title' => 'Jadwal', 'url' => url('/') . "/sub-menu?type=6"],
             ['title' => $this->title, 'url' => url('/') . "/" . $this->url_index],
@@ -29,19 +29,19 @@ class JadwalAbsensiController extends \App\Http\Controllers\MyAuthController
 
         $this->globalService = new GlobalService;
         $this->globalFunction = new GlobalFunction;
-        $this->refJadwalService = new RefJadwalService;
+        $this->refTemplateJadwalShiftService = new RefTemplateJadwalShiftService;
     }
 
     function actionIndex(Request $request)
     {
-        DB::statement("ALTER TABLE ".( new \App\Models\RefJadwal() )->table." AUTO_INCREMENT = 1");
+        DB::statement("ALTER TABLE ".( new \App\Models\RefTemplateJadwalShift() )->table." AUTO_INCREMENT = 1");
         $form_filter_text = !empty($request->form_filter_text) ? $request->form_filter_text : '';
 
         $paramater=[
             'search' => $form_filter_text
         ];
 
-        $list_data = $this->refJadwalService->getList($paramater, 1)->orderBy('kd_jadwal','ASC')->paginate(!empty($request->per_page) ? $request->per_page : 400);
+        $list_data = $this->refTemplateJadwalShiftService->getList($paramater, 1)->orderBy('id_template_jadwal_shift','ASC')->paginate(!empty($request->per_page) ? $request->per_page : 15);
 
         $parameter_view = [
             'title' => $this->title,
@@ -56,18 +56,21 @@ class JadwalAbsensiController extends \App\Http\Controllers\MyAuthController
     {
         $kode = !empty($request->data_sent) ? $request->data_sent : '';
         $paramater = [
-            'id_jadwal' => $kode
+            'id_template_jadwal_shift' => $kode
         ];
-        $model = $this->refJadwalService->getList($paramater, 1)->first();
+        $model = $this->refTemplateJadwalShiftService->getList($paramater, 1)->first();
         if ($model) {
             $action_form = $this->part_view . '/update';
         } else {
             $action_form = $this->part_view . '/create';
         }
 
+        $list_type_periode = (new \App\Models\RefTemplateJadwalShift())->list_type_periode();
+
         $parameter_view = [
             'action_form' => $action_form,
-            'model' => $model
+            'model' => $model,
+            'list_type_periode'=>$list_type_periode
         ];
 
         return view($this->part_view . '.form', $parameter_view);
@@ -125,28 +128,11 @@ class JadwalAbsensiController extends \App\Http\Controllers\MyAuthController
         
         
         try {
-            $model = (new \App\Models\RefJadwal)->where('id_jadwal', '=', $kode)->first();
+            $model = (new \App\Models\RefTemplateJadwalShift)->where('id_template_jadwal_shift', '=', $kode)->first();
             if (empty($model)) {
-                $model = (new \App\Models\RefJadwal);
+                $model = (new \App\Models\RefTemplateJadwalShift);
             }
             $data_save = $req;
-            $data_save['alias'] = strtolower(str_replace(" ", "_", $this->globalFunction->remove_multiplespace($data_save['uraian'])));
-            
-            $toren_jam_cepat=!empty($data_save['toren_jam_cepat']) ? $data_save['toren_jam_cepat'] : '00:00';
-            $status_toren_jam_cepat=0;
-            if((new \App\Http\Traits\AbsensiFunction)->his_to_seconds($toren_jam_cepat)>0){
-                $status_toren_jam_cepat=1;
-            }
-            $data_save['status_toren_jam_cepat']=$status_toren_jam_cepat;
-
-            $toren_jam_telat=!empty($data_save['toren_jam_telat']) ? $data_save['toren_jam_telat'] : '00:00';
-            $status_toren_jam_telat=0;
-            if((new \App\Http\Traits\AbsensiFunction)->his_to_seconds($toren_jam_telat)>0){
-                $status_toren_jam_telat=1;
-            }
-            $data_save['status_toren_jam_telat']=$status_toren_jam_telat;
-            $data_save['status_jadwal']=!empty($data_save['status_jadwal']) ? $data_save['status_jadwal'] : 0;
-
             $model->set_model_with_data($data_save);
 
             $is_save = 0;
@@ -189,7 +175,7 @@ class JadwalAbsensiController extends \App\Http\Controllers\MyAuthController
         $kode = !empty($request->data_sent) ? $request->data_sent : null;
 
         try {
-            $model = (new \App\Models\RefJadwal)->where('id_jadwal', '=', $kode)->first();
+            $model = (new \App\Models\RefTemplateJadwalShift)->where('id_template_jadwal_shift', '=', $kode)->first();
             if (empty($model)) {
                 return redirect()->route($this->url_name, $link_back_param)->with(['error', 'Data tidak ditemukan']);
             }
@@ -201,7 +187,7 @@ class JadwalAbsensiController extends \App\Http\Controllers\MyAuthController
 
             if ($is_save) {
                 DB::commit();
-                DB::statement("ALTER TABLE ".( new \App\Models\RefJadwal )->table." AUTO_INCREMENT = 1");
+                DB::statement("ALTER TABLE ".( new \App\Models\RefTemplateJadwalShift )->table." AUTO_INCREMENT = 1");
                 $pesan = ['success', $message_default['success'], 2];
             } else {
                 DB::rollBack();

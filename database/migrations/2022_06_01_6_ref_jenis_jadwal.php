@@ -23,12 +23,16 @@ class RefJenisJadwal extends Migration
                 $table->string('nm_jenis_jadwal');
                 $table->time('masuk_kerja');
                 $table->time('pulang_kerja');
-                $table->time('awal_istirahat');
-                $table->time('akhir_istirahat');
+                $table->smallInteger('pulang_kerja_next_day');
+                $table->time('awal_istirahat')->nullable();
+                $table->time('akhir_istirahat')->nullable();
+                $table->smallInteger('akhir_istirahat_next_day');
+                $table->smallInteger('type_jenis');
+                $table->string('bg_color')->length(10);
             });
         }
 
-        $another_create_time=['masuk_kerja','pulang_kerja','awal_istirahat','akhir_istirahat'];
+        $another_create_time=['masuk_kerja','pulang_kerja'];
         foreach($another_create_time as $value){
             if (!Schema::hasColumn($table_name, $value)){
                 Schema::table($table_name, function (Blueprint $table) use ($value){
@@ -36,11 +40,34 @@ class RefJenisJadwal extends Migration
                 });
             }
         }
-        $another_create_string=['hari_kerja'=>50];
+
+        $another_create_time=['awal_istirahat','akhir_istirahat'];
+        foreach($another_create_time as $value){
+            if (!Schema::hasColumn($table_name, $value)){
+                Schema::table($table_name, function (Blueprint $table) use ($value){
+                    $table->time($value)->nullable();
+                });
+            }else{
+                Schema::table($table_name, function (Blueprint $table) use ($value){
+                    $table->time($value)->nullable()->change();
+                });
+            }
+        }
+
+        $another_create_string=['hari_kerja'=>50,'bg_color'=>10];
         foreach($another_create_string as $value => $length){
             if (!Schema::hasColumn($table_name, $value)){
                 Schema::table($table_name, function (Blueprint $table) use ($value,$length){
                     $table->string($value,$length);
+                });
+            }
+        }
+
+        $another_create_smallInteger=['type_jenis','pulang_kerja_next_day','akhir_istirahat_next_day'];
+        foreach($another_create_smallInteger as $value){
+            if (!Schema::hasColumn($table_name, $value)){
+                Schema::table($table_name, function (Blueprint $table) use ($value){
+                    $table->smallInteger($value);
                 });
             }
         }

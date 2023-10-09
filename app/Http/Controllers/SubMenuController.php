@@ -92,12 +92,12 @@ class SubMenuController extends Controller
             if($type==6){
                 $menu_permission=[
                     [
-                        'title'=>'Jenis Jadwal Absensi',
+                        'title'=>'Data Jadwal Kerja',
                         'key'=>'jenis-jadwal-absensi',
                         'url'=>url('/')."/jenis-jadwal-absensi",
                     ],
                     [
-                        'title'=>'Jadwal Absensi',
+                        'title'=>'Pengaturan Jadwal Presensi',
                         'key'=>'jadwal-absensi',
                         'url'=>url('/')."/jadwal-absensi",
                     ],

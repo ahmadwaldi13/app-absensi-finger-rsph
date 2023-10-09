@@ -356,7 +356,7 @@ class ListRoutes
                 ]
             ],
             [
-                'title' => 'Absensi | Jenis Jadwal Absensi',
+                'title' => 'Manajemen Absensi | Data Jadwal Kerja',
                 'item' => [
                     [
                         'type' => 'index',
@@ -393,7 +393,7 @@ class ListRoutes
                 ]
             ],
             [
-                'title' => 'Absensi | Jadwal Absensi',
+                'title' => 'Manajemen Absensi | Pengaturan Jadwal Presensi',
                 'item' => [
                     [
                         'type' => 'index',
@@ -427,6 +427,65 @@ class ListRoutes
                     // 	'name' => '',
                     // 	'middleware' => '',
                     // ],
+                ]
+            ],
+            [
+                'title' => 'Manajemen Absensi | Templat Jadwal Shift',
+                'item' => [
+                    [
+                        'type' => 'index',
+                        'method' => 'get',
+                        'url' => '/template-jadwal-shift',
+                        'controller' => 'TemplateJadwalShiftController@actionIndex',
+                        'name' => 'template_jadwal_shift',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'create',
+                        'method' => ['get', 'post'],
+                        'url' => '/template-jadwal-shift/create',
+                        'controller' => 'TemplateJadwalShiftController@actionCreate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'update',
+                        'method' => ['get', 'post'],
+                        'url' => '/template-jadwal-shift/update',
+                        'controller' => 'TemplateJadwalShiftController@actionUpdate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'delete',
+                        'method' => 'delete',
+                        'url' => '/template-jadwal-shift/delete',
+                        'controller' => 'TemplateJadwalShiftController@actionDelete',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                ]
+            ],
+
+            [
+                'title' => 'Manajemen Absensi | Templat Jadwal Shift Atur waktu',
+                'item' => [
+                    [
+                        'type' => 'index',
+                        'method' => 'get',
+                        'url' => '/template-jadwal-shift-waktu',
+                        'controller' => 'TemplateJadwalShiftWaktuController@actionIndex',
+                        'name' => 'template_jadwal_shift_waktu',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'update',
+                        'method' => ['get', 'post'],
+                        'url' => '/template-jadwal-shift-waktu/update',
+                        'controller' => 'TemplateJadwalShiftWaktuController@actionUpdate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
                 ]
             ],
             [
