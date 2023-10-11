@@ -22,7 +22,7 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
 
         $this->title = 'Report Absensi Jadwal Rutin';
         $this->breadcrumbs = [
-            ['title' => 'Manajemen Absensi', 'url' => url('/') . "/sub-menu?type=5"],
+            ['title' => 'Manajemen Absensi', 'url' => url('/') . "/sub-menu?type=6"],
             ['title' => $this->title, 'url' => url('/') . "/" . $this->url_index],
         ];
 

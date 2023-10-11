@@ -563,7 +563,7 @@ class ListRoutes
                 ]
             ],
             [
-                'title' => 'Absensi | Perjalanan Dinas',
+                'title' => 'Absensi | Perjalanan Dinas Karyawan',
                 'item' => [
                     [
                         'type' => 'index',

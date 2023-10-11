@@ -19,7 +19,7 @@ class PerjalananDinasController extends \App\Http\Controllers\MyAuthController
         $this->url_index = $router_name->uri;
         $this->url_name = $router_name->router_name;
 
-        $this->title = 'Perjalanan Dinas';
+        $this->title = 'Perjalanan Dinas Karyawan';
         $this->breadcrumbs = [
             ['title' => 'Manajemen Absensi', 'url' => url('/') . "/sub-menu?type=6"],
             ['title' => $this->title, 'url' => url('/') . "/" . $this->url_index],
