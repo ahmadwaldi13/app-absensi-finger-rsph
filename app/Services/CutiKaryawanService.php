@@ -46,7 +46,7 @@ class CutiKaryawanService extends BaseService
         $tgl_akhir=!empty($params['tanggal'][1]) ? $params['tanggal'][1] : date('Y-m-d');
 
         unset($params['tanggal']);
-
+        
         $query=DB::table(DB::raw(
             '(
                 select
@@ -81,15 +81,14 @@ class CutiKaryawanService extends BaseService
                         inner join ref_karyawan rk on rk.id_karyawan=utama.id_karyawan
                         left join ref_departemen rd on rd.id_departemen=rk.id_departemen
                         left join ref_ruangan rr on rr.id_ruangan=rk.id_ruangan
+                        '.(!empty($params['search']) ? "where nm_karyawan like '%".$params['search']."%'" : '' ).'
                     )utama
                     group by id_karyawan
                 )utama
             ) utama'
         ));
 
-        $list_search=[
-            'where_or'=>['nm_karyawan'],
-        ];
+        $list_search=[];
 
         if($params){
             $query=(new \App\Models\MyModel)->set_where($query,$params,$list_search);
