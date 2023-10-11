@@ -23,7 +23,7 @@
                         <div class="message"></div>
                     </div>
                 </div>
-                <div class="col-lg-3">
+                <div class="col-lg-2">
                     <label for="test" class="form-label">Jenis Perjalanan Dinas <span class="text-danger">*</span></label>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input mt-2" type="radio" name="jenis_dinas" id="1" value="1" {{($model['jenis_dinas'] == '1') ? 'checked' : '1'}}>
@@ -69,6 +69,14 @@
                             <label for="jumlah" class="form-label">Jumlah Hari</label>
                             <input type="number" class="form-control" id="jumlah" name="jumlah" min='1' value="{{ !empty($model->jumlah) ? $model->jumlah : '0' }}" readonly>
                         </div>
+                        <div class="message"></div>
+                    </div>
+                </div>
+
+                <div class="col-lg-3">
+                    <div class='bagan_form'>
+                        <label for="uraian" class="form-label">Keterangan</label>
+                        <input type="text" class="form-control" id="uraian" name='uraian'  required value="{{ !empty($model->uraian) ? $model->uraian : '' }}">
                         <div class="message"></div>
                     </div>
                 </div>

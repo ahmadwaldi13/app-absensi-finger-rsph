@@ -96,6 +96,7 @@
                         <th class="py-3" style="width: 10%">Jenis Dinas</th>
                         <th class="py-3" style="width: 10%">Tanggal Pelaksanaan</th>
                         <th class="py-3" style="width: 5%">Lama Dinas</th>
+                        <th class="py-3" style="width: 10%">Keterangan</th>
                         <th class="py-3" style="width: 5%">Action</th>
                     </tr>
                 </thead>
@@ -120,6 +121,7 @@
                             <td>{!! $jenisDinas  !!}</td>
                             <td>{{ !empty($item->tgl_mulai) ? $item->tgl_mulai : ''  }} S/D {{ !empty($item->tgl_selesai) ? $item->tgl_selesai : ''  }}</td>
                             <td>{{ !empty($item->jumlah) ? $item->jumlah : ''  }} Hari</td>
+                            <td>{{ !empty($item->uraian) ? $item->uraian : ''  }}</td>
                             <td class='text-right'>
                                 {!! (new
                                 \App\Http\Traits\AuthFunction)->setPermissionButton([$router_name->uri.'/update',$paramater_url,'update'])
