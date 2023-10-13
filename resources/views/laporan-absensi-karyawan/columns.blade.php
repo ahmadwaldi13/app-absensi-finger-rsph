@@ -14,6 +14,10 @@
     .hari_blue_sky{
         background-color: #79f6eb !important;
     }
+
+    .hari_green_sky{
+        background-color: #9cec6d !important;
+    }
 </style>
 
 <?php
@@ -148,7 +152,7 @@
                                         <span class="modal-remote-data" data-modal-src="{{ url('ajax?action=get_list_departemen') }}" data-modal-key="" data-modal-pencarian='true' data-modal-title='Departemen' data-modal-width='30%' data-modal-action-change="function=.set-data-list-from-modal@data-target=#filter_id_departemen|#filter_nm_departemen@data-key-bagan=0@data-btn-close=#closeModalData">
                                             <img class="iconify hover-pointer text-primary" src="{{ asset('') }}icon/selected.png" alt="">
                                         </span>
-                                        <a href="#" id='reset_input'><i class="fa-solid fa-square-xmark"></i></a>                            
+                                        <a href="#" id='reset_input'><i class="fa-solid fa-square-xmark"></i></a>
                                     </div>
                                     <div class="message"></div>
                                 </div>
@@ -163,12 +167,12 @@
                                         <span class="modal-remote-data" data-modal-src="{{ url('ajax?action=get_list_ruangan') }}" data-modal-key-with-form="#filter_id_departemen" data-modal-pencarian='true' data-modal-title='ruangan' data-modal-width='30%' data-modal-action-change="function=.set-data-list-from-modal@data-target=#filter_id_ruangan|#filter_nm_ruangan@data-key-bagan=0@data-btn-close=#closeModalData">
                                             <img class="iconify hover-pointer text-primary" src="{{ asset('') }}icon/selected.png" alt="">
                                         </span>
-                                        <a href="#" id='reset_input'><i class="fa-solid fa-square-xmark"></i></a>                            
+                                        <a href="#" id='reset_input'><i class="fa-solid fa-square-xmark"></i></a>
                                     </div>
                                     <div class="message"></div>
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
 
@@ -387,23 +391,52 @@
                                                     'list_libur_kerja'=>!empty($get_hari_minggu) ? $get_hari_minggu : '',
                                                     'list_libur_nasional'=>!empty($list_hari_libur) ? $list_hari_libur : '',
                                                 ];
-                                                $hasil_cuti_tmp=(new \App\Http\Traits\AbsensiFunction)->get_tgl_cuti_with_data($parameter_get_cuti);
+                                                $hasil_cuti_tmp=(new \App\Http\Traits\AbsensiFunction)->get_tgl_khusus_with_data($parameter_get_cuti);
                                                 $hasil_cuti=!empty($hasil_cuti_tmp['hasil_data']) ? $hasil_cuti_tmp['hasil_data'] : [];
-                                                $total_cuti+=!empty($hasil_cuti_tmp['jml_cuti']) ? $hasil_cuti_tmp['jml_cuti'] : 0;
+                                                $total_cuti+=!empty($hasil_cuti_tmp['jml_hari']) ? $hasil_cuti_tmp['jml_hari'] : 0;
                                                 $list_cuti_karyawan=array_merge($list_cuti_karyawan,$hasil_cuti);
                                             }
                                         }
-                                    }    
+                                    }
                                 }
 
+                                $list_dinasluar_karyawan=[];
+                                $total_dinasluar=0;
+                                if(!empty($list_dinasluar[$item->id_karyawan])){
+                                    $data_dinasluar=(object)$list_dinasluar[$item->id_karyawan];
+                                    if(!empty($data_dinasluar->waktu)){
+                                        foreach($data_dinasluar->waktu as $wc){
+                                            if(!empty($wc[0])){
+                                                $parameter_get_dinasluar=[
+                                                    'tgl_awal'=>!empty($wc[0]) ? $wc[0] : '',
+                                                    'tgl_akhir'=>!empty($wc[1]) ? $wc[1] : '',
+                                                    'data_sent'=>!empty($wc[3]) ? $wc[3] : '',
+                                                    'list_libur_kerja'=>!empty($get_hari_minggu) ? $get_hari_minggu : '',
+                                                    'list_libur_nasional'=>!empty($list_hari_libur) ? $list_hari_libur : '',
+                                                ];
+                                                $hasil_dinasluar_tmp=(new \App\Http\Traits\AbsensiFunction)->get_tgl_khusus_with_data($parameter_get_dinasluar);
+                                                $hasil_dinasluar=!empty($hasil_dinasluar_tmp['hasil_data']) ? $hasil_dinasluar_tmp['hasil_data'] : [];
+                                                $total_dinasluar+=!empty($hasil_dinasluar_tmp['jml_hari']) ? $hasil_dinasluar_tmp['jml_hari'] : 0;
+                                                $list_dinasluar_karyawan=array_merge($list_dinasluar_karyawan,$hasil_dinasluar);
+                                            }
+                                        }
+                                    }
+                                }
+                                
                                 $total_waktu_kerja_user_sec=!empty($item->sum_waktu_kerja_user_sec) ? $item->sum_waktu_kerja_user_sec : 0;
-                                $total_waktu_kerja_user_text=(new \App\Http\Traits\AbsensiFunction)->change_format_waktu_indo($total_waktu_kerja_user_sec,':');
 
+                                //total kerja sistem kurang cuti
                                 $total_waktu_kerja_kurang_cuti=$total_kerja_sec_sistem_sec*$total_cuti;
                                 $total_kerja_bulan_sec=$total_kerja_bulan_sec-$total_waktu_kerja_kurang_cuti;
-                                
+
+                                //total kerja user tambah dinas luar
+                                $total_waktu_kerja_tambah_dinasluar=$total_kerja_sec_sistem_sec*$total_dinasluar;
+                                $total_waktu_kerja_user_sec=$total_waktu_kerja_user_sec+$total_waktu_kerja_tambah_dinasluar;
+
                                 $total_waktu_kerja_selisih_sec=$total_kerja_bulan_sec-$total_waktu_kerja_user_sec;
                                 $tanda=($total_waktu_kerja_selisih_sec<0) ? '+' : '-';
+                                
+                                $total_waktu_kerja_user_text=(new \App\Http\Traits\AbsensiFunction)->change_format_waktu_indo($total_waktu_kerja_user_sec,':');
                                 $total_waktu_kerja_selisih_text=$tanda.' '.(new \App\Http\Traits\AbsensiFunction)->change_format_waktu_indo(abs($total_waktu_kerja_selisih_sec),':');
 
                             ?>
@@ -435,8 +468,8 @@
                                         if(!empty($data_presensi_type[$item_tgl])){
                                             $get_type_data=$data_presensi_type[$item_tgl];
                                             $get_status_kerja=!empty($get_type_data->status_kerja) ? json_decode($get_type_data->status_kerja,true) : '';
-                                            
-                                            
+
+
                                             if(!empty($get_status_kerja['alias'])){
                                                 $hasil_alias=$get_status_kerja['alias'];
                                                 if($hasil_alias!='A'){
@@ -461,6 +494,11 @@
                                         if(!empty($list_cuti_karyawan[$item_tgl])){
                                             $class_hari='hari_blue_sky';
                                             $presensi_user_text=$list_cuti_karyawan[$item_tgl];
+                                        }
+
+                                        if(!empty($list_dinasluar_karyawan[$item_tgl])){
+                                            $class_hari='hari_green_sky';
+                                            $presensi_user_text=$list_dinasluar_karyawan[$item_tgl];
                                         }
                                     ?>
                                     <td class='{{ $class_hari }}' style='vertical-align: middle;'>{!! $presensi_user_text !!}</td>

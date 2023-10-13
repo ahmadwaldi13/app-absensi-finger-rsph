@@ -58,7 +58,7 @@ trait AbsensiTraits {
         return  $hours * 3600 + $minutes * 60 + $seconds;
     }
 
-    function get_tgl_cuti_with_data($params=null) {
+    function get_tgl_khusus_with_data($params=null) {
 
         $tgl_awal=$params['tgl_awal'];
         $tgl_akhir=$params['tgl_akhir'];
@@ -78,12 +78,12 @@ trait AbsensiTraits {
             $interval = $start_date->diff($end_date);
             $jml=$interval->days;
         }
-        $jml_cuti=1;
+        $jml_hari=1;
         $hasil_data[$tgl_awal]=!empty($data_sent) ? $data_sent : '';
         if(!empty($list_libur_kerja[$tgl_awal])){
-            $jml_cuti--;
+            $jml_hari--;
         }else if(!empty($list_libur_nasional[$tgl_awal])){
-            $jml_cuti--;
+            $jml_hari--;
         }
 
         if(!empty($jml)){
@@ -93,18 +93,18 @@ trait AbsensiTraits {
                 $indate->modify('+1 day');
                 $hasil = $indate->format('Y-m-d');
                 $hasil_data[$hasil]=!empty($data_sent) ? $data_sent : '';
-                $jml_cuti++;
+                $jml_hari++;
 
                 if(!empty($list_libur_kerja[$hasil])){
-                    $jml_cuti--;
+                    $jml_hari--;
                 }else if(!empty($list_libur_nasional[$hasil])){
-                    $jml_cuti--;
+                    $jml_hari--;
                 }
             }
         }
         return [
             'hasil_data'=>$hasil_data,
-            'jml_cuti'=>$jml_cuti
+            'jml_hari'=>$jml_hari
         ];
     }
 

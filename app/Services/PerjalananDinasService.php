@@ -37,4 +37,67 @@ class PerjalananDinasService extends BaseService
             return $query;
         }
     }
+
+    public function getDataPerjalanDinas($params=[],$type){
+        ini_set("memory_limit","800M");
+        DB::statement("SET GLOBAL group_concat_max_len = 15000;");
+
+        $tgl_awal=!empty($params['tanggal'][0]) ? $params['tanggal'][0] : date('Y-m-d');
+        $tgl_akhir=!empty($params['tanggal'][1]) ? $params['tanggal'][1] : date('Y-m-d');
+
+        unset($params['tanggal']);
+        
+        $query=DB::table(DB::raw(
+            '(
+                select
+                    JSON_OBJECTAGG(
+                        id_karyawan,data_pd
+                    ) hasil
+                from(
+                    select
+                        utama.*,
+                        json_object(
+                            "waktu",
+                            JSON_ARRAYAGG(
+                                JSON_array(
+                                    tgl_mulai,tgl_selesai,jml,uraian,jenis_dinas
+                                )
+                            ),
+                            "nm_karyawan",
+                            nm_karyawan
+                        ) as data_pd
+                    from
+                    (
+                        select utama.*,nm_karyawan,rd.id_departemen,nm_departemen,rr.id_ruangan,nm_ruangan
+                        from
+                        (
+                            select
+                                id_karyawan,uraian,tgl_mulai,tgl_selesai,if(tgl_selesai>=tgl_mulai,(DATEDIFF(tgl_selesai,tgl_mulai)),0) jml,jenis_dinas
+                            from ref_perjalanan_dinas
+                            where
+                                ( tgl_mulai between "'.$tgl_awal.'" and "'.$tgl_akhir.'" ) or
+                                ( tgl_selesai between "'.$tgl_awal.'" and "'.$tgl_akhir.'" )
+                        ) utama
+                        inner join ref_karyawan rk on rk.id_karyawan=utama.id_karyawan
+                        left join ref_departemen rd on rd.id_departemen=rk.id_departemen
+                        left join ref_ruangan rr on rr.id_ruangan=rk.id_ruangan
+                        '.(!empty($params['search']) ? "where nm_karyawan like '%".$params['search']."%'" : '' ).'
+                    )utama
+                    group by id_karyawan
+                )utama
+            ) utama'
+        ));
+
+        $list_search=[];
+
+        if($params){
+            $query=(new \App\Models\MyModel)->set_where($query,$params,$list_search);
+        }
+
+        if(empty($type)){
+            return $query->get();
+        }else{
+            return $query;
+        }
+    }
 }
