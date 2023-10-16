@@ -79,6 +79,8 @@
                                 'bgcolor'=>"#ccc",
                             ];
 
+                            $data_shift=$grafik_data;
+
                             $list_data_besok=[];
                         ?>
                         @foreach($looping_range_date as $key_date => $valeu_date)

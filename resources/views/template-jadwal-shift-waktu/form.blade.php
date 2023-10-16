@@ -37,7 +37,9 @@
 </style>
 <form action="{{ url($action_form) }}" method="{{ !empty($method_form) ? $method_form : 'POST' }}">
     @csrf
-    <input type="text" name="key_old" value="{{ !empty($item_template_shift->id_template_jadwal_shift) ? $item_template_shift->id_template_jadwal_shift : 0 }}">
+    <input type="hidden" name="key_old" value="{{ !empty($item_template_shift->id_template_jadwal_shift) ? $item_template_shift->id_template_jadwal_shift : 0 }}">
+    <input type="hidden" id='id_jenis_jadwal'>
+    <textarea style="display:none" id="list_tgl_terpilih" name=list_tgl_terpilih>{{ !empty($list_data_json) ? $list_data_json : '{}' }}</textarea>
     
     <div class="row d-flex justify-content-between">
         <div class="col-lg-4 p-0">
@@ -57,7 +59,9 @@
                                     <tr style="border-bottom:1px solid; background:{{ $bgcolor }}">
                                         <td>      
                                             <div class="custom-control custom-radio" style="display:table;">
-                                                <input type="radio" id="{{ $nm_kode_uniq }}" name="id_jenis_jadwal" class="custom-control-input list_jadwal_style">
+                                                <input type="radio" id="{{ $nm_kode_uniq }}" name='pil_jadwal' class="custom-control-input list_jadwal_style radio_pil" value='{{ $item_jadwal->id_jenis_jadwal }}'>
+                                                <input type="hidden" class="radio_pil_nama" value='{{ !empty($item_jadwal->nm_jenis_jadwal) ? $item_jadwal->nm_jenis_jadwal : '' }}'>
+                                                
                                                 <label class="custom-control-label list_jadwal_style" for="{{ $nm_kode_uniq }}" style="width:100%">
                                                     <div class="list_jadwal_style" style="width:43%;">{{ !empty($item_jadwal->nm_jenis_jadwal) ? $item_jadwal->nm_jenis_jadwal : '' }}</div>
                                                     <div class="list_jadwal_style" style="width:70%;">
@@ -80,91 +84,108 @@
         <div class="col-lg-8 p-0">
             <div class="card">
                 <div class="card-body" style="padding:7px;">
-                    <h5>Daftar hari</h5>
+                    <label id='title_jadwal'></label>
+                    <h5 style="border-top:1px solid;">Daftar hari</h5>
                     <hr style="margin:3px 0px;">
-                    <div style="overflow:auto; max-height: 1900px; padding:5px;">
-                        <?php 
-                            $urutan_bulan=0;
-                        ?>
-                        @foreach($data_tanggal as $key_bulan => $value_bulan)
+                    <div id='list_hari' style='display:none'>
+                        <div style="overflow:auto; max-height: 1900px; padding:5px;">
                             <?php 
-                                $is_bulan=($type_periode=='month') ? 1 : 0;
-                                $jml_hari=count($value_bulan);
-                                $urutan_bulan++;
+                                $urutan_bulan=0;
                             ?>
-                            @if($urutan_bulan>1)
-                                <hr>
-                            @endif
-                            @if(!empty($is_bulan))
-                                <h5>Bulan {{ $urutan_bulan }}</h5>
-                            @endif
-
-                            <div class="row d-flex justify-content-start">
+                            @foreach($data_tanggal as $key_bulan => $value_bulan)
                                 <?php 
-                                    
-                                    $total_looping=1;
-                                    $max_hari=7;
-                                    if($jml_hari>=($max_hari*1)){
-                                        $total_looping=2;
-                                    }
-                                    if($jml_hari>=($max_hari*2)){
-                                        $total_looping=3;
-                                    }
-                                    if($jml_hari>=($max_hari*3)){
-                                        $total_looping=4;
-                                    }
-                                    $i_awal=0;
-                                    $i_end=7;
+                                    $is_bulan=($type_periode=='month') ? 1 : 0;
+                                    $jml_hari=count($value_bulan);
+                                    $urutan_bulan++;
                                 ?>
-                                @for($j=0; $j<=$total_looping; $j++)
-                                    <?php 
-                                        if($j>0){
-                                            $i_awal=$i_end;
-                                            $i_end=$i_end+$max_hari;
-                                            if($i_end>$jml_hari){
-                                                $i_end=$jml_hari;
-                                            }
-                                        }
-                                    ?>    
-                                
-                                    <div class="col-sm p-0">
-                                        <table class="table border table-responsive-tablet">
-                                            <tbody> 
-                                                @for($i=$i_awal; $i<$i_end; $i++)   
-                                                    <?php 
-                                                        $data_tgl=$data_tanggal[$key_bulan];
-                                                        $hasil_data_tgl=[];
-                                                        $kode='';
-                                                        if(!empty($data_tgl[$i])){
-                                                            $hasil_data_tgl=$data_tgl[$i];
-                                                            $kode=$hasil_data_tgl['month_date'].'_'.$hasil_data_tgl['tgl'];
-                                                        }
-                                                        $hasil_data_tgl=(object)$hasil_data_tgl;
+                                @if($urutan_bulan>1)
+                                    <hr>
+                                @endif
+                                @if(!empty($is_bulan))
+                                    <h5>Bulan {{ $urutan_bulan }}</h5>
+                                @endif
 
-                                                        $nm_kode='pil_'.$kode;
-                                                    ?>
-                                                    <tr>
-                                                        <td>
-                                                            <div class="form-check">
-                                                                <input class="form-check-input" type="checkbox"  name='pulang_kerja_next_day' value="1" id="{{ $nm_kode }}">
-                                                                <label class="form-check-label" style='margin-top: 7px;margin-left: 5px;' for="{{ $nm_kode }}">
-                                                                    <div>Hari Ke {{ !empty($hasil_data_tgl->tgl) ? $hasil_data_tgl->tgl : '' }}</div>
-                                                                    <hr style="margin:0px">
-                                                                    <div>{{ !empty($hasil_data_tgl->nm_hari) ? $hasil_data_tgl->nm_hari : '' }}</div>
-                                                                </label>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                @endfor
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                @endfor
+                                <div class="row d-flex justify-content-start">
+                                    <?php 
+                                        
+                                        $total_looping=1;
+                                        $max_hari=7;
+                                        if($jml_hari>=($max_hari*1)){
+                                            $total_looping=2;
+                                        }
+                                        if($jml_hari>=($max_hari*2)){
+                                            $total_looping=3;
+                                        }
+                                        if($jml_hari>=($max_hari*3)){
+                                            $total_looping=4;
+                                        }
+                                        $i_awal=0;
+                                        $i_end=7;
+                                    ?>
+                                    @for($j=0; $j<=$total_looping; $j++)
+                                        <?php 
+                                            if($j>0){
+                                                $i_awal=$i_end;
+                                                $i_end=$i_end+$max_hari;
+                                                if($i_end>$jml_hari){
+                                                    $i_end=$jml_hari;
+                                                }
+                                            }
+                                        ?>    
+                                    
+                                        <div class="col-sm p-0">
+                                            <table class="table border table-responsive-tablet">
+                                                <tbody> 
+                                                    @for($i=$i_awal; $i<$i_end; $i++)   
+                                                        <?php 
+                                                            $data_tgl=$data_tanggal[$key_bulan];
+                                                            $hasil_data_tgl=[];
+                                                            $kode='';
+                                                            if(!empty($data_tgl[$i])){
+                                                                $hasil_data_tgl=$data_tgl[$i];
+                                                                $kode=$hasil_data_tgl['month_date'].'_'.$hasil_data_tgl['tgl'];
+                                                            }
+                                                            $hasil_data_tgl=(object)$hasil_data_tgl;
+
+                                                            $nm_kode='pil_'.$kode;
+                                                            $value_hari=!empty($hasil_data_tgl->tgl) ? $hasil_data_tgl->tgl : 0;
+                                                        ?>
+                                                        <tr>
+                                                            <td>
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input checkbox_hari" type="checkbox" value="{{ $value_hari }}" id="{{ $nm_kode }}">
+                                                                    <label class="form-check-label" style='margin-top: 7px;margin-left: 5px;' for="{{ $nm_kode }}">
+                                                                        <div>Hari Ke {{ $value_hari }}</div>
+                                                                        <hr style="margin:0px">
+                                                                        <div>{{ !empty($hasil_data_tgl->nm_hari) ? $hasil_data_tgl->nm_hari : '' }}</div>
+                                                                    </label>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    @endfor
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    @endfor
+                                </div>
+                            @endforeach
+                        </div>
+
+                        <div class="row justify-content-end align-items-end mt-1">
+                            <div class="col-md-2 text-center">
+                                <button class="btn btn-primary btn-block" id='btn_save' type="submit">Ubah</button>
                             </div>
-                        @endforeach
+                        </div>
+                    </div>
+                    <div id='list_hari_non_change'>
+                        <h5 class="text-center">Silahkan Pilih jadwal shift terlebih dahulu</h5>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </form>
+
+@push('script-end-2')
+    <script src="{{ asset('js/template-jadwal-shift-waktu/form.js') }}"></script>
+@endpush
