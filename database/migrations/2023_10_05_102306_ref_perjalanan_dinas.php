@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
-class RefPerjalananDinas extends Migration
+class RefPerjalananDinas extends \App\Classes\MyMigration
 {
     /**
      * Run the migrations.
@@ -31,9 +31,17 @@ class RefPerjalananDinas extends Migration
             });
         }
 
-        $field='id_spd';
-        if (!Schema::hasColumn($table_name,$field)){
-            DB::statement("ALTER TABLE ".$table_name." ADD ".$field." INT(10) PRIMARY KEY AUTO_INCREMENT");
+        $field='uraian';
+        $primary_key='id_spd';
+        if (!Schema::hasColumn($table_name,$primary_key,$field)){
+            DB::statement("ALTER TABLE ".$table_name." ADD ".$primary_key." INT(10) PRIMARY KEY AUTO_INCREMENT");
+            DB::statement("ALTER TABLE ".$table_name." ADD ".$field." varchar(100) NOT NULL");
+        }
+
+        if (Schema::hasTable($table_name)) {
+            $table=new Blueprint($table_name);
+            $params=['dropForeign'=>['id_karyawan']];
+            $this->update_table($table_name,$table,$params);
         }
     }
 
