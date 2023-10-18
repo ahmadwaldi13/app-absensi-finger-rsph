@@ -23,7 +23,7 @@ class TemplateJadwalShiftWaktuController extends \App\Http\Controllers\MyAuthCon
 
         $this->title = 'Atur Watku Template Jadwal Shift';
         $this->breadcrumbs = [
-            ['title' => 'Jadwal', 'url' => url('/') . "/sub-menu?type=6"],
+            ['title' => 'Manajemen Absensi', 'url' => url('/') . "/sub-menu?type=6"],
             ['title' => $this->title, 'url' => url('/') . "/" . $this->url_index],
         ];
 
@@ -35,13 +35,24 @@ class TemplateJadwalShiftWaktuController extends \App\Http\Controllers\MyAuthCon
     function actionIndex(Request $request)
     {
         $id_template_shift=!empty($request->get('data_sent')) ? $request->get('data_sent') : 0;
+        $id_template_jadwal_shift_detail_tmp=!empty($request->get('data_key')) ? $request->get('data_key') : 0;
+
         
         $paramater = [
             'id_template_jadwal_shift' => $id_template_shift
         ];
 
         $item_template_shift = (new \App\Services\RefTemplateJadwalShiftService)->getList($paramater, 1)->first();
+        $get_list_template_shift_detail = (new \App\Models\RefTemplateJadwalShiftDetail)->where('id_template_jadwal_shift','=',$id_template_shift)->orderby('jml_periode','ASC')->get();
+        if($get_list_template_shift_detail){
+            $id_template_shift_detail=!empty($get_list_template_shift_detail[0]) ? $get_list_template_shift_detail[0]->id_template_jadwal_shift_detail : '';
+        }
+        if(!empty($id_template_jadwal_shift_detail_tmp)){
+            $id_template_shift_detail=$id_template_jadwal_shift_detail_tmp;
+        }
 
+        $get_template_shift_detail = (new \App\Models\RefTemplateJadwalShiftDetail)->where('id_template_jadwal_shift_detail','=',$id_template_shift_detail)->first();
+        
         $data_jadwal=( new \App\Models\RefJenisJadwal() )->where(['type_jenis'=>2])->get();
         $data_jadwal_tmp=[];
         if($data_jadwal){
@@ -50,7 +61,7 @@ class TemplateJadwalShiftWaktuController extends \App\Http\Controllers\MyAuthCon
             }
         }
 
-        $model = (new \App\Models\RefTemplateJadwalShiftWaktu)->where('id_template_jadwal_shift', '=', $id_template_shift)->get();
+        $model = (new \App\Models\RefTemplateJadwalShiftWaktu)->where('id_template_jadwal_shift_detail', '=', $id_template_shift_detail)->get();
         $grafik_data=[];
         if($model){
             foreach($model as $value){
@@ -82,6 +93,8 @@ class TemplateJadwalShiftWaktuController extends \App\Http\Controllers\MyAuthCon
             'breadcrumbs' => $this->breadcrumbs,
             'url_back_index' => 'template-jadwal-shift',
             'item_template_shift'=>$item_template_shift,
+            'get_list_template_shift_detail'=>$get_list_template_shift_detail,
+            'get_template_shift_detail'=>$get_template_shift_detail,
             'grafik_data'=>$grafik_data,
         ];
 
@@ -90,8 +103,9 @@ class TemplateJadwalShiftWaktuController extends \App\Http\Controllers\MyAuthCon
 
     private function form(Request $request)
     {
-        $kode = !empty($request->data_sent) ? $request->data_sent : '';
-
+        $kode = !empty($request->id_template_jadwal_shift_detail) ? $request->id_template_jadwal_shift_detail : '';
+        $get_template_shift_detail = (new \App\Models\RefTemplateJadwalShiftDetail)->where('id_template_jadwal_shift_detail','=',$kode)->first();
+        
         $data_jadwal=( new \App\Models\RefJenisJadwal() )->where(['type_jenis'=>2])->get();
         $data_jadwal_tmp=[];
         if($data_jadwal){
@@ -100,7 +114,7 @@ class TemplateJadwalShiftWaktuController extends \App\Http\Controllers\MyAuthCon
             }
         }
 
-        $model = (new \App\Models\RefTemplateJadwalShiftWaktu)->where('id_template_jadwal_shift', '=', $kode)->get();
+        $model = (new \App\Models\RefTemplateJadwalShiftWaktu)->where('id_template_jadwal_shift_detail', '=', $kode)->get();
         $list_data=[];
         if($model){
             foreach($model as $value){
@@ -126,6 +140,7 @@ class TemplateJadwalShiftWaktuController extends \App\Http\Controllers\MyAuthCon
             'item_template_shift'=>$item_template_shift,
             'data_jadwal'=>$data_jadwal,
             'list_data_json'=>$list_data_json,
+            'get_template_shift_detail'=>$get_template_shift_detail,
         ];
 
         return view($this->part_view . '.form', $parameter_view);
@@ -156,17 +171,24 @@ class TemplateJadwalShiftWaktuController extends \App\Http\Controllers\MyAuthCon
         ];
         
         try {
-            $id_template_jadwal_shift=$kode;
+            $id_template_jadwal_shift_detail=$kode;
             $list_data=!empty($req['list_tgl_terpilih']) ? $req['list_tgl_terpilih'] : "";
             $list_data = (array)json_decode($list_data);
 
+            $get_template_shift_detail = (new \App\Models\RefTemplateJadwalShiftDetail)->where('id_template_jadwal_shift_detail','=',$id_template_jadwal_shift_detail)->first();
+            $link_back_param = [
+                'data_sent' => $get_template_shift_detail->id_template_jadwal_shift,
+                'data_key' => $get_template_shift_detail->id_template_jadwal_shift_detail
+            ];
+            $link_back_param = array_merge($link_back_param, $request->all());
+            
             if ($list_data) {
-                (new \App\Models\RefTemplateJadwalShiftWaktu)->where('id_template_jadwal_shift', '=', $id_template_jadwal_shift)->delete();
+                (new \App\Models\RefTemplateJadwalShiftWaktu)->where('id_template_jadwal_shift_detail', '=', $id_template_jadwal_shift_detail)->delete();
                 $jml_save = 0;
                 foreach ($list_data  as $key => $value) {
                     $hari=!empty($value->item) ? array_unique($value->item) : [];
                     $data_save=[
-                        'id_template_jadwal_shift'=>$id_template_jadwal_shift,
+                        'id_template_jadwal_shift_detail'=>$id_template_jadwal_shift_detail,
                         'id_jenis_jadwal'=>$key,
                         'tgl'=>implode(',',$hari),
                     ];

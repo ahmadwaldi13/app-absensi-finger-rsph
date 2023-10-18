@@ -20,18 +20,37 @@ class RefTemplateJadwalShiftWaktu extends Migration
                 $table->charset = 'latin1';
                 $table->collation = 'latin1_swedish_ci';
 
-                $table->integer('id_template_jadwal_shift');
+                $table->integer('id_template_jadwal_shift_detail');
                 $table->integer('id_jenis_jadwal');
                 $table->text('tgl');
 
-                $table->unique(['id_template_jadwal_shift','id_jenis_jadwal'],$table_name.'_uniq');
+                $table->unique(['id_template_jadwal_shift_detail','id_jenis_jadwal'],$table_name.'_uniq');
             });
         }
 
-        $another_create_string=['id_template_jadwal_shift'=>10,'id_jenis_jadwal'=>10];
-        foreach($another_create_string as $value => $length){
-            if (Schema::hasColumn($table_name, $value)){
-                DB::statement("ALTER TABLE ".$table_name." MODIFY ".$value." INT(".$length.")");
+        $another_create_string=[
+            'id_template_jadwal_shift_detail'=>['type'=>'INT','length'=>10,'option'=>'UNSIGNED NOT NULL'],
+            'id_jenis_jadwal'=>['type'=>'INT','length'=>10,'option'=>'']
+        ];
+        foreach($another_create_string as $key => $value){
+            if (Schema::hasColumn($table_name, $key)){
+                DB::statement("ALTER TABLE ".$table_name." MODIFY ".$key." ".$value['type']."(".$value['length'].")".$value['option']." ");
+            }
+        }
+
+        $doctrineTable = Schema::getConnection()->getDoctrineSchemaManager()->listTableDetails($table_name);
+        $another_create_foreign=[
+            $table_name.'_fk1'=>[
+                'key'=>['id_template_jadwal_shift_detail'],
+                'target'=>['id_template_jadwal_shift_detail'],
+                'tbl'=>'ref_template_jadwal_shift_detail'
+            ]
+        ];
+        foreach($another_create_foreign as $key => $value){
+            if(!$doctrineTable->hasForeignKey($key)){
+                Schema::table($table_name, function($table) use ($key,$value) {
+                    $table->foreign($value['key'],$key)->references($value['target'])->on($value['tbl'])->onUpdate('cascade')->onDelete('cascade');
+                });
             }
         }
     }

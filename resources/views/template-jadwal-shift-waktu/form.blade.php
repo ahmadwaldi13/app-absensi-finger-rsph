@@ -1,9 +1,9 @@
 <?php 
-    $jml_periode=$item_template_shift->jml_periode;
-    $type_periode = (new \App\Models\RefTemplateJadwalShift())->list_type_periode_system($item_template_shift->type_periode);
+    $jml_periode=$get_template_shift_detail->jml_periode;
+    $type_periode = (new \App\Models\RefTemplateJadwalShiftDetail())->list_type_periode_system($get_template_shift_detail->type_periode);
 
-    $tgl_start=new \DateTime($item_template_shift->tgl_mulai);
-    $tgl_start_tmp=new \DateTime($item_template_shift->tgl_mulai);
+    $tgl_start=new \DateTime($get_template_shift_detail->tgl_mulai);
+    $tgl_start_tmp=new \DateTime($get_template_shift_detail->tgl_mulai);
 
     $rumus_tmp="+".$jml_periode." ".$type_periode;
     $tgl_end = $tgl_start_tmp->modify($rumus_tmp);
@@ -37,7 +37,7 @@
 </style>
 <form action="{{ url($action_form) }}" method="{{ !empty($method_form) ? $method_form : 'POST' }}">
     @csrf
-    <input type="hidden" name="key_old" value="{{ !empty($item_template_shift->id_template_jadwal_shift) ? $item_template_shift->id_template_jadwal_shift : 0 }}">
+    <input type="hidden" name="key_old" value="{{ !empty($get_template_shift_detail->id_template_jadwal_shift_detail) ? $get_template_shift_detail->id_template_jadwal_shift_detail : 0 }}">
     <input type="hidden" id='id_jenis_jadwal'>
     <textarea style="display:none" id="list_tgl_terpilih" name=list_tgl_terpilih>{{ !empty($list_data_json) ? $list_data_json : '{}' }}</textarea>
     
@@ -156,8 +156,6 @@
                                                                     <input class="form-check-input checkbox_hari" type="checkbox" value="{{ $value_hari }}" id="{{ $nm_kode }}">
                                                                     <label class="form-check-label" style='margin-top: 7px;margin-left: 5px;' for="{{ $nm_kode }}">
                                                                         <div>Hari Ke {{ $value_hari }}</div>
-                                                                        <hr style="margin:0px">
-                                                                        <div>{{ !empty($hasil_data_tgl->nm_hari) ? $hasil_data_tgl->nm_hari : '' }}</div>
                                                                     </label>
                                                                 </div>
                                                             </td>

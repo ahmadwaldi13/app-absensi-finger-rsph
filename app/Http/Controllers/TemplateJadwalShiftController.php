@@ -23,7 +23,7 @@ class TemplateJadwalShiftController extends \App\Http\Controllers\MyAuthControll
 
         $this->title = 'Template Jadwal Shift';
         $this->breadcrumbs = [
-            ['title' => 'Jadwal', 'url' => url('/') . "/sub-menu?type=6"],
+            ['title' => 'Manajemen Absensi', 'url' => url('/') . "/sub-menu?type=6"],
             ['title' => $this->title, 'url' => url('/') . "/" . $this->url_index],
         ];
 
@@ -35,6 +35,7 @@ class TemplateJadwalShiftController extends \App\Http\Controllers\MyAuthControll
     function actionIndex(Request $request)
     {
         DB::statement("ALTER TABLE ".( new \App\Models\RefTemplateJadwalShift() )->table." AUTO_INCREMENT = 1");
+        DB::statement("ALTER TABLE ".( new \App\Models\RefTemplateJadwalShiftDetail() )->table." AUTO_INCREMENT = 1");
         $form_filter_text = !empty($request->form_filter_text) ? $request->form_filter_text : '';
 
         $paramater=[
@@ -65,12 +66,9 @@ class TemplateJadwalShiftController extends \App\Http\Controllers\MyAuthControll
             $action_form = $this->part_view . '/create';
         }
 
-        $list_type_periode = (new \App\Models\RefTemplateJadwalShift())->list_type_periode();
-
         $parameter_view = [
             'action_form' => $action_form,
             'model' => $model,
-            'list_type_periode'=>$list_type_periode
         ];
 
         return view($this->part_view . '.form', $parameter_view);
@@ -126,21 +124,51 @@ class TemplateJadwalShiftController extends \App\Http\Controllers\MyAuthControll
             'error' => !empty($kode) ? 'Data tidak berhasil diubah' : 'Data berhasil disimpan'
         ];
         
-        
         try {
+            $update=1;
             $model = (new \App\Models\RefTemplateJadwalShift)->where('id_template_jadwal_shift', '=', $kode)->first();
             if (empty($model)) {
                 $model = (new \App\Models\RefTemplateJadwalShift);
-            }
-            $data_save = $req;
-            $model->set_model_with_data($data_save);
-
-            $is_save = 0;
-
-            if ($model->save()) {
-                $is_save = 1;
+                $update=0;
             }
             
+            $data_save=[
+                'nm_shift'=>!empty($req['nm_shift']) ? trim($req['nm_shift']) : ""
+            ];
+
+            $model->set_model_with_data($data_save);
+            
+            $is_save = 0;
+            if($update){
+                if($model->save()){
+                    $is_save=1;
+                }
+            }else{
+                if ($id_template_jadwal_shift= $model->insertGetId($model->getAttributes())) {
+                    $list_jml_periode = (new \App\Models\RefTemplateJadwalShiftDetail())->list_jml_periode();
+                    foreach ($list_jml_periode as $key => $value) {
+                        $model_detail = (new \App\Models\RefTemplateJadwalShiftDetail)
+                        ->where('id_template_jadwal_shift', '=', $id_template_jadwal_shift)
+                        ->where('jml_periode', '=', $value)
+                        ->first();
+                        if(empty($model_detail)){
+                            $model_detail = (new \App\Models\RefTemplateJadwalShiftDetail);
+                        }
+                        $get_tgl_periode = (new \App\Models\RefTemplateJadwalShiftDetail())->get_tgl_periode($value);
+                        $data_save=[
+                            'id_template_jadwal_shift'=>$id_template_jadwal_shift,
+                            'tgl_mulai'=>$get_tgl_periode,
+                            'jml_periode'=>$value,
+                            'type_periode'=>1,
+                        ];
+
+                        $model_detail->set_model_with_data($data_save);
+                        $model_detail->save();
+                    }
+                    $is_save = 1;
+                }
+            }
+
             if ($is_save) {
                 DB::commit();
                 $link_back_param = $this->clear_request($link_back_param, $request);
@@ -182,8 +210,6 @@ class TemplateJadwalShiftController extends \App\Http\Controllers\MyAuthControll
 
             $is_save = 0;
             if ($model->delete()) {
-                (new \App\Models\RefTemplateJadwalShiftWaktu)->where('id_template_jadwal_shift', '=', $kode)->delete();
-
                 $is_save = 1;
             }
 

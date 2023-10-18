@@ -17,11 +17,11 @@
                     </thead>
                     <tbody>
                         <?php 
-                            $jml_periode=$item_template_shift->jml_periode;
-                            $type_periode = (new \App\Models\RefTemplateJadwalShift())->list_type_periode_system($item_template_shift->type_periode);
+                            $jml_periode=$get_template_shift_detail->jml_periode;
+                            $type_periode = (new \App\Models\RefTemplateJadwalShiftDetail())->list_type_periode_system($get_template_shift_detail->type_periode);
                         
-                            $tgl_start=new \DateTime($item_template_shift->tgl_mulai);
-                            $tgl_start_tmp=new \DateTime($item_template_shift->tgl_mulai);
+                            $tgl_start=new \DateTime($get_template_shift_detail->tgl_mulai);
+                            $tgl_start_tmp=new \DateTime($get_template_shift_detail->tgl_mulai);
 
                             $rumus_tmp="+".$jml_periode." ".$type_periode;
                             $tgl_end = $tgl_start_tmp->modify($rumus_tmp);
@@ -30,54 +30,6 @@
                             $tgl_end_text = $tgl_end->format('Y-m-d');
 
                             $looping_range_date = new DatePeriod($tgl_start, DateInterval::createFromDateString('1 day'), $tgl_end);
-
-                            $data_shift[0][0]=[
-                                'start'=>'08:00',
-                                'end'=>'09:00',
-                                'besok'=>0,
-                                'nm_shift'=>'pagi',
-                                'bgcolor'=>"#dc9090",
-                            ];
-
-                            $data_shift[0][1]=[
-                                'start'=>'14:00',
-                                'end'=>'16:00',
-                                'besok'=>0,
-                                'nm_shift'=>'siang',
-                                'bgcolor'=>"#ede",
-                            ];
-
-                            $data_shift[0][2]=[
-                                'start'=>'14:00',
-                                'end'=>'16:00',
-                                'besok'=>0,
-                                'nm_shift'=>'siang',
-                                'bgcolor'=>"#ede",
-                            ];
-
-                            $data_shift[1][0]=[
-                                'start'=>'14:00',
-                                'end'=>'16:00',
-                                'besok'=>0,
-                                'nm_shift'=>'siang',
-                                'bgcolor'=>"#ede",
-                            ];
-
-                            $data_shift[1][2]=[
-                                'start'=>'20:00',
-                                'end'=>'09:00',
-                                'besok'=>1,
-                                'nm_shift'=>'malam',
-                                'bgcolor'=>"#ccc",
-                            ];
-
-                            $data_shift[5][0]=[
-                                'start'=>'20:00',
-                                'end'=>'09:00',
-                                'besok'=>1,
-                                'nm_shift'=>'malam',
-                                'bgcolor'=>"#ccc",
-                            ];
 
                             $data_shift=$grafik_data;
 
@@ -91,8 +43,6 @@
                             <tr>
                                 <td>
                                     <div>Hari Ke {{ ($key_date+1) }}</div>
-                                    <hr style="margin:0px">
-                                    <div>{{ $nm_hari }}</div>
                                 </td>
                                 <td>
                                     <?php 
