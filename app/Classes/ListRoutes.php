@@ -600,6 +600,51 @@ class ListRoutes
                 ]
             ],
             [
+                'title' => 'Absensi | Master Departemen',
+                'item' => [
+                    [
+                        'type' => 'index',
+                        'method' => 'get',
+                        'url' => '/kepala-departemen',
+                        'controller' => 'KepalaDepartemenController@actionIndex',
+                        'name' => 'kepala_departemen',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'create',
+                        'method' => ['get', 'post'],
+                        'url' => '/kepala-departemen/create',
+                        'controller' => 'KepalaDepartemenController@actionCreate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'update',
+                        'method' => ['get', 'post'],
+                        'url' => '/kepala-departemen/update',
+                        'controller' => 'KepalaDepartemenController@actionUpdate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'delete',
+                        'method' => 'delete',
+                        'url' => '/kepala-departemen/delete',
+                        'controller' => 'KepalaDepartemenController@actionDelete',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'system',
+                        'method' => 'get',
+                        'url' => '/kepala-departemen/ajax',
+                        'controller' => 'KepalaDepartemenController@ajax',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                ]
+            ],
+            [
                 'title' => 'Manajemen Absensi | Tarik Log Absensi Karyawan',
                 'item' => [
                     [
