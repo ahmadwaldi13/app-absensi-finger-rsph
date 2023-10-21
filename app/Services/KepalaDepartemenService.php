@@ -16,7 +16,7 @@ class KepalaDepartemenService extends BaseService
 
     function getList($params=[],$type=''){
         $query = $this->kepalaDepartemen
-            ->select('ref_kepala_departemen.*','ref_karyawan.nm_karyawan','nm_jabatan','ref_departemen_2.nm_departemen','nm_ruangan',DB::raw("GROUP_CONCAT(ref_departemen.nm_departemen) as list_departemen"),DB::raw("GROUP_CONCAT(ref_departemen.id_departemen) as list_dep_id"))
+            ->select('ref_kepala_departemen.*','ref_karyawan.nm_karyawan','ref_karyawan.nip','nm_jabatan','ref_departemen_2.nm_departemen','nm_ruangan',DB::raw("GROUP_CONCAT(ref_departemen.nm_departemen) as list_departemen"),DB::raw("GROUP_CONCAT(ref_departemen.id_departemen) as list_dep_id"))
             ->join('ref_karyawan','ref_karyawan.id_karyawan','=','ref_kepala_departemen.id_karyawan')
             ->join('ref_departemen','ref_departemen.id_departemen','=','ref_kepala_departemen.departemen')
             ->Leftjoin('ref_jabatan','ref_jabatan.id_jabatan','=','ref_karyawan.id_jabatan')
