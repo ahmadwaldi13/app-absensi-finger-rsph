@@ -36,16 +36,16 @@
 
                 <div class="col-lg-2 mb-3">
                     <div class='bagan_form'>
-                    <label for="departemen" class="form-label">Departemen</label>
-                        <input type="text" class="form-control" id="departemen" readonly disabled value="{{ !empty($model->departemen) ? $model->departemen : '' }}">
+                    <label for="nm_departemen" class="form-label">Departemen</label>
+                        <input type="text" class="form-control" id="nm_departemen" readonly disabled value="{{ !empty($model->nm_departemen) ? $model->nm_departemen : '' }}">
                         <div class="message"></div>
                     </div>
                 </div>
 
                 <div class="col-lg-3 mb-3">
                     <div class='bagan_form'>
-                        <label for="ruang" class="form-label">Ruangan </label>
-                        <input type="text" class="form-control" id="ruang" value="{{ !empty($model->ruang) ? $model->ruang : '' }}">
+                        <label for="nm_ruangan" class="form-label">Ruangan </label>
+                        <input type="text" class="form-control" id="nm_ruangan" value="{{ !empty($model->nm_ruangan) ? $model->nm_ruangan : '' }}">
                         <div class="message"></div>
                     </div>
                 </div>
