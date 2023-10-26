@@ -144,13 +144,24 @@ $(document).delegate(".del_item", "click", function(event) {
 });
 
 $(document).delegate(".checked_all", "change", function(event) {
+    $checked=0;
+    if($(this).is(':checked')){
+        $checked=1;
+    }
+
     $(document).find('.checked_b').each(function () {
-        $(this).prop('checked',true);
+        if($checked==1){
+            $(this).prop('checked',true);
+        }else{
+            $(this).prop('checked',false);
+        }
     });
-    setTimeout(function() { 
+
+    setTimeout(function() {
         set_data();
         get_terpilih();
     }, 700);
+    
 });
 
 
