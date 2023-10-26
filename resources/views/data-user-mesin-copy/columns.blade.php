@@ -31,7 +31,7 @@
                             <th class="py-3" style="width: 15%">Nama Karyawan</th>
                             <th class="py-3" style="width: 15%">Departemen</th>
                             <th class="py-3" style="width: 15%">Ruangan</th>
-                            <th class="py-3" style="width: 1%">Pil</th>
+                            <th class="py-3" style="width: 1%">Pil<input class='form-check-input hover-pointer checked_all' style='border-radius: 0px;' type='checkbox'></th>
                         </tr>
                     </thead>
                     <tbody>
