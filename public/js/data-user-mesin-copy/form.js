@@ -144,6 +144,16 @@ $(document).delegate(".del_item", "click", function(event) {
     return false;
 });
 
+$(document).delegate(".checked_all", "change", function(event) {
+    $(document).find('.checked_b').each(function () {
+        $(this).prop('checked',true);
+    });
+    setTimeout(function() { 
+        set_data();
+        get_terpilih();
+    }, 700);
+});
+
 
 function check_data_terpilih(){
     $form_data=$(document).find('#item_list_terpilih');
