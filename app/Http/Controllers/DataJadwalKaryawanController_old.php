@@ -78,51 +78,23 @@ class DataJadwalKaryawanController extends \App\Http\Controllers\MyAuthControlle
 
         $list_data = $this->refKaryawanService->getListKaryawanJadwal($paramater, 1)->paginate(!empty($request->per_page) ? $request->per_page : 15);
 
-
-        $data_jadwal=[];
-        $data_jadwal_rutin=( new \App\Models\RefJenisJadwal() )->where('id_jenis_jadwal','=',1)->first();
-        if(!empty($data_jadwal_rutin)){
-            $data_jadwal[]=[
-                'key'=>$data_jadwal_rutin->id_jenis_jadwal,
-                'value'=>$data_jadwal_rutin->id_jenis_jadwal,
-                'text'=>$data_jadwal_rutin->nm_jenis_jadwal,
-            ];
-        }
-
-        $data_jadwal_shift=( new \App\Models\RefTemplateJadwalShift() )->get();
-        if(!empty($data_jadwal_shift)){
-            foreach($data_jadwal_shift as $value){
-                $data_jadwal[]=[
-                    'key'=>2,
-                    'value'=>$value->id_template_jadwal_shift,
-                    'text'=>$value->nm_shift,
-                ];
-            }
-        }
-
-        $data_jadwal_tmp=$data_jadwal;
-
+        $data_jadwal_tmp=( new \App\Models\RefJenisJadwal() )->get();
+        $data_jadwal=$data_jadwal_tmp;
         $data_jadwal_json=[];
         $data_jadwal_json[]=[
-            'key'=>0,
             'value'=>0,
-            'text'=>'-',
+            'text'=>'-'
         ];
-
         foreach($data_jadwal_tmp as $value){
-            $value=(object)$value;
             $data_jadwal_json[]=[
-                'key'=>$value->key,
-                // 'value'=>$value->value,
-                'value'=>$value->key.'@'.$value->value,
-                'text'=>$value->text,
+                'value'=>$value->id_jenis_jadwal,
+                'text'=>$value->nm_jenis_jadwal,
             ];
         }
-
         if(!empty($data_jadwal_json)){
             $data_jadwal_json=json_encode($data_jadwal_json);
         }
-
+        
         $parameter_view = [
             'title' => $this->title,
             'breadcrumbs' => $this->breadcrumbs,
@@ -148,38 +120,31 @@ class DataJadwalKaryawanController extends \App\Http\Controllers\MyAuthControlle
 
         if ($request->ajax()) {
             try {
+                $model=( new \App\Models\RefKaryawanJadwalRutin() )->where('id_karyawan','=',$id_karyawan)->first();
+                if(empty($model)){
+                    $model=new \App\Models\RefKaryawanJadwalRutin();
+                    $model->id_karyawan=$id_karyawan;
+                    
+                }
+                $model->id_jenis_jadwal=$id_jenis_jadwal;
+                
+                $status_delete=0;
+                if(!empty($model) && empty($id_jenis_jadwal)){
+                    $status_delete=1;
+                }
+                
                 $is_save=0;
-                dd($id_jenis_jadwal,$req);
-                if(empty($id_jenis_jadwal)){
-                    dd('proses delete');
-                }else if($id_jenis_jadwal==1){
-
-                    $model=( new \App\Models\RefKaryawanJadwalRutin() )->where('id_karyawan','=',$id_karyawan)->first();
-                    if(empty($model)){
-                        $model=new \App\Models\RefKaryawanJadwalRutin();
-                        $model->id_karyawan=$id_karyawan;
-                        
-                    }
-                    $model->id_jenis_jadwal=$id_jenis_jadwal;
-                    
-                    $status_delete=0;
-                    if(!empty($model) && empty($id_jenis_jadwal)){
-                        $status_delete=1;
-                    }
-                    
-                    if($status_delete){
-                        if ($model->delete()) {
-                            $is_save = 1;
-                        }
-                    }else{
-                        if ($model->save()) {
-                            $is_save = 1;
-                        }
+                if($status_delete){
+                    if ($model->delete()) {
+                        $is_save = 1;
                     }
                 }else{
-                    dd($id_karyawan,$id_jenis_jadwal);
+                    if ($model->save()) {
+                        $is_save = 1;
+                    }
                 }
                     
+
                 if ($is_save) {
                     DB::commit();
                     $pesan = ['success', $message_default['success'], 2];

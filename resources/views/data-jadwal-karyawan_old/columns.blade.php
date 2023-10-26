@@ -69,17 +69,10 @@
                                     <option value="non" {{ (Request::get('form_jenis_jadwal')=='non') ? 'selected' : '' }}>Tidak ada jadwal</option>
                                     @if(!empty($data_jadwal))
                                         @foreach($data_jadwal as $key => $item)
-                                            <?php
-                                                $item=(object)$item;
-                                                $kode=$item->key.'@'.$item->value;
-                                                $selected=(Request::get('form_jenis_jadwal')==$kode) ? 'selected' : '';
-
-                                                $title_jadwal=$item->text;
-                                                if($item->key==2){
-                                                    $title_jadwal='Shift:'.$item->text;
-                                                }
+                                            <?php 
+                                                $selected=(Request::get('form_jenis_jadwal')==$item->id_jenis_jadwal) ? 'selected' : '';
                                             ?>
-                                            <option value="{{ $kode }}" {{ $selected }} >{{ $title_jadwal }}</option>
+                                            <option value="{{ $item->id_jenis_jadwal }}" {{ $selected }} >{{ $item->nm_jenis_jadwal }}</option>
                                         @endforeach
                                     @endif
                                 </select>

@@ -69,11 +69,6 @@ class DataUserMesinCopyController extends \App\Http\Controllers\MyAuthController
                 return redirect()->route($this->url_name, $link_back_param)->with(['error'=>'List User Tidak ada']);
             }
 
-            // $get_data=( new \App\Models\RefUserInfo() )->orderBy('id_user','ASC')->get();
-            // if(empty($get_data[0])){
-            //     return redirect()->route($this->url_name, $link_back_param)->with(['error'=>'Data tidak ditemukan']);
-            // }
-            
             $data_mesin_tujuan=(new \App\Models\RefMesinAbsensi)->where(['id_mesin_absensi'=>$id_mesin_tujuan])->first();
             if(empty($data_mesin_tujuan)){
                 return redirect()->route($this->url_name, $link_back_param)->with(['error'=>'Data Mesin Tujuan Tidak ditemukan']);
@@ -86,47 +81,64 @@ class DataUserMesinCopyController extends \App\Http\Controllers\MyAuthController
                 return redirect()->route($this->url_name, [])->with(['error' => 'Maaf Mesin tujuan tidak connect']);
             }
 
-            $set_waktu=$model_mesin_tujuan->set_waktu_mesin();
-            $check_hasil=!empty($set_waktu[1]) ? $set_waktu[1] : '';
-            if($check_hasil==2){
-                return redirect()->route($this->url_name, [])->with(['error' => 'Maaf Mesin tidak dapat di set waktu']);
-            }
+            // $set_waktu=$model_mesin_tujuan->set_waktu_mesin();
+            // $check_hasil=!empty($set_waktu[1]) ? $set_waktu[1] : '';
+            // if($check_hasil==2){
+            //     return redirect()->route($this->url_name, [])->with(['error' => 'Maaf Mesin tidak dapat di set waktu']);
+            // }
 
-            $get_user_mesin_tujuan=$model_mesin_tujuan->get_user();
-            $check_hasil=!empty($get_user_mesin_tujuan[0]) ? $get_user_mesin_tujuan[0] : '';
-            if($check_hasil!='error'){
-                $get_user_mesin_tujuan=json_decode($get_user_mesin_tujuan);
-                foreach($get_user_mesin_tujuan as $value){
-                    $model_mesin_tujuan->delete_finger_to_mesin($value);
-                    $model_mesin_tujuan->delete_user_to_mesin($value);
-                }
-            }
+            // $get_user_mesin_tujuan=$model_mesin_tujuan->get_user();
+            // $check_hasil=!empty($get_user_mesin_tujuan[0]) ? $get_user_mesin_tujuan[0] : '';
+            // if($check_hasil!='error'){
+            //     $get_user_mesin_tujuan=json_decode($get_user_mesin_tujuan);
+            //     foreach($get_user_mesin_tujuan as $value){
+            //         $model_mesin_tujuan->delete_finger_to_mesin($value);
+            //         $model_mesin_tujuan->delete_user_to_mesin($value);
+            //     }
+            // }
             
             $jml_user=0;
             $jml_user_detail=0;
+            $jml_user_exist=0;
             foreach($item_list_user as $key_u => $user){
                 $user['id_user']=$key_u;
-                $user=(object)$user;
 
-                $hasil_user=$model_mesin_tujuan->upload_user_to_mesin($user);
-                $check_hasil=!empty($hasil_user[1]) ? $hasil_user[1] : '';
-                if($check_hasil==1){
-                    $jml_user++;
+                $get_user_exist=$model_mesin_tujuan->get_user($key_u);
+                
+                $check_get_user_exist=0;
+                if(!empty($get_user_exist)){
+                    if(strtolower( $get_user_exist[0] )==strtolower( 'error') ){
+                        $check_get_user_exist=1;
+                    }
+                }
+                
+                if(!empty($check_get_user_exist)){
 
-                    $get_user_detail=( new \App\Models\RefUserInfoDetail() )->where('id_user','=', $user->id_user)->orderBy('id_user','ASC')->get();
-                    if(!empty($get_user_detail[0])){
-                        foreach($get_user_detail as $user_detail){
-                            $hasil_user=$model_mesin_tujuan->upload_user_finger_to_mesin($user_detail);
-                            $check_hasil=!empty($hasil_user[1]) ? $hasil_user[1] : '';
-                            if($check_hasil==1){
-                                $model_mesin_tujuan->refresh_db_mesin();
-                                $jml_user_detail++;
+                    $get_user=( new \App\Models\RefUserInfo() )->where('id_user','=', $key_u)->first();
+                    $user=(object)$get_user->getAttributes();
+
+                    $hasil_user=$model_mesin_tujuan->upload_user_to_mesin($user);
+                    $check_hasil=!empty($hasil_user[1]) ? $hasil_user[1] : '';
+                    if($check_hasil==1){
+                        $jml_user++;
+
+                        $get_user_detail=( new \App\Models\RefUserInfoDetail() )->where('id_user','=', $user->id_user)->orderBy('id_user','ASC')->get();
+                        if(!empty($get_user_detail[0])){
+                            foreach($get_user_detail as $user_detail){
+                                $hasil_user=$model_mesin_tujuan->upload_user_finger_to_mesin($user_detail);
+                                $check_hasil=!empty($hasil_user[1]) ? $hasil_user[1] : '';
+                                if($check_hasil==1){
+                                    $model_mesin_tujuan->refresh_db_mesin();
+                                    $jml_user_detail++;
+                                }
                             }
                         }
                     }
+                }else{
+                    $jml_user_exist++;
                 }
             }
-
+            
             $is_save = 0;
             if(!empty($jml_user)){
                 $is_save=1;
@@ -134,6 +146,9 @@ class DataUserMesinCopyController extends \App\Http\Controllers\MyAuthController
 
             if ($is_save) {
                 $link_back_param = $this->clear_request($link_back_param, $request);
+                if(!empty($jml_user_exist)){
+                    $message_default['success']=$message_default['success'].' ada '.$jml_user_exist.' memiliki ID USER yang sama dan '.$jml_user.' user berhasil di proses';
+                }
                 $pesan = ['success', $message_default['success'], 2];
             } else {
                 $pesan = ['error', $message_default['error'], 3];
@@ -173,7 +188,7 @@ class DataUserMesinCopyController extends \App\Http\Controllers\MyAuthController
             }
 
             $start_page=!empty($request->start) ? $request->start : 0;
-            $end_page=!empty($request->end) ? $request->end : 20;
+            $end_page=!empty($request->end) ? $request->end : 10;
 
             $paramater=[
                 'search'=>$form_filter_text
@@ -210,6 +225,9 @@ class DataUserMesinCopyController extends \App\Http\Controllers\MyAuthController
                     $data_json=[
                         $div_un,
                         $div_gp,
+                        ( !empty($item->id_user) ? $item->id_user : '' ),
+                        ( !empty($item->name) ? $item->name : '' ),
+                        ( !empty($item->group) ? $item->group : '' ),
                         (!empty($item->nm_karyawan) ? $item->nm_karyawan : '' ),
                         !empty($item->nm_departemen) ? $item->nm_departemen : '',
                         !empty($item->nm_ruangan) ? $item->nm_ruangan : '',
