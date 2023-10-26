@@ -70,7 +70,6 @@ function get_terpilih(){
             $.each( $item, function( key, value ) {
                 if(value.data){
                     $tamplate+='<tr data-kode="'+key+'">';
-                        console.log(value.data);
                         $.each( value.data, function( key1, value1 ) {
                             $tamplate+="<td>"+decode_html_raw(value1)+"</td>";
                         });
