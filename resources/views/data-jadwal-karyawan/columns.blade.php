@@ -133,7 +133,13 @@
                                 $paramater_url=[
                                     'data_sent'=>$item->id_karyawan
                                 ];
-
+                                
+                                $id_jenis_jadwal=!empty($item->id_jenis_jadwal) ? $item->id_jenis_jadwal : '';
+                                $key_jadwal='';
+                                if($id_jenis_jadwal){
+                                    $key_jadwal='1@'.$id_jenis_jadwal;
+                                }
+                                
                                 $status_user_mesin=$item->status_akun_mesin;
                                 $status_user_mesin_text="<span style='color:RED'>Tidak ada</span>";
                                 if(!empty($status_user_mesin)){
@@ -150,7 +156,13 @@
                                 
                                 <td>{!! $status_user_mesin_text  !!}</td>
                                 <td class='text-right'>
-                                    <a href="#" class="pil_jadwal" data-value="{{ !empty($item->id_jenis_jadwal) ? $item->id_jenis_jadwal : ''  }}" data-source='{{ $data_jadwal_json }}' data-type="select" data-pk="{{ !empty($item->id_karyawan) ? $item->id_karyawan : ''  }}" data-url="{{ $router_name->uri }}" data-title="Select status"></a>
+                                    <a href="#" class="pil_jadwal"
+                                        data-source='{{ $data_jadwal_json }}' data-type="select" 
+                                        data-value="{{ $key_jadwal  }}"
+                                        data-pk="{{ !empty($item->id_karyawan) ? $item->id_karyawan : ''  }}" 
+                                        data-url="{{ $router_name->uri }}" 
+                                        data-title="Select status">
+                                    </a>
                                 </td>
                             </tr>
                             @endforeach
