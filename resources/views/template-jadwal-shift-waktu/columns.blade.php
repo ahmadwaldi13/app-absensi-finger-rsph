@@ -40,7 +40,7 @@
                                 $single_date=$valeu_date->format('D');
                                 $nm_hari=(new \App\Http\Traits\GlobalFunction)->hari($single_date);
                             ?>
-                            <tr>
+                            <tr style='border-bottom:1px solid #ccc;'>
                                 <td>
                                     <div>Hari Ke {{ ($key_date+1) }}</div>
                                 </td>
@@ -49,26 +49,37 @@
                                         $list_shift=[];
                                         if(!empty($data_shift[$key_date])){
                                             foreach($data_shift[$key_date] as $key_list => $value){
+                                                $text="";
                                                 $value=(object)$value;
-                                                $text="
-                                                    <span class='box_waktu' style='background:".$value->bgcolor.";'>"
-                                                        .$value->nm_shift." : ".$value->start.' s/d '.$value->end.
-                                                    "</span>
-                                                ";
-                                                
-                                                if(!empty($value->besok)){
+                                                if(!empty($value->type_jadwal)){
+                                                    if($value->type_jadwal==2){
+                                                        $text="
+                                                            <span class='box_waktu' style='background:".$value->bgcolor."; display:block; width:20%;'>".$value->nm_shift."</span>
+                                                        ";
+                                                    }
+                                                }else{
                                                     $text="
                                                         <span class='box_waktu' style='background:".$value->bgcolor.";'>"
-                                                            .$value->nm_shift." : ".$value->start.' s/d '.
+                                                            .$value->nm_shift." : ".$value->start.' s/d '.$value->end.
                                                         "</span>
                                                     ";
+                                                    
+                                                    if(!empty($value->besok)){
+                                                        $text="
+                                                            <span class='box_waktu' style='background:".$value->bgcolor.";'>"
+                                                                .$value->nm_shift." : ".$value->start.' s/d '.$value->end.' Esok hari'.
+                                                            "</span>
+                                                        ";
 
-                                                    $text_next="
-                                                        <span class='box_waktu' style='background:".$value->bgcolor.";'>"
-                                                            .$value->nm_shift." : ".' s/d '.$value->end.
-                                                        "</span>
-                                                    ";
-                                                    $list_data_besok[$key_date+1][]=$text_next;
+                                                        $text_next="";
+
+                                                        // $text_next="
+                                                        //     <span class='box_waktu' style='background:".$value->bgcolor.";'>"
+                                                        //         .$value->nm_shift." : ".' s/d '.$value->end.
+                                                        //     "</span>
+                                                        // ";
+                                                        $list_data_besok[$key_date+1][]=$text_next;
+                                                    }
                                                 }
                                                 $list_shift[]=$text;
                                             }

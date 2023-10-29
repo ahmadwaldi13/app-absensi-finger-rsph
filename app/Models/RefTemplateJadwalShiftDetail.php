@@ -26,7 +26,8 @@ class RefTemplateJadwalShiftDetail extends \App\Models\MyModel
     }
 
     function list_jml_periode($id=null){
-        $data=[1=>28,2=>29,3=>30,4=>31];
+        // $data=[1=>28,2=>29,3=>30,4=>31];
+        $data=[1=>31];
         if(!empty($id)){
             return !empty($data[$id]) ? $data[$id] : '';
         }

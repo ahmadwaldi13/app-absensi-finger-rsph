@@ -135,11 +135,17 @@
                                 ];
                                 
                                 $id_jenis_jadwal=!empty($item->id_jenis_jadwal) ? $item->id_jenis_jadwal : '';
+                                $id_template_jadwal_shift=!empty($item->id_template_jadwal_shift) ? $item->id_template_jadwal_shift : '';
+                                
                                 $key_jadwal='';
                                 if($id_jenis_jadwal){
                                     $key_jadwal='1@'.$id_jenis_jadwal;
                                 }
-                                
+
+                                if($id_template_jadwal_shift){
+                                    $key_jadwal='2@'.$id_template_jadwal_shift;
+                                }
+
                                 $status_user_mesin=$item->status_akun_mesin;
                                 $status_user_mesin_text="<span style='color:RED'>Tidak ada</span>";
                                 if(!empty($status_user_mesin)){

@@ -33,15 +33,18 @@ function set_data(){
     }
     
     $jenis_jadwal=$(document).find("#id_jenis_jadwal").val();
+    $type_jadwal=$(document).find("#type_jadwal").val();
 
     $me_data=[];
     $me_data.push({
+        type_jadwal : '',
         item : []
     });
     $(document).find(".checkbox_hari").each(function () {
         if($(this).is(":checked")){
             if($(this).val()){
                 $me_data[0].item.push($(this).val());
+                $me_data[0].type_jadwal=$type_jadwal;
             }
         }
     });
@@ -60,7 +63,9 @@ $(document).find(".radio_pil").on("change", function (e) {
         $(document).find("#list_hari").show();
         $(document).find("#list_hari_non_change").hide();
         $(document).find("#id_jenis_jadwal").val($(this).val());
-
+        $type_jadwal = (typeof $(this).data("type-jadwal") != "undefined" || $(this).data("type-jadwal") != null) ? $(this).data("type-jadwal") : '';
+        $(document).find("#type_jadwal").val($type_jadwal);
+        
         $(document).find(".radio_pil").parents('td').css('background',"none");
         $(document).find(".radio_pil").parents('td').css('color',"#555");
         $parent.css('background',"#555");

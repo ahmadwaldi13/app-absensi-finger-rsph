@@ -161,6 +161,12 @@ class DataJadwalKaryawanController extends \App\Http\Controllers\MyAuthControlle
                         $is_save = 1;
                     }
 
+                    $model_shift=( new \App\Models\RefKaryawanJadwalShift() )->where('id_karyawan','=',$id_karyawan)->first();
+
+                    if ($model_shift->delete()) {
+                        $is_save = 1;
+                    }
+
                     /*
                     proses delete data shift
                     */
@@ -179,7 +185,16 @@ class DataJadwalKaryawanController extends \App\Http\Controllers\MyAuthControlle
                     }
                 
                 }else if($type_jadwal==2){
-                    // dd($is_save);
+                    $model=( new \App\Models\RefKaryawanJadwalShift() )->where('id_karyawan','=',$id_karyawan)->first();
+                    if(empty($model)){
+                        $model=new \App\Models\RefKaryawanJadwalShift();
+                        $model->id_karyawan=$id_karyawan;
+                    }
+                    $model->id_template_jadwal_shift=$id_jenis_jadwal;
+
+                    if ($model->save()) {
+                        $is_save = 1;
+                    }
                 }
 
                 if ($is_save) {

@@ -57,12 +57,14 @@
                             </td>
                         </tr>
                         <tr>
-                            <td colspan="3">
-                                <input type="hidden" name="data_sent" value="{{ !empty($item_template_shift->id_template_jadwal_shift) ? $item_template_shift->id_template_jadwal_shift : 0 }}">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fa-sharp fa-solid fa-magnifying-glass"></i><span> Ambil Data</span>
-                                </button>
-                            </td>
+                            {{--
+                                <td colspan="3">
+                                    <input type="hidden" name="data_sent" value="{{ !empty($item_template_shift->id_template_jadwal_shift) ? $item_template_shift->id_template_jadwal_shift : 0 }}">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fa-sharp fa-solid fa-magnifying-glass"></i><span> Ambil Data</span>
+                                    </button>
+                                </td>
+                            --}}
                         </tr>
                     </tbody>
                 </table>

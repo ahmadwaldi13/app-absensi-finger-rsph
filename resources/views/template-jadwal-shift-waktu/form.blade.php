@@ -1,4 +1,4 @@
-<?php 
+<?php
     $jml_periode=$get_template_shift_detail->jml_periode;
     $type_periode = (new \App\Models\RefTemplateJadwalShiftDetail())->list_type_periode_system($get_template_shift_detail->type_periode);
 
@@ -7,7 +7,7 @@
 
     $rumus_tmp="+".$jml_periode." ".$type_periode;
     $tgl_end = $tgl_start_tmp->modify($rumus_tmp);
-    
+
     $tgl_start_text = $tgl_start->format('Y-m-d');
     $tgl_end_text = $tgl_end->format('Y-m-d');
 
@@ -39,8 +39,9 @@
     @csrf
     <input type="hidden" name="key_old" value="{{ !empty($get_template_shift_detail->id_template_jadwal_shift_detail) ? $get_template_shift_detail->id_template_jadwal_shift_detail : 0 }}">
     <input type="hidden" id='id_jenis_jadwal'>
+    <input type="hidden" id='type_jadwal'>
     <textarea style="display:none" id="list_tgl_terpilih" name=list_tgl_terpilih>{{ !empty($list_data_json) ? $list_data_json : '{}' }}</textarea>
-    
+
     <div class="row d-flex justify-content-between">
         <div class="col-lg-4 p-0">
             <div class="card">
@@ -50,18 +51,44 @@
                     <div style="overflow-x: auto; max-width: auto;">
                         <table class="table border table-responsive-tablet">
                             <tbody>
+                                <?php
+                                    $item_jadwal=[
+                                        'id_jenis_jadwal'=>0,
+                                        'bg_color'=>"#e1dede",
+                                        'nm_jenis_jadwal'=>'Libur',
+                                        'masuk_kerja'=>0,
+                                        'pulang_kerja'=>0,
+                                    ];
+                                    $item_jadwal=(object)$item_jadwal;
+
+                                    $kode_uniq=$item_jadwal->id_jenis_jadwal;
+                                    $nm_kode_uniq='pil_'.$kode_uniq;
+                                    $bgcolor=!empty($item_jadwal->bg_color) ? $item_jadwal->bg_color : "#fff";
+                                ?>
+                                <tr style="border-bottom:1px solid; background:{{ $bgcolor }}">
+                                    <td>
+                                        <div class="custom-control custom-radio" style="display:table;">
+                                            <input type="radio" id="{{ $nm_kode_uniq }}" name='pil_jadwal' class="custom-control-input list_jadwal_style radio_pil" data-type-jadwal='2' value='{{ $item_jadwal->id_jenis_jadwal }}'>
+                                            <input type="hidden" class="radio_pil_nama" value='{{ !empty($item_jadwal->nm_jenis_jadwal) ? $item_jadwal->nm_jenis_jadwal : '' }}'>
+
+                                            <label class="custom-control-label list_jadwal_style" for="{{ $nm_kode_uniq }}" style="width:100%">
+                                                <div class="list_jadwal_style" style="width:43%;">{{ !empty($item_jadwal->nm_jenis_jadwal) ? $item_jadwal->nm_jenis_jadwal : '' }}</div>
+                                            </label>
+                                        </div>
+                                    </td>
+                                </tr>
                                 @foreach($data_jadwal as $key_jadwal => $item_jadwal)
-                                    <?php 
+                                    <?php
                                         $kode_uniq=$item_jadwal->id_jenis_jadwal;
                                         $nm_kode_uniq='pil_'.$kode_uniq;
                                         $bgcolor=!empty($item_jadwal->bg_color) ? $item_jadwal->bg_color : "#fff";
                                     ?>
                                     <tr style="border-bottom:1px solid; background:{{ $bgcolor }}">
-                                        <td>      
+                                        <td>
                                             <div class="custom-control custom-radio" style="display:table;">
-                                                <input type="radio" id="{{ $nm_kode_uniq }}" name='pil_jadwal' class="custom-control-input list_jadwal_style radio_pil" value='{{ $item_jadwal->id_jenis_jadwal }}'>
+                                                <input type="radio" id="{{ $nm_kode_uniq }}" name='pil_jadwal' class="custom-control-input list_jadwal_style radio_pil" data-type-jadwal='1' value='{{ $item_jadwal->id_jenis_jadwal }}'>
                                                 <input type="hidden" class="radio_pil_nama" value='{{ !empty($item_jadwal->nm_jenis_jadwal) ? $item_jadwal->nm_jenis_jadwal : '' }}'>
-                                                
+
                                                 <label class="custom-control-label list_jadwal_style" for="{{ $nm_kode_uniq }}" style="width:100%">
                                                     <div class="list_jadwal_style" style="width:43%;">{{ !empty($item_jadwal->nm_jenis_jadwal) ? $item_jadwal->nm_jenis_jadwal : '' }}</div>
                                                     <div class="list_jadwal_style" style="width:70%;">
@@ -79,8 +106,8 @@
                     </div>
                 </div>
             </div>
-        </div>  
-        
+        </div>
+
         <div class="col-lg-8 p-0">
             <div class="card">
                 <div class="card-body" style="padding:7px;">
@@ -89,11 +116,11 @@
                     <hr style="margin:3px 0px;">
                     <div id='list_hari' style='display:none'>
                         <div style="overflow:auto; max-height: 1900px; padding:5px;">
-                            <?php 
+                            <?php
                                 $urutan_bulan=0;
                             ?>
                             @foreach($data_tanggal as $key_bulan => $value_bulan)
-                                <?php 
+                                <?php
                                     $is_bulan=($type_periode=='month') ? 1 : 0;
                                     $jml_hari=count($value_bulan);
                                     $urutan_bulan++;
@@ -106,8 +133,8 @@
                                 @endif
 
                                 <div class="row d-flex justify-content-start">
-                                    <?php 
-                                        
+                                    <?php
+
                                         $total_looping=1;
                                         $max_hari=7;
                                         if($jml_hari>=($max_hari*1)){
@@ -123,7 +150,7 @@
                                         $i_end=7;
                                     ?>
                                     @for($j=0; $j<=$total_looping; $j++)
-                                        <?php 
+                                        <?php
                                             if($j>0){
                                                 $i_awal=$i_end;
                                                 $i_end=$i_end+$max_hari;
@@ -131,13 +158,13 @@
                                                     $i_end=$jml_hari;
                                                 }
                                             }
-                                        ?>    
-                                    
+                                        ?>
+
                                         <div class="col-sm p-0">
                                             <table class="table border table-responsive-tablet">
-                                                <tbody> 
-                                                    @for($i=$i_awal; $i<$i_end; $i++)   
-                                                        <?php 
+                                                <tbody>
+                                                    @for($i=$i_awal; $i<$i_end; $i++)
+                                                        <?php
                                                             $data_tgl=$data_tanggal[$key_bulan];
                                                             $hasil_data_tgl=[];
                                                             $kode='';
@@ -149,13 +176,22 @@
 
                                                             $nm_kode='pil_'.$kode;
                                                             $value_hari=!empty($hasil_data_tgl->tgl) ? $hasil_data_tgl->tgl : 0;
+                                                            
+                                                            $have_data=[];
+                                                            if(!empty($grafik_data[$i])){
+                                                                foreach($grafik_data[$i] as $val_grafik){
+                                                                    $have_data[]="<div style='background-color:".$val_grafik['bgcolor']."; padding:5px;'>".$val_grafik['nm_shift']."</div>";
+                                                                }
+                                                            }
+                                                            $have_data=implode('',$have_data);
                                                         ?>
-                                                        <tr>
+                                                        <tr style='border-bottom:1px solid #ccc;'>
                                                             <td>
                                                                 <div class="form-check">
                                                                     <input class="form-check-input checkbox_hari" type="checkbox" value="{{ $value_hari }}" id="{{ $nm_kode }}">
                                                                     <label class="form-check-label" style='margin-top: 7px;margin-left: 5px;' for="{{ $nm_kode }}">
                                                                         <div>Hari Ke {{ $value_hari }}</div>
+                                                                        <div style='font-size:13px'>{!! $have_data !!}</div>
                                                                     </label>
                                                                 </div>
                                                             </td>

@@ -22,6 +22,7 @@ class RefTemplateJadwalShiftWaktu extends Migration
 
                 $table->integer('id_template_jadwal_shift_detail');
                 $table->integer('id_jenis_jadwal');
+                $table->smallInteger('type')->comment('1=jadwal,2=>libur');
                 $table->text('tgl');
 
                 $table->unique(['id_template_jadwal_shift_detail','id_jenis_jadwal'],$table_name.'_uniq');
