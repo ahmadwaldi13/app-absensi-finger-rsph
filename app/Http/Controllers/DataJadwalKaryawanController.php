@@ -62,9 +62,19 @@ class DataJadwalKaryawanController extends \App\Http\Controllers\MyAuthControlle
 
         if($form_jenis_jadwal){
             if($form_jenis_jadwal=='non'){
-                $paramater['where_raw']=[ 'ref_jenis_jadwal.id_jenis_jadwal'=>['is null',1] ];
+                $paramater['where_raw']=[ 
+                    'ref_jenis_jadwal.id_jenis_jadwal'=>['is null',1],
+                    'ref_karyawan_jadwal_shift.id_template_jadwal_shift'=>['is null',1],
+                 ];
             }else{
-                $paramater['ref_jenis_jadwal.id_jenis_jadwal']=$form_jenis_jadwal;
+                $exp=explode('@',$form_jenis_jadwal);
+                $type_jadwal=!empty($exp[0]) ? $exp[0] : 0;
+                $id_jenis_jadwal=!empty($exp[1]) ? $exp[1] : 0;
+                if($type_jadwal==1){
+                    $paramater['ref_jenis_jadwal.id_jenis_jadwal']=$id_jenis_jadwal;
+                }else if($type_jadwal==2){
+                    $paramater['ref_karyawan_jadwal_shift.id_template_jadwal_shift']=$id_jenis_jadwal;
+                }
             }
         }
 
@@ -152,24 +162,21 @@ class DataJadwalKaryawanController extends \App\Http\Controllers\MyAuthControlle
                 $exp=explode('@',$params);
                 $type_jadwal=!empty($exp[0]) ? $exp[0] : 0;
                 $id_jenis_jadwal=!empty($exp[1]) ? $exp[1] : 0;
-                
                 if(empty($type_jadwal) ){
                     
                     $model_rutin=( new \App\Models\RefKaryawanJadwalRutin() )->where('id_karyawan','=',$id_karyawan)->first();
-
-                    if ($model_rutin->delete()) {
-                        $is_save = 1;
+                    if($model_rutin){
+                        if ($model_rutin->delete()) {
+                            $is_save = 1;
+                        }
                     }
 
                     $model_shift=( new \App\Models\RefKaryawanJadwalShift() )->where('id_karyawan','=',$id_karyawan)->first();
-
-                    if ($model_shift->delete()) {
-                        $is_save = 1;
+                    if($model_shift){
+                        if ($model_shift->delete()) {
+                            $is_save = 1;
+                        }
                     }
-
-                    /*
-                    proses delete data shift
-                    */
 
                 }else if($type_jadwal==1){
                     $model=( new \App\Models\RefKaryawanJadwalRutin() )->where('id_karyawan','=',$id_karyawan)->first();
