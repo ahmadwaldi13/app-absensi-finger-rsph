@@ -6,12 +6,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 use App\Services\GlobalService;
-use App\Services\DataRuanganService;
 
-class DataRuanganController extends \App\Http\Controllers\MyAuthController
+class StatusKaryawanController extends \App\Http\Controllers\MyAuthController
 {
     public $part_view, $url_index, $url_name, $title, $breadcrumbs, $globalService;
-    public $dataRuanganService;
 
     public function __construct()
     {
@@ -20,26 +18,30 @@ class DataRuanganController extends \App\Http\Controllers\MyAuthController
         $this->url_index = $router_name->uri;
         $this->url_name = $router_name->router_name;
 
-        $this->title = 'Data Ruangan';
+        $this->title = 'Referensi Status Karyawan';
         $this->breadcrumbs = [
             ['title' => 'Data Karyawan', 'url' => url('/') . "/sub-menu?type=4"],
             ['title' => $this->title, 'url' => url('/') . "/" . $this->url_index],
         ];
 
         $this->globalService = new GlobalService;
-        $this->dataRuanganService = new DataRuanganService;
     }
 
     function actionIndex(Request $request)
     {
-        DB::statement("ALTER TABLE ".( new \App\Models\RefRuangan )->table." AUTO_INCREMENT = 1");
+        DB::statement("ALTER TABLE ".( new \App\Models\RefStatusKaryawan )->table." AUTO_INCREMENT = 1");
         $form_filter_text = !empty($request->form_filter_text) ? $request->form_filter_text : '';
 
-        $paramater_search=[
+        $paramater_where=[
             'search' => $form_filter_text
         ];
 
-        $list_data = $this->dataRuanganService->getList($paramater_search, 1)->paginate(!empty($request->per_page) ? $request->per_page : 15);
+        $paramater_search=[
+            'where_or'=>['nm_status_karyawan'],
+        ];
+
+        $data_tmp_tmp=(new \App\Models\RefStatusKaryawan);
+        $list_data=$data_tmp_tmp->set_where($data_tmp_tmp,$paramater_where,$paramater_search)->paginate(!empty($request->per_page) ? $request->per_page : 15);
 
         $parameter_view = [
             'title' => $this->title,
@@ -54,11 +56,10 @@ class DataRuanganController extends \App\Http\Controllers\MyAuthController
     {
         $kode = !empty($request->data_sent) ? $request->data_sent : '';
         $paramater_where = [
-            'id_ruangan' => $kode
+            'id_status_karyawan' => $kode
         ];
-
-        $model = $this->dataRuanganService->getList($paramater_where, 1)->first();
-
+        $data_tmp_tmp=(new \App\Models\RefStatusKaryawan);
+        $model=$data_tmp_tmp->set_where($data_tmp_tmp,$paramater_where)->first();
         if ($model) {
             $action_form = $this->part_view . '/update';
         } else {
@@ -124,9 +125,9 @@ class DataRuanganController extends \App\Http\Controllers\MyAuthController
         ];
 
         try {
-            $model = (new \App\Models\RefRuangan)->where('id_ruangan', '=', $kode)->first();
+            $model = (new \App\Models\RefStatusKaryawan)->where('id_status_karyawan', '=', $kode)->first();
             if (empty($model)) {
-                $model = (new \App\Models\RefRuangan);
+                $model = (new \App\Models\RefStatusKaryawan);
             }
             $data_save = $req;
             $model->set_model_with_data($data_save);
@@ -172,7 +173,7 @@ class DataRuanganController extends \App\Http\Controllers\MyAuthController
         $kode = !empty($request->data_sent) ? $request->data_sent : null;
 
         try {
-            $model = (new \App\Models\RefRuangan)->where('id_ruangan', '=', $kode)->first();
+            $model = (new \App\Models\RefStatusKaryawan)->where('id_status_karyawan', '=', $kode)->first();
             if (empty($model)) {
                 return redirect()->route($this->url_name, $link_back_param)->with(['error', 'Data tidak ditemukan']);
             }
@@ -184,7 +185,7 @@ class DataRuanganController extends \App\Http\Controllers\MyAuthController
 
             if ($is_save) {
                 DB::commit();
-                DB::statement("ALTER TABLE ".( new \App\Models\RefRuangan )->table." AUTO_INCREMENT = 1");
+                DB::statement("ALTER TABLE ".( new \App\Models\RefStatusKaryawan )->table." AUTO_INCREMENT = 1");
                 $pesan = ['success', $message_default['success'], 2];
             } else {
                 DB::rollBack();

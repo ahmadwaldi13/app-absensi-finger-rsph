@@ -180,6 +180,44 @@ class ListRoutes
             ],
 
             [
+                'title' => 'Data Karyawan | Referensi Status Karyawan',
+                'item' => [
+                    [
+                        'type' => 'index',
+                        'method' => 'get',
+                        'url' => '/status-karyawan',
+                        'controller' => 'StatusKaryawanController@actionIndex',
+                        'name' => 'status_karyawan',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'create',
+                        'method' => ['get', 'post'],
+                        'url' => '/status-karyawan/create',
+                        'controller' => 'StatusKaryawanController@actionCreate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'update',
+                        'method' => ['get', 'post'],
+                        'url' => '/status-karyawan/update',
+                        'controller' => 'StatusKaryawanController@actionUpdate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'delete',
+                        'method' => 'delete',
+                        'url' => '/status-karyawan/delete',
+                        'controller' => 'StatusKaryawanController@actionDelete',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                ]
+            ],
+
+            [
                 'title' => 'Data Karyawan | Data karyawan',
                 'item' => [
                     [

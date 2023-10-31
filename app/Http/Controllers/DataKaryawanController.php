@@ -37,6 +37,7 @@ class DataKaryawanController extends \App\Http\Controllers\MyAuthController
         $filter_id_jabatan = !empty($request->filter_id_jabatan) ? $request->filter_id_jabatan : '';
         $filter_id_departemen = !empty($request->filter_id_departemen) ? $request->filter_id_departemen : '';
         $filter_id_ruangan = !empty($request->filter_id_ruangan) ? $request->filter_id_ruangan : '';
+        $filter_id_status_karyawan = !empty($request->filter_id_status_karyawan) ? $request->filter_id_status_karyawan : '';
 
         $paramater=[
             'search' => $form_filter_text
@@ -52,6 +53,10 @@ class DataKaryawanController extends \App\Http\Controllers\MyAuthController
 
         if($filter_id_ruangan){
             $paramater['ref_karyawan.id_ruangan']=$filter_id_ruangan;
+        }
+
+        if($filter_id_status_karyawan){
+            $paramater['ref_karyawan.id_status_karyawan']=$filter_id_status_karyawan;
         }
 
         $list_data = $this->refKaryawanService->getList($paramater, 1)->paginate(!empty($request->per_page) ? $request->per_page : 15);

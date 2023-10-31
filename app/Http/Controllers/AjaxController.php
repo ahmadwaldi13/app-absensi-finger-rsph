@@ -118,6 +118,37 @@ class AjaxController extends Controller
         ];
     }
 
+    function getListStatusKaryawan($request){
+        $list_data_tmp=(new \App\Models\RefStatusKaryawan)->get();
+        
+        $list_data=[];
+        foreach($list_data_tmp as $value){
+            $list_data[]=[
+                'kode'=>[
+                    'data-item'=>$value->id_status_karyawan.'@'.$value->nm_status_karyawan,
+                    'value'=>$value->nm_status_karyawan
+                ]
+            ];
+        }
+    
+        $table=[
+            'header'=>[
+               'title'=> ['Status Karyawan'],
+               'parameter'=>[' class="w-25" ']
+            ],
+        ];
+    
+        $parameter_view=[
+            'table'=>$table,
+            'list_data'=>!empty($list_data) ? $list_data : ''
+        ];
+    
+        return [
+            'success' => true,
+            'html'=>view('ajax.columns_ajax',$parameter_view)->render(),
+        ];
+    }
+
     function getListMesihAbsensi($request){
         $list_data_tmp=(new \App\Models\RefMesinAbsensi)->get();
         
@@ -231,6 +262,10 @@ class AjaxController extends Controller
 
             if($get_req['action']=='get_list_ruangan'){
                 $hasil=$this->getListRuangan($request);
+            }
+
+            if($get_req['action']=='get_list_status_karyawan'){
+                $hasil=$this->getListStatusKaryawan($request);
             }
 
             if($get_req['action']=='get_list_mesih_absensi'){
