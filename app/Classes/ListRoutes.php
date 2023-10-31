@@ -666,15 +666,24 @@ class ListRoutes
                     ],
                 ]
             ],
+
             [
                 'title' => 'Manajemen | Data Absensi',
                 'item' => [
                     [
-                        'type' => 'index',
+                        'type' => 'Absensi Rutin',
                         'method' => 'get',
                         'url' => '/absensi-karyawan',
                         'controller' => 'AbsensiKaryawanController@actionIndex',
                         'name' => 'absensi_karyawan',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'Absensi Shift',
+                        'method' => 'get',
+                        'url' => '/absensi-karyawan-shift',
+                        'controller' => 'AbsensiKaryawanShiftController@actionIndex',
+                        'name' => 'absensi_karyawan_shift',
                         'middleware' => '',
                     ],
                     [
@@ -687,11 +696,20 @@ class ListRoutes
                     ],
                 ]
             ],
+
             [
                 'title' => 'Manajemen | Laporan Data Absensi',
                 'item' => [
                     [
-                        'type' => 'index',
+                        'type' => 'Laporan Absensi LOG',
+                        'method' => 'get',
+                        'url' => '/laporan-absensi-karyawan-log',
+                        'controller' => 'LaporanAbsensiKaryawanLogController@actionIndex',
+                        'name' => 'laporan_absensi_karyawan_log',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'Laporan Absensi Rutin',
                         'method' => 'get',
                         'url' => '/laporan-absensi-karyawan',
                         'controller' => 'LaporanAbsensiKaryawanController@actionIndex',
@@ -699,7 +717,7 @@ class ListRoutes
                         'middleware' => '',
                     ],
                     [
-                        'type' => 'cetak',
+                        'type' => 'Cetak Laporan Absensi Rutin',
                         'method' => 'get',
                         'url' => '/laporan-absensi-karyawan/cetak',
                         'controller' => 'LaporanAbsensiKaryawanController@actionCetak',
