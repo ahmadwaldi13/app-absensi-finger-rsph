@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
-class RefTemplateJadwalShift extends Migration
+class RefTemplateJadwalShiftWaktu extends Migration
 {
     /**
      * Run the migrations.
@@ -14,34 +14,25 @@ class RefTemplateJadwalShift extends Migration
      */
     public function up()
     {
-        $table_name='ref_template_jadwal_shift';
+        $table_name='ref_template_jadwal_shift_waktu';
         if (!Schema::hasTable($table_name)) {
             Schema::create($table_name, function (Blueprint $table) use ($table_name) {
                 $table->charset = 'latin1';
                 $table->collation = 'latin1_swedish_ci';
 
-                $table->increments('id_template_jadwal_shift');
-                $table->string('nm_shift');
+                $table->integer('id_template_jadwal_shift_detail');
+                $table->integer('id_jenis_jadwal');
+                $table->smallInteger('type')->comment('1=jadwal,2=>libur');
+                $table->text('tgl');
+
+                $table->unique(['id_template_jadwal_shift_detail','id_jenis_jadwal'],$table_name.'_uniq');
             });
         }
 
-        $table_name='ref_template_jadwal_shift_detail';
-        if (!Schema::hasTable($table_name)) {
-            Schema::create($table_name, function (Blueprint $table) use ($table_name) {
-                $table->charset = 'latin1';
-                $table->collation = 'latin1_swedish_ci';
-
-                $table->increments('id_template_jadwal_shift_detail');
-                $table->integer('id_template_jadwal_shift');
-                $table->date('tgl_mulai');
-                $table->smallInteger('jml_periode');
-                $table->smallInteger('type_periode');
-
-                $table->unique(['id_template_jadwal_shift','jml_periode'],$table_name.'_uniq');
-            });
-        }
-
-        $another_create_string=['id_template_jadwal_shift'=>['type'=>'INT','length'=>10,'option'=>'UNSIGNED NOT NULL']];
+        $another_create_string=[
+            'id_template_jadwal_shift_detail'=>['type'=>'INT','length'=>10,'option'=>'UNSIGNED NOT NULL'],
+            'id_jenis_jadwal'=>['type'=>'INT','length'=>10,'option'=>'']
+        ];
         foreach($another_create_string as $key => $value){
             if (Schema::hasColumn($table_name, $key)){
                 DB::statement("ALTER TABLE ".$table_name." MODIFY ".$key." ".$value['type']."(".$value['length'].")".$value['option']." ");
@@ -49,7 +40,13 @@ class RefTemplateJadwalShift extends Migration
         }
 
         $doctrineTable = Schema::getConnection()->getDoctrineSchemaManager()->listTableDetails($table_name);
-        $another_create_foreign=[$table_name.'_fk1'=>['key'=>['id_template_jadwal_shift'],'target'=>['id_template_jadwal_shift'],'tbl'=>'ref_template_jadwal_shift']];
+        $another_create_foreign=[
+            $table_name.'_fk1'=>[
+                'key'=>['id_template_jadwal_shift_detail'],
+                'target'=>['id_template_jadwal_shift_detail'],
+                'tbl'=>'ref_template_jadwal_shift_detail'
+            ]
+        ];
         foreach($another_create_foreign as $key => $value){
             if(!$doctrineTable->hasForeignKey($key)){
                 Schema::table($table_name, function($table) use ($key,$value) {
@@ -66,12 +63,7 @@ class RefTemplateJadwalShift extends Migration
      */
     public function down()
     {
-        $table_name='ref_template_jadwal_shift';
-        if (Schema::hasTable($table_name)) {
-            Schema::dropIfExists($table_name);
-        }
-
-        $table_name='ref_template_jadwal_shift_detail';
+        $table_name='ref_template_jadwal_shift_waktu';
         if (Schema::hasTable($table_name)) {
             Schema::dropIfExists($table_name);
         }

@@ -35,6 +35,15 @@ class RefPerjalananDinas extends Migration
         if (!Schema::hasColumn($table_name,$field)){
             DB::statement("ALTER TABLE ".$table_name." ADD ".$field." INT(10) PRIMARY KEY AUTO_INCREMENT");
         }
+
+        $another_create_string=['uraian'=>100];
+        foreach($another_create_string as $value => $length){
+            if (!Schema::hasColumn($table_name, $value)){
+                Schema::table($table_name, function (Blueprint $table) use ($value,$length){
+                    $table->string($value,$length);
+                });
+            }
+        }
     }
 
     /**

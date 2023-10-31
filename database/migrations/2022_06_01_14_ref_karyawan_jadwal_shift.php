@@ -20,14 +20,19 @@ class RefKaryawanJadwalShift extends Migration
                 $table->charset = 'latin1';
                 $table->collation = 'latin1_swedish_ci';
                 $table->integer('id_karyawan')->length(10)->unsigned();
-                $table->integer('id_jenis_jadwal')->length(10)->unsigned();
-                $table->date('tgl_mulai');
-                $table->date('tgl_akhir');
-                
-                $table->unique(['id_karyawan','id_jenis_jadwal','tgl_mulai','tgl_akhir'],$table_name.'_uniq');
+                $table->integer('id_template_jadwal_shift')->length(10)->unsigned();
+
+                $table->unique(['id_karyawan','id_template_jadwal_shift'],$table_name.'_uniq');
                 $table->foreign(['id_karyawan'],$table_name.'_fk1')->references(['id_karyawan'])->on('ref_karyawan')->onUpdate('cascade')->onDelete('cascade');
-                $table->foreign(['id_jenis_jadwal'],$table_name.'_fk2')->references(['id_jenis_jadwal'])->on('ref_jenis_jadwal')->onUpdate('cascade')->onDelete('cascade');
+                $table->foreign(['id_template_jadwal_shift'],$table_name.'_fk2')->references(['id_template_jadwal_shift'])->on('ref_template_jadwal_shift')->onUpdate('cascade')->onDelete('cascade');
             });
+        }
+
+        $another_create_string=['id_template_jadwal_shift'=>['type'=>'INT','length'=>10,'option'=>'UNSIGNED NOT NULL']];
+        foreach($another_create_string as $key => $value){
+            if (Schema::hasColumn($table_name, $key)){
+                DB::statement("ALTER TABLE ".$table_name." MODIFY ".$key." ".$value['type']."(".$value['length'].")".$value['option']." ");
+            }
         }
         
     }
@@ -39,7 +44,7 @@ class RefKaryawanJadwalShift extends Migration
      */
     public function down()
     {
-        $table_name='ref_jenis_jadwal';
+        $table_name='ref_karyawan_jadwal_shift';
         if (Schema::hasTable($table_name)) {
             Schema::dropIfExists($table_name);
         }
