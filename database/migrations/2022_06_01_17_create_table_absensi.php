@@ -32,6 +32,7 @@ class CreateTableAbsensi extends \App\Classes\MyMigration
         $table->smallInteger('id_jabatan');
         $table->smallInteger('id_departemen');
         $table->smallInteger('id_ruangan');
+        $table->smallInteger('id_status_karyawan');
         $table->date('tgl_presensi');
         $table->text('presensi_jadwal');
         $table->text('presensi_all');
