@@ -132,7 +132,7 @@ class DataPresensiRutinService extends BaseService
         }
 
         $list_data_karyawan_rutin = $this->getListKaryawan($paramater_data_karyawan_rutin, 1)->select(DB::raw('group_concat(id_karyawan) as id_karyawan'),DB::raw('group_concat(id_user) as id_user'))->first();
-
+        
         $data_jadwal=(new \App\Http\Traits\PresensiHitungRutinFunction)->getWaktuKerja(['id_jenis_jadwal'=>1])->first();
 
         $parameter_search=[
@@ -226,6 +226,7 @@ class DataPresensiRutinService extends BaseService
                         'id_jabatan'=>$get_data->id_jabatan,
                         'id_departemen'=>$get_data->id_departemen,
                         'id_ruangan'=>$get_data->id_ruangan,
+                        'id_status_karyawan'=>$get_data->id_status_karyawan,
                         'tgl_presensi'=>$get_data->tgl_presensi,
                         'presensi_jadwal'=>trim($presensi_jadwal),
                         'presensi_all'=>trim($get_data->presensi),

@@ -86,17 +86,17 @@ class DataPresensiService extends BaseService
 
             $model = (new \App\Models\DataAbsensiKaryawanRekap);
 
-            if(!empty($data_save[0])){
-                $get_tgl_presensi=$data_save[0]['tgl_presensi'];
-                if(!empty($get_tgl_presensi)){
-                    $tb_presensi=new \DateTime($get_tgl_presensi);
-                    $tahun_presensi=$tb_presensi->format('Y');
-                    $bulan_presensi=(int)$tb_presensi->format('m');
+            // if(!empty($data_save[0])){
+            //     $get_tgl_presensi=$data_save[0]['tgl_presensi'];
+            //     if(!empty($get_tgl_presensi)){
+            //         $tb_presensi=new \DateTime($get_tgl_presensi);
+            //         $tahun_presensi=$tb_presensi->format('Y');
+            //         $bulan_presensi=(int)$tb_presensi->format('m');
 
-                    $model::whereRaw('YEAR(tgl_presensi)', $tahun_presensi)->whereRaw('MONTH(tgl_presensi)', $bulan_presensi)->delete();
-                }
+            //         $model::whereRaw('YEAR(tgl_presensi)', $tahun_presensi)->whereRaw('MONTH(tgl_presensi)', $bulan_presensi)->delete();
+            //     }
                 
-            }
+            // }
             
             if($model::insertOrIgnore($data_save)){
                 $is_save = 1;

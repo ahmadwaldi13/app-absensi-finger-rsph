@@ -160,10 +160,10 @@
 
                             <div class="col-lg-3 col-md-10">
                                 <div class='bagan_form'>
-                                    <label for="filter_nm_ruangan" class="form-label">Ruangan </label>
+                                    <label for="filter_nm_ruangan" class="form-label">Ruangan <span class="text-danger">*</span></label>
                                     <div class="button-icon-inside">
-                                        <input type="text" class="input-text" id='filter_nm_ruangan' name="filter_nm_ruangan" readonly value="{{ Request::get('filter_nm_ruangan') }}" />
-                                        <input type="hidden" id="filter_id_ruangan" name='filter_id_ruangan' readonly value="{{ Request::get('filter_id_ruangan') }}">
+                                        <input type="text" class="input-text" id='filter_nm_ruangan' name="filter_nm_ruangan" required value="{{ Request::get('filter_nm_ruangan') }}" />
+                                        <input type="hidden" id="filter_id_ruangan" name='filter_id_ruangan' required value="{{ Request::get('filter_id_ruangan') }}">
                                         <span class="modal-remote-data" data-modal-src="{{ url('ajax?action=get_list_ruangan') }}" data-modal-key-with-form="#filter_id_departemen" data-modal-pencarian='true' data-modal-title='ruangan' data-modal-width='30%' data-modal-action-change="function=.set-data-list-from-modal@data-target=#filter_id_ruangan|#filter_nm_ruangan@data-key-bagan=0@data-btn-close=#closeModalData">
                                             <img class="iconify hover-pointer text-primary" src="{{ asset('') }}icon/selected.png" alt="">
                                         </span>
@@ -371,6 +371,7 @@
                         <?php
                             $list_departemen=[];
                             $list_ruangan=[];
+                            $list_status_karyawan=[];
                         ?>
                         @foreach($list_data as $key => $item)
                             <?php
@@ -442,15 +443,23 @@
                             ?>
                             @if(empty($list_departemen[$item->id_departemen]))
                                 <?php $list_departemen[$item->id_departemen]=1; ?>
-                                <tr style='background: #ccc;'>
+                                <tr style='background: #a7a7a7;'>
                                     <td colspan="50" style='vertical-align: middle;'>{{ !empty($item->nm_departemen) ? $item->nm_departemen : '' }}</td>
                                 </tr>
                             @endif
                             @if(empty($list_ruangan[$item->id_ruangan]))
                                 <?php $list_ruangan[$item->id_ruangan]=1; ?>
-                                <tr style='background: #eaeaea;'>
+                                <tr style='background: #c8c7c7;'>
                                     <td>-</td>
                                     <td colspan="50" style='vertical-align: middle;'>{{ !empty($item->nm_ruangan) ? $item->nm_ruangan : '' }}</td>
+                                </tr>
+                            @endif
+
+                            @if(empty($list_status_karyawan[$item->id_ruangan][$item->id_status_karyawan]))
+                                <?php $list_status_karyawan[$item->id_ruangan][$item->id_status_karyawan]=1; ?>
+                                <tr style='background: #eaeaea;'>
+                                    <td>--</td>
+                                    <td colspan="50" style='vertical-align: middle;'>{{ !empty($item->nm_status_karyawan) ? $item->nm_status_karyawan : '' }}</td>
                                 </tr>
                             @endif
                             <tr>
