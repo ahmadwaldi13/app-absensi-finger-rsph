@@ -287,6 +287,15 @@ trait GlobalTraits {
         }
         return $limit_data;
     }
+
+    function remove_special_char($str) {
+        return  preg_replace('/[^a-zA-Z0-9_ -]/s','', $str);
+    }
+
+    function remove_special_char_json($str) {
+        $data=["'","/",'\\','[',']','<','>'];
+        return str_replace($data,'',$str);
+    }
 }
 
 class GlobalFunction {
