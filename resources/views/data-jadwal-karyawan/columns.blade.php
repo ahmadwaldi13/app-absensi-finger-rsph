@@ -124,6 +124,7 @@
                             <th class="py-3" style="width: 10%">Ruangan</th>
                             <th class="py-3" style="width: 5%">Id User Mesin</th>
                             <th class="py-3" style="width: 5%">Jenis Jadwal</th>
+                            <th class="py-3" style="width: 5%">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -169,6 +170,21 @@
                                         data-url="{{ $router_name->uri }}" 
                                         data-title="Select status">
                                     </a>
+                                </td>
+                                <td>
+                                    <?php $url_atur_waktu=$router_name->uri.'/aturwaktu'; ?>
+                                    @if( (new \App\Http\Traits\AuthFunction)->checkAkses($url_atur_waktu) )
+                                        @if($id_template_jadwal_shift)
+                                            <?php
+                                                $paramater_url=[
+                                                    'data_sent'=>$item->id_karyawan.'@'.$id_template_jadwal_shift,
+                                                    'params'=>json_encode(Request::all())
+                                                ];
+                                                $url_atur_waktu=(new \App\Http\Traits\GlobalFunction)->set_paramter_url($url_atur_waktu,$paramater_url);
+                                            ?>
+                                            <a href="{{ url($url_atur_waktu) }}" class="btn btn-kecil btn-info" style='color:#555'>Atur Waktu</a>
+                                        @endif
+                                    @endif
                                 </td>
                             </tr>
                             @endforeach

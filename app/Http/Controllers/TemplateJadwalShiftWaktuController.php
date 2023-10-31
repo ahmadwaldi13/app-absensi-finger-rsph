@@ -32,7 +32,7 @@ class TemplateJadwalShiftWaktuController extends \App\Http\Controllers\MyAuthCon
         $this->refTemplateJadwalShiftService = new RefTemplateJadwalShiftService;
     }
 
-    private function get_data_grafik($id_template_jadwal_shift_detail){
+    public function get_data_grafik($id_template_jadwal_shift_detail){
         $data_jadwal=( new \App\Models\RefJenisJadwal() )->where(['type_jenis'=>2])->get();
         $data_jadwal_tmp=[];
         if($data_jadwal){
@@ -91,7 +91,6 @@ class TemplateJadwalShiftWaktuController extends \App\Http\Controllers\MyAuthCon
     {
         $id_template_shift=!empty($request->get('data_sent')) ? $request->get('data_sent') : 0;
         $id_template_jadwal_shift_detail_tmp=!empty($request->get('data_key')) ? $request->get('data_key') : 0;
-
         
         $paramater = [
             'id_template_jadwal_shift' => $id_template_shift

@@ -229,6 +229,14 @@ class ListRoutes
                         'middleware' => '',
                     ],
                     [
+                        'type' => 'atur waktu',
+                        'method' => ['get', 'post'],
+                        'url' => '/data-jadwal-karyawan/aturwaktu',
+                        'controller' => 'DataJadwalKaryawanController@actionAturWaktu',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
                         'type' => 'system',
                         'method' => ['get', 'post'],
                         'url' => '/data-jadwal-karyawan/ajax',
