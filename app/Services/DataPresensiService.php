@@ -61,6 +61,126 @@ class DataPresensiService extends BaseService
         }
     }
 
+    public function get_data_karyawan_log($params=[],$type){
+        ini_set("memory_limit","800M");
+        DB::statement("SET GLOBAL group_concat_max_len = 15000;");
+
+        $tgl_awal=!empty($params['tanggal'][0]) ? $params['tanggal'][0] : date('Y-m-d');
+        $tgl_akhir=!empty($params['tanggal'][1]) ? $params['tanggal'][1] : date('Y-m-d');
+        unset($params['tanggal']);
+
+        $limit_data=!empty($params['limit']) ? $params['limit'] : [];
+        $limit_data=(new \App\Http\Traits\GlobalFunction)->limit_mysql_manual($limit_data);
+        $limit='';
+        if(!empty($limit_data)){
+            $limit="LIMIT ".implode(',',$limit_data);
+        }
+        unset($params['limit']);
+        
+        $query=DB::table(DB::raw(
+            '(
+                select
+                    utama.id_user,
+                    karyawan.id_karyawan,
+                    nm_karyawan,
+                    karyawan.id_departemen,
+                    nm_departemen,
+                    karyawan.id_ruangan,
+                    nm_ruangan,
+                    karyawan.id_status_karyawan,
+                    nm_status_karyawan,
+                    karyawan.id_jabatan,
+                    nm_jabatan,
+                    id_jenis_jadwal jadwal_rutin,
+                    id_template_jadwal_shift jadwal_shift,
+                    if(id_jenis_jadwal,1,if(id_template_jadwal_shift,1,0)) ada_jadwal,
+                    JSON_OBJECTAGG(
+                        tgl,
+                        JSON_OBJECT(
+                            "presensi",
+                            presensi_json
+                        )
+                    )presensi,
+                    JSON_OBJECTAGG(
+                        tgl,
+                        detail_data_json
+                    )list_data_detail
+                from (
+                    select
+                        id_user,
+                        tgl,
+                        JSON_ARRAYAGG(
+                            TIME_FORMAT(jam,"%H:%i:%s")
+                        )presensi_json,
+                        JSON_OBJECT(
+                            "id_mesin",
+                            JSON_ARRAYAGG(
+                                id_mesin_absensi
+                            ),
+                            "nm_mesin",
+                            JSON_ARRAYAGG(
+                                nm_mesin
+                            ),
+                            "lokasi_mesin",
+                            JSON_ARRAYAGG(
+                                lokasi_mesin
+                            ),
+                            "verif",
+                            JSON_ARRAYAGG(
+                                verified
+                            ),
+                            "sts",
+                            JSON_ARRAYAGG(
+                                status
+                            )
+                        )detail_data_json
+                    from (
+                        select
+                            id_user,
+                            utama.id_mesin_absensi,verified,status,nm_mesin,lokasi_mesin,
+                            waktu,
+                            year(waktu) tahun,
+                            date(waktu) tgl,
+                            time(waktu) jam
+                        from ref_data_absensi_tmp utama
+                        LEFT JOIN ref_mesin_absensi rma on rma.id_mesin_absensi = utama.id_mesin_absensi
+                        where date(waktu) BETWEEN "'.$tgl_awal.'" and "'.$tgl_akhir.'"
+                        order by
+                            CONVERT ( year(waktu), UNSIGNED INTEGER) asc,
+                            CONVERT ( month(waktu), UNSIGNED INTEGER) asc,
+                            CONVERT ( day(waktu), UNSIGNED INTEGER) asc,
+                            UNIX_TIMESTAMP( waktu ) asc
+                    )utama
+                    group by id_user,tgl
+                )utama
+                left join ref_karyawan_user rku on rku.id_user=utama.id_user
+                left join ref_karyawan karyawan on karyawan.id_karyawan=rku.id_karyawan
+                left join ref_jabatan rj on rj.id_jabatan=karyawan.id_jabatan
+                left join ref_departemen rd on rd.id_departemen=karyawan.id_departemen
+                left join ref_ruangan rr on rr.id_ruangan=karyawan.id_ruangan
+                left join ref_status_karyawan rsk on rsk.id_status_karyawan=karyawan.id_status_karyawan
+                left join ref_karyawan_jadwal jadwal_rutin on jadwal_rutin.id_karyawan=karyawan.id_karyawan
+                left join ref_karyawan_jadwal_shift jadwal_shift on jadwal_shift.id_karyawan=karyawan.id_karyawan
+                group by utama.id_user
+                '.$limit.'
+            ) utama'
+        ));
+
+        $list_search=[
+            'where_or'=>['nm_karyawan'],
+        ];
+
+        if($params){
+            $query=(new \App\Models\MyModel)->set_where($query,$params,$list_search);
+        }
+
+        if(empty($type)){
+            return $query->get();
+        }else{
+            return $query;
+        }
+    }
+
     public function get_type_verified($type=null){
         $list_data=[
             1=>'Finger',
@@ -189,125 +309,5 @@ class DataPresensiService extends BaseService
 
         return $list_data;
 
-    }
-
-    public function get_data_karyawan_log($params=[],$type){
-        ini_set("memory_limit","800M");
-        DB::statement("SET GLOBAL group_concat_max_len = 15000;");
-
-        $tgl_awal=!empty($params['tanggal'][0]) ? $params['tanggal'][0] : date('Y-m-d');
-        $tgl_akhir=!empty($params['tanggal'][1]) ? $params['tanggal'][1] : date('Y-m-d');
-        unset($params['tanggal']);
-
-        $limit_data=!empty($params['limit']) ? $params['limit'] : [];
-        $limit_data=(new \App\Http\Traits\GlobalFunction)->limit_mysql_manual($limit_data);
-        $limit='';
-        if(!empty($limit_data)){
-            $limit="LIMIT ".implode(',',$limit_data);
-        }
-        unset($params['limit']);
-        
-        $query=DB::table(DB::raw(
-            '(
-                select
-                    utama.id_user,
-                    karyawan.id_karyawan,
-                    nm_karyawan,
-                    karyawan.id_departemen,
-                    nm_departemen,
-                    karyawan.id_ruangan,
-                    nm_ruangan,
-                    karyawan.id_status_karyawan,
-                    nm_status_karyawan,
-                    karyawan.id_jabatan,
-                    nm_jabatan,
-                    id_jenis_jadwal jadwal_rutin,
-                    id_template_jadwal_shift jadwal_shift,
-                    if(id_jenis_jadwal,1,if(id_template_jadwal_shift,1,0)) ada_jadwal,
-                    JSON_OBJECTAGG(
-                        tgl,
-                        JSON_OBJECT(
-                            "presensi",
-                            presensi_json
-                        )
-                    )presensi,
-                    JSON_OBJECTAGG(
-                        tgl,
-                        detail_data_json
-                    )list_data_detail
-                from (
-                    select
-                        id_user,
-                        tgl,
-                        JSON_ARRAYAGG(
-                            TIME_FORMAT(jam,"%H:%i:%s")
-                        )presensi_json,
-                        JSON_OBJECT(
-                            "id_mesin",
-                            JSON_ARRAYAGG(
-                                id_mesin_absensi
-                            ),
-                            "nm_mesin",
-                            JSON_ARRAYAGG(
-                                nm_mesin
-                            ),
-                            "lokasi_mesin",
-                            JSON_ARRAYAGG(
-                                lokasi_mesin
-                            ),
-                            "verif",
-                            JSON_ARRAYAGG(
-                                verified
-                            ),
-                            "sts",
-                            JSON_ARRAYAGG(
-                                status
-                            )
-                        )detail_data_json
-                    from (
-                        select
-                            id_user,
-                            utama.id_mesin_absensi,verified,status,nm_mesin,lokasi_mesin,
-                            waktu,
-                            year(waktu) tahun,
-                            date(waktu) tgl,
-                            time(waktu) jam
-                        from ref_data_absensi_tmp utama
-                        LEFT JOIN ref_mesin_absensi rma on rma.id_mesin_absensi = utama.id_mesin_absensi
-                        where date(waktu) BETWEEN "'.$tgl_awal.'" and "'.$tgl_akhir.'"
-                        order by
-                            CONVERT ( year(waktu), UNSIGNED INTEGER) asc,
-                            CONVERT ( month(waktu), UNSIGNED INTEGER) asc,
-                            CONVERT ( day(waktu), UNSIGNED INTEGER) asc,
-                            UNIX_TIMESTAMP( waktu ) asc
-                    )utama
-                    group by id_user,tgl
-                )utama
-                left join ref_karyawan_user rku on rku.id_user=utama.id_user
-                left join ref_karyawan karyawan on karyawan.id_karyawan=rku.id_karyawan
-                left join ref_jabatan rj on rj.id_jabatan=karyawan.id_jabatan
-                left join ref_departemen rd on rd.id_departemen=karyawan.id_departemen
-                left join ref_ruangan rr on rr.id_ruangan=karyawan.id_ruangan
-                left join ref_status_karyawan rsk on rsk.id_status_karyawan=karyawan.id_status_karyawan
-                left join ref_karyawan_jadwal jadwal_rutin on jadwal_rutin.id_karyawan=karyawan.id_karyawan
-                left join ref_karyawan_jadwal_shift jadwal_shift on jadwal_shift.id_karyawan=karyawan.id_karyawan
-                group by utama.id_user
-                '.$limit.'
-            ) utama'
-        ));
-
-        $list_search=[
-            'where_or'=>['nm_karyawan'],
-        ];
-
-        if($params){
-            $query=(new \App\Models\MyModel)->set_where($query,$params,$list_search);
-        }
-
-        if(empty($type)){
-            return $query->get();
-        }else{
-            return $query;
-        }
     }
 }
