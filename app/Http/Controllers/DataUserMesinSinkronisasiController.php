@@ -121,7 +121,8 @@ class DataUserMesinSinkronisasiController extends \App\Http\Controllers\MyAuthCo
 
             $is_save = 0;
             $mesin=(new \App\Services\MesinFinger($data_mesin->ip_address));
-            $get_user=$mesin->get_user();
+            $get_user=$mesin->get_user_tad();
+
             $check_hasil=!empty($get_user[0]) ? $get_user[0] : '';
             if($check_hasil=='error'){
                 return ['error',$get_user[1]];
@@ -134,13 +135,14 @@ class DataUserMesinSinkronisasiController extends \App\Http\Controllers\MyAuthCo
                 $jml_save=0;
                 foreach($get_user as $value){
                     $model = (new \App\Models\UserMesinTmp);
+
                     $model->id_mesin_absensi = $data_mesin->id_mesin_absensi;
-                    $model->id_user = $value->id;
-                    $model->name = $value->name;
-                    $model->group = $value->group;
-                    $model->privilege = $value->privilege;
-                    $model->pin = $value->pin;
-                    $model->pin2 = $value->pin2;
+                    $model->id_user = !empty($value->PIN2) ? $value->PIN2 : '';
+                    $model->name = !empty($value->Name) ? trim( (new \App\Http\Traits\GlobalFunction)->remove_special_char_json($value->Name)) : '';
+                    $model->group = !empty($value->Group) ? $value->Group : '';
+                    $model->privilege = !empty($value->Privilege) ? $value->Privilege : '';
+                    $model->pin = !empty($value->PIN) ? $value->PIN : '';
+                    $model->pin2 = !empty($value->PIN2) ? $value->PIN2 : '';
 
                     if ($model->save()) {
                         $jml_save++;
@@ -189,27 +191,45 @@ class DataUserMesinSinkronisasiController extends \App\Http\Controllers\MyAuthCo
             $data_mesin=(new \App\Models\RefMesinAbsensi)->where(['id_mesin_absensi'=>$id_mesin_absensi])->first();
 
             $mesin=(new \App\Services\MesinFinger($data_mesin->ip_address));
-            $get_user=$mesin->get_user();
+            // $get_user=$mesin->get_user();
+            $get_user=$mesin->get_user_tad();
             if($get_user){
                 $get_user=json_decode($get_user);
                 $jml_save_user=0;
                 $jml_save_finger=0;
                 foreach($get_user as $value_user){
                     $data_item=[];
-                    $data_item=[
-                        'name'=>$value_user->name,
-                        'password'=>$value_user->password,
-                        'group'=>$value_user->group,
-                        'privilege'=>$value_user->privilege,
-                        'card'=>$value_user->card,
-                        'pin'=>$value_user->pin,
-                        'pin2'=>$value_user->pin2,
-                        'tz1'=>$value_user->tz1,
-                        'tz2'=>$value_user->tz2,
-                        'tz3'=>$value_user->tz3,
-                    ];
 
-                    $model_user=(new \App\Models\RefUserInfo())->where(['id_user'=>$value_user->id])->first();
+                    // $data_item=[
+                    //     'name'=>$value_user->name,
+                    //     'password'=>$value_user->password,
+                    //     'group'=>$value_user->group,
+                    //     'privilege'=>$value_user->privilege,
+                    //     'card'=>$value_user->card,
+                    //     'pin'=>$value_user->pin,
+                    //     'pin2'=>$value_user->pin2,
+                    //     'tz1'=>$value_user->tz1,
+                    //     'tz2'=>$value_user->tz2,
+                    //     'tz3'=>$value_user->tz3,
+                    // ];
+                    
+                    $data_item=[
+                        'name'=> !empty($value_user->Name) ? trim( (new \App\Http\Traits\GlobalFunction)->remove_special_char_json($value_user->Name)) : '',
+                        'password'=>!empty($value_user->Password) ? $value_user->Password : '',
+                        'group'=>!empty($value_user->Group) ? $value_user->Group : '',
+                        'privilege'=>!empty($value_user->Privilege) ? $value_user->Privilege : '',
+                        'card'=>!empty($value_user->Card) ? $value_user->Card : '',
+                        'pin'=>!empty($value_user->pin) ? $value_user->pin : '',
+                        'pin2'=>!empty($value_user->PIN2) ? $value_user->PIN2 : '',
+                        'tz1'=>!empty($value_user->TZ1) ? $value_user->TZ1 : '',
+                        'tz2'=>!empty($value_user->TZ2) ? $value_user->TZ2 : '',
+                        'tz3'=>!empty($value_user->TZ3) ? $value_user->TZ3 : '',
+                    ];
+                    dd($data_item);
+
+
+                    // $model_user=(new \App\Models\RefUserInfo())->where(['id_user'=>$value_user->id])->first();
+                    $model_user=(new \App\Models\RefUserInfo())->where(['id_user'=>$value_user->PIN2])->first();
                     if(empty($model_user)){
                         $model_user=(new \App\Models\RefUserInfo());
                         $model_user->id_user=$value_user->id;

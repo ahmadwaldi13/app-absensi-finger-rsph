@@ -22,7 +22,8 @@ class RefKaryawanJadwalShift extends Migration
                 $table->integer('id_karyawan')->length(10)->unsigned();
                 $table->integer('id_template_jadwal_shift')->length(10)->unsigned();
 
-                $table->unique(['id_karyawan','id_template_jadwal_shift'],$table_name.'_uniq');
+                $table->unique(['id_karyawan'],$table_name.'_uniq1');
+                $table->unique(['id_template_jadwal_shift'],$table_name.'_uniq2');
                 $table->foreign(['id_karyawan'],$table_name.'_fk1')->references(['id_karyawan'])->on('ref_karyawan')->onUpdate('cascade')->onDelete('cascade');
                 $table->foreign(['id_template_jadwal_shift'],$table_name.'_fk2')->references(['id_template_jadwal_shift'])->on('ref_template_jadwal_shift')->onUpdate('cascade')->onDelete('cascade');
             });
