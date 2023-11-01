@@ -480,6 +480,31 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
     }
 
     function get_user_tamplate_tad($id_user){
-        die;
+        ini_set("memory_limit","800M");
+        set_time_limit(0);
+
+        $connect_ip=$this->connect_sock();
+
+        if(empty($connect_ip[2]==3)){
+            $tad=$this->connect_tad();
+
+            $get_data_tmp = $tad->get_user_template(['pin'=>$id_user]);
+
+            $data=[];
+            if($get_data_tmp->is_empty_response()==false){
+                $data=$get_data_tmp->get_response(['format'=>'json']);
+
+                $data=json_decode($data,true);
+                if(!empty($data['Row'])){
+                    $data=$data['Row'];
+                }else{
+                    $data=[];
+                }
+            }
+
+            return json_encode($data);
+        }else{
+            return ['error','Tidak Terkoneksi'];
+        }
     }
 }
