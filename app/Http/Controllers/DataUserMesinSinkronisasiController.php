@@ -51,7 +51,7 @@ class DataUserMesinSinkronisasiController extends \App\Http\Controllers\MyAuthCo
                 if($connect==2){
                     return redirect()->route($this->url_name, [])->with(['error' => 'Maaf Mesin tidak connect']);
                 }
-                
+
                 $hasil=$this->proses_tmp($data_mesin);
                 $check_hasil=!empty($hasil[0]) ? $hasil[0] : '';
                 if($check_hasil=='error'){
@@ -129,9 +129,9 @@ class DataUserMesinSinkronisasiController extends \App\Http\Controllers\MyAuthCo
             }
             if($get_user){
                 $get_user=json_decode($get_user);
-                
+
                 (new \App\Models\UserMesinTmp)->truncate();
-                
+
                 $jml_save=0;
                 foreach($get_user as $value){
                     $model = (new \App\Models\UserMesinTmp);
@@ -175,6 +175,8 @@ class DataUserMesinSinkronisasiController extends \App\Http\Controllers\MyAuthCo
     }
 
     function actionSinkron(Request $request){
+        ini_set("memory_limit","800M");
+        set_time_limit(0);
 
         $req = $request->all();
         $id_mesin_absensi = !empty($req['key']) ? $req['key'] : '';
@@ -200,62 +202,55 @@ class DataUserMesinSinkronisasiController extends \App\Http\Controllers\MyAuthCo
                 foreach($get_user as $value_user){
                     $data_item=[];
 
-                    // $data_item=[
-                    //     'name'=>$value_user->name,
-                    //     'password'=>$value_user->password,
-                    //     'group'=>$value_user->group,
-                    //     'privilege'=>$value_user->privilege,
-                    //     'card'=>$value_user->card,
-                    //     'pin'=>$value_user->pin,
-                    //     'pin2'=>$value_user->pin2,
-                    //     'tz1'=>$value_user->tz1,
-                    //     'tz2'=>$value_user->tz2,
-                    //     'tz3'=>$value_user->tz3,
-                    // ];
-                    
                     $data_item=[
                         'name'=> !empty($value_user->Name) ? trim( (new \App\Http\Traits\GlobalFunction)->remove_special_char_json($value_user->Name)) : '',
                         'password'=>!empty($value_user->Password) ? $value_user->Password : '',
                         'group'=>!empty($value_user->Group) ? $value_user->Group : '',
                         'privilege'=>!empty($value_user->Privilege) ? $value_user->Privilege : '',
                         'card'=>!empty($value_user->Card) ? $value_user->Card : '',
-                        'pin'=>!empty($value_user->pin) ? $value_user->pin : '',
+                        'pin'=>!empty($value_user->pin) ? $value_user->PIN : '',
                         'pin2'=>!empty($value_user->PIN2) ? $value_user->PIN2 : '',
                         'tz1'=>!empty($value_user->TZ1) ? $value_user->TZ1 : '',
                         'tz2'=>!empty($value_user->TZ2) ? $value_user->TZ2 : '',
                         'tz3'=>!empty($value_user->TZ3) ? $value_user->TZ3 : '',
                     ];
-                    dd($data_item);
-
 
                     // $model_user=(new \App\Models\RefUserInfo())->where(['id_user'=>$value_user->id])->first();
                     $model_user=(new \App\Models\RefUserInfo())->where(['id_user'=>$value_user->PIN2])->first();
                     if(empty($model_user)){
                         $model_user=(new \App\Models\RefUserInfo());
-                        $model_user->id_user=$value_user->id;
+                        $model_user->id_user=$value_user->PIN2;
                     }
                     $model_user->set_model_with_data($data_item);
                     if($model_user->save()){
-                        $jml_save_user++;
-                        
-                        $get_user_finger=$mesin->get_user_tamplate($value_user->id);
+
                         // $get_user_finger=$mesin->get_user_tamplate($value_user->pin);
-
+                        $get_user_finger=$mesin->get_user_tamplate_tad($value_user->PIN2);
+                        
                         if($get_user_finger){
-                            (new \App\Models\RefUserInfoDetail())->where(['id_user'=>$value_user->id])->delete();
+                            $get_user_finger=json_decode($get_user_finger);
+
+                            (new \App\Models\RefUserInfoDetail())->where(['id_user'=>$value_user->PIN2])->delete();
                             foreach($get_user_finger as $value_finger){
-                                $data_item=[];
-                                $data_item=(array)$value_finger;
-                                $data_item['finger']=$data_item['template'];
-                                unset($data_item['template']);
 
-                                $model_finger=(new \App\Models\RefUserInfoDetail());
-                                $model_finger->id_user=$value_user->id;
+                                if(!empty($value_finger->PIN) && !empty($value_finger->FingerID) && !empty($value_finger->Template) ){
+                                    $data_item=[
+                                        'id_user'=>!empty($value_finger->PIN) ? $value_finger->PIN : '',
+                                        'finger_id'=>!empty($value_finger->FingerID) ? $value_finger->FingerID : '',
+                                        'size'=>!empty($value_finger->Size) ? $value_finger->Size : '',
+                                        'valid'=>!empty($value_finger->Valid) ? $value_finger->Valid : '',
+                                        'finger'=>!empty($value_finger->Template) ? $value_finger->Template : '',
+                                        'pin'=>!empty($value_finger->PIN) ? $value_finger->PIN : '',
+                                    ];
 
-                                $model_finger->set_model_with_data($data_item);
-                                
-                                if($model_finger->save()){
-                                    $jml_save_finger++;
+                                    $model_finger=(new \App\Models\RefUserInfoDetail());
+                                    $model_finger->id_user=$value_user->PIN2;
+
+                                    $model_finger->set_model_with_data($data_item);
+
+                                    if($model_finger->save()){
+                                        $jml_save_user++;
+                                    }
                                 }
                             }
                         }
