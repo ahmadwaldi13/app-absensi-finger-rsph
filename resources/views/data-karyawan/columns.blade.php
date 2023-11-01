@@ -68,7 +68,7 @@
                                     <div class="button-icon-inside">
                                         <input type="text" class="input-text" id='filter_nm_status_karyawan' name="filter_nm_status_karyawan" readonly value="{{ Request::get('filter_nm_status_karyawan') }}" />
                                         <input type="hidden" id="filter_id_status_karyawan" name='filter_id_status_karyawan' readonly required value="{{ Request::get('filter_id_status_karyawan') }}">
-                                        <span class="modal-remote-data" data-modal-src="{{ url('ajax?action=get_list_status_karyawan') }}" data-modal-key="" data-modal-pencarian='true' data-modal-title='Departemen' data-modal-width='30%' data-modal-action-change="function=.set-data-list-from-modal@data-target=#filter_id_status_karyawan|#filter_nm_status_karyawan@data-key-bagan=0@data-btn-close=#closeModalData">
+                                        <span class="modal-remote-data" data-modal-src="{{ url('ajax?action=get_list_status_karyawan') }}" data-modal-key="" data-modal-pencarian='true' data-modal-title='Departemen' data-modal-width='40%' data-modal-action-change="function=.set-data-list-from-modal@data-target=#filter_id_status_karyawan|#filter_nm_status_karyawan@data-key-bagan=0@data-btn-close=#closeModalData">
                                             <img class="iconify hover-pointer text-primary" src="{{ asset('') }}icon/selected.png" alt="">
                                         </span>
                                         <a href="#" id='reset_input'><i class="fa-solid fa-square-xmark"></i></a>                            
