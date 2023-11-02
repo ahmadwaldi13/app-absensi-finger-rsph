@@ -717,6 +717,14 @@ class ListRoutes
                         'middleware' => '',
                     ],
                     [
+                        'type' => 'Cetak Laporan Absensi LOG',
+                        'method' => 'get',
+                        'url' => '/laporan-absensi-karyawan-log/cetak',
+                        'controller' => 'LaporanAbsensiKaryawanLogController@actionCetak',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
                         'type' => 'Laporan Absensi Rutin',
                         'method' => 'get',
                         'url' => '/laporan-absensi-karyawan',

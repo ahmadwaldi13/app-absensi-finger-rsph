@@ -179,6 +179,11 @@ class DataJadwalKaryawanController extends \App\Http\Controllers\MyAuthControlle
                     }
 
                 }else if($type_jadwal==1){
+                    $model_shift=( new \App\Models\RefKaryawanJadwalShift() )->where('id_karyawan','=',$id_karyawan)->first();
+                    if($model_shift){
+                        $model_shift->delete();
+                    }
+
                     $model=( new \App\Models\RefKaryawanJadwalRutin() )->where('id_karyawan','=',$id_karyawan)->first();
                     if(empty($model)){
                         $model=new \App\Models\RefKaryawanJadwalRutin();
@@ -192,6 +197,11 @@ class DataJadwalKaryawanController extends \App\Http\Controllers\MyAuthControlle
                     }
                 
                 }else if($type_jadwal==2){
+                    $model_rutin=( new \App\Models\RefKaryawanJadwalRutin() )->where('id_karyawan','=',$id_karyawan)->first();
+                    if($model_rutin){
+                        $model_rutin->delete();
+                    }
+
                     $model=( new \App\Models\RefKaryawanJadwalShift() )->where('id_karyawan','=',$id_karyawan)->first();
                     if(empty($model)){
                         $model=new \App\Models\RefKaryawanJadwalShift();

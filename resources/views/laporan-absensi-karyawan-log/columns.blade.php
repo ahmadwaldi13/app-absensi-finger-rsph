@@ -231,7 +231,17 @@
                         @foreach($list_data as $key => $item)
                             <?php 
                                 $data_presensi=!empty($item->presensi) ? (array)json_decode($item->presensi) : [];
-                                // dd($data_presensi);
+
+                                $type_jadwal_text='';
+                                if(!empty($item->ada_jadwal)){
+                                    if(!empty($item->jadwal_rutin)){
+                                        $type_jadwal_text='Rutin';
+                                    }
+                                    
+                                    if(!empty($item->jadwal_shift)){
+                                        $type_jadwal_text='Shift';
+                                    }
+                                }
                             ?>
                             @if(empty($list_departemen[$item->id_departemen]))
                                 <?php $list_departemen[$item->id_departemen]=1; ?>
@@ -271,8 +281,8 @@
                                         }
                                     ?>
                                     <td style='vertical-align: middle;'>{!! $presensi_user_text !!}</td>
-
                                 @endforeach
+                                <td style='vertical-align: middle;'>{{ $type_jadwal_text }}</td>
                             </tr>
                         @endforeach
                     @endif

@@ -647,6 +647,9 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
                 }
             }
 
+            $cell_border="A".$position_awal_.':'.$end_index_tgl.$end_position;
+            $objPHPExcel->getActiveSheet()->getStyle($cell_border)->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+
             $objWriter  = IOFactory::createWriter($objPHPExcel, "Xlsx");
 
             if (ob_get_contents()) ob_end_clean();
