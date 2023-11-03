@@ -97,8 +97,8 @@
                                 <div class='bagan_form'>
                                     <label for="filter_nm_departemen" class="form-label">Departemen <span class="text-danger">*</span></label>
                                     <div class="button-icon-inside">
-                                        <input type="text" class="input-text" id='filter_nm_departemen' name="filter_nm_departemen" required value="{{ Request::get('filter_nm_departemen') }}" />
-                                        <input type="hidden" id="filter_id_departemen" name='filter_id_departemen' required value="{{ Request::get('filter_id_departemen') }}">
+                                        <input type="text" class="input-text" id='filter_nm_departemen' name="filter_nm_departemen" value="{{ Request::get('filter_nm_departemen') }}" />
+                                        <input type="hidden" id="filter_id_departemen" name='filter_id_departemen' value="{{ Request::get('filter_id_departemen') }}">
                                         <span class="modal-remote-data" data-modal-src="{{ url('ajax?action=get_list_departemen') }}" data-modal-key="" data-modal-pencarian='true' data-modal-title='Departemen' data-modal-width='50%' data-modal-action-change="function=.set-data-list-from-modal@data-target=#filter_id_departemen|#filter_nm_departemen@data-key-bagan=0@data-btn-close=#closeModalData">
                                             <img class="iconify hover-pointer text-primary" src="{{ asset('') }}icon/selected.png" alt="">
                                         </span>
@@ -112,8 +112,8 @@
                                 <div class='bagan_form'>
                                     <label for="filter_nm_ruangan" class="form-label">Ruangan <span class="text-danger">*</span></label>
                                     <div class="button-icon-inside">
-                                        <input type="text" class="input-text" id='filter_nm_ruangan' name="filter_nm_ruangan" required value="{{ Request::get('filter_nm_ruangan') }}" />
-                                        <input type="hidden" id="filter_id_ruangan" name='filter_id_ruangan' required value="{{ Request::get('filter_id_ruangan') }}">
+                                        <input type="text" class="input-text" id='filter_nm_ruangan' name="filter_nm_ruangan"  value="{{ Request::get('filter_nm_ruangan') }}" />
+                                        <input type="hidden" id="filter_id_ruangan" name='filter_id_ruangan'  value="{{ Request::get('filter_id_ruangan') }}">
                                         <span class="modal-remote-data" data-modal-src="{{ url('ajax?action=get_list_ruangan') }}" data-modal-key-with-form="#filter_id_departemen" data-modal-pencarian='true' data-modal-title='Ruangan' data-modal-width='70%' data-modal-action-change="function=.set-data-list-from-modal@data-target=#filter_id_ruangan|#filter_nm_ruangan@data-key-bagan=0@data-btn-close=#closeModalData">
                                             <img class="iconify hover-pointer text-primary" src="{{ asset('') }}icon/selected.png" alt="">
                                         </span>

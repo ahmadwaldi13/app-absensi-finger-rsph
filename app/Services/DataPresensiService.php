@@ -167,7 +167,7 @@ class DataPresensiService extends BaseService
         ));
 
         $list_search=[
-            'where_or'=>['nm_karyawan'],
+            'where_or'=>['id_user','nm_karyawan'],
         ];
 
         if($params){

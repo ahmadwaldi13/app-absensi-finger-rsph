@@ -51,7 +51,8 @@ class LaporanAbsensiKaryawanLogController extends \App\Http\Controllers\MyAuthCo
         if(!empty($request->cari_data)){
 
             $paramter_search=[
-                'tanggal'=>$filter_tgl
+                'tanggal'=>$filter_tgl,
+                'search'=>$form_filter_text,
             ];
 
             if(!empty($filter_id_departemen)){
@@ -121,7 +122,8 @@ class LaporanAbsensiKaryawanLogController extends \App\Http\Controllers\MyAuthCo
         }
 
         $paramter_search=[
-            'tanggal'=>$filter_tgl
+            'tanggal'=>$filter_tgl,
+            'search'=>$form_filter_text,
         ];
 
         if(!empty($filter_id_departemen)){
@@ -143,6 +145,10 @@ class LaporanAbsensiKaryawanLogController extends \App\Http\Controllers\MyAuthCo
         ->orderBy('nm_karyawan','ASC')
         ->get();
 
+        if($list_data->count()>200){
+            $link_back_param=(array)$data_sent;
+            return redirect()->route($this->url_name, $link_back_param)->with(['error' => 'Maaf Data Terlalu banyak untuk di tampilkan,silahkan gunakan filter departemen/bidang,ruangan dll']);
+        }
         if($list_data){
 
             $get_tb=new \DateTime($filter_tahun_bulan.'-01');
