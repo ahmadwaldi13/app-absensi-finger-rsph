@@ -5,28 +5,15 @@
     $tgl_start=new \DateTime($get_template_shift_detail->tgl_mulai);
     $tgl_start_tmp=new \DateTime($get_template_shift_detail->tgl_mulai);
 
+    $jml_periode=$jml_periode-1;
     $rumus_tmp="+".$jml_periode." ".$type_periode;
     $tgl_end = $tgl_start_tmp->modify($rumus_tmp);
 
     $tgl_start_text = $tgl_start->format('Y-m-d');
     $tgl_end_text = $tgl_end->format('Y-m-d');
-
+    
     $looping_range_date = new DatePeriod($tgl_start, DateInterval::createFromDateString('1 day'), $tgl_end);
-    $data_tanggal=[];
-    foreach($looping_range_date as $key_date => $valeu_date){
-        $tgl_date=(int)$valeu_date->format('d');
-        $single_date=$valeu_date->format('D');
-        $month_date=(int)$valeu_date->format('m');
-        $nm_hari=(new \App\Http\Traits\GlobalFunction)->hari($single_date);
-        $nm_bulan=(new \App\Http\Traits\GlobalFunction)->get_bulan($month_date);
 
-        $data_tanggal[$month_date][]=[
-            'tgl'=>$tgl_date,
-            'nm_hari'=>$nm_hari,
-            'month_date'=>$month_date,
-            'nm_bulan'=>$nm_bulan
-        ];
-    }
 ?>
 
 <hr>
@@ -114,95 +101,94 @@
                     <label id='title_jadwal'></label>
                     <h5 style="border-top:1px solid;">Daftar hari</h5>
                     <hr style="margin:3px 0px;">
-                    <div id='list_hari' style='display:none'>
+                    <!-- <div id='list_hari' style='display:none'> -->
+                    <div id='list_hari' style=''>
                         <div style="overflow:auto; max-height: 1900px; padding:5px;">
                             <?php
-                                $urutan_bulan=0;
+                                $jml_periode=$get_template_shift_detail->jml_periode;
+                                $check_looping=0;
+                                $max_move=8;
+                                
+                                $hasil_pemilahan_data=[];
+                                $jml_max_column=0;
                             ?>
-                            @foreach($data_tanggal as $key_bulan => $value_bulan)
+
+                            @foreach($looping_range_date as $key_date => $valeu_date)
                                 <?php
-                                    $is_bulan=($type_periode=='month') ? 1 : 0;
-                                    $jml_hari=count($value_bulan);
-                                    $urutan_bulan++;
+                                    $check_looping++;
+                                    $single_date=$valeu_date->format('D');
+                                    $number_date=$valeu_date->format('d');
+                                    $month=$valeu_date->format('m');
+                                    $number_date=(int)$number_date;
+                                    $nm_hari=(new \App\Http\Traits\GlobalFunction)->hari($single_date);
+
+                                    $kode=$month.'_'.$number_date;
+
+                                    $nm_kode='pil_'.$kode;
+                                    $value_hari=$number_date;
+                                    
+                                    $have_data=[];
+                                    if(!empty($grafik_data[$number_date])){
+                                        foreach($grafik_data[$number_date] as $val_grafik){
+                                            $have_data[]="<div style='background-color:".$val_grafik['bgcolor']."; padding:5px;'>".$val_grafik['nm_shift']."</div>";
+                                        }
+                                    }
+                                    $have_data=implode('',$have_data);
+                                    if($check_looping>=$max_move){
+                                        $check_looping=1;
+                                    }
+                                    $hasil_pemilahan_data[$check_looping][]=$valeu_date;
+                                    if($jml_max_column<count($hasil_pemilahan_data[$check_looping])){
+                                        $jml_max_column=count($hasil_pemilahan_data[$check_looping]);
+                                    }
                                 ?>
-                                @if($urutan_bulan>1)
-                                    <hr>
-                                @endif
-                                @if(!empty($is_bulan))
-                                    <h5>Bulan {{ $urutan_bulan }}</h5>
-                                @endif
-
-                                <div class="row d-flex justify-content-start">
-                                    <?php
-
-                                        $total_looping=1;
-                                        $max_hari=7;
-                                        if($jml_hari>=($max_hari*1)){
-                                            $total_looping=2;
-                                        }
-                                        if($jml_hari>=($max_hari*2)){
-                                            $total_looping=3;
-                                        }
-                                        if($jml_hari>=($max_hari*3)){
-                                            $total_looping=4;
-                                        }
-                                        $i_awal=0;
-                                        $i_end=7;
-                                    ?>
-                                    @for($j=0; $j<=$total_looping; $j++)
-                                        <?php
-                                            if($j>0){
-                                                $i_awal=$i_end;
-                                                $i_end=$i_end+$max_hari;
-                                                if($i_end>$jml_hari){
-                                                    $i_end=$jml_hari;
-                                                }
-                                            }
-                                        ?>
-
-                                        <div class="col-sm p-0">
-                                            <table class="table border table-responsive-tablet">
-                                                <tbody>
-                                                    @for($i=$i_awal; $i<$i_end; $i++)
-                                                        <?php
-                                                            $data_tgl=$data_tanggal[$key_bulan];
-                                                            $hasil_data_tgl=[];
-                                                            $kode='';
-                                                            if(!empty($data_tgl[$i])){
-                                                                $hasil_data_tgl=$data_tgl[$i];
-                                                                $kode=$hasil_data_tgl['month_date'].'_'.$hasil_data_tgl['tgl'];
-                                                            }
-                                                            $hasil_data_tgl=(object)$hasil_data_tgl;
-
-                                                            $nm_kode='pil_'.$kode;
-                                                            $value_hari=!empty($hasil_data_tgl->tgl) ? $hasil_data_tgl->tgl : 0;
+                            @endforeach
+                            
+                            <div class="col-sm p-0">
+                                <table class="table border table-responsive-tablet">
+                                    <tbody>
+                                        @foreach($hasil_pemilahan_data as $key_parent => $valeu_parent)
+                                            @if(!empty($valeu_parent))
+                                                <tr style='border-bottom:1px solid #ccc;'>
+                                                    @foreach($valeu_parent as $key_date => $valeu_date)
+                                                        <?php 
+                                                            $single_date=$valeu_date->format('D');
+                                                            $number_date=$valeu_date->format('d');
+                                                            $month=$valeu_date->format('m');
+                                                            $number_date=(int)$number_date;
+                                                            $nm_hari=(new \App\Http\Traits\GlobalFunction)->hari($single_date);
                                                             
+                                                            $value_hari=$number_date;
+                                                            $nm_kode='pil_'.$kode;
+
                                                             $have_data=[];
-                                                            if(!empty($grafik_data[$i])){
-                                                                foreach($grafik_data[$i] as $val_grafik){
+                                                            if(!empty($grafik_data[$number_date])){
+                                                                foreach($grafik_data[$number_date] as $val_grafik){
                                                                     $have_data[]="<div style='background-color:".$val_grafik['bgcolor']."; padding:5px;'>".$val_grafik['nm_shift']."</div>";
                                                                 }
                                                             }
                                                             $have_data=implode('',$have_data);
                                                         ?>
-                                                        <tr style='border-bottom:1px solid #ccc;'>
-                                                            <td>
-                                                                <div class="form-check">
-                                                                    <input class="form-check-input checkbox_hari" type="checkbox" value="{{ $value_hari }}" id="{{ $nm_kode }}">
-                                                                    <label class="form-check-label" style='margin-top: 7px;margin-left: 5px;' for="{{ $nm_kode }}">
-                                                                        <div>Hari Ke {{ $value_hari }}</div>
-                                                                        <div style='font-size:13px'>{!! $have_data !!}</div>
-                                                                    </label>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    @endfor
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    @endfor
-                                </div>
-                            @endforeach
+
+                                                        <td>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input checkbox_hari" type="checkbox" value="{{ $value_hari }}" id="{{ $nm_kode }}">
+                                                                <label class="form-check-label" style='margin-top: 7px;margin-left: 5px;' for="{{ $nm_kode }}">
+                                                                    <div>Hari Ke {{ $value_hari }}</div>
+                                                                    <div style='font-size:13px'>{!! $have_data !!}</div>
+                                                                </label>
+                                                            </div>
+                                                        </td>
+                                                    @endforeach
+                                                    @if(count($valeu_parent)<$jml_max_column)
+                                                        <td></td>
+                                                    @endif
+                                                </tr>
+                                            @endif
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
 
                         <div class="row justify-content-end align-items-end mt-1">

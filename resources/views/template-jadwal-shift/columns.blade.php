@@ -25,7 +25,9 @@
                 <table class="table border table-responsive-tablet">
                     <thead>
                         <tr>
-                            <th class="py-3 col-md-10">Nama Shift</th>
+                            <th class="py-3 col-md-5">Nama Shift</th>
+                            <th class="py-3 col-md-3">Tanggal Mulai</th>
+                            <th class="py-3 col-md-2">Jml Priode</th>
                             <th class="py-3 col-md-2">Action</th>
                         </tr>
                     </thead>
@@ -39,6 +41,8 @@
                             ?>
                             <tr>
                                 <td>{{ !empty($item->nm_shift) ? $item->nm_shift : ''  }}</td>
+                                <td>{{ !empty($item->tgl_mulai) ? $item->tgl_mulai : ''  }}</td>
+                                <td>{{ !empty($item->jml_periode) ? $item->jml_periode : ''  }}</td>
 
                                 <td class='text-right'>
                                     <?php $url_template_shift_waktu='template-jadwal-shift-waktu'; ?>

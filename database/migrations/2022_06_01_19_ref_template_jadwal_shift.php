@@ -57,6 +57,22 @@ class RefTemplateJadwalShift extends Migration
                 });
             }
         }
+
+        $table_name='ref_template_jadwal_shift_detail';
+        Schema::table($table_name, function (Blueprint $table) use ($table_name) {
+            $sm = Schema::getConnection()->getDoctrineSchemaManager();
+            $indexesFound = $sm->listTableIndexes($table_name);
+
+            if(!array_key_exists($table_name.'_uniq1', $indexesFound)){
+                $table->unique(['id_template_jadwal_shift'],$table_name.'_uniq1');
+            }
+
+            if(array_key_exists($table_name.'_uniq', $indexesFound)){
+                $table->dropUnique($table_name.'_uniq');
+            }
+
+            
+        });
     }
 
     /**

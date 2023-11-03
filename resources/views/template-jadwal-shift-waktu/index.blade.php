@@ -32,39 +32,21 @@
                 <table class="table border table-responsive-tablet">
                     <tbody>
                         <tr>
-                            <td style='width: 20%; vertical-align: middle;'>Nama Shift</td>
+                            <td style='width: 30%; vertical-align: middle;'>Nama Shift</td>
                             <td style='width: 1%; vertical-align: middle;'>:</td>
-                            <td style='width: 69%; vertical-align: middle;'>{{ !empty($item_template_shift->nm_shift) ? $item_template_shift->nm_shift : '' }}</td>
+                            <td style='width: 39%; vertical-align: middle;'>{{ !empty($item_template_shift->nm_shift) ? $item_template_shift->nm_shift : '' }}</td>
                         </tr>
 
                         <tr>
-                            <td style='width: 20%; vertical-align: middle;'>Periode</td>
+                            <td style='width: 30%; vertical-align: middle;'>Tanggal Mulai</td>
                             <td style='width: 1%; vertical-align: middle;'>:</td>
-                            <td style='width: 69%; vertical-align: middle;'>
-                                <div class='bagan_form'>
-                                    <select class="form-select" id="data_key" name="data_key" required aria-label="Default select ">
-                                        @if(!empty($get_list_template_shift_detail))
-                                            @foreach($get_list_template_shift_detail as $key => $val)
-                                                <?php
-                                                    $model_type_periode=!empty($get_template_shift_detail->id_template_jadwal_shift_detail) ? $get_template_shift_detail->id_template_jadwal_shift_detail : '';
-                                                ?>
-                                                <option value='{{ $val->id_template_jadwal_shift_detail }}' {{ ($model_type_periode==$val->id_template_jadwal_shift_detail) ? 'selected' : '' }}>{{ $val->jml_periode }} hari</option>
-                                            @endforeach
-                                        @endif
-                                    </select>
-                                    <div class="message"></div>
-                                </div>
-                            </td>
+                            <td style='width: 39%; vertical-align: middle;'>{{ !empty($get_template_shift_detail->tgl_mulai) ? $get_template_shift_detail->tgl_mulai : '' }}</td>
                         </tr>
+
                         <tr>
-                            {{--
-                                <td colspan="3">
-                                    <input type="hidden" name="data_sent" value="{{ !empty($item_template_shift->id_template_jadwal_shift) ? $item_template_shift->id_template_jadwal_shift : 0 }}">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="fa-sharp fa-solid fa-magnifying-glass"></i><span> Ambil Data</span>
-                                    </button>
-                                </td>
-                            --}}
+                            <td style='width: 30%; vertical-align: middle;'>Jumlah Periode</td>
+                            <td style='width: 1%; vertical-align: middle;'>:</td>
+                            <td style='width: 39%; vertical-align: middle;'>{{ !empty($get_template_shift_detail->jml_periode) ? $get_template_shift_detail->jml_periode.' Hari' : '' }}</td>
                         </tr>
                     </tbody>
                 </table>

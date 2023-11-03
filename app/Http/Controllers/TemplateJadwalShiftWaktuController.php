@@ -50,7 +50,7 @@ class TemplateJadwalShiftWaktuController extends \App\Http\Controllers\MyAuthCon
                     if(!empty($data_jadwal_tmp[$value->id_jenis_jadwal])){
                         $nilai=$data_jadwal_tmp[$value->id_jenis_jadwal];
                         foreach($item_hari as $hari){
-                            $check_hari=$hari-1;
+                            $check_hari=$hari;
                             if($check_hari<0){
                                 $check_hari=0;
                             }
@@ -65,7 +65,7 @@ class TemplateJadwalShiftWaktuController extends \App\Http\Controllers\MyAuthCon
                         }
                     }else if($value->type==2){
                         foreach($item_hari as $hari){
-                            $check_hari=$hari-1;
+                            $check_hari=$hari;
                             if($check_hari<0){
                                 $check_hari=0;
                             }
@@ -83,6 +83,7 @@ class TemplateJadwalShiftWaktuController extends \App\Http\Controllers\MyAuthCon
                 }
             }
         }
+        ksort($grafik_data);
 
         return $grafik_data;
     }

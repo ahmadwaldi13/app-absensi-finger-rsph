@@ -38,17 +38,19 @@
                         @foreach($looping_range_date as $key_date => $valeu_date)
                             <?php 
                                 $single_date=$valeu_date->format('D');
+                                $number_date=$valeu_date->format('d');
+                                $number_date=(int)$number_date;
                                 $nm_hari=(new \App\Http\Traits\GlobalFunction)->hari($single_date);
                             ?>
                             <tr style='border-bottom:1px solid #ccc;'>
                                 <td>
-                                    <div>Hari Ke {{ ($key_date+1) }}</div>
+                                    <div>Hari Ke {{ $number_date }}</div>
                                 </td>
                                 <td>
                                     <?php 
                                         $list_shift=[];
-                                        if(!empty($data_shift[$key_date])){
-                                            foreach($data_shift[$key_date] as $key_list => $value){
+                                        if(!empty($data_shift[$number_date])){
+                                            foreach($data_shift[$number_date] as $key_list => $value){
                                                 $text="";
                                                 $value=(object)$value;
                                                 if(!empty($value->type_jadwal)){

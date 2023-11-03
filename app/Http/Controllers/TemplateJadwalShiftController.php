@@ -60,6 +60,7 @@ class TemplateJadwalShiftController extends \App\Http\Controllers\MyAuthControll
             'id_template_jadwal_shift' => $kode
         ];
         $model = $this->refTemplateJadwalShiftService->getList($paramater, 1)->first();
+        
         if ($model) {
             $action_form = $this->part_view . '/update';
         } else {
@@ -125,11 +126,11 @@ class TemplateJadwalShiftController extends \App\Http\Controllers\MyAuthControll
         ];
         
         try {
-            $update=1;
+            $is_save = 0;
+
             $model = (new \App\Models\RefTemplateJadwalShift)->where('id_template_jadwal_shift', '=', $kode)->first();
             if (empty($model)) {
                 $model = (new \App\Models\RefTemplateJadwalShift);
-                $update=0;
             }
             
             $data_save=[
@@ -138,35 +139,43 @@ class TemplateJadwalShiftController extends \App\Http\Controllers\MyAuthControll
 
             $model->set_model_with_data($data_save);
             
-            $is_save = 0;
-            if($update){
-                if($model->save()){
+            if($model->save()){
+                if(empty($model->id_template_jadwal_shift)){
+                    $id_template_jadwal_shift= DB::getPdo()->lastInsertId();
+                }else{
+                    $id_template_jadwal_shift=$model->id_template_jadwal_shift;
+                }
+
+                $model_detail = (new \App\Models\RefTemplateJadwalShiftDetail)->where('id_template_jadwal_shift', '=', $id_template_jadwal_shift)->first();
+                if (empty($model_detail)) {
+                    $model_detail = (new \App\Models\RefTemplateJadwalShiftDetail);
+                }
+
+                $tgl_mulai=!empty($req['tgl_mulai']) ? trim($req['tgl_mulai']) : date('Y-m-d');
+                $filter_tahun_bulan=new \DateTime($tgl_mulai);
+                $filter_tahun_bulan=$filter_tahun_bulan->format('Y-m');
+                $get_tgl_per_bulan=(new \App\Http\Traits\AbsensiFunction)->get_tgl_per_bulan($filter_tahun_bulan);
+
+                $start_day=$tgl_mulai;
+                $end_day=$get_tgl_per_bulan->tgl_start_end[1];
+                $date1 = new \DateTime($start_day);
+                $date2 = new \DateTime($end_day);
+                $interval = $date1->diff($date2);
+                $jml_periode=$interval->days;
+                
+                $data_save_detail=[
+                    'id_template_jadwal_shift'=>$id_template_jadwal_shift,
+                    'tgl_mulai'=>$tgl_mulai,
+                    'jml_periode'=>$jml_periode+1,
+                    'type_periode'=>1
+                ];
+
+                $model_detail->set_model_with_data($data_save_detail);
+            
+                if($model_detail->save()){
                     $is_save=1;
                 }
-            }else{
-                if ($id_template_jadwal_shift= $model->insertGetId($model->getAttributes())) {
-                    $list_jml_periode = (new \App\Models\RefTemplateJadwalShiftDetail())->list_jml_periode();
-                    foreach ($list_jml_periode as $key => $value) {
-                        $model_detail = (new \App\Models\RefTemplateJadwalShiftDetail)
-                        ->where('id_template_jadwal_shift', '=', $id_template_jadwal_shift)
-                        ->where('jml_periode', '=', $value)
-                        ->first();
-                        if(empty($model_detail)){
-                            $model_detail = (new \App\Models\RefTemplateJadwalShiftDetail);
-                        }
-                        $get_tgl_periode = (new \App\Models\RefTemplateJadwalShiftDetail())->get_tgl_periode($value);
-                        $data_save=[
-                            'id_template_jadwal_shift'=>$id_template_jadwal_shift,
-                            'tgl_mulai'=>$get_tgl_periode,
-                            'jml_periode'=>$value,
-                            'type_periode'=>1,
-                        ];
-
-                        $model_detail->set_model_with_data($data_save);
-                        $model_detail->save();
-                    }
-                    $is_save = 1;
-                }
+            
             }
 
             if ($is_save) {

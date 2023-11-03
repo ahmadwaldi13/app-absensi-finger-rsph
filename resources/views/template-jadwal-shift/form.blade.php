@@ -16,6 +16,18 @@
                         <div class="message"></div>
                     </div>
                 </div>
+
+                <div class="col-lg-3">
+                    <div class='bagan_form'>
+                        <div class='input-date-bagan'>
+                            <label for="tgl_mulai" class="form-label">Tgl. Mulai <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control input-daterange input-date" id='tgl_mulai' autocomplete="off">
+                            <input type="hidden" id="tgl" required name="tgl_mulai" value="{{ !empty($model->tgl_mulai) ? $model->tgl_mulai : date('Y-m-d') }}">
+                        </div>
+                        <div class="message"></div>
+                    </div>
+                </div>
+
             </div>
         </div>
 
