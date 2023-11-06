@@ -109,6 +109,12 @@ class TemplateJadwalShiftWaktuController extends \App\Http\Controllers\MyAuthCon
         $get_template_shift_detail = (new \App\Models\RefTemplateJadwalShiftDetail)->where('id_template_jadwal_shift_detail','=',$id_template_shift_detail)->first();
         
         $grafik_data=$this->get_data_grafik($id_template_shift_detail);
+
+        $paramater=[
+            'id_template_jadwal_shift'=>$id_template_shift,
+            'type_fungsi'=>'bulan'
+        ];
+        $list_shift_tmp=(new \App\Services\DataPresensiService)->setListShiftFirstDatabase($paramater);
         
         $parameter_view = [
             'title' => $this->title,
