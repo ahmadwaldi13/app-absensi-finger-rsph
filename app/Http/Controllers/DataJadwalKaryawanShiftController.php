@@ -48,11 +48,22 @@ class DataJadwalKaryawanShiftController extends \App\Http\Controllers\MyAuthCont
     
         $url_back_index=(new \App\Http\Traits\GlobalFunction)->set_paramter_url('data-jadwal-karyawan',$params);
 
-
         $filter_tahun_bulan=!empty($request->filter_tahun_bulan) ? $request->filter_tahun_bulan : date('Y-m');
+        $export_date=new \DateTime($filter_tahun_bulan);
+        $tahun_filter=$export_date->format('Y');
+        $bulan_filter=$export_date->format('m');
 
         $get_tgl_per_bulan=(new \App\Http\Traits\AbsensiFunction)->get_tgl_per_bulan($filter_tahun_bulan);
         $list_tgl=!empty($get_tgl_per_bulan->list_tgl) ? $get_tgl_per_bulan->list_tgl : [];
+
+        $parameter=[
+            'id_template_jadwal_shift'=>$id_template_jadwal_shift,
+            'tahun'=>$tahun_filter,
+            'bulan'=>$bulan_filter,
+        ];
+        
+        $check_change=(new \App\Services\DataPresensiService)->setListShift($parameter);
+        dd($check_change);
 
         $list_shift=[];
         
