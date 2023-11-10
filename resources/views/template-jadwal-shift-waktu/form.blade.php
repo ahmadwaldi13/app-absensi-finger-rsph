@@ -101,8 +101,7 @@
                     <label id='title_jadwal'></label>
                     <h5 style="border-top:1px solid;">Daftar hari</h5>
                     <hr style="margin:3px 0px;">
-                    <!-- <div id='list_hari' style='display:none'> -->
-                    <div id='list_hari' style=''>
+                    <div id='list_hari' style='display:none'>
                         <div style="overflow:auto; max-height: 1900px; padding:5px;">
                             <?php
                                 $jml_periode=$get_template_shift_detail->jml_periode;

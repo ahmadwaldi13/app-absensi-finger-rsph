@@ -600,12 +600,90 @@ class DataPresensiService extends BaseService
     }
 
     function setListShiftFirstDatabase($params=[]){
-        $hasil=$this->setListShiftFirst($params);
-        if(!empty($hasil)){
-            dd('simpan ke database');
-            dd($params,$hasil);
-        }else{
-            return '';
+        $id_template_jadwal_shift=!empty($params['id_template_jadwal_shift']) ? $params['id_template_jadwal_shift'] : 0;
+        if(!empty($id_template_jadwal_shift)){
+            $hasil=$this->setListShiftFirst($params);
+
+            if(empty($hasil)){
+                $get_data_tw = (new \App\Models\RefTemplateJadwalShiftDetail)->where([
+                    'id_template_jadwal_shift'=> $id_template_jadwal_shift,
+                ])->first();
+                if($get_data_tw->id_template_jadwal_shift_detail){
+                    $check_data = (new \App\Models\RefTemplateJadwalShiftWaktu)->where([
+                        'id_template_jadwal_shift_detail'=> $get_data_tw->id_template_jadwal_shift_detail,
+                    ])->count('id_template_jadwal_shift_detail');
+                    if(empty($check_data)){
+                        $get_data = (new \App\Models\RefTemplateJadwalShiftLanjutan)->where([
+                            'id_template_jadwal_shift'=> $id_template_jadwal_shift
+                        ])->delete();
+                    }
+                }
+            }
+
+            DB::beginTransaction();
+
+            $message_default = [
+                'success' => !empty($kode) ? 'Data berhasil diubah' : 'Data berhasil disimpan',
+                'error' => !empty($kode) ? 'Data tidak berhasil diubah' : 'Data berhasil disimpan'
+            ];
+
+            try {
+                $data_insert=[];
+                foreach($hasil as $k_hasil => $v_hasil){
+                    if(!empty($v_hasil)){
+                        $get_data = (new \App\Models\RefTemplateJadwalShiftLanjutan)->where([
+                            'id_template_jadwal_shift'=> $id_template_jadwal_shift,
+                            'tahun'=>$k_hasil
+                        ])->count('id_template_jadwal_shift');
+                        if(!empty($get_data)){
+                            $get_data = (new \App\Models\RefTemplateJadwalShiftLanjutan)->where([
+                                'id_template_jadwal_shift'=> $id_template_jadwal_shift,
+                                'tahun'=>$k_hasil
+                            ])->delete();
+                        }
+                        foreach($v_hasil as $bulan => $nilai){
+                            
+                            if($nilai){
+                                $nilai_json=json_encode($nilai);
+                                $data_insert[]=[
+                                    'id_template_jadwal_shift'=>$id_template_jadwal_shift,
+                                    'tahun'=>$k_hasil,
+                                    'bulan'=>$bulan,
+                                    'data'=>$nilai_json
+                                ];
+                            }
+                        }
+                        
+                    }
+                }
+                
+                $is_save=0;
+                if($data_insert){
+                    $model=(new \App\Models\RefTemplateJadwalShiftLanjutan);
+                    if($model->insert($data_insert)){
+                        $is_save=1;
+                    }
+                }
+
+                if ($is_save) {
+                    DB::commit();
+                    $pesan = ['success', $message_default['success'], 2];
+                } else {
+                    DB::rollBack();
+                    $pesan = ['error', $message_default['error'], 3];
+                }
+
+            } catch (\Illuminate\Database\QueryException $e) {
+                DB::rollBack();
+                if ($e->errorInfo[1] == '1062') {
+                }
+                $pesan = ['error', $message_default['error'], 3];
+            } catch (\Throwable $e) {
+                DB::rollBack();
+                $pesan = ['error', $message_default['error'], 3];
+            }
+            return $pesan;
         }
+        return '';
     }
 }

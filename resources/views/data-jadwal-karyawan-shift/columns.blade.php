@@ -33,7 +33,7 @@
         $list_shift['item']=json_decode($list_shift['item'],true);
     }
 
-    $template_list_shift=$list_shift['item'];
+    $template_list_shift=!empty($list_shift['item']) ? $list_shift['item'] : [];
 
 ?>
 <style>

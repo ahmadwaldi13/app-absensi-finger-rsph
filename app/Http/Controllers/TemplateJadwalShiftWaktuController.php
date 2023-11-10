@@ -114,7 +114,8 @@ class TemplateJadwalShiftWaktuController extends \App\Http\Controllers\MyAuthCon
             'id_template_jadwal_shift'=>$id_template_shift,
             'type_fungsi'=>'bulan'
         ];
-        $list_shift_tmp=(new \App\Services\DataPresensiService)->setListShiftFirstDatabase($paramater);
+        
+        $list_shift_save=(new \App\Services\DataPresensiService)->setListShiftFirstDatabase($paramater);
         
         $parameter_view = [
             'title' => $this->title,

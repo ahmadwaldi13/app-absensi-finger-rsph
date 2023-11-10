@@ -87,6 +87,6 @@
     </form>
 </div>
 
-@include($router_name->path_base.'.columns_atur_waktu')
+@include($router_name->path_base.'.columns')
 
 @endsection

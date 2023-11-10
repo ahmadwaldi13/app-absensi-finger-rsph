@@ -172,7 +172,7 @@
                                     </a>
                                 </td>
                                 <td>
-                                    <?php $url_atur_waktu=$router_name->uri.'/aturwaktu'; ?>
+                                    <?php $url_atur_waktu='/data-jadwal-karyawan-shift'; ?>
                                     @if( (new \App\Http\Traits\AuthFunction)->checkAkses($url_atur_waktu) )
                                         @if($id_template_jadwal_shift)
                                             <?php
