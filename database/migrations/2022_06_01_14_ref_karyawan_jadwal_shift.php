@@ -23,7 +23,6 @@ class RefKaryawanJadwalShift extends Migration
                 $table->integer('id_template_jadwal_shift')->length(10)->unsigned();
 
                 $table->unique(['id_karyawan'],$table_name.'_uniq1');
-                $table->unique(['id_template_jadwal_shift'],$table_name.'_uniq2');
                 $table->foreign(['id_karyawan'],$table_name.'_fk1')->references(['id_karyawan'])->on('ref_karyawan')->onUpdate('cascade')->onDelete('cascade');
                 $table->foreign(['id_template_jadwal_shift'],$table_name.'_fk2')->references(['id_template_jadwal_shift'])->on('ref_template_jadwal_shift')->onUpdate('cascade')->onDelete('cascade');
             });
@@ -35,7 +34,25 @@ class RefKaryawanJadwalShift extends Migration
                 DB::statement("ALTER TABLE ".$table_name." MODIFY ".$key." ".$value['type']."(".$value['length'].")".$value['option']." ");
             }
         }
-        
+
+        $table_name='ref_karyawan_jadwal_shift';
+        Schema::table($table_name, function (Blueprint $table) use ($table_name) {
+            $sm = Schema::getConnection()->getDoctrineSchemaManager();
+            $indexesFound = $sm->listTableIndexes($table_name);
+
+            if(array_key_exists($table_name.'_uniq', $indexesFound)){
+                $table->dropUnique($table_name.'_uniq');
+            }
+
+            if(array_key_exists($table_name.'_uniq2', $indexesFound)){
+                $table->dropUnique($table_name.'_uniq2');
+            }
+
+            if(!array_key_exists($table_name.'_uniq1', $indexesFound)){
+                $table->unique(['id_karyawan'],$table_name.'_uniq1');
+            }
+        });
+
     }
 
     /**

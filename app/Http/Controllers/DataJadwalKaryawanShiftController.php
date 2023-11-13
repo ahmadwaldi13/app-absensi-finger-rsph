@@ -56,16 +56,16 @@ class DataJadwalKaryawanShiftController extends \App\Http\Controllers\MyAuthCont
         $get_tgl_per_bulan=(new \App\Http\Traits\AbsensiFunction)->get_tgl_per_bulan($filter_tahun_bulan);
         $list_tgl=!empty($get_tgl_per_bulan->list_tgl) ? $get_tgl_per_bulan->list_tgl : [];
 
+        $model_shift=(new \App\Models\RefTemplateJadwalShift)->where(['id_template_jadwal_shift'=>$id_template_jadwal_shift])->first();
+        
         $parameter=[
             'id_template_jadwal_shift'=>$id_template_jadwal_shift,
             'tahun'=>$tahun_filter,
             'bulan'=>$bulan_filter,
         ];
         
-        $check_change=(new \App\Services\DataPresensiService)->setListShift($parameter);
-        dd($check_change);
-
-        $list_shift=[];
+        $get_list_shift=(new \App\Services\DataPresensiService)->setListShift($parameter);
+        $list_shift=!empty($get_list_shift->data) ? json_decode($get_list_shift->data,true)  : [];
         
         $parameter_view = [
             'title' => 'Atur Waktu Jadwal Karyawan',
@@ -75,12 +75,8 @@ class DataJadwalKaryawanShiftController extends \App\Http\Controllers\MyAuthCont
             'params_json'=>json_encode($params),
             'data_karyawan' => $data_karyawan,
             'list_tgl'=>$list_tgl,
+            'model_shift'=>$model_shift,
             'list_shift'=>$list_shift,
-            // 'grafik_data'=>$grafik_data
-            // 'item_template_shift'=>$item_template_shift,
-            // 'get_list_template_shift_detail'=>$get_list_template_shift_detail,
-            // 'get_template_shift_detail'=>$get_template_shift_detail,
-            // 'grafik_data'=>$grafik_data,
         ];
 
         return view($this->part_view . '.index', $parameter_view);

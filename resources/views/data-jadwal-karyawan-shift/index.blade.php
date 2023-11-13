@@ -77,7 +77,7 @@
                             <tr>
                                 <td style='width: 20%; vertical-align: middle;'>Model Jadwal Shift</td>
                                 <td style='width: 1%; vertical-align: middle;'>:</td>
-                                <td style='width: 69%; vertical-align: middle;'>{{ !empty($data_karyawan->nm_karyawan) ? $data_karyawan->nm_karyawan : '' }}</td>
+                                <td style='width: 69%; vertical-align: middle;'>{{ !empty($model_shift->nm_shift) ? $model_shift->nm_shift : '' }}</td>
                             </tr>
                         </tbody>
                     </table>

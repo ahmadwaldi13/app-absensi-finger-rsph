@@ -162,6 +162,7 @@ class DataJadwalKaryawanController extends \App\Http\Controllers\MyAuthControlle
                 $exp=explode('@',$params);
                 $type_jadwal=!empty($exp[0]) ? $exp[0] : 0;
                 $id_jenis_jadwal=!empty($exp[1]) ? $exp[1] : 0;
+
                 if(empty($type_jadwal) ){
                     
                     $model_rutin=( new \App\Models\RefKaryawanJadwalRutin() )->where('id_karyawan','=',$id_karyawan)->first();

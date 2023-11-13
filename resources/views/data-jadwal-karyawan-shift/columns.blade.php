@@ -82,39 +82,58 @@
                     <tbody>
                         @if(!empty($list_tgl))
                             @foreach($list_tgl as $key_date => $value_date)
-                            <?php
-                                $tgl= $key_date+1;
-                                
-                                $list_shift=[];
-                                if( !empty($template_list_shift[$tgl])) {
-                                    
-                                    if( !empty( $template_list_shift[$tgl]['data_jadwal_waktu'])  ){
-                                        $tmp=$template_list_shift[$tgl]['data_jadwal_waktu'];
-                                        foreach( $tmp as $item ){
-                                            $item=json_decode($item);
-                                            $text="<span class='box_waktu' style='background:".$item->bg_color.";'>".$item->title."</span>";
-                                            if($item->type_jadwal==2){
-                                                $text="<span class='box_waktu' style='background:".$item->bg_color."; display:block; width:20%;'>".$item->title."</span>";
+                                <?php
+                                    $list_shift_text_tmp=[];
+                                    if(!empty($list_shift[$value_date])){
+                                        $data_detail=$list_shift[$value_date];
+                                        if(!empty($data_detail)){
+                                            foreach($data_detail as $value){
+                                                $value=(object)$value;
+                                                $text='';
+
+                                                if(!empty($value->type_jadwal)){
+                                                    if($value->type_jadwal==2){
+                                                        $text="
+                                                            <span class='box_waktu' style='background:".$value->bg_color."; display:block; width:20%;'>".$value->nm_jenis_jadwal."</span>
+                                                        ";
+                                                    }else{
+                                                        $text="
+                                                            <span class='box_waktu' style='background:".$value->bg_color.";'>"
+                                                                .$value->nm_jenis_jadwal." : ".$value->masuk_kerja.' s/d '.$value->pulang_kerja.
+                                                            "</span>
+                                                        ";
+
+                                                        if(!empty($value->pulang_kerja_next_day)){
+                                                            $text="
+                                                                <span class='box_waktu' style='background:".$value->bg_color.";'>"
+                                                                    .$value->nm_jenis_jadwal." : ".$value->masuk_kerja.' s/d '.$value->pulang_kerja.' Esok hari'.
+                                                                "</span>
+                                                            ";
+                                                        }
+                                                    }
+                                                }
+
+                                                if(!empty($text)){
+                                                    $list_shift_text_tmp[]=$text;
+                                                }
                                             }
-                                            $list_shift[]=$text;
                                         }
                                     }
-                                }
-                                if($list_shift){
-                                    $list_shift=implode('',$list_shift);
-                                }else{
-                                    $list_shift='';
-                                }
 
-                            ?>
-                            <tr style='border-bottom:1px solid #ccc;'>
-                                <td>
-                                    <div>{{ $value_date }}</div>
-                                </td>
-                                <td>
-                                    <div>{!! $list_shift !!}</div>
-                                </td>
-                            </tr>
+                                    $list_shift_text='';
+                                    if(!empty($list_shift_text_tmp)){
+                                        $list_shift_text=implode(',',$list_shift_text_tmp);
+                                    }
+                                    
+                                ?>
+                                <tr style='border-bottom:1px solid #ccc;'>
+                                    <td>
+                                        <div>{{ $value_date }}</div>
+                                    </td>
+                                    <td>
+                                        <div>{!! $list_shift_text !!}</div>
+                                    </td>
+                                </tr>
                             @endforeach        
                         @endif                  
                     </tbody>

@@ -219,7 +219,14 @@ class TemplateJadwalShiftController extends \App\Http\Controllers\MyAuthControll
 
             $is_save = 0;
             if ($model->delete()) {
+                $model_detail = (new \App\Models\RefTemplateJadwalShiftLanjutan)->where('id_template_jadwal_shift', '=', $kode);
                 $is_save = 1;
+                if(!empty($model_detail->count('id_template_jadwal_shift'))){
+                    $is_save = 0;
+                    if($model_detail->delete()){
+                        $is_save = 1;
+                    }
+                }
             }
 
             if ($is_save) {
