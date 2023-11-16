@@ -23,7 +23,7 @@ class TemplateJadwalShiftController extends \App\Http\Controllers\MyAuthControll
 
         $this->title = 'Template Jadwal Shift';
         $this->breadcrumbs = [
-            ['title' => 'Jadwal', 'url' => url('/') . "/sub-menu?type=6"],
+            ['title' => 'Manajemen Absensi', 'url' => url('/') . "/sub-menu?type=6"],
             ['title' => $this->title, 'url' => url('/') . "/" . $this->url_index],
         ];
 
@@ -35,6 +35,7 @@ class TemplateJadwalShiftController extends \App\Http\Controllers\MyAuthControll
     function actionIndex(Request $request)
     {
         DB::statement("ALTER TABLE ".( new \App\Models\RefTemplateJadwalShift() )->table." AUTO_INCREMENT = 1");
+        DB::statement("ALTER TABLE ".( new \App\Models\RefTemplateJadwalShiftDetail() )->table." AUTO_INCREMENT = 1");
         $form_filter_text = !empty($request->form_filter_text) ? $request->form_filter_text : '';
 
         $paramater=[
@@ -59,18 +60,16 @@ class TemplateJadwalShiftController extends \App\Http\Controllers\MyAuthControll
             'id_template_jadwal_shift' => $kode
         ];
         $model = $this->refTemplateJadwalShiftService->getList($paramater, 1)->first();
+        
         if ($model) {
             $action_form = $this->part_view . '/update';
         } else {
             $action_form = $this->part_view . '/create';
         }
 
-        $list_type_periode = (new \App\Models\RefTemplateJadwalShift())->list_type_periode();
-
         $parameter_view = [
             'action_form' => $action_form,
             'model' => $model,
-            'list_type_periode'=>$list_type_periode
         ];
 
         return view($this->part_view . '.form', $parameter_view);
@@ -126,21 +125,59 @@ class TemplateJadwalShiftController extends \App\Http\Controllers\MyAuthControll
             'error' => !empty($kode) ? 'Data tidak berhasil diubah' : 'Data berhasil disimpan'
         ];
         
-        
         try {
+            $is_save = 0;
+
             $model = (new \App\Models\RefTemplateJadwalShift)->where('id_template_jadwal_shift', '=', $kode)->first();
             if (empty($model)) {
                 $model = (new \App\Models\RefTemplateJadwalShift);
             }
-            $data_save = $req;
-            $model->set_model_with_data($data_save);
-
-            $is_save = 0;
-
-            if ($model->save()) {
-                $is_save = 1;
-            }
             
+            $data_save=[
+                'nm_shift'=>!empty($req['nm_shift']) ? trim($req['nm_shift']) : ""
+            ];
+
+            $model->set_model_with_data($data_save);
+            
+            if($model->save()){
+                if(empty($model->id_template_jadwal_shift)){
+                    $id_template_jadwal_shift= DB::getPdo()->lastInsertId();
+                }else{
+                    $id_template_jadwal_shift=$model->id_template_jadwal_shift;
+                }
+
+                $model_detail = (new \App\Models\RefTemplateJadwalShiftDetail)->where('id_template_jadwal_shift', '=', $id_template_jadwal_shift)->first();
+                if (empty($model_detail)) {
+                    $model_detail = (new \App\Models\RefTemplateJadwalShiftDetail);
+                }
+
+                $tgl_mulai=!empty($req['tgl_mulai']) ? trim($req['tgl_mulai']) : date('Y-m-d');
+                $filter_tahun_bulan=new \DateTime($tgl_mulai);
+                $filter_tahun_bulan=$filter_tahun_bulan->format('Y-m');
+                $get_tgl_per_bulan=(new \App\Http\Traits\AbsensiFunction)->get_tgl_per_bulan($filter_tahun_bulan);
+
+                $start_day=$tgl_mulai;
+                $end_day=$get_tgl_per_bulan->tgl_start_end[1];
+                $date1 = new \DateTime($start_day);
+                $date2 = new \DateTime($end_day);
+                $interval = $date1->diff($date2);
+                $jml_periode=$interval->days;
+                
+                $data_save_detail=[
+                    'id_template_jadwal_shift'=>$id_template_jadwal_shift,
+                    'tgl_mulai'=>$tgl_mulai,
+                    'jml_periode'=>$jml_periode+1,
+                    'type_periode'=>1
+                ];
+
+                $model_detail->set_model_with_data($data_save_detail);
+            
+                if($model_detail->save()){
+                    $is_save=1;
+                }
+            
+            }
+
             if ($is_save) {
                 DB::commit();
                 $link_back_param = $this->clear_request($link_back_param, $request);

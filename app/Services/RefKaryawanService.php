@@ -20,10 +20,11 @@ class RefKaryawanService extends BaseService
     function getList($params=[],$type=''){
         
         $query = $this->refKaryawan
-            ->select('ref_karyawan.*','nm_jabatan','nm_departemen','nm_ruangan')
+            ->select('ref_karyawan.*','nm_jabatan','nm_departemen','nm_ruangan','nm_status_karyawan')
             ->Leftjoin('ref_jabatan','ref_jabatan.id_jabatan','=','ref_karyawan.id_jabatan')
             ->Leftjoin('ref_departemen','ref_departemen.id_departemen','=','ref_karyawan.id_departemen')
             ->Leftjoin('ref_ruangan','ref_ruangan.id_ruangan','=','ref_karyawan.id_ruangan')
+            ->Leftjoin('ref_status_karyawan','ref_status_karyawan.id_status_karyawan','=','ref_karyawan.id_status_karyawan')
             ->orderBy('nm_karyawan','ASC')
         ;
 
@@ -59,13 +60,14 @@ class RefKaryawanService extends BaseService
     function getListKaryawanJadwal($params=[],$type=''){
         
         $query = $this->refKaryawan
-            ->select('ref_karyawan.*','nm_jabatan','nm_departemen','nm_ruangan','ref_jenis_jadwal.id_jenis_jadwal','nm_jenis_jadwal','ref_karyawan_user.id_user',DB::raw("IF( ref_karyawan_user.id_user, 1, 0 ) as status_akun_mesin "))
+            ->select('ref_karyawan.*','nm_jabatan','nm_departemen','nm_ruangan','ref_jenis_jadwal.id_jenis_jadwal','ref_karyawan_jadwal_shift.id_template_jadwal_shift','nm_jenis_jadwal','ref_karyawan_user.id_user',DB::raw("IF( ref_karyawan_user.id_user, 1, 0 ) as status_akun_mesin "))
             ->Leftjoin('ref_jabatan','ref_jabatan.id_jabatan','=','ref_karyawan.id_jabatan')
             ->Leftjoin('ref_departemen','ref_departemen.id_departemen','=','ref_karyawan.id_departemen')
             ->Leftjoin('ref_ruangan','ref_ruangan.id_ruangan','=','ref_karyawan.id_ruangan')
             ->Leftjoin('ref_karyawan_jadwal','ref_karyawan_jadwal.id_karyawan','=','ref_karyawan.id_karyawan')
             ->Leftjoin('ref_jenis_jadwal','ref_jenis_jadwal.id_jenis_jadwal','=','ref_karyawan_jadwal.id_jenis_jadwal')
             ->Leftjoin('ref_karyawan_user','ref_karyawan_user.id_karyawan','=','ref_karyawan.id_karyawan')
+            ->Leftjoin('ref_karyawan_jadwal_shift','ref_karyawan_jadwal_shift.id_karyawan','=','ref_karyawan.id_karyawan')
             ->orderBy('nm_karyawan','ASC')
         ;
 

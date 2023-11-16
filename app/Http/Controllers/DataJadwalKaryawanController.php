@@ -62,9 +62,19 @@ class DataJadwalKaryawanController extends \App\Http\Controllers\MyAuthControlle
 
         if($form_jenis_jadwal){
             if($form_jenis_jadwal=='non'){
-                $paramater['where_raw']=[ 'ref_jenis_jadwal.id_jenis_jadwal'=>['is null',1] ];
+                $paramater['where_raw']=[ 
+                    'ref_jenis_jadwal.id_jenis_jadwal'=>['is null',1],
+                    'ref_karyawan_jadwal_shift.id_template_jadwal_shift'=>['is null',1],
+                 ];
             }else{
-                $paramater['ref_jenis_jadwal.id_jenis_jadwal']=$form_jenis_jadwal;
+                $exp=explode('@',$form_jenis_jadwal);
+                $type_jadwal=!empty($exp[0]) ? $exp[0] : 0;
+                $id_jenis_jadwal=!empty($exp[1]) ? $exp[1] : 0;
+                if($type_jadwal==1){
+                    $paramater['ref_jenis_jadwal.id_jenis_jadwal']=$id_jenis_jadwal;
+                }else if($type_jadwal==2){
+                    $paramater['ref_karyawan_jadwal_shift.id_template_jadwal_shift']=$id_jenis_jadwal;
+                }
             }
         }
 
@@ -78,23 +88,51 @@ class DataJadwalKaryawanController extends \App\Http\Controllers\MyAuthControlle
 
         $list_data = $this->refKaryawanService->getListKaryawanJadwal($paramater, 1)->paginate(!empty($request->per_page) ? $request->per_page : 15);
 
-        $data_jadwal_tmp=( new \App\Models\RefJenisJadwal() )->get();
-        $data_jadwal=$data_jadwal_tmp;
-        $data_jadwal_json=[];
-        $data_jadwal_json[]=[
-            'value'=>0,
-            'text'=>'-'
-        ];
-        foreach($data_jadwal_tmp as $value){
-            $data_jadwal_json[]=[
-                'value'=>$value->id_jenis_jadwal,
-                'text'=>$value->nm_jenis_jadwal,
+        $data_jadwal=[];
+        $data_jadwal_rutin=( new \App\Models\RefJenisJadwal() )->where('id_jenis_jadwal','=',1)->first();
+        if(!empty($data_jadwal_rutin)){
+            $data_jadwal[]=[
+                'key'=>$data_jadwal_rutin->id_jenis_jadwal,
+                'value'=>$data_jadwal_rutin->id_jenis_jadwal,
+                'text'=>$data_jadwal_rutin->nm_jenis_jadwal,
             ];
         }
+
+        $data_jadwal_shift=( new \App\Models\RefTemplateJadwalShift() )->get();
+        if(!empty($data_jadwal_shift)){
+            foreach($data_jadwal_shift as $value){
+                $data_jadwal[]=[
+                    'key'=>2,
+                    'value'=>$value->id_template_jadwal_shift,
+                    'text'=>$value->nm_shift,
+                ];
+            }
+        }
+
+        $data_jadwal_tmp=$data_jadwal;
+
+        $data_jadwal_json=[];
+        $data_jadwal_json[]=[
+            'key'=>0,
+            'value'=>0,
+            'text'=>'-',
+        ];
+
+        foreach($data_jadwal_tmp as $value){
+            $value=(object)$value;
+
+            $data_jadwal_json[]=[
+                // 'key'=>$value->key,
+                // 'value'=>$value->value,
+                'value'=>$value->key.'@'.$value->value,
+                'text'=>$value->text,
+            ];
+        }
+
         if(!empty($data_jadwal_json)){
             $data_jadwal_json=json_encode($data_jadwal_json);
         }
-        
+
         $parameter_view = [
             'title' => $this->title,
             'breadcrumbs' => $this->breadcrumbs,
@@ -109,7 +147,7 @@ class DataJadwalKaryawanController extends \App\Http\Controllers\MyAuthControlle
     private function proses_jadwal($request){
         $req = $request->all();
         $id_karyawan = !empty($req['pk']) ? $req['pk'] : '';
-        $id_jenis_jadwal = !empty($req['value']) ? $req['value'] : '';
+        $params = !empty($req['value']) ? $req['value'] : '';
         DB::beginTransaction();
         $pesan = [];
 
@@ -120,30 +158,61 @@ class DataJadwalKaryawanController extends \App\Http\Controllers\MyAuthControlle
 
         if ($request->ajax()) {
             try {
-                $model=( new \App\Models\RefKaryawanJadwalRutin() )->where('id_karyawan','=',$id_karyawan)->first();
-                if(empty($model)){
-                    $model=new \App\Models\RefKaryawanJadwalRutin();
-                    $model->id_karyawan=$id_karyawan;
-                    
-                }
-                $model->id_jenis_jadwal=$id_jenis_jadwal;
-                
-                $status_delete=0;
-                if(!empty($model) && empty($id_jenis_jadwal)){
-                    $status_delete=1;
-                }
-                
                 $is_save=0;
-                if($status_delete){
-                    if ($model->delete()) {
+                $exp=explode('@',$params);
+                $type_jadwal=!empty($exp[0]) ? $exp[0] : 0;
+                $id_jenis_jadwal=!empty($exp[1]) ? $exp[1] : 0;
+                if(empty($type_jadwal) ){
+                    
+                    $model_rutin=( new \App\Models\RefKaryawanJadwalRutin() )->where('id_karyawan','=',$id_karyawan)->first();
+                    if($model_rutin){
+                        if ($model_rutin->delete()) {
+                            $is_save = 1;
+                        }
+                    }
+
+                    $model_shift=( new \App\Models\RefKaryawanJadwalShift() )->where('id_karyawan','=',$id_karyawan)->first();
+                    if($model_shift){
+                        if ($model_shift->delete()) {
+                            $is_save = 1;
+                        }
+                    }
+
+                }else if($type_jadwal==1){
+                    $model_shift=( new \App\Models\RefKaryawanJadwalShift() )->where('id_karyawan','=',$id_karyawan)->first();
+                    if($model_shift){
+                        $model_shift->delete();
+                    }
+
+                    $model=( new \App\Models\RefKaryawanJadwalRutin() )->where('id_karyawan','=',$id_karyawan)->first();
+                    if(empty($model)){
+                        $model=new \App\Models\RefKaryawanJadwalRutin();
+                        $model->id_karyawan=$id_karyawan;
+                    }
+
+                    $model->id_jenis_jadwal=$id_jenis_jadwal;
+
+                    if ($model->save()) {
                         $is_save = 1;
                     }
-                }else{
+                
+                }else if($type_jadwal==2){
+                    $model_rutin=( new \App\Models\RefKaryawanJadwalRutin() )->where('id_karyawan','=',$id_karyawan)->first();
+                    if($model_rutin){
+                        $model_rutin->delete();
+                    }
+
+                    $model=( new \App\Models\RefKaryawanJadwalShift() )->where('id_karyawan','=',$id_karyawan)->first();
+                    if(empty($model)){
+                        $model=new \App\Models\RefKaryawanJadwalShift();
+                        $model->id_karyawan=$id_karyawan;
+                    }
+                    $model->id_template_jadwal_shift=$id_jenis_jadwal;
+
                     if ($model->save()) {
                         $is_save = 1;
                     }
                 }
-                    
 
                 if ($is_save) {
                     DB::commit();
@@ -164,5 +233,57 @@ class DataJadwalKaryawanController extends \App\Http\Controllers\MyAuthControlle
 
             return response()->json($pesan);
         }
+    }
+
+    function actionAturWaktu(Request $request){
+        $req = $request->all();
+        $data_sent = !empty($req['data_sent']) ? $req['data_sent'] : '';
+        $params = !empty($req['params']) ? $req['params'] : '';
+        $params=json_decode($params);
+        $exp=explode('@',$data_sent);
+        $id_karyawan=!empty($exp[0]) ? $exp[0] : 0;
+        $id_template_jadwal_shift=!empty($exp[1]) ? $exp[1] : 0;
+
+        $breadcrumbs=$this->breadcrumbs;
+        array_push($breadcrumbs,['title' => 'Atur Waktu Jadwal Karyawan', 'url' => url('/') . "/" . $this->url_index]);
+        
+        $paramater = [
+            'id_karyawan' => $id_karyawan
+        ];
+        $data_karyawan = (new \App\Services\RefKaryawanService)->getList($paramater, 1)->first();
+    
+        $url_back_index=(new \App\Http\Traits\GlobalFunction)->set_paramter_url('data-jadwal-karyawan',$params);
+
+
+        $filter_tahun_bulan=!empty($request->filter_tahun_bulan) ? $request->filter_tahun_bulan : date('Y-m');
+
+        $get_tgl_per_bulan=(new \App\Http\Traits\AbsensiFunction)->get_tgl_per_bulan($filter_tahun_bulan);
+        $list_tgl=!empty($get_tgl_per_bulan->list_tgl) ? $get_tgl_per_bulan->list_tgl : [];
+
+        $list_shift_tmp=(new \App\Services\DataPresensiService)->getListShift(['id_template_jadwal_shift'=>$id_template_jadwal_shift]);
+        $list_shift=[];
+        if(!empty($list_shift_tmp)){
+            foreach($list_shift_tmp as $value){
+                $list_shift=$value;
+            }
+        }
+        
+        $parameter_view = [
+            'title' => 'Atur Waktu Jadwal Karyawan',
+            'breadcrumbs' => $breadcrumbs,
+            'url_back_index' => $url_back_index,
+            'data_sent'=>$data_sent,
+            'params_json'=>json_encode($params),
+            'data_karyawan' => $data_karyawan,
+            'list_tgl'=>$list_tgl,
+            'list_shift'=>$list_shift,
+            // 'grafik_data'=>$grafik_data
+            // 'item_template_shift'=>$item_template_shift,
+            // 'get_list_template_shift_detail'=>$get_list_template_shift_detail,
+            // 'get_template_shift_detail'=>$get_template_shift_detail,
+            // 'grafik_data'=>$grafik_data,
+        ];
+
+        return view($this->part_view . '.index_atur_waktu', $parameter_view);
     }
 }

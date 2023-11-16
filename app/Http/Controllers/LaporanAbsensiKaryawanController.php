@@ -89,6 +89,7 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
             $list_data=$this->dataLaporanPresensiService->getRekapPresensi($parameter_where,1)
             ->orderBy('id_departemen','ASC')
             ->orderBy('id_ruangan','ASC')
+            ->orderBy('id_status_karyawan','ASC')
             ->orderBy('nm_karyawan','ASC')
             ->get();
 
@@ -187,6 +188,7 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
         $list_data=$this->dataLaporanPresensiService->getRekapPresensi($parameter_where,1)
         ->orderBy('id_departemen','ASC')
         ->orderBy('id_ruangan','ASC')
+        ->orderBy('id_status_karyawan','ASC')
         ->orderBy('nm_karyawan','ASC')
         ->get();
 
@@ -377,6 +379,8 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
             $list_departemen_first=[];
             $list_ruangan=[];
             $list_ruangan_first=[];
+            $list_status_karyawan=[];
+            $list_status_karyawan_first=[];
 
             $jml_item=0;
 
@@ -405,7 +409,7 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
 
                 if(empty($list_ruangan[$item->id_ruangan])){
                     $list_ruangan[$item->id_ruangan]=1;
-                    $cell_me='B';
+                    $cell_me='A';
                     $objPHPExcel->setActiveSheetIndex(0)->setCellValue($cell_me.$position_, !empty($item->nm_ruangan) ? $item->nm_ruangan : '' );
                     $merge_me=$cell_me.$position_.':'.$set_end_column_index.$position_;
                     $objPHPExcel->getActiveSheet()->mergeCells($merge_me);
@@ -414,6 +418,23 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
                         $list_ruangan_first[]=$cell_me.$position_;
                     }else{
                         $this_style=$objPHPExcel->getActiveSheet()->getStyle($list_ruangan_first[0]);
+                        $objPHPExcel->getActiveSheet()->duplicateStyle($this_style,$cell_me.$position_);
+                    }
+
+                    $position_++;
+                }
+
+                if(empty($list_status_karyawan[$item->id_ruangan][$item->id_status_karyawan])){
+                    $list_status_karyawan[$item->id_ruangan][$item->id_status_karyawan]=1;
+                    $cell_me='B';
+                    $objPHPExcel->setActiveSheetIndex(0)->setCellValue($cell_me.$position_, !empty($item->nm_status_karyawan) ? $item->nm_status_karyawan : '' );
+                    $merge_me=$cell_me.$position_.':'.$set_end_column_index.$position_;
+                    $objPHPExcel->getActiveSheet()->mergeCells($merge_me);
+
+                    if(empty($list_status_karyawan_first)){
+                        $list_status_karyawan_first[]=$cell_me.$position_;
+                    }else{
+                        $this_style=$objPHPExcel->getActiveSheet()->getStyle($list_status_karyawan_first[0]);
                         $objPHPExcel->getActiveSheet()->duplicateStyle($this_style,$cell_me.$position_);
                     }
 
@@ -625,6 +646,9 @@ class LaporanAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContr
                     ->setARGB('9cec6d');
                 }
             }
+
+            $cell_border="A".$position_awal_.':'.$end_index_tgl.$end_position;
+            $objPHPExcel->getActiveSheet()->getStyle($cell_border)->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
 
             $objWriter  = IOFactory::createWriter($objPHPExcel, "Xlsx");
 

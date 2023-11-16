@@ -114,6 +114,23 @@ class RefUserInfo extends Migration
                 // $table->foreign(['id_mesin_absensi','id_user'],$table_name.'_fk2')->references(['id_mesin_absensi','id_user'])->on('ref_user_info')->onUpdate('cascade')->onDelete('cascade');
             });
         }
+
+        Schema::table($table_name, function (Blueprint $table) use ($table_name) {
+            $sm = Schema::getConnection()->getDoctrineSchemaManager();
+            $indexesFound = $sm->listTableIndexes($table_name);
+
+            if(!array_key_exists($table_name.'_uniq1', $indexesFound)){
+                $table->unique(['id_karyawan'],$table_name.'_uniq1');
+            }
+
+            if(!array_key_exists($table_name.'_uniq2', $indexesFound)){
+                $table->unique(['id_user'],$table_name.'_uniq2');
+            }
+            
+            if(array_key_exists($table_name.'_uniq', $indexesFound)){
+                $table->dropUnique($table_name.'_uniq');
+            }
+        });
         
     }
 

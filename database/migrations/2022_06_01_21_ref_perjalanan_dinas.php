@@ -43,6 +43,15 @@ class RefPerjalananDinas extends \App\Classes\MyMigration
             $params=['dropForeign'=>['id_karyawan']];
             $this->update_table($table_name,$table,$params);
         }
+
+        $another_create_string=['uraian'=>100];
+        foreach($another_create_string as $value => $length){
+            if (!Schema::hasColumn($table_name, $value)){
+                Schema::table($table_name, function (Blueprint $table) use ($value,$length){
+                    $table->string($value,$length);
+                });
+            }
+        }
     }
 
     /**

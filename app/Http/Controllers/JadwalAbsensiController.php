@@ -23,7 +23,7 @@ class JadwalAbsensiController extends \App\Http\Controllers\MyAuthController
 
         $this->title = 'Pengaturan Jadwal Presensi';
         $this->breadcrumbs = [
-            ['title' => 'Jadwal', 'url' => url('/') . "/sub-menu?type=6"],
+            ['title' => 'Manajemen Absensi', 'url' => url('/') . "/sub-menu?type=6"],
             ['title' => $this->title, 'url' => url('/') . "/" . $this->url_index],
         ];
 

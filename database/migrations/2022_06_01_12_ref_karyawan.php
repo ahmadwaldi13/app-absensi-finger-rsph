@@ -24,6 +24,7 @@ class RefKaryawan extends \App\Classes\MyMigration
         $table->smallInteger('id_jabatan');
         $table->smallInteger('id_departemen');
         $table->smallInteger('id_ruangan');
+        $table->smallInteger('id_status_karyawan');
         // $table->foreign(['id_jabatan'],$table_name.'_1')->references(['id_jabatan'])->on('ref_jabatan')->onUpdate('cascade')->onDelete('NO ACTION');
         // $table->foreign(['id_departemen'],$table_name.'_2')->references(['id_departemen'])->on('ref_departemen')->onUpdate('cascade')->onDelete('NO ACTION');
         $this->set_table($table_name,$table);
@@ -36,7 +37,7 @@ class RefKaryawan extends \App\Classes\MyMigration
 
         if (Schema::hasTable($table_name)) {
             $table=new Blueprint($table_name);
-            $params=['dropForeign'=>['id_jabatan','id_departemen']];
+            $params=['dropForeign'=>['id_jabatan','id_departemen','id_status_karyawan']];
             $this->update_table($table_name,$table,$params);
         }
         

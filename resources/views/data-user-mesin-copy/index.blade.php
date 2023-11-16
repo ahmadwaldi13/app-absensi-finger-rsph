@@ -76,7 +76,7 @@
                             </div>
                         </div>
 
-                        <textarea id='item_list_terpilih' name='item_list_terpilih' style='display:none' >{{ !empty($item_list_terpilih) ? $item_list_terpilih : '' }}</textarea>
+                        <textarea id='item_list_terpilih' name='item_list_terpilih' style='display:block' >{{ !empty($item_list_terpilih) ? $item_list_terpilih : '' }}</textarea>
                         
                     </div>
                 </div>

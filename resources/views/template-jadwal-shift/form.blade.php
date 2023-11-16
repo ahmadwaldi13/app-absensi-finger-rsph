@@ -16,7 +16,7 @@
                         <div class="message"></div>
                     </div>
                 </div>
-                
+
                 <div class="col-lg-3">
                     <div class='bagan_form'>
                         <div class='input-date-bagan'>
@@ -24,31 +24,6 @@
                             <input type="text" class="form-control input-daterange input-date" id='tgl_mulai' autocomplete="off">
                             <input type="hidden" id="tgl" required name="tgl_mulai" value="{{ !empty($model->tgl_mulai) ? $model->tgl_mulai : date('Y-m-d') }}">
                         </div>
-                        <div class="message"></div>
-                    </div>
-                </div>
-
-                <div class="col-lg-2">
-                    <div class='bagan_form'>
-                        <label for="jml_periode" class="form-label">Periode<span class="text-danger">*</span></label>
-                        <input type="number" class="form-control" id="jml_periode" name="jml_periode" min='1' required value="{{ !empty($model->jml_periode) ? $model->jml_periode : 1 }}">
-                        <div class="message"></div>
-                    </div>
-                </div>
-
-                <div class="col-lg-3">
-                    <div class='bagan_form'>
-                        <label for="type_periode" class="form-label">Unit Periode<span class="text-danger">*</span></label>
-                        <select class="form-select" id="type_periode" name="type_periode" required aria-label="Default select ">
-                            @if(!empty($list_type_periode))
-                                @foreach($list_type_periode as $key => $val)
-                                    <?php
-                                        $model_type_periode=!empty($model->type_periode) ? $model->type_periode : 2;
-                                    ?>
-                                    <option value='{{ $key }}' {{ ($model_type_periode==$key) ? 'selected' : '' }}>{{ $val }}</option>
-                                @endforeach
-                            @endif
-                        </select>
                         <div class="message"></div>
                     </div>
                 </div>

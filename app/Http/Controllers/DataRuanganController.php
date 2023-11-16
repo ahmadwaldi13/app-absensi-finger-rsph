@@ -32,7 +32,7 @@ class DataRuanganController extends \App\Http\Controllers\MyAuthController
 
     function actionIndex(Request $request)
     {
-
+        DB::statement("ALTER TABLE ".( new \App\Models\RefRuangan )->table." AUTO_INCREMENT = 1");
         $form_filter_text = !empty($request->form_filter_text) ? $request->form_filter_text : '';
 
         $paramater_search=[

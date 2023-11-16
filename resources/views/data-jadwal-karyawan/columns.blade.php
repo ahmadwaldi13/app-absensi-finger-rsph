@@ -31,7 +31,7 @@
                                 <div class="button-icon-inside">
                                     <input type="text" class="input-text" id='filter_nm_departemen' name="filter_nm_departemen" readonly value="{{ Request::get('filter_nm_departemen') }}" />
                                     <input type="hidden" id="filter_id_departemen" name='filter_id_departemen' readonly required value="{{ Request::get('filter_id_departemen') }}">
-                                    <span class="modal-remote-data" data-modal-src="{{ url('ajax?action=get_list_departemen') }}" data-modal-key="" data-modal-pencarian='true' data-modal-title='Departemen' data-modal-width='30%' data-modal-action-change="function=.set-data-list-from-modal@data-target=#filter_id_departemen|#filter_nm_departemen@data-key-bagan=0@data-btn-close=#closeModalData">
+                                    <span class="modal-remote-data" data-modal-src="{{ url('ajax?action=get_list_departemen') }}" data-modal-key="" data-modal-pencarian='true' data-modal-title='Departemen' data-modal-width='50%' data-modal-action-change="function=.set-data-list-from-modal@data-target=#filter_id_departemen|#filter_nm_departemen@data-key-bagan=0@data-btn-close=#closeModalData">
                                         <img class="iconify hover-pointer text-primary" src="{{ asset('') }}icon/selected.png" alt="">
                                     </span>
                                     <a href="#" id='reset_input'><i class="fa-solid fa-square-xmark"></i></a>                            
@@ -46,7 +46,7 @@
                                 <div class="button-icon-inside">
                                     <input type="text" class="input-text" id='filter_nm_ruangan' name="filter_nm_ruangan" readonly value="{{ Request::get('filter_nm_ruangan') }}" />
                                     <input type="hidden" id="filter_id_ruangan" name='filter_id_ruangan' readonly required value="{{ Request::get('filter_id_ruangan') }}">
-                                    <span class="modal-remote-data" data-modal-src="{{ url('ajax?action=get_list_ruangan') }}" data-modal-key-with-form="#filter_id_departemen" data-modal-pencarian='true' data-modal-title='ruangan' data-modal-width='30%' data-modal-action-change="function=.set-data-list-from-modal@data-target=#filter_id_ruangan|#filter_nm_ruangan@data-key-bagan=0@data-btn-close=#closeModalData">
+                                    <span class="modal-remote-data" data-modal-src="{{ url('ajax?action=get_list_ruangan') }}" data-modal-key-with-form="#filter_id_departemen" data-modal-pencarian='true' data-modal-title='Ruangan' data-modal-width='70%' data-modal-action-change="function=.set-data-list-from-modal@data-target=#filter_id_ruangan|#filter_nm_ruangan@data-key-bagan=0@data-btn-close=#closeModalData">
                                         <img class="iconify hover-pointer text-primary" src="{{ asset('') }}icon/selected.png" alt="">
                                     </span>
                                     <a href="#" id='reset_input'><i class="fa-solid fa-square-xmark"></i></a>                            
@@ -69,10 +69,17 @@
                                     <option value="non" {{ (Request::get('form_jenis_jadwal')=='non') ? 'selected' : '' }}>Tidak ada jadwal</option>
                                     @if(!empty($data_jadwal))
                                         @foreach($data_jadwal as $key => $item)
-                                            <?php 
-                                                $selected=(Request::get('form_jenis_jadwal')==$item->id_jenis_jadwal) ? 'selected' : '';
+                                            <?php
+                                                $item=(object)$item;
+                                                $kode=$item->key.'@'.$item->value;
+                                                $selected=(Request::get('form_jenis_jadwal')==$kode) ? 'selected' : '';
+
+                                                $title_jadwal=$item->text;
+                                                if($item->key==2){
+                                                    $title_jadwal='Shift:'.$item->text;
+                                                }
                                             ?>
-                                            <option value="{{ $item->id_jenis_jadwal }}" {{ $selected }} >{{ $item->nm_jenis_jadwal }}</option>
+                                            <option value="{{ $kode }}" {{ $selected }} >{{ $title_jadwal }}</option>
                                         @endforeach
                                     @endif
                                 </select>
@@ -117,6 +124,7 @@
                             <th class="py-3" style="width: 10%">Ruangan</th>
                             <th class="py-3" style="width: 5%">Id User Mesin</th>
                             <th class="py-3" style="width: 5%">Jenis Jadwal</th>
+                            <th class="py-3" style="width: 5%">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -126,6 +134,18 @@
                                 $paramater_url=[
                                     'data_sent'=>$item->id_karyawan
                                 ];
+                                
+                                $id_jenis_jadwal=!empty($item->id_jenis_jadwal) ? $item->id_jenis_jadwal : '';
+                                $id_template_jadwal_shift=!empty($item->id_template_jadwal_shift) ? $item->id_template_jadwal_shift : '';
+                                
+                                $key_jadwal='';
+                                if($id_jenis_jadwal){
+                                    $key_jadwal='1@'.$id_jenis_jadwal;
+                                }
+
+                                if($id_template_jadwal_shift){
+                                    $key_jadwal='2@'.$id_template_jadwal_shift;
+                                }
 
                                 $status_user_mesin=$item->status_akun_mesin;
                                 $status_user_mesin_text="<span style='color:RED'>Tidak ada</span>";
@@ -143,7 +163,28 @@
                                 
                                 <td>{!! $status_user_mesin_text  !!}</td>
                                 <td class='text-right'>
-                                    <a href="#" class="pil_jadwal" data-value="{{ !empty($item->id_jenis_jadwal) ? $item->id_jenis_jadwal : ''  }}" data-source='{{ $data_jadwal_json }}' data-type="select" data-pk="{{ !empty($item->id_karyawan) ? $item->id_karyawan : ''  }}" data-url="{{ $router_name->uri }}" data-title="Select status"></a>
+                                    <a href="#" class="pil_jadwal"
+                                        data-source='{{ $data_jadwal_json }}' data-type="select" 
+                                        data-value="{{ $key_jadwal  }}"
+                                        data-pk="{{ !empty($item->id_karyawan) ? $item->id_karyawan : ''  }}" 
+                                        data-url="{{ $router_name->uri }}" 
+                                        data-title="Select status">
+                                    </a>
+                                </td>
+                                <td>
+                                    <?php $url_atur_waktu=$router_name->uri.'/aturwaktu'; ?>
+                                    @if( (new \App\Http\Traits\AuthFunction)->checkAkses($url_atur_waktu) )
+                                        @if($id_template_jadwal_shift)
+                                            <?php
+                                                $paramater_url=[
+                                                    'data_sent'=>$item->id_karyawan.'@'.$id_template_jadwal_shift,
+                                                    'params'=>json_encode(Request::all())
+                                                ];
+                                                $url_atur_waktu=(new \App\Http\Traits\GlobalFunction)->set_paramter_url($url_atur_waktu,$paramater_url);
+                                            ?>
+                                            <a href="{{ url($url_atur_waktu) }}" class="btn btn-kecil btn-info" style='color:#555'>Atur Waktu</a>
+                                        @endif
+                                    @endif
                                 </td>
                             </tr>
                             @endforeach

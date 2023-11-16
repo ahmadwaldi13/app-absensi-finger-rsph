@@ -70,7 +70,6 @@ function get_terpilih(){
             $.each( $item, function( key, value ) {
                 if(value.data){
                     $tamplate+='<tr data-kode="'+key+'">';
-                        console.log(value.data);
                         $.each( value.data, function( key1, value1 ) {
                             $tamplate+="<td>"+decode_html_raw(value1)+"</td>";
                         });
@@ -142,6 +141,27 @@ $(document).delegate(".del_item", "click", function(event) {
     }
 
     return false;
+});
+
+$(document).delegate(".checked_all", "change", function(event) {
+    $checked=0;
+    if($(this).is(':checked')){
+        $checked=1;
+    }
+
+    $(document).find('.checked_b').each(function () {
+        if($checked==1){
+            $(this).prop('checked',true);
+        }else{
+            $(this).prop('checked',false);
+        }
+    });
+
+    setTimeout(function() {
+        set_data();
+        get_terpilih();
+    }, 700);
+    
 });
 
 

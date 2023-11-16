@@ -38,6 +38,8 @@ class DataLaporanPresensiService extends BaseService
                     nm_departemen,
                     utama.id_ruangan,
                     nm_ruangan,
+                    utama.id_status_karyawan,
+                    nm_status_karyawan,
                     utama.id_jabatan,
                     nm_jabatan,
                     JSON_OBJECTAGG( 
@@ -69,6 +71,7 @@ class DataLaporanPresensiService extends BaseService
                     left join ref_jabatan rj on rj.id_jabatan=utama.id_jabatan
                     left join ref_departemen rd on rd.id_departemen=utama.id_departemen
                     left join ref_ruangan rr on rr.id_ruangan=utama.id_ruangan
+                    left join ref_status_karyawan rsk on rsk.id_status_karyawan=utama.id_status_karyawan
                 GROUP BY id_user
                 ORDER BY 
                     UNIX_TIMESTAMP( tgl_presensi ) ASC,
