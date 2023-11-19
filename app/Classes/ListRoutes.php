@@ -269,9 +269,9 @@ class ListRoutes
                     [
                         'type' => 'atur waktu',
                         'method' => ['get', 'post'],
-                        'url' => '/data-jadwal-karyawan/aturwaktu',
-                        'controller' => 'DataJadwalKaryawanController@actionAturWaktu',
-                        'name' => '',
+                        'url' => '/data-jadwal-karyawan-shift',
+                        'controller' => 'DataJadwalKaryawanShiftController@actionIndex',
+                        'name' => 'data_jadwal_karyawan_shift',
                         'middleware' => '',
                     ],
                     [

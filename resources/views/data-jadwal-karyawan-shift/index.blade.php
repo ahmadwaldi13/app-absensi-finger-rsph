@@ -26,8 +26,8 @@
 <hr>
 <div>
     <form action="" method="GET">
-        <input type="text" name='data_sent' value='{{ !empty($data_sent) ? $data_sent : '' }}'>
-        <input type="text" name='params' value='{{ !empty($params_json) ? $params_json : '' }}'>
+        <input type="hidden" name='data_sent' value='{{ !empty($data_sent) ? $data_sent : '' }}'>
+        <input type="hidden" name='params' value='{{ !empty($params_json) ? $params_json : '' }}'>
 
         <div class="row d-flex justify-content-between">
             <div class="col-lg-6">
@@ -77,7 +77,7 @@
                             <tr>
                                 <td style='width: 20%; vertical-align: middle;'>Model Jadwal Shift</td>
                                 <td style='width: 1%; vertical-align: middle;'>:</td>
-                                <td style='width: 69%; vertical-align: middle;'>{{ !empty($data_karyawan->nm_karyawan) ? $data_karyawan->nm_karyawan : '' }}</td>
+                                <td style='width: 69%; vertical-align: middle;'>{{ !empty($model_shift->nm_shift) ? $model_shift->nm_shift : '' }}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -87,6 +87,6 @@
     </form>
 </div>
 
-@include($router_name->path_base.'.columns_atur_waktu')
+@include($router_name->path_base.'.columns')
 
 @endsection

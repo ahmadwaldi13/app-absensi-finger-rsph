@@ -70,8 +70,6 @@ class RefTemplateJadwalShift extends Migration
             if(array_key_exists($table_name.'_uniq', $indexesFound)){
                 $table->dropUnique($table_name.'_uniq');
             }
-
-            
         });
     }
 

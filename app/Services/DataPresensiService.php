@@ -311,198 +311,182 @@ class DataPresensiService extends BaseService
 
     }
 
-    // function getListShift($params=[]){
+    public function hitung_tgl_rekursif($params){
+        $tgl_dasar=$params['tgl_dasar'];
+        $tgl_awal=$params['tgl_awal'];
+        $jml_range=$params['jml_range'];
+        $value_data=$params['value_data'];
 
-    //     $query=DB::table(DB::raw(
-    //         '(
-    //             select
-    //                 utama.id_template_jadwal_shift,
-    //                 utama.nm_shift,
-    //                 rtjsd.id_template_jadwal_shift_detail,
-    //                 tgl_mulai,
-    //                 rtjsw.id_jenis_jadwal,
-    //                 nm_jenis_jadwal,masuk_kerja,pulang_kerja,pulang_kerja_next_day,bg_color,
-    //                 type as type_jadwal,
-    //                 tgl
-    //             from (
-    //                 select * from ref_template_jadwal_shift '.(!empty($params['id_template_jadwal_shift']) ? "where id_template_jadwal_shift=".$params['id_template_jadwal_shift'] : '').'
-    //             ) utama
-    //             inner join ref_template_jadwal_shift_detail rtjsd on rtjsd.id_template_jadwal_shift = utama.id_template_jadwal_shift
-    //             inner join ref_template_jadwal_shift_waktu rtjsw on rtjsw.id_template_jadwal_shift_detail = rtjsd.id_template_jadwal_shift_detail
-    //             left join ref_jenis_jadwal rjj on rjj.id_jenis_jadwal = rtjsw.id_jenis_jadwal
-                
-    //         ) utama'
-    //     ));
-
-    //     $hasil=$query->get();
+        $tgl_akhir=!empty($params['tgl_akhir']) ? $params['tgl_akhir'] : '';
         
-    //     $data_template_jadwal_shift=[];
-    //     $list_option_data=[];
-    //     if($hasil){
-    //         foreach($hasil as $key => $value){
-    //             if(!empty($value->tgl)){
-    //                 $explode=explode(',',$value->tgl);
-    //                 if($explode){
-    //                     foreach($explode as $val_tgl){
-    //                         $data_template_jadwal_shift[$value->id_template_jadwal_shift][$val_tgl]['id_template_jadwal_shift']=$value->id_template_jadwal_shift;
-    //                         $data_template_jadwal_shift[$value->id_template_jadwal_shift][$val_tgl]['nm_shift']=$value->nm_shift;
-    //                         $data_template_jadwal_shift[$value->id_template_jadwal_shift][$val_tgl]['id_template_jadwal_shift_detail']=$value->id_template_jadwal_shift_detail;
+        $callback=!empty($params['callback']) ? $params['callback'] : [];
 
-    //                         $data_template_jadwal_shift[$value->id_template_jadwal_shift][$val_tgl]['data_jadwal'][]=$value->nm_jenis_jadwal;
-
-                            
-    //                         $text_lenght_jadwal_waktu=$value->nm_jenis_jadwal.' '.$value->masuk_kerja.' s/d '.$value->pulang_kerja;
-    //                         if($value->pulang_kerja_next_day){
-    //                             $text_lenght_jadwal_waktu.=' Esok Hari';
-    //                         }
-    //                         if($value->type_jadwal==2){
-    //                             $text_lenght_jadwal_waktu="Libur";
-    //                             $value->bg_color='#e1dede';
-    //                         }
-                            
-    //                         $parameter=[
-    //                             'title'=>$text_lenght_jadwal_waktu,
-    //                             'bg_color'=>$value->bg_color,
-    //                             'type_jadwal'=>$value->type_jadwal,
-
-    //                         ];
-    //                         $data_template_jadwal_shift[$value->id_template_jadwal_shift][$val_tgl]['data_jadwal_waktu'][]=json_encode($parameter);
-
-    //                         $data_template_jadwal_shift[$value->id_template_jadwal_shift][$val_tgl]['item'][]=[
-    //                             'id_jenis_jadwal'=>$value->id_jenis_jadwal,
-    //                             'type_jadwal'=>$value->type_jadwal,
-    //                             'nm_jenis_jadwal'=>$value->nm_jenis_jadwal,
-    //                             'bg_color'=>$value->bg_color,
-    //                             'masuk_kerja'=>$value->masuk_kerja,
-    //                             'pulang_kerja'=>$value->pulang_kerja,
-    //                             'pulang_kerja_next_day'=>$value->pulang_kerja_next_day,
-    //                         ];
-
-    //                         if($value->type_jadwal==1){
-    //                             if(empty( $data_template_jadwal_shift[$value->id_template_jadwal_shift][$val_tgl]['jml_kerja'] )){
-    //                                 $data_template_jadwal_shift[$value->id_template_jadwal_shift][$val_tgl]['jml_kerja']=1;
-    //                             }else{
-    //                                 $data_template_jadwal_shift[$value->id_template_jadwal_shift][$val_tgl]['jml_kerja']++;
-    //                             }
-
-    //                             if(empty($list_option_data[$value->id_template_jadwal_shift]['jml_kerja_minggu'])){
-    //                                 $list_option_data[$value->id_template_jadwal_shift]['jml_kerja_minggu']=1;
-    //                             }else{
-    //                                 $list_option_data[$value->id_template_jadwal_shift]['jml_kerja_minggu']++;
-    //                             }
-
-    //                             $masuk=(new \App\Http\Traits\AbsensiFunction)->his_to_seconds($value->masuk_kerja);
-    //                             $pulang=(new \App\Http\Traits\AbsensiFunction)->his_to_seconds($value->pulang_kerja);
-                                
-    //                             if(empty($value->pulang_kerja_next_day)){
-    //                                 $total_kerja=$pulang-$masuk;
-    //                             }else{
-    //                                 $total_kerja=$masuk-$pulang;
-    //                             }
-
-    //                             if(empty($data_template_jadwal_shift[$value->id_template_jadwal_shift][$val_tgl]['total_kerja_per_hari'])){
-    //                                 $data_template_jadwal_shift[$value->id_template_jadwal_shift][$val_tgl]['total_kerja_per_hari']=$total_kerja;
-    //                             }else{
-    //                                 $total_kerja_per_hari_tmp=$data_template_jadwal_shift[$value->id_template_jadwal_shift][$val_tgl]['total_kerja_per_hari'];
-    //                                 $data_template_jadwal_shift[$value->id_template_jadwal_shift][$val_tgl]['total_kerja_per_hari']=$total_kerja_per_hari_tmp+$total_kerja;
-    //                             }
-                                
-    //                             if(empty($list_option_data[$value->id_template_jadwal_shift]['total_kerja_minggu'])){
-    //                                 $list_option_data[$value->id_template_jadwal_shift]['total_kerja_minggu']=$total_kerja;
-    //                             }else{
-    //                                 $total_kerja_tmp=$list_option_data[$value->id_template_jadwal_shift]['total_kerja_minggu'];
-    //                                 $list_option_data[$value->id_template_jadwal_shift]['total_kerja_minggu']=$total_kerja_tmp+$total_kerja;
-    //                             }
-    //                         }
-
-    //                         if($value->type_jadwal==2){
-
-    //                             if(empty( $data_template_jadwal_shift[$value->id_template_jadwal_shift][$val_tgl]['jml_libur'] )){
-    //                                 $data_template_jadwal_shift[$value->id_template_jadwal_shift][$val_tgl]['jml_libur']=1;
-    //                             }
-
-    //                             if(empty($list_option_data[$value->id_template_jadwal_shift]['jml_libur_minggu'])){
-    //                                 $list_option_data[$value->id_template_jadwal_shift]['jml_libur_minggu']=1;
-    //                             }else{
-    //                                 $list_option_data[$value->id_template_jadwal_shift]['jml_libur_minggu']++;
-    //                             }
-    //                         }
-                            
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //     }
-
-        
-
-    //     $data_template_jadwal_shift_tmp=$data_template_jadwal_shift;
-    //     $list_data=[];
-        
-    //     foreach($data_template_jadwal_shift_tmp as $key => $item){
-    //         $list_option_data[$key]['jml_kerja_bulan']=$list_option_data[$key]['jml_kerja_minggu'];
-    //         $list_option_data[$key]['jml_libur_bulan']=$list_option_data[$key]['jml_libur_minggu'];
-    //         $list_option_data[$key]['total_kerja_bulan']=$list_option_data[$key]['total_kerja_minggu'];
-    //         foreach($item as $key_hari => $val_hasil){
-    //             for($i=1; $i<=4; $i++){
-    //                 $jml=$i*count($item);
-    //                 $tgl_hasil=$jml+$key_hari;
-    //                 if($tgl_hasil<=31){
-    //                     $data_template_jadwal_shift_tmp[$key][$tgl_hasil]=$val_hasil;
-    //                     if(!empty($data_template_jadwal_shift_tmp[$key][$tgl_hasil]['jml_kerja'])){
-    //                         $tmp=$list_option_data[$key]['jml_kerja_bulan'];
-    //                         $list_option_data[$key]['jml_kerja_bulan']=$tmp+$data_template_jadwal_shift_tmp[$key][$tgl_hasil]['jml_kerja'];
-    //                     }
-
-    //                     if(!empty($data_template_jadwal_shift_tmp[$key][$tgl_hasil]['jml_libur'])){
-    //                         $tmp=$list_option_data[$key]['jml_libur_bulan'];
-    //                         $list_option_data[$key]['jml_libur_bulan']=$tmp+$data_template_jadwal_shift_tmp[$key][$tgl_hasil]['jml_libur'];
-    //                     }
-
-    //                     if(!empty($data_template_jadwal_shift_tmp[$key][$tgl_hasil]['total_kerja_per_hari'])){
-    //                         $tmp=$list_option_data[$key]['total_kerja_bulan'];
-    //                         $list_option_data[$key]['total_kerja_bulan']=$tmp+$data_template_jadwal_shift_tmp[$key][$tgl_hasil]['total_kerja_per_hari'];
-    //                     }
-    //                 }
-    //             }
-    //         }
-    //         ksort($data_template_jadwal_shift_tmp[$key]);
-    //         $list_data[$key]['item']=json_encode($data_template_jadwal_shift_tmp[$key]);
-    //     }
-
-    //     foreach($list_data as $key => $item){
-    //         if(!empty($list_option_data[$key])){
-    //             $list_data[$key]=array_merge($list_option_data[$key],$list_data[$key]);
-    //         }
-    //     }
-    //     return $list_data;
-    // }
-
-
-    public function putar($tgl_mulai,$end_tgl,$callback){
         $return=[];
-        $tgl1 = new \DateTime($tgl_mulai);
-        $tgl2 = new \DateTime($tgl_mulai);
-        $vv=8;
-        $tgl2->modify('+'.$vv.' day');
-        $hasil=$tgl2->format('Y-m-d');
-
-        $strtotime_start=strtotime($tgl_mulai);
-        $strtotime_end=strtotime($end_tgl);
+        
+        $tgl_next_tmp = new \DateTime($tgl_awal);
+        $tgl_next_tmp->modify('+'.$jml_range.' day');
+        $tgl_next_tahun=$tgl_next_tmp->format('Y');
+        $tgl_next_bulan=$tgl_next_tmp->format('m');
+        $tgl_next=$tgl_next_tmp->format('Y-m-d');
+        
+        if($tgl_dasar==$tgl_awal){
+            $tgl_dasar_tmp = new \DateTime($tgl_dasar);
+            $callback[$tgl_dasar_tmp->format('Y-m-d')]=$value_data;
+        }
 
         if(!empty($callback)){
             $return=$callback;
         }
-        $callback[$hasil]=1;
-
-        if($strtotime_start<=$strtotime_end){
-            return $this->putar($hasil,$end_tgl,$callback);
-        }
         
+        $tgl_tmp = new \DateTime($tgl_dasar);
+        $tgl_first=(int)$tgl_tmp->format('d');
+        $tahun_first=(int)$tgl_tmp->format('Y');
+        $tgl_check=(int)$tgl_next_tmp->format('d');
+        $tahun_check=(int)$tgl_next_tmp->format('Y');
+
+        $status_lopping=0;
+        if( $tgl_first!=$tgl_check){
+            $status_lopping=1;
+        }else{
+            if( $tahun_first==$tahun_check){
+                $status_lopping=1;
+            }
+        }
+
+        if(!empty($tgl_akhir)){
+            $status_lopping=0;
+
+            $strtotime_start=strtotime($tgl_next);
+            $strtotime_end=strtotime($tgl_akhir);
+
+            if($strtotime_start<=$strtotime_end){
+                $status_lopping=1;
+            }
+        }
+
+        if( ($status_lopping)){
+            $callback[$tgl_next]=$value_data;
+        }
+
+        if(!empty($callback)){
+            ksort($callback);
+        }
+
+        if( ($status_lopping)){
+            $paramater=[
+                'tgl_dasar'=>$tgl_dasar,
+                'tgl_awal'=>$tgl_next,
+                'jml_range'=>$jml_range,
+                'value_data'=>$value_data,
+                'callback'=>$callback,
+            ];
+
+            if(!empty($tgl_akhir)){
+                $paramater['tgl_akhir']=$tgl_akhir;
+            }
+            
+            return $this->hitung_tgl_rekursif($paramater);
+        }else{
+            $return=$callback;
+        }
+
         return $return;
     }
 
-    function getListShift($params=[]){
+    public function hitung_tgl_rekursif_bulan($params){
+        $tgl_dasar=$params['tgl_dasar'];
+        $tgl_awal=$params['tgl_awal'];
+        $jml_range=$params['jml_range'];
+        $value_data=$params['value_data'];
+
+        $tgl_akhir=!empty($params['tgl_akhir']) ? $params['tgl_akhir'] : '';
+        
+        $callback=!empty($params['callback']) ? $params['callback'] : [];
+
+        $return=[];
+        
+        $tgl_next_tmp = new \DateTime($tgl_awal);
+        $tgl_next_tmp->modify('+'.$jml_range.' day');
+        $tgl_next_tahun=$tgl_next_tmp->format('Y');
+        $tgl_next_bulan=$tgl_next_tmp->format('m');
+        $tgl_next=$tgl_next_tmp->format('Y-m-d');
+        
+        if($tgl_dasar==$tgl_awal){
+            $tgl_dasar_tmp = new \DateTime($tgl_dasar);
+            $callback[$tgl_dasar_tmp->format('Y')][(int)$tgl_dasar_tmp->format('m')][$tgl_dasar_tmp->format('Y-m-d')]=$value_data;
+        }
+
+        if(!empty($callback)){
+            $return=$callback;
+        }
+
+        $tgl_tmp = new \DateTime($tgl_dasar);
+        $tgl_first=(int)$tgl_tmp->format('d');
+        $tahun_first=(int)$tgl_tmp->format('Y');
+        $tgl_check=(int)$tgl_next_tmp->format('d');
+        $tahun_check=(int)$tgl_next_tmp->format('Y');
+
+        $status_lopping=0;
+        if( $tgl_first!=$tgl_check){
+            $status_lopping=1;
+        }else{
+            if( $tahun_first==$tahun_check){
+                $status_lopping=1;
+            }
+        }
+
+        if(!empty($tgl_akhir)){
+            $status_lopping=0;
+
+            $strtotime_start=strtotime($tgl_next);
+            $strtotime_end=strtotime($tgl_akhir);
+
+            if($strtotime_start<=$strtotime_end){
+                $status_lopping=1;
+            }
+        }
+
+        if( ($status_lopping)){
+            $callback[$tgl_next_tahun][(int)$tgl_next_bulan][$tgl_next]=$value_data;
+        }
+
+        if(!empty($callback)){
+            ksort($callback);
+        }
+
+        if(!empty($callback[$tgl_next_tahun])){
+            ksort($callback[$tgl_next_tahun]);
+        }
+
+        if(!empty($callback[$tgl_next_tahun][(int)$tgl_next_bulan])){
+            ksort($callback[$tgl_next_tahun][(int)$tgl_next_bulan]);
+        }
+
+        if( ($status_lopping)){
+            $paramater=[
+                'tgl_dasar'=>$tgl_dasar,
+                'tgl_awal'=>$tgl_next,
+                'jml_range'=>$jml_range,
+                'value_data'=>$value_data,
+                'callback'=>$callback,
+            ];
+
+            if(!empty($tgl_akhir)){
+                $paramater['tgl_akhir']=$tgl_akhir;
+            }
+
+            return $this->hitung_tgl_rekursif_bulan($paramater);
+        }else{
+            $return=$callback;
+        }
+
+        return $return;
+    }
+
+    function setListShiftFirst($params=[]){
+
+        $type_fungsi=!empty($params['type_fungsi']) ? $params['type_fungsi'] : 'bulan';
+        unset($params['type_fungsi']);
 
         $query=DB::table(DB::raw(
             '(
@@ -525,219 +509,389 @@ class DataPresensiService extends BaseService
             ) utama'
         ));
 
-        $hasil=$query->get();
-        
-        $data_template_jadwal_shift=[];
-        $list_option_data=[];
-        $list_option_data_2=[];
-        if($hasil){
-            foreach($hasil as $key => $value){
+        $hasil_query=$query->get();
+
+        $data_jadwal_tmp=[];
+        $data_hari_shift=[];
+        $data_hari_shift_tmp=[];
+        $tgl_mulai_perhitungan='';
+        if($hasil_query->count()){
+            foreach($hasil_query as $key => $value){
                 if(!empty($value->tgl)){
-                    $explode=explode(',',$value->tgl);
-                    if($explode){
-                        foreach($explode as $val_tgl){
-                            $list_option_data_2[$value->id_template_jadwal_shift]['tgl_mulai']=$value->tgl_mulai;
-
-                            $data_template_jadwal_shift[$value->id_template_jadwal_shift][$val_tgl]['id_template_jadwal_shift']=$value->id_template_jadwal_shift;
-                            $data_template_jadwal_shift[$value->id_template_jadwal_shift][$val_tgl]['nm_shift']=$value->nm_shift;
-                            $data_template_jadwal_shift[$value->id_template_jadwal_shift][$val_tgl]['id_template_jadwal_shift_detail']=$value->id_template_jadwal_shift_detail;
-
-                            $data_template_jadwal_shift[$value->id_template_jadwal_shift][$val_tgl]['data_jadwal'][]=$value->nm_jenis_jadwal;
-
-                            
-                            $text_lenght_jadwal_waktu=$value->nm_jenis_jadwal.' '.$value->masuk_kerja.' s/d '.$value->pulang_kerja;
-                            if($value->pulang_kerja_next_day){
-                                $text_lenght_jadwal_waktu.=' Esok Hari';
-                            }
-                            if($value->type_jadwal==2){
-                                $text_lenght_jadwal_waktu="Libur";
-                                $value->bg_color='#e1dede';
-                            }
-                            
-                            $parameter=[
-                                'title'=>$text_lenght_jadwal_waktu,
-                                'bg_color'=>$value->bg_color,
-                                'type_jadwal'=>$value->type_jadwal,
-
-                            ];
-                            $data_template_jadwal_shift[$value->id_template_jadwal_shift][$val_tgl]['data_jadwal_waktu'][]=json_encode($parameter);
-
-                            $data_template_jadwal_shift[$value->id_template_jadwal_shift][$val_tgl]['item'][]=[
-                                'id_jenis_jadwal'=>$value->id_jenis_jadwal,
-                                'type_jadwal'=>$value->type_jadwal,
-                                'nm_jenis_jadwal'=>$value->nm_jenis_jadwal,
-                                'bg_color'=>$value->bg_color,
-                                'masuk_kerja'=>$value->masuk_kerja,
-                                'pulang_kerja'=>$value->pulang_kerja,
-                                'pulang_kerja_next_day'=>$value->pulang_kerja_next_day,
-                            ];
-
-                            if($value->type_jadwal==1){
-                                if(empty( $data_template_jadwal_shift[$value->id_template_jadwal_shift][$val_tgl]['jml_kerja'] )){
-                                    $data_template_jadwal_shift[$value->id_template_jadwal_shift][$val_tgl]['jml_kerja']=1;
-                                }else{
-                                    $data_template_jadwal_shift[$value->id_template_jadwal_shift][$val_tgl]['jml_kerja']++;
-                                }
-
-                                if(empty($list_option_data[$value->id_template_jadwal_shift]['jml_kerja_minggu'])){
-                                    $list_option_data[$value->id_template_jadwal_shift]['jml_kerja_minggu']=1;
-                                }else{
-                                    $list_option_data[$value->id_template_jadwal_shift]['jml_kerja_minggu']++;
-                                }
-
-                                $masuk=(new \App\Http\Traits\AbsensiFunction)->his_to_seconds($value->masuk_kerja);
-                                $pulang=(new \App\Http\Traits\AbsensiFunction)->his_to_seconds($value->pulang_kerja);
-                                
-                                if(empty($value->pulang_kerja_next_day)){
-                                    $total_kerja=$pulang-$masuk;
-                                }else{
-                                    $total_kerja=$masuk-$pulang;
-                                }
-
-                                if(empty($data_template_jadwal_shift[$value->id_template_jadwal_shift][$val_tgl]['total_kerja_per_hari'])){
-                                    $data_template_jadwal_shift[$value->id_template_jadwal_shift][$val_tgl]['total_kerja_per_hari']=$total_kerja;
-                                }else{
-                                    $total_kerja_per_hari_tmp=$data_template_jadwal_shift[$value->id_template_jadwal_shift][$val_tgl]['total_kerja_per_hari'];
-                                    $data_template_jadwal_shift[$value->id_template_jadwal_shift][$val_tgl]['total_kerja_per_hari']=$total_kerja_per_hari_tmp+$total_kerja;
-                                }
-                                
-                                if(empty($list_option_data[$value->id_template_jadwal_shift]['total_kerja_minggu'])){
-                                    $list_option_data[$value->id_template_jadwal_shift]['total_kerja_minggu']=$total_kerja;
-                                }else{
-                                    $total_kerja_tmp=$list_option_data[$value->id_template_jadwal_shift]['total_kerja_minggu'];
-                                    $list_option_data[$value->id_template_jadwal_shift]['total_kerja_minggu']=$total_kerja_tmp+$total_kerja;
-                                }
-                            }
-
-                            if($value->type_jadwal==2){
-
-                                if(empty( $data_template_jadwal_shift[$value->id_template_jadwal_shift][$val_tgl]['jml_libur'] )){
-                                    $data_template_jadwal_shift[$value->id_template_jadwal_shift][$val_tgl]['jml_libur']=1;
-                                }
-
-                                if(empty($list_option_data[$value->id_template_jadwal_shift]['jml_libur_minggu'])){
-                                    $list_option_data[$value->id_template_jadwal_shift]['jml_libur_minggu']=1;
-                                }else{
-                                    $list_option_data[$value->id_template_jadwal_shift]['jml_libur_minggu']++;
-                                }
-                            }
-                            
-                        }
+                    $tgl_mulai_perhitungan=$value->tgl_mulai;
+                    
+                    if($value->type_jadwal==2){
+                        $value=(array)$value;
+                        $value['nm_jenis_jadwal']='Libur';
+                        $value['bg_color']='#e1dede';
+                        $value=(object)$value;
                     }
+
+                    $data_jadwal_tmp[$value->id_jenis_jadwal]=$value;
+                    $data_hari=explode(',',$value->tgl);
+                    foreach($data_hari as $key_hari => $value_hari){
+                        if(empty($data_hari_shift[$value->id_jenis_jadwal])){
+                            $data_hari_shift[$value->id_jenis_jadwal]=[];
+                        }
+                        array_push($data_hari_shift[$value->id_jenis_jadwal], $value_hari);
+                        $data_hari_shift_tmp[$value_hari][]=$value->id_jenis_jadwal;
+                        
+                    }
+                }
+            }
+        }else{
+            return [];
+        }
+        ksort($data_jadwal_tmp);
+        ksort($data_hari_shift_tmp);
+
+        $return=[];
+        
+        if(!empty($data_hari_shift_tmp) && !empty($data_jadwal_tmp) ){
+            $tgl_mulai_perhitungan = new \DateTime($tgl_mulai_perhitungan);
+            $tgl_mulai_perhitungan=(object)[
+                'tahun'=>$tgl_mulai_perhitungan->format('Y'),
+                'bulan'=>$tgl_mulai_perhitungan->format('m'),
+                'tahun_bulan'=>$tgl_mulai_perhitungan->format('Y-m'),
+                'tgl'=>$tgl_mulai_perhitungan->format('Y-m-d'),
+            ];
+
+            $end_tahun_bulan_mksimal=$tgl_mulai_perhitungan->tahun.'-12';
+            $get_tgl_per_bulan=(new \App\Http\Traits\AbsensiFunction)->get_tgl_per_bulan($end_tahun_bulan_mksimal);
+            $end_tanggal=!empty($get_tgl_per_bulan->tgl_start_end[1]) ? $get_tgl_per_bulan->tgl_start_end[1] : '';
+
+            foreach($data_hari_shift_tmp as $key => $value){
+                $tgl_awal=$tgl_mulai_perhitungan->tahun_bulan.'-'.$key;
+                
+                $value_data=[];
+                if($value){
+                    foreach($value as $nilai){
+                        if(!empty($data_jadwal_tmp[$nilai])){
+                            $detail_data=(array)$data_jadwal_tmp[$nilai];
+                            unset($detail_data['tgl']);
+                            $detail_data=(object)$detail_data;
+                            $value_data[]=$detail_data;
+                        }
+                        
+                    }
+                }
+
+                $paramater=[
+                    'tgl_dasar'=>$tgl_awal,
+                    'tgl_awal'=>$tgl_awal,
+                    'jml_range'=>count($data_hari_shift_tmp),
+                    'value_data'=>$value_data,
+                    // 'id_jadwal'=>$value,
+                    'tgl_akhir'=>$end_tanggal
+                ];
+
+                if(!empty($return)){
+                    $paramater['callback']=$return;
+                }
+
+                if($type_fungsi=='tanggal'){
+                    $return=$this->hitung_tgl_rekursif($paramater);
+                }else if($type_fungsi=='bulan'){
+                    $return=$this->hitung_tgl_rekursif_bulan($paramater);
                 }
             }
         }
 
-        // $filter_tahun_bulan="2023-01";
-        // $tgl1 = new \DateTime($filter_tahun_bulan);
-        // dd($tgl1);
+        return $return;
+    }
 
-        // $get_tgl_per_bulan=(new \App\Http\Traits\AbsensiFunction)->get_tgl_per_bulan($filter_tahun_bulan);
-        // dd($get_tgl_per_bulan);
-
-
-        $datetime_1 = '2023-05-01';
-        
-        $tgl1 = new \DateTime($datetime_1);
-        $tgl2 = new \DateTime($datetime_1);
-        $tgl2->modify('+11 month');
-        // $tgl2 = new \DateTime($datetime_2);
-        // dd($tgl1,$tgl2);
-
-        $get_diff = $tgl1->diff($tgl2);
-
-
-        foreach($data_template_jadwal_shift as $key => $value){
-            if(!empty($list_option_data_2[$key])){
-                $tgl_mulai=$list_option_data_2[$key]['tgl_mulai'];
-                $tgl_mulai_tmp = new \DateTime($tgl_mulai);
-                $year_month=$tgl_mulai_tmp->format('Y-m');
-                $tgl=$year_month.'-'.$key;
-                
-
-                $tgl1 = new \DateTime($tgl);
-                $tgl2 = new \DateTime($tgl);
-                $tgl2->modify('+12 month');
-                $tgl2_end=$tgl2->format('Y-m-d');
-
-                $get_diff = $tgl1->diff($tgl2);
-
-                $hasil=$this->putar($tgl1->format('Y-m-d'),$tgl2_end,[]);
-                dd($hasil);
-                
-
-                dd($year_month,$tgl1,$tgl2,$get_diff->days,$tgl2_end);
-            }
-            dd($value,$list_option_data_2);
-        }
-        $data=[];
-        $datetime_1 = '2023-05-01';
-        $data[]=$datetime_1;
-        for($i=1; $i<=60; $i++ ){
-            $tgl1 = new \DateTime($datetime_1);
-            $tgl2 = new \DateTime($datetime_1);
-            $vv=$i*8;
-            $tgl2->modify('+'.$vv.' day');
-            $data[]=$tgl2->format('Y-m-d');
-        }
-        dd($data);
-
-        // dd($tgl1,$tgl2,$get_diff,$get_diff->format('%y'));
-        // die;
-
-        // $tgl1 = new \DateTime($datetime_1);
-        // dd($tgl1);
-        
-        // // for ($i=1; $i <=$get_diff->days ; $i++) { 
-        // //     // dd($i);
-        // // }
-
-        // dd($get_diff,$data_template_jadwal_shift[1]);
- 
-
-        // dd($data_template_jadwal_shift[1],$get_tgl_per_bulan);
-        
-
-        $data_template_jadwal_shift_tmp=$data_template_jadwal_shift;
-        $list_data=[];
-        
-        foreach($data_template_jadwal_shift_tmp as $key => $item){
-            $list_option_data[$key]['jml_kerja_bulan']=$list_option_data[$key]['jml_kerja_minggu'];
-            $list_option_data[$key]['jml_libur_bulan']=$list_option_data[$key]['jml_libur_minggu'];
-            $list_option_data[$key]['total_kerja_bulan']=$list_option_data[$key]['total_kerja_minggu'];
-            foreach($item as $key_hari => $val_hasil){
-                for($i=1; $i<=4; $i++){
-                    $jml=$i*count($item);
-                    $tgl_hasil=$jml+$key_hari;
-                    if($tgl_hasil<=31){
-                        $data_template_jadwal_shift_tmp[$key][$tgl_hasil]=$val_hasil;
-                        if(!empty($data_template_jadwal_shift_tmp[$key][$tgl_hasil]['jml_kerja'])){
-                            $tmp=$list_option_data[$key]['jml_kerja_bulan'];
-                            $list_option_data[$key]['jml_kerja_bulan']=$tmp+$data_template_jadwal_shift_tmp[$key][$tgl_hasil]['jml_kerja'];
-                        }
-
-                        if(!empty($data_template_jadwal_shift_tmp[$key][$tgl_hasil]['jml_libur'])){
-                            $tmp=$list_option_data[$key]['jml_libur_bulan'];
-                            $list_option_data[$key]['jml_libur_bulan']=$tmp+$data_template_jadwal_shift_tmp[$key][$tgl_hasil]['jml_libur'];
-                        }
-
-                        if(!empty($data_template_jadwal_shift_tmp[$key][$tgl_hasil]['total_kerja_per_hari'])){
-                            $tmp=$list_option_data[$key]['total_kerja_bulan'];
-                            $list_option_data[$key]['total_kerja_bulan']=$tmp+$data_template_jadwal_shift_tmp[$key][$tgl_hasil]['total_kerja_per_hari'];
-                        }
+    function setListShiftFirstDatabase($params=[]){
+        $id_template_jadwal_shift=!empty($params['id_template_jadwal_shift']) ? $params['id_template_jadwal_shift'] : 0;
+        if(!empty($id_template_jadwal_shift)){
+            $hasil=$this->setListShiftFirst($params);
+            
+            if(empty($hasil)){
+                $get_data_tw = (new \App\Models\RefTemplateJadwalShiftDetail)->where([
+                    'id_template_jadwal_shift'=> $id_template_jadwal_shift,
+                ])->select('id_template_jadwal_shift_detail')->first();
+                if($get_data_tw->id_template_jadwal_shift_detail){
+                    $check_data = (new \App\Models\RefTemplateJadwalShiftWaktu)->where([
+                        'id_template_jadwal_shift_detail'=> $get_data_tw->id_template_jadwal_shift_detail,
+                    ])->count('id_template_jadwal_shift_detail');
+                    if(empty($check_data)){
+                        $get_data = (new \App\Models\RefTemplateJadwalShiftLanjutan)->where([
+                            'id_template_jadwal_shift'=> $id_template_jadwal_shift
+                        ])->delete();
                     }
                 }
             }
-            ksort($data_template_jadwal_shift_tmp[$key]);
-            dd($data_template_jadwal_shift_tmp[$key]);
-            $list_data[$key]['item']=json_encode($data_template_jadwal_shift_tmp[$key]);
-        }
 
-        foreach($list_data as $key => $item){
-            if(!empty($list_option_data[$key])){
-                $list_data[$key]=array_merge($list_option_data[$key],$list_data[$key]);
+            DB::beginTransaction();
+
+            $message_default = [
+                'success' => !empty($kode) ? 'Data berhasil diubah' : 'Data berhasil disimpan',
+                'error' => !empty($kode) ? 'Data tidak berhasil diubah' : 'Data berhasil disimpan'
+            ];
+
+            try {
+                $data_insert=[];
+                foreach($hasil as $k_hasil => $v_hasil){
+                    if(!empty($v_hasil)){
+                        $get_data = (new \App\Models\RefTemplateJadwalShiftLanjutan)->where([
+                            'id_template_jadwal_shift'=> $id_template_jadwal_shift,
+                            'tahun'=>$k_hasil
+                        ])->count('id_template_jadwal_shift');
+                        if(!empty($get_data)){
+                            $get_data = (new \App\Models\RefTemplateJadwalShiftLanjutan)->where([
+                                'id_template_jadwal_shift'=> $id_template_jadwal_shift,
+                                'tahun'=>$k_hasil
+                            ])->delete();
+                        }
+                        foreach($v_hasil as $bulan => $nilai){
+                            if($nilai){
+                                $nilai_json=json_encode($nilai);
+                                $data_insert[]=[
+                                    'id_template_jadwal_shift'=>$id_template_jadwal_shift,
+                                    'tahun'=>$k_hasil,
+                                    'bulan'=>$bulan,
+                                    'data'=>$nilai_json
+                                ];
+                            }
+                        }
+                        
+                    }
+                }
+                
+                $is_save=0;
+                if($data_insert){
+                    $model=(new \App\Models\RefTemplateJadwalShiftLanjutan);
+                    if($model->insert($data_insert)){
+                        $is_save=1;
+                    }
+                }
+
+                if ($is_save) {
+                    DB::commit();
+                    $pesan = ['success', $message_default['success'], 2];
+                } else {
+                    DB::rollBack();
+                    $pesan = ['error', $message_default['error'], 3];
+                }
+
+            } catch (\Illuminate\Database\QueryException $e) {
+                DB::rollBack();
+                if ($e->errorInfo[1] == '1062') {
+                }
+                $pesan = ['error', $message_default['error'], 3];
+            } catch (\Throwable $e) {
+                DB::rollBack();
+                $pesan = ['error', $message_default['error'], 3];
+            }
+            return $pesan;
+        }
+        return '';
+    }
+
+    function setListShift($params=[]){
+        
+        $get_data=(new \App\Models\RefTemplateJadwalShiftLanjutan)->where([
+            'id_template_jadwal_shift'=>$params['id_template_jadwal_shift'],
+            'tahun'=>$params['tahun'],
+            'bulan'=>$params['bulan'],
+        ])->first();
+        if($get_data){
+            $chec_rumus_mulai = (new \App\Models\RefTemplateJadwalShiftDetail)->where([
+                'id_template_jadwal_shift'=> $params['id_template_jadwal_shift'],
+            ])->whereYear('tgl_mulai', '=', $params['tahun'])->whereMonth('tgl_mulai', '=', $params['bulan'])
+            ->count('id_template_jadwal_shift');
+            
+            if(empty($chec_rumus_mulai)){
+                $jml=0;
+                $data_tmp=json_decode($get_data->data,true);
+                if(count($data_tmp)<28){
+                    $get_data=0;
+                }
+            }
+
+            
+        }
+        
+        if($get_data){
+            return (object)$get_data->getAttributes();
+        }else{
+            $get_data_tahun=[];
+            $get_data_tahun_tmp=(new \App\Models\RefTemplateJadwalShiftLanjutan)->where([
+                'id_template_jadwal_shift'=>$params['id_template_jadwal_shift']
+            ])->select(DB::raw('max(tahun) as tahun'))->first();
+
+            $get_data_bulan_tmp=(new \App\Models\RefTemplateJadwalShiftLanjutan)->where([
+                'id_template_jadwal_shift'=>$params['id_template_jadwal_shift'],
+                'tahun'=>$get_data_tahun_tmp->tahun
+            ])->select(DB::raw('max(bulan) as bulan'))->first();
+
+            $get_data_tahun=(object)[
+                'tahun'=>$get_data_tahun_tmp->tahun,
+                'bulan'=>$get_data_bulan_tmp->bulan,
+            ];
+
+            if($get_data_tahun){
+                $get_data_old=(new \App\Models\RefTemplateJadwalShiftLanjutan)->where([
+                    'id_template_jadwal_shift'=>$params['id_template_jadwal_shift'],
+                    'tahun'=>$get_data_tahun->tahun,
+                    'bulan'=>$get_data_tahun->bulan,
+                ])->first();
+
+                if(!empty($get_data_old)){
+                
+                    $tahun_old=$get_data_old->tahun;
+                    $bulan_old=$get_data_old->bulan;
+                    
+                    $data=!empty($get_data_old->data) ? json_decode($get_data_old->data) : '';
+
+                    $get_data_tw = (new \App\Models\RefTemplateJadwalShiftDetail)->where([
+                        'id_template_jadwal_shift'=> $params['id_template_jadwal_shift'],
+                    ])->select('id_template_jadwal_shift_detail')->first();
+
+                    $get_rumus=[];
+                    if($get_data_tw->id_template_jadwal_shift_detail){
+                        $get_data_td = (new \App\Models\RefTemplateJadwalShiftWaktu)->where([
+                            'id_template_jadwal_shift_detail'=> $get_data_tw->id_template_jadwal_shift_detail,
+                        ])->get();
+                        if($get_data_td){
+                            foreach($get_data_td as $value){
+                                $exp_tgl=explode(',',$value->tgl);
+                                foreach($exp_tgl as $tgl){
+                                    $get_rumus[$tgl]=$value->id_jenis_jadwal;
+                                }
+                            }
+                        }
+                    }
+                    ksort($get_rumus);
+                    $get_rumus=array_values($get_rumus);
+                    
+                    $data_tmp=(array)$data;
+                    $first_data=key($data_tmp);
+                    $this_day=$first_data;
+                    $next_day='';
+                    $i=0;
+                    $j=0;
+                    $get_hasil_rumus=[];
+                    while($i<=31){
+                        $tgl_next_tmp = new \DateTime($this_day);
+                        $tgl_next_tmp->modify('+1 day');
+                        $next_day=$tgl_next_tmp->format('Y-m-d');
+
+                        if(!empty($data_tmp[$this_day])){
+                            $get_data=$data_tmp[$this_day];
+                            foreach($get_data as $val){
+                                
+                                if($get_rumus[$j]==$val->id_jenis_jadwal){
+                                    $get_hasil_rumus[$this_day]=$val->id_jenis_jadwal;
+                                    $j++;
+                                }else{
+                                    $j=0;
+                                }
+                            }    
+                        }
+                        $this_day=$next_day;
+                        $i++;
+                        if(count($get_hasil_rumus)==count($get_rumus)){
+                            $i=32;
+                        }
+                    }
+
+                    $return=[];
+                    if($get_hasil_rumus){
+                        $filter_tahun_bulan=$params['tahun'].'-'.$params['bulan'];
+                        $get_tgl_per_bulan=(new \App\Http\Traits\AbsensiFunction)->get_tgl_per_bulan($filter_tahun_bulan);
+                        // $tgl_akhir=!empty($get_tgl_per_bulan->tgl_start_end[1]) ? $get_tgl_per_bulan->tgl_start_end[1] : $filter_tahun_bulan.'-31';
+                        $tgl_akhir=$filter_tahun_bulan.'-31';
+
+                        foreach($get_hasil_rumus as $tgl => $val){
+                            if(!empty($data_tmp[$tgl])){
+                                $data_wow=$data_tmp[$tgl];
+                                
+                                $paramater=[
+                                    'tgl_dasar'=>$tgl,
+                                    'tgl_awal'=>$tgl,
+                                    'jml_range'=>count($get_hasil_rumus),
+                                    'value_data'=>$data_wow,
+                                    'tgl_akhir'=>$tgl_akhir
+                                ];
+                
+                                if(!empty($return)){
+                                    $paramater['callback']=$return;
+                                }
+                
+                                $return=$this->hitung_tgl_rekursif_bulan($paramater);
+
+                            }
+
+                        }
+                    }
+
+                    if(!empty($return[$tahun_old][$bulan_old])){
+                        unset($return[$tahun_old][$bulan_old]);
+                    }
+
+                    if(empty($return[$tahun_old])){
+                        unset($return[$tahun_old]);
+                    }
+
+                    $data_insert=[];
+                    if($return){
+
+                        DB::beginTransaction();
+                        
+                        try {
+                            foreach($return as $k_hasil => $v_hasil){
+                                foreach($v_hasil as $bulan => $nilai){
+                                    if(count($nilai)>=28){
+                                        $nilai_json=json_encode($nilai);
+                                        $data_insert[]=[
+                                            'id_template_jadwal_shift'=>$params['id_template_jadwal_shift'],
+                                            'tahun'=>$k_hasil,
+                                            'bulan'=>$bulan,
+                                            'data'=>$nilai_json
+                                        ];
+
+                                        $delete_data = (new \App\Models\RefTemplateJadwalShiftLanjutan)->where([
+                                            'id_template_jadwal_shift'=> $params['id_template_jadwal_shift'],
+                                            'tahun'=>$k_hasil,
+                                            'bulan'=>$bulan,
+                                        ])->delete();
+                                    }
+                                }
+                            }
+
+                            $is_save=0;
+                            if($data_insert){
+                                $model=(new \App\Models\RefTemplateJadwalShiftLanjutan);
+                                if($model->insert($data_insert)){
+                                    $is_save=1;
+                                }
+                            }
+
+                            if ($is_save) {
+                                DB::commit();
+                                return $this->setListShift($params);
+                                // $pesan = ['success', $message_default['success'], 2];
+                            } else {
+                                DB::rollBack();
+                                return [];
+                            }
+
+
+                            
+                        } catch (\Illuminate\Database\QueryException $e) {
+                            DB::rollBack();
+                            if ($e->errorInfo[1] == '1062') {
+                            }
+                            return [];
+                        } catch (\Throwable $e) {
+                            DB::rollBack();
+                            return [];
+                        }
+                    }
+                }
+                
+                return [];
             }
         }
-        return $list_data;
     }
 }
