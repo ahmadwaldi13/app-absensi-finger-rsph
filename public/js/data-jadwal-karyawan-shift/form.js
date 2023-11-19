@@ -125,14 +125,23 @@ $(document).delegate("#proses_jadwal", "submit", function (e) {
         return false;
     }
 
-    if(JSON.stringify($check_data.item)==JSON.stringify($check_data_sistem.item)){
-        $hasil=0;
-        $(document).find('#modal-closes').click();
-    }
+    // if(JSON.stringify($check_data.item)==JSON.stringify($check_data_sistem.item)){
+    //     $hasil=0;
+    //     $(document).find('#modal-closes').click();
+    // }
 
     if($hasil==1){
         return true;    
     }
     e.preventDefault();
+    return false;
+});
+
+$(document).find("#btn_reset").on("click", function (e) {
+    e.preventDefault();
+    $form_data=$(document).find('#jadwal_terpilih_sendiri');
+    $form_data_sistem=$(document).find('#jadwal_terpilih_sistem');
+    $form_data.html($form_data_sistem.html());
+    get_terpilih();
     return false;
 });

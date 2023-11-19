@@ -1,5 +1,4 @@
 @include($router_name->path_base.'.modal')
-
 <?php 
     $header_tgl='';
     $header_hari='';
@@ -41,14 +40,32 @@
     .box_waktu{
         padding:10px;
     }
+
+    .box_waktu_sendiri{
+        position: relative;
+        padding:10px;
+        padding-right:30px;
+    }
+    .box_waktu_sendiri>.icon_tanda{
+        position: absolute;
+        top:-10px;
+        right:-10px;
+    }
+    .box_waktu_sendiri>.icon_tanda>i{
+        color:#fff;
+        font-size: 14px;
+        padding:8px;
+        background: #f34e4e;
+        border-radius:100px;
+    }
 </style>
 <hr>
 <div>
     <div class="row d-flex justify-content-between">
         <div>
             <form action="" method="GET">
-                <input type="text" name='data_sent' value='{{ !empty($data_sent) ? $data_sent : '' }}'>
-                <input type="text" name='params' value='{{ !empty($params_json) ? $params_json : '' }}'>
+                <input type="hidden" name='data_sent' value='{{ !empty($data_sent) ? $data_sent : '' }}'>
+                <input type="hidden" name='params' value='{{ !empty($params_json) ? $params_json : '' }}'>
 
                 <div class="row justify-content-start align-items-end mb-3">
                     <div class="col-lg-3">
@@ -134,6 +151,60 @@
                                     if(!empty($list_shift_text_tmp)){
                                         $list_shift_text=implode(',',$list_shift_text_tmp);
                                     }
+
+                                    $list_shift_sendiri_json='';
+                                    $ss_short=[];
+                                    $list_shift_text_sendiri_tmp='';
+                                    if(!empty($list_data_jadwal_sendiri[$data_karyawan->id_karyawan][$value_date])){
+                                        $s_tmp=$list_data_jadwal_sendiri[$data_karyawan->id_karyawan][$value_date];
+                                        $s_tmp_array=json_decode($s_tmp);
+                                        $s_tmp_array=!empty($s_tmp_array->item) ? $s_tmp_array->item : [];
+
+                                        $ss_short_tmp=[];
+                                        $ss_long_tmp=[];
+                                        foreach($s_tmp_array as $item_ss){
+                                            if(!empty($list_data_jadwal_library[$item_ss])){
+                                                $get_dd=$list_data_jadwal_library[$item_ss];
+                                                $ss_short_tmp[]=$item_ss;
+                                                
+                                                $text='';
+                                                if(!empty($get_dd->type_jadwal)){
+                                                    if($get_dd->type_jadwal==2){
+                                                        $text="
+                                                            <span class='box_waktu box_waktu_sendiri' style='background:".$get_dd->bg_color."; display:block; width:20%; position:relative;'>".$get_dd->nm_jenis_jadwal."<span class='icon_tanda'><i class='fa-solid fa-pencil'></i></span></span>
+                                                        ";
+                                                    }else{
+                                                        $text="
+                                                            <span class='box_waktu box_waktu_sendiri' style='background:".$get_dd->bg_color."; position:relative;'>"
+                                                                .$get_dd->nm_jenis_jadwal." : ".$get_dd->masuk_kerja.' s/d '.$get_dd->pulang_kerja.
+                                                            "<span class='icon_tanda'><i class='fa-solid fa-pencil'></i></span></span>
+                                                        ";
+
+                                                        if(!empty($get_dd->pulang_kerja_next_day)){
+                                                            $text="
+                                                                <span class='box_waktu box_waktu_sendiri' style='background:".$get_dd->bg_color."; position:relative;'>"
+                                                                    .$get_dd->nm_jenis_jadwal." : ".$get_dd->masuk_kerja.' s/d '.$get_dd->pulang_kerja.' Esok hari'.
+                                                                "<span class='icon_tanda'><i class='fa-solid fa-pencil'></i></span></span>
+                                                            ";
+                                                        }
+                                                    }
+                                                }
+
+                                                if($text){
+                                                    $ss_long_tmp[]=$text;
+                                                }
+                                            }
+                                        }
+                                        $ss_short=$ss_short_tmp;
+
+                                        $list_shift_text_sendiri_tmp='';
+                                        if(!empty($ss_long_tmp)){
+                                            $list_shift_text_sendiri_tmp=implode(',',$ss_long_tmp);
+                                        }
+                                    }
+
+                                    $list_shift_sendiri_json=!empty($ss_short) ? json_encode(['item'=>$ss_short]) : '';
+                                    $list_shift_text=!empty($list_shift_text_sendiri_tmp) ? $list_shift_text_sendiri_tmp : $list_shift_text ;
                                     
                                 ?>
                                 <tr style='border-bottom:1px solid #ccc;' id='$value_date'>
@@ -142,8 +213,8 @@
                                     </td>
                                     <td>
                                         <div>{!! $list_shift_text !!}</div>
-                                        <textarea class='jadwal_sistem'>{{ !empty($list_shift_sistem_json) ? $list_shift_sistem_json : '' }}</textarea>
-                                        <textarea class='jadwal_sendiri'></textarea>
+                                        <textarea class='jadwal_sistem' style="display:none" >{{ !empty($list_shift_sistem_json) ? $list_shift_sistem_json : '' }}</textarea>
+                                        <textarea class='jadwal_sendiri' style="display:none" >{{ !empty($list_shift_sendiri_json) ? $list_shift_sendiri_json : '' }}</textarea>
                                     </td>
                                     <td style="border-left:1px solid;">
                                         <?php 
@@ -152,7 +223,7 @@
                                                 'data_sent'=>\Request::get('data_sent'),
                                                 'params'=>\Request::get('params'),
                                                 'list_sistem'=>$list_shift_sistem_json,
-                                                'list_sendiri'=>''
+                                                'list_sendiri'=>$list_shift_sendiri_json,
                                             ];
 
                                             $parameter=json_encode($parameter);

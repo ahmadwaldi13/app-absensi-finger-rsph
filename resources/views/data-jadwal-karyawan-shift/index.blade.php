@@ -26,8 +26,8 @@
 <hr>
 <div>
     <form action="" method="GET">
-        <input type="text" name='data_sent' value='{{ !empty($data_sent) ? $data_sent : '' }}'>
-        <input type="text" name='params' value='{{ !empty($params_json) ? $params_json : '' }}'>
+        <input type="hidden" name='data_sent' value='{{ !empty($data_sent) ? $data_sent : '' }}'>
+        <input type="hidden" name='params' value='{{ !empty($params_json) ? $params_json : '' }}'>
 
         <div class="row d-flex justify-content-between">
             <div class="col-lg-6">

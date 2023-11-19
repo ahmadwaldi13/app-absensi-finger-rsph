@@ -22,8 +22,10 @@ class RefKaryawanJadwalShiftWaktu extends Migration
                 $table->integer('id_karyawan')->length(10)->unsigned();
                 $table->integer('id_template_jadwal_shift')->length(10)->unsigned();
                 $table->date('tanggal');
-                $table->integer('id_jenis_jadwal');
-                $table->smallInteger('type')->comment('1=jadwal,2=>libur');
+                $table->longText('data');
+                $table->text('data_item');
+
+                $table->unique(['id_karyawan','id_template_jadwal_shift','tanggal'],$table_name.'_uniq');
             });
         }
 
