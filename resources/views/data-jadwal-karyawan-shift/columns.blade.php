@@ -1,5 +1,6 @@
-<?php 
+@include($router_name->path_base.'.modal')
 
+<?php 
     $header_tgl='';
     $header_hari='';
     foreach($list_tgl as $key_tgl => $item_tgl){
@@ -74,9 +75,10 @@
             <div style="overflow-x: auto; max-width: auto;">
                 <table class="table border table-responsive-tablet" style="width:100%">
                     <thead>
-                        <tr>
+                        <tr style="border-bottom:1px solid;">
                             <th style='width:10%'>*</th>
-                            <th>Uraian</th>
+                            <th style='width:85%'>Uraian</th>
+                            <th style='width:5%; border-left:1px solid;'>Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -84,12 +86,15 @@
                             @foreach($list_tgl as $key_date => $value_date)
                                 <?php
                                     $list_shift_text_tmp=[];
+                                    $list_shift_sistem=[];
                                     if(!empty($list_shift[$value_date])){
                                         $data_detail=$list_shift[$value_date];
                                         if(!empty($data_detail)){
                                             foreach($data_detail as $value){
                                                 $value=(object)$value;
                                                 $text='';
+                                                $kode_jadwal=$value->type_jadwal.'@'.$value->id_jenis_jadwal;
+                                                $list_shift_sistem[]=$kode_jadwal;
 
                                                 if(!empty($value->type_jadwal)){
                                                     if($value->type_jadwal==2){
@@ -120,18 +125,44 @@
                                         }
                                     }
 
+                                    $list_shift_sistem_json=[
+                                        'item'=>$list_shift_sistem
+                                    ];
+                                    $list_shift_sistem_json=!empty($list_shift_sistem_json) ? json_encode($list_shift_sistem_json) : '';
+                                    
                                     $list_shift_text='';
                                     if(!empty($list_shift_text_tmp)){
                                         $list_shift_text=implode(',',$list_shift_text_tmp);
                                     }
                                     
                                 ?>
-                                <tr style='border-bottom:1px solid #ccc;'>
+                                <tr style='border-bottom:1px solid #ccc;' id='$value_date'>
                                     <td>
                                         <div>{{ $value_date }}</div>
                                     </td>
                                     <td>
                                         <div>{!! $list_shift_text !!}</div>
+                                        <textarea class='jadwal_sistem'>{{ !empty($list_shift_sistem_json) ? $list_shift_sistem_json : '' }}</textarea>
+                                        <textarea class='jadwal_sendiri'></textarea>
+                                    </td>
+                                    <td style="border-left:1px solid;">
+                                        <?php 
+                                            $parameter=[
+                                                'tgl'=>$value_date,
+                                                'data_sent'=>\Request::get('data_sent'),
+                                                'params'=>\Request::get('params'),
+                                                'list_sistem'=>$list_shift_sistem_json,
+                                                'list_sendiri'=>''
+                                            ];
+
+                                            $parameter=json_encode($parameter);
+                                            // dd($parameter);
+                                            // $params = !empty($req['params']) ? $req['params'] : '';
+                                        ?>
+                                        <a href='#' 
+                                            class="btn btn-kecil btn-warning btn_change"
+                                            data-sent='{{ $parameter }}'
+                                        ><i class="fa-solid fa-pencil"></i></a>
                                     </td>
                                 </tr>
                             @endforeach        
@@ -142,3 +173,7 @@
         </div>
     </div>
 </div>
+
+@push('script-end-2')
+<script src="{{ asset('js/data-jadwal-karyawan-shift/form.js') }}"></script>
+@endpush

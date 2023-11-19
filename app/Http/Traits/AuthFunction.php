@@ -231,7 +231,6 @@ trait AuthTraits {
                         $tamplate="<a href='".url($url)."' ".$paramater_html." >".$icon."</a>";
                     }
                 }
-
             }
         }
 

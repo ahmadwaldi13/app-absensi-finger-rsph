@@ -38,6 +38,10 @@ class DataJadwalKaryawanShiftController extends \App\Http\Controllers\MyAuthCont
         $id_karyawan=!empty($exp[0]) ? $exp[0] : 0;
         $id_template_jadwal_shift=!empty($exp[1]) ? $exp[1] : 0;
 
+        if($request->isMethod('post')){
+            dd($req);
+        }
+
         $breadcrumbs=$this->breadcrumbs;
         array_push($breadcrumbs,['title' => 'Atur Waktu Jadwal Karyawan', 'url' => url('/') . "/" . $this->url_index]);
         
@@ -66,6 +70,12 @@ class DataJadwalKaryawanShiftController extends \App\Http\Controllers\MyAuthCont
         
         $get_list_shift=(new \App\Services\DataPresensiService)->setListShift($parameter);
         $list_shift=!empty($get_list_shift->data) ? json_decode($get_list_shift->data,true)  : [];
+
+        $paramater=[
+            'id_template_jadwal_shift'=>$id_template_jadwal_shift,
+        ];
+
+        $list_data_jadwal = (new \App\Services\RefTemplateJadwalShiftService)->getListJadwalTemplate($paramater);
         
         $parameter_view = [
             'title' => 'Atur Waktu Jadwal Karyawan',
@@ -77,6 +87,7 @@ class DataJadwalKaryawanShiftController extends \App\Http\Controllers\MyAuthCont
             'list_tgl'=>$list_tgl,
             'model_shift'=>$model_shift,
             'list_shift'=>$list_shift,
+            'list_data_jadwal'=>$list_data_jadwal
         ];
 
         return view($this->part_view . '.index', $parameter_view);
