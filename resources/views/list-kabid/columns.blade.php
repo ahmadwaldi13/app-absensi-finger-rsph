@@ -33,11 +33,10 @@
                 <thead>
                     <tr>
                         <th class="py-3">Nip</th>
-                        <th class="py-3">Nama Karyawan</th>
+                        <th class="py-3">Nama Kabid</th>
                         <th class="py-3">Jabatan</th>
                         <th class="py-3">Departemen</th>
-                        <th class="py-3">Ruangan</th>
-                        <th class="py-3">Departemen Pilihan</th>
+                        <th class="py-3">Ruangan Pilihan</th>
                         <th class="py-3">Action</th>
                     </tr>
                 </thead>
@@ -54,8 +53,7 @@
                             <td>{{ !empty($item->nm_karyawan) ? $item->nm_karyawan : ''  }}</td>
                             <td>{{ !empty($item->nm_jabatan) ? $item->nm_jabatan : ''  }}</td>
                             <td>{{ !empty($item->nm_departemen) ? $item->nm_departemen : ''  }}</td>
-                            <td>{{ !empty($item->nm_ruangan) ? $item->nm_ruangan : ''  }}</td>
-                            <td>{{ !empty($item->list_departemen) ? $item->list_departemen : ''  }}</td>
+                            <td>{{ !empty($item->list_ruangan) ? $item->list_ruangan : ''  }}</td>
                             <td class='text-right'>
                                 {!! (new
                                 \App\Http\Traits\AuthFunction)->setPermissionButton([$router_name->uri.'/update',$paramater_url,'update'])

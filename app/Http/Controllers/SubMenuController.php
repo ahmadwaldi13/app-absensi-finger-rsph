@@ -76,6 +76,11 @@ class SubMenuController extends Controller
                         'key'=>'data-jadwal-karyawan',
                         'url'=>url('/')."/data-jadwal-karyawan",
                     ],
+                    [
+                        'title'=>'List Kabid',
+                        'key'=>'list-kabid',
+                        'url'=>url('/')."/list-kabid",
+                    ],
                 ];
             }
 
@@ -120,11 +125,6 @@ class SubMenuController extends Controller
                         'title'=>'Perjalanan Dinas Karyawan',
                         'key'=>'perjalanan-dinas',
                         'url'=>url('/')."/perjalanan-dinas",
-                    ],
-                    [
-                        'title'=>'Kepala Departemen',
-                        'key'=>'kepala-departemen',
-                        'url'=>url('/')."/kepala-departemen",
                     ],
                     [
                         'title'=>'Absensi',

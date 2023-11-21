@@ -7,11 +7,11 @@ use Illuminate\Support\Facades\DB;
 
 use App\Services\GlobalService;
 use App\Http\Traits\GlobalFunction;
-use App\Services\KepalaDepartemenService;
+use App\Services\ListKabidService;
 
-class KepalaDepartemenController extends \App\Http\Controllers\MyAuthController
+class ListKabidController extends \App\Http\Controllers\MyAuthController
 {
-    public $part_view, $url_index, $url_name, $title, $breadcrumbs, $globalService, $globalFunction, $kepalaDepartemenService;
+    public $part_view, $url_index, $url_name, $title, $breadcrumbs, $globalService, $globalFunction, $listKabidService;
 
     public function __construct()
     {
@@ -20,15 +20,15 @@ class KepalaDepartemenController extends \App\Http\Controllers\MyAuthController
         $this->url_index = $router_name->uri;
         $this->url_name = $router_name->router_name;
 
-        $this->title = 'Kepala Departemen';
+        $this->title = 'List Kabid';
         $this->breadcrumbs = [
-            ['title' => 'Manajemen Absensi', 'url' => url('/') . "/sub-menu?type=6"],
+            ['title' => 'Data Karyawan', 'url' => url('/') . "/sub-menu?type=4"],
             ['title' => $this->title, 'url' => url('/') . "/" . $this->url_index],
         ];
 
         $this->globalService = new GlobalService;
         $this->globalFunction = new GlobalFunction;
-        $this->kepalaDepartemenService = new KepalaDepartemenService;
+        $this->listKabidService = new ListKabidService;
     }
 
     function actionIndex(Request $request)
@@ -39,7 +39,7 @@ class KepalaDepartemenController extends \App\Http\Controllers\MyAuthController
             'search' => !empty($form_filter_text) ? $form_filter_text : '',
         ];
 
-        $list_data=(new \App\Services\KepalaDepartemenService())->getList($paramater,1)->groupBy('ref_kepala_departemen.id_karyawan')->paginate(!empty($request->per_page) ? $request->per_page : 15);
+        $list_data=(new \App\Services\ListKabidService())->getList($paramater,1)->groupBy('ref_list_kabid.id_karyawan')->paginate(!empty($request->per_page) ? $request->per_page : 15);
 
         $parameter_view = [
             'title' => $this->title,
@@ -54,19 +54,22 @@ class KepalaDepartemenController extends \App\Http\Controllers\MyAuthController
     {
         $kode = !empty($request->data_sent) ? $request->data_sent : "";
         $paramater = [
-            'ref_kepala_departemen.id_karyawan' => $kode
+            'ref_list_kabid.id_karyawan' => $kode
         ];
-        $model = $this->kepalaDepartemenService->getList($paramater, 1)->first();
+        $model = $this->listKabidService->getList($paramater, 1)->first();
         if (!empty($model->id_karyawan)) {
             $action_form = $this->part_view . '/update';
 
-            $list_item = $this->kepalaDepartemenService->getList($paramater, 1)->select('ref_kepala_departemen.departemen', 'ref_departemen.nm_departemen as nama_departemen')->get();
+            $list_item = $this->listKabidService->getList($paramater, 1)->select('ref_list_kabid.ruangan', 'ref_ruangan.nm_ruangan')->get();
             $item_list_terpilih = [];
             if ($list_item) {
                 foreach ($list_item as $value) {
-                    $item_list_terpilih[$value->departemen] = [
+                    $item_list_terpilih[$value->ruangan] = [
                         'value' => 1,
-                        'data' => [$value->departemen, $value->nama_departemen]
+                        'data' => [
+                            !empty($value->ruangan) ? strval($value->ruangan) : '',
+                            !empty($value->nm_ruangan) ? $value->nm_ruangan : '',
+                        ]
                     ];
                 }
             }
@@ -156,14 +159,14 @@ class KepalaDepartemenController extends \App\Http\Controllers\MyAuthController
                 if (empty($kode)) {
                     $kode = $nip;
                 }
-                (new \App\Models\KepalaDepartemen)->where('id_karyawan', '=', $kode)->delete();
+                (new \App\Models\ListKabid())->where('id_karyawan', '=', $kode)->delete();
                 $jml_save = 0;
                 foreach ($item_list_terpilih  as $key => $value) {
                     $data_save = [
                         'id_karyawan' => $kode,
-                        'departemen' => $key
+                        'ruangan' => $key
                     ];
-                    $model = (new \App\Models\KepalaDepartemen);
+                    $model = (new \App\Models\ListKabid());
                     $model->set_model_with_data($data_save);
                     if ($model->save()) {
                         $jml_save++;
@@ -174,7 +177,6 @@ class KepalaDepartemenController extends \App\Http\Controllers\MyAuthController
                     $is_save = 1;
                 }
             }
-
             if ($is_save) {
                 DB::commit();
                 $link_back_param = $this->clear_request($link_back_param, $request);
@@ -210,13 +212,13 @@ class KepalaDepartemenController extends \App\Http\Controllers\MyAuthController
         $kode = !empty($request->data_sent) ? $request->data_sent : null;
 
         try {
-            $model = (new \App\Models\KepalaDepartemen)->where('id_karyawan', '=', $kode)->first();
+            $model = (new \App\Models\ListKabid())->where('id_karyawan', '=', $kode)->first();
             if (empty($model)) {
                 return redirect()->route($this->url_name, $link_back_param)->with(['error', 'Data tidak ditemukan']);
             }
 
             $is_save = 0;
-            $model = (new \App\Models\KepalaDepartemen)->where('id_karyawan', '=', $kode);
+            $model = (new \App\Models\ListKabid())->where('id_karyawan', '=', $kode);
             if ($model->delete()) {
                 $is_save = 1;
             }
@@ -241,7 +243,7 @@ class KepalaDepartemenController extends \App\Http\Controllers\MyAuthController
         return redirect()->route($this->url_name, $link_back_param)->with([$pesan[0] => $pesan[1]]);
     }
 
-    function getListDepartemenMasterForm(Request $request)
+    function getListKabidMasterForm(Request $request)
     {
         $hasil_data = [];
         try {
@@ -254,6 +256,9 @@ class KepalaDepartemenController extends \App\Http\Controllers\MyAuthController
                 $filter = json_decode($filter);
                 if (!empty($filter)) {
                     foreach ($filter as $value) {
+                        if (trim(strtolower($value->name)) == 'filter_id_departemen') {
+                            $filter_id_departemen = $value->value;
+                        }
                         if (trim(strtolower($value->name)) == 'form_filter_text') {
                             $form_filter_text = $value->value;
                         }
@@ -268,7 +273,11 @@ class KepalaDepartemenController extends \App\Http\Controllers\MyAuthController
                 'search' => $form_filter_text
             ];
 
-            $data_tmp_tmp = (new \App\Models\RefDepartemen);
+            if (!empty($filter_id_departemen)) {
+                $paramater['ref_ruangan.id_departemen'] = $filter_id_departemen;
+            }
+
+            $data_tmp_tmp = (new \App\Models\RefRuangan);
             $data_tmp_tmp = $data_tmp_tmp->set_where($data_tmp_tmp, $paramater, ['where_or' => ['id_departemen', 'nm_departemen']]);
 
             $data_tmp = $data_tmp_tmp->offset($start_page)->limit($end_page)->get();
@@ -277,9 +286,9 @@ class KepalaDepartemenController extends \App\Http\Controllers\MyAuthController
                 foreach ($data_tmp as $value) {
 
                     $data = [
-                        "<input class='form-check-input hover-pointer checked_b' style='border-radius: 0px;' type='checkbox' data-kode='" . $value->id_departemen . "'>",
-                        !empty($value->id_departemen) ? $value->id_departemen : '',
-                        !empty($value->nm_departemen) ? $value->nm_departemen : '',
+                        "<input class='form-check-input hover-pointer checked_b' style='border-radius: 0px;' type='checkbox' data-kode='" . $value->id_ruangan . "'>",
+                        !empty($value->id_ruangan) ? strval($value->id_ruangan) : '',
+                        !empty($value->nm_ruangan) ? $value->nm_ruangan : '',
                     ];
                     $hasil_data[] = $data;
                 }
@@ -299,8 +308,8 @@ class KepalaDepartemenController extends \App\Http\Controllers\MyAuthController
     {
         $get_req = $request->all();
         if (!empty($get_req['action'])) {
-            if ($get_req['action'] == 'list_departemen_master_form') {
-                $hasil = $this->getListDepartemenMasterForm($request);
+            if ($get_req['action'] == 'list_kabid_master_form') {
+                $hasil = $this->getListKabidMasterForm($request);
                 if ($request->ajax()) {
                     $return = '';
                     if ($hasil) {

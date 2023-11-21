@@ -63,8 +63,8 @@
                 <table class="table border table-responsive-tablet">
                     <thead>
                         <tr>
-                            <th class="py-3" style="width: 5%">Kode Departemen</th>
-                            <th class="py-3" style="width: 20%">Nama Departemen</th>
+                            <th class="py-3" style="width: 5%">Kode Ruangan</th>
+                            <th class="py-3" style="width: 20%">Nama Ruangan</th>
                             <th class="py-3" style="width: 1%">action</th>
                         </tr>
                     </thead>
