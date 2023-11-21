@@ -913,43 +913,43 @@ class ListRoutes
                     ],
                 ]
             ],
-            [
-                'title'=>'Setting Variabel Aplikasi',
-                'item'=>[
-                    [
-                        'type'=>'index',
-                        'method'=>'get',
-                        'url'=>'/setting-app-variabel',
-                        'controller'=>'SettingAppVariabelController@actionIndex',
-                        'name'=>'',
-                        'middleware'=>'',
-                    ],
-                    [
-                        'type'=>'create',
-                        'method'=>['get','post'],
-                        'url'=>'/setting-app-variabel/create',
-                        'controller'=>'SettingAppVariabelController@actionCreate',
-                        'name'=>'',
-                        'middleware'=>'',
-                    ],
-                    [
-                        'type'=>'update',
-                        'method'=>['get','post'],
-                        'url'=>'/setting-app-variabel/update',
-                        'controller'=>'SettingAppVariabelController@actionUpdate',
-                        'name'=>'',
-                        'middleware'=>'',
-                    ],
-                    [
-                        'type'=>'delete',
-                        'method'=>'delete',
-                        'url'=>'/setting-app-variabel/delete',
-                        'controller'=>'SettingAppVariabelController@actionDelete',
-                        'name'=>'',
-                        'middleware'=>'',
-                    ],
-                ]
-            ],
+            // [
+            //     'title'=>'Setting Variabel Aplikasi',
+            //     'item'=>[
+            //         [
+            //             'type'=>'index',
+            //             'method'=>'get',
+            //             'url'=>'/setting-app-variabel',
+            //             'controller'=>'SettingAppVariabelController@actionIndex',
+            //             'name'=>'',
+            //             'middleware'=>'',
+            //         ],
+            //         [
+            //             'type'=>'create',
+            //             'method'=>['get','post'],
+            //             'url'=>'/setting-app-variabel/create',
+            //             'controller'=>'SettingAppVariabelController@actionCreate',
+            //             'name'=>'',
+            //             'middleware'=>'',
+            //         ],
+            //         [
+            //             'type'=>'update',
+            //             'method'=>['get','post'],
+            //             'url'=>'/setting-app-variabel/update',
+            //             'controller'=>'SettingAppVariabelController@actionUpdate',
+            //             'name'=>'',
+            //             'middleware'=>'',
+            //         ],
+            //         [
+            //             'type'=>'delete',
+            //             'method'=>'delete',
+            //             'url'=>'/setting-app-variabel/delete',
+            //             'controller'=>'SettingAppVariabelController@actionDelete',
+            //             'name'=>'',
+            //             'middleware'=>'',
+            //         ],
+            //     ]
+            // ],
         ];
 
         if (!empty($index)) {

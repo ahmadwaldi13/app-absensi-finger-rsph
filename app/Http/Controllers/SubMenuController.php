@@ -34,15 +34,15 @@ class SubMenuController extends Controller
                 ];
             }
 
-            if($type==3){
-                $menu_permission=[
-                    [
-                        'title'=>'Setting Variabel Aplikasi',
-                        'key'=>'setting-app-variabel',
-                        'url'=>url('/')."/setting-app-variabel",
-                    ],
-                ];
-            }
+            // if($type==3){
+            //     $menu_permission=[
+            //         [
+            //             'title'=>'Setting Variabel Aplikasi',
+            //             'key'=>'setting-app-variabel',
+            //             'url'=>url('/')."/setting-app-variabel",
+            //         ],
+            //     ];
+            // }
 
             if($type==4){
                 $menu_permission=[
