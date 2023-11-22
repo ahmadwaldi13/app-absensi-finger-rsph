@@ -8,7 +8,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use App\Services\GlobalService;
 use App\Services\DataLaporanPresensiService;
 
-class LaporanAbsensiKaryawanLogController extends \App\Http\Controllers\MyAuthController
+class ReportLogMesinController extends \App\Http\Controllers\MyAuthController
 {
     public $part_view, $url_index, $url_name, $title, $breadcrumbs, $globalService;
     public $dataLaporanPresensiService;
@@ -20,7 +20,7 @@ class LaporanAbsensiKaryawanLogController extends \App\Http\Controllers\MyAuthCo
         $this->url_index = $router_name->uri;
         $this->url_name = $router_name->router_name;
 
-        $this->title = 'Report Absensi Jadwal Rutin';
+        $this->title = 'Report Absensi Histori Dari Mesin';
         $this->breadcrumbs = [
             ['title' => 'Manajemen Absensi', 'url' => url('/') . "/sub-menu?type=6"],
             ['title' => $this->title, 'url' => url('/') . "/" . $this->url_index],
@@ -67,7 +67,7 @@ class LaporanAbsensiKaryawanLogController extends \App\Http\Controllers\MyAuthCo
                 $paramter_search['id_status_karyawan']=$filter_id_status_karyawan;
             }
             
-            $list_data=(new \App\Services\DataPresensiService)->get_data_karyawan_log($paramter_search,1)
+            $list_data=(new \App\Services\DataPresensiService)->get_log_mesin_by_histori($paramter_search,1)
             ->orderBy('id_departemen','ASC')
             ->orderBy('id_ruangan','ASC')
             ->orderBy('id_status_karyawan','ASC')
@@ -138,7 +138,7 @@ class LaporanAbsensiKaryawanLogController extends \App\Http\Controllers\MyAuthCo
             $paramter_search['id_status_karyawan']=$filter_id_status_karyawan;
         }
         
-        $list_data=(new \App\Services\DataPresensiService)->get_data_karyawan_log($paramter_search,1)
+        $list_data=(new \App\Services\DataPresensiService)->get_log_mesin_by_histori($paramter_search,1)
         ->orderBy('id_departemen','ASC')
         ->orderBy('id_ruangan','ASC')
         ->orderBy('id_status_karyawan','ASC')
@@ -156,9 +156,9 @@ class LaporanAbsensiKaryawanLogController extends \App\Http\Controllers\MyAuthCo
             $bulan=(int)$get_tb->format('m');
             $bulan_text=(new \App\Http\Traits\GlobalFunction)->get_bulan($bulan);
 
-            $file_='format_laporan_rekap_absensi_karyawan_log.xlsx';
+            $file_='format_report_log_mesin.xlsx';
 
-            $nama_excel="rekap_absensi_log";
+            $nama_excel="rekap_log_mesin";
             $nama_excel.="_".$tahun."_".$bulan;
             $nama_excel.=!empty($get_nm_departemen) ? "_".strtolower( str_replace(" ","_",$get_nm_departemen) ) : '';
             $nama_excel.=!empty($get_nm_ruangan) ? "_".strtolower( str_replace(" ","_",$get_nm_ruangan) ) : '';

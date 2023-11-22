@@ -2,10 +2,14 @@
 
 $item = [
     1 => (object) [
-        'nama' => 'Laporan Absensi log',
-        'key' => 'laporan-absensi-karyawan-log',
+        'nama' => 'Report Absensi Histori Dari Mesin',
+        'key' => 'report-log-mesin',
     ],
     2 => (object) [
+        'nama' => 'Report Absensi Histori Dari Karyawan',
+        'key' => 'report-log-mesin-by-karyawan',
+    ],
+    3 => (object) [
         'nama' => 'Laporan Absensi Rutin',
         'key' => 'laporan-absensi-karyawan',
     ],

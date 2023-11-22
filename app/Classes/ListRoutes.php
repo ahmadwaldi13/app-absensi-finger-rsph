@@ -751,26 +751,44 @@ class ListRoutes
             ],
 
             [
-                'title' => 'Manajemen | Laporan Data Absensi',
+                'title' => 'Manajemen | Report Data Absensi',
                 'item' => [
                     [
-                        'type' => 'Laporan Absensi LOG',
+                        'type' => 'Report Absensi Histori Dari Mesin',
                         'method' => 'get',
-                        'url' => '/laporan-absensi-karyawan-log',
-                        'controller' => 'LaporanAbsensiKaryawanLogController@actionIndex',
-                        'name' => 'laporan_absensi_karyawan_log',
+                        'url' => '/report-log-mesin',
+                        'controller' => 'ReportLogMesinController@actionIndex',
+                        'name' => 'report_log_mesin',
                         'middleware' => '',
                     ],
                     [
-                        'type' => 'Cetak Laporan Absensi LOG',
+                        'type' => 'Cetak Report Absensi Histori Dari Mesin',
                         'method' => 'get',
-                        'url' => '/laporan-absensi-karyawan-log/cetak',
-                        'controller' => 'LaporanAbsensiKaryawanLogController@actionCetak',
+                        'url' => '/report-log-mesin/cetak',
+                        'controller' => 'ReportLogMesinController@actionCetak',
                         'name' => '',
                         'middleware' => '',
                     ],
+
                     [
-                        'type' => 'Laporan Absensi Rutin',
+                        'type' => 'Report Absensi Histori Dari Karyawan',
+                        'method' => 'get',
+                        'url' => '/report-log-mesin-by-karyawan',
+                        'controller' => 'ReportLogMesinByKaryawanController@actionIndex',
+                        'name' => 'report_log_mesin_by_karyawan',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'Cetak Report Absensi Histori Dari Karyawan',
+                        'method' => 'get',
+                        'url' => '/report-log-mesin-by-karyawan/cetak',
+                        'controller' => 'ReportLogMesinByKaryawanController@actionCetak',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+
+                    [
+                        'type' => 'Report Absensi Rutin',
                         'method' => 'get',
                         'url' => '/laporan-absensi-karyawan',
                         'controller' => 'LaporanAbsensiKaryawanController@actionIndex',
@@ -778,7 +796,7 @@ class ListRoutes
                         'middleware' => '',
                     ],
                     [
-                        'type' => 'Cetak Laporan Absensi Rutin',
+                        'type' => 'Cetak Report Absensi Rutin',
                         'method' => 'get',
                         'url' => '/laporan-absensi-karyawan/cetak',
                         'controller' => 'LaporanAbsensiKaryawanController@actionCetak',
