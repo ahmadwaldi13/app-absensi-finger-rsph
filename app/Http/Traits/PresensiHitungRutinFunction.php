@@ -395,6 +395,37 @@ trait PresensiHitungRutinTraits {
         ];
     }
 
+    public function getProses_tes($data=[]){
+        $hasil_proses=(new \App\Http\Traits\PresensiHitungRutinFunction)->getProses($data);
+        
+        $get_data_presensi_user=!empty($hasil_proses) ? (object)$hasil_proses : '';
+        $get_open_mesin=!empty($get_data_presensi_user->jadwal_open_mesin) ? $get_data_presensi_user->jadwal_open_mesin : '';
+        $presensi_jadwal=[];
+        foreach($get_open_mesin as $gom){
+            $get_gom_presensi=!empty($gom->user_presensi) ? (object)$gom->user_presensi : '';
+            if(!empty($get_gom_presensi->user_presensi)){
+                $presensi_jadwal[]=$get_gom_presensi->user_presensi;
+            }
+        }
+        $presensi_jadwal=!empty($presensi_jadwal) ? implode(',',$presensi_jadwal) : '';
+        $get_jadwal_kerja=!empty($get_data_presensi_user->jadwal_kerja) ? $get_data_presensi_user->jadwal_kerja : '';
+        $total_waktu_kerja_sec=!empty($get_jadwal_kerja->total_kerja_sec) ? $get_jadwal_kerja->total_kerja_sec : 0;
+
+        $get_kerja_user=!empty($get_data_presensi_user->hasil_hitung_kerja) ? $get_data_presensi_user->hasil_hitung_kerja : '';
+        $total_waktu_kerja_user_sec=!empty($get_kerja_user->total_kerja_sec) ? $get_kerja_user->total_kerja_sec : 0;
+        $status_kerja_user=!empty($get_kerja_user->status_kerja_text) ? $get_kerja_user->status_kerja_text : '';
+
+        $hasil=[
+            'presensi_user'=>trim($presensi_jadwal),
+            'total_waktu_kerja_user_sec'=>$total_waktu_kerja_user_sec,
+            'total_waktu_kerja_sistem_sec'=>$total_waktu_kerja_sec,
+            'status_kerja'=>$status_kerja_user,
+            'id_jenis_jadwal'=>!empty($get_jadwal_kerja->id_jenis_jadwal) ? $get_jadwal_kerja->id_jenis_jadwal : null,
+        ];
+
+        return $hasil;
+    }
+
 }
 
 class PresensiHitungRutinFunction {
