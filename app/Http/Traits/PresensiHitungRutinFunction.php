@@ -395,7 +395,7 @@ trait PresensiHitungRutinTraits {
         ];
     }
 
-    public function getProses_tes($data=[]){
+    public function getHitungRutin($data=[]){
         $hasil_proses=(new \App\Http\Traits\PresensiHitungRutinFunction)->getProses($data);
         
         $get_data_presensi_user=!empty($hasil_proses) ? (object)$hasil_proses : '';

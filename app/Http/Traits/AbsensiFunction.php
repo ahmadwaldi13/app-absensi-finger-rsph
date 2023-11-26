@@ -427,7 +427,36 @@ trait AbsensiTraits {
             $text=implode(', ',$list_simbol_text);
         }
         return $text;
+    }
 
+    function getJadwalRutin(){
+        $data_jadwal_presensi=(new \App\Http\Traits\PresensiHitungRutinFunction)->getWaktuKerja(['id_jenis_jadwal'=>1])->first();
+        if($data_jadwal_presensi){
+            $waktu_masuk=(new \App\Http\Traits\AbsensiFunction)->his_to_seconds($data_jadwal_presensi->masuk_kerja);
+            $waktu_pulang=(new \App\Http\Traits\AbsensiFunction)->his_to_seconds($data_jadwal_presensi->pulang_kerja);
+
+            $mulai_istirahat=(new \App\Http\Traits\AbsensiFunction)->his_to_seconds($data_jadwal_presensi->awal_istirahat);
+            $akhir_istirahat=(new \App\Http\Traits\AbsensiFunction)->his_to_seconds($data_jadwal_presensi->akhir_istirahat);
+
+            $waktu_masuk_pulang=$waktu_pulang-$waktu_masuk;
+            if(!empty($data_jadwal_presensi->pulang_kerja_next_day)){
+                $waktu_masuk_pulang=$waktu_masuk-$waktu_pulang;
+            }
+
+            $total_istirahat=$akhir_istirahat-$mulai_istirahat;
+            if(!empty($data_jadwal_presensi->akhir_istirahat_next_day)){
+                $total_istirahat=$mulai_istirahat-$akhir_istirahat;
+            }
+
+            $total_waktu_kerja_sec=$waktu_masuk_pulang-$total_istirahat;
+            $total_waktu_kerja=(new \App\Http\Traits\AbsensiFunction)->hitung_waktu_by_seccond($total_waktu_kerja_sec);
+
+            return (object)[
+                'data_jadwal_presensi'=>$data_jadwal_presensi,
+                'total_waktu_kerja_sec'=>$total_waktu_kerja_sec,
+                'total_waktu_kerja'=>$total_waktu_kerja,
+            ];
+        }
     }
 
 
