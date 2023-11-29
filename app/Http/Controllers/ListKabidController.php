@@ -67,7 +67,7 @@ class ListKabidController extends \App\Http\Controllers\MyAuthController
                     $item_list_terpilih[$value->ruangan] = [
                         'value' => 1,
                         'data' => [
-                            !empty($value->ruangan) ? strval($value->ruangan) : '',
+                            '',
                             !empty($value->nm_ruangan) ? $value->nm_ruangan : '',
                         ]
                     ];
@@ -147,7 +147,7 @@ class ListKabidController extends \App\Http\Controllers\MyAuthController
             $data_save = $req;
             $nip = !empty($request->id_karyawan) ? $request->id_karyawan : '';
             if (empty($nip)) {
-                return redirect()->route($link_back_redirect, $link_back_param)->with(['error' => 'NIP idak boleh kosong']);
+                return redirect()->route($link_back_redirect, $link_back_param)->with(['error' => 'NIP tidak boleh kosong']);
             }
 
             $is_save = 0;
@@ -287,7 +287,6 @@ class ListKabidController extends \App\Http\Controllers\MyAuthController
 
                     $data = [
                         "<input class='form-check-input hover-pointer checked_b' style='border-radius: 0px;' type='checkbox' data-kode='" . $value->id_ruangan . "'>",
-                        !empty($value->id_ruangan) ? strval($value->id_ruangan) : '',
                         !empty($value->nm_ruangan) ? $value->nm_ruangan : '',
                     ];
                     $hasil_data[] = $data;
