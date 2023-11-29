@@ -81,6 +81,11 @@ class SubMenuController extends Controller
                         'key'=>'list-kabid',
                         'url'=>url('/')."/list-kabid",
                     ],
+                    [
+                        'title'=>'List Kepala Ruangan',
+                        'key'=>'list-kepala-ruangan',
+                        'url'=>url('/')."/list-kepala-ruangan",
+                    ],
                 ];
             }
 
