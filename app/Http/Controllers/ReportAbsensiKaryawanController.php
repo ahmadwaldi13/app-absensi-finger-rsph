@@ -20,7 +20,7 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
         $this->url_index = $router_name->uri;
         $this->url_name = $router_name->router_name;
 
-        $this->title = 'Report Absensi Jadwal Rutin';
+        $this->title = 'Report Absensi Karyawan';
         $this->breadcrumbs = [
             ['title' => 'Manajemen Absensi', 'url' => url('/') . "/sub-menu?type=6"],
             ['title' => $this->title, 'url' => url('/') . "/" . $this->url_index],
@@ -30,9 +30,7 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
         $this->dataLaporanPresensiService = new DataLaporanPresensiService;
     }
 
-    function actionIndex(Request $request){
-        ini_set("memory_limit","800M");
-        set_time_limit(0);
+    private function karyawan_rutin($request){
 
         $form_filter_text=!empty($request->form_filter_text) ? $request->form_filter_text : '';
         $filter_tahun_bulan=!empty($request->filter_tahun_bulan) ? $request->filter_tahun_bulan : date('Y-m');
@@ -46,8 +44,7 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
 
         $filter_id_departemen=!empty($request->filter_id_departemen) ? $request->filter_id_departemen : '';
         $filter_id_ruangan=!empty($request->filter_id_ruangan) ? $request->filter_id_ruangan : '';
-
-        /*simpan data jika bulan dan tahun berbeda---------------------*/
+        
         $list_data=$collection = collect([]);
         if(!empty($request->cari_data)){
 
@@ -119,6 +116,23 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
             'list_dinasluar'=>!empty($list_dinasluar) ? $list_dinasluar : '',
         ];
 
-        return view($this->part_view . '.index', $parameter_view);
+        return view($this->part_view . '.index_rutin', $parameter_view);
+    }
+
+    function actionIndex(Request $request){
+        ini_set("memory_limit","800M");
+        set_time_limit(0);
+
+        $type_modul=!empty($request->type_link) ? $request->type_link : '';
+
+        $type_modul=!empty($type_modul) ? $type_modul : 1;
+        
+        if($type_modul==1){
+            return $this->karyawan_rutin($request);
+        }
+
+        if($type_modul==2){
+            return $this->karyawan_rutin($request);
+        }
     }
 }

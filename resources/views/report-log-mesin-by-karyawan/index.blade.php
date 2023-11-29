@@ -14,7 +14,7 @@
 
 @include('absensi-karyawan.tab_absensi', ["active"=>3])
 
-@include('laporan-absensi-karyawan.tab_laporan_absensi', ["active"=>2])
+@include('report-absensi-karyawan.tab_laporan_absensi', ["active"=>2])
 
 @include($router_name->path_base.'.columns')
 

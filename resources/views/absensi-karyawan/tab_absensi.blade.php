@@ -11,7 +11,7 @@ $item = [
     ],
     3 => (object) [
         'nama' => 'Report Absensi',
-        'key' => 'laporan-absensi-karyawan',
+        'key' => 'report-absensi-karyawan',
     ]
 ];
 
