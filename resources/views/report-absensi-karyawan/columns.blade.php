@@ -337,6 +337,52 @@
                         @foreach($list_data as $key => $item)
                             <?php 
                                 $data_presensi=!empty($item->presensi) ? (array)json_decode($item->presensi) : [];
+                                
+                                $list_cuti_karyawan=[];
+                                $total_cuti=0;
+                                if(!empty($list_cuti[$item->id_karyawan])){
+                                    $data_cuti=(object)$list_cuti[$item->id_karyawan];
+                                    if(!empty($data_cuti->waktu)){
+                                        foreach($data_cuti->waktu as $wc){
+                                            if(!empty($wc[0])){
+                                                $parameter_get_cuti=[
+                                                    'tgl_awal'=>!empty($wc[0]) ? $wc[0] : '',
+                                                    'tgl_akhir'=>!empty($wc[1]) ? $wc[1] : '',
+                                                    'data_sent'=>!empty($wc[3]) ? $wc[3] : '',
+                                                    'list_libur_kerja'=>!empty($get_hari_minggu) ? $get_hari_minggu : '',
+                                                    'list_libur_nasional'=>!empty($list_hari_libur) ? $list_hari_libur : '',
+                                                ];
+                                                $hasil_cuti_tmp=(new \App\Http\Traits\AbsensiFunction)->get_tgl_khusus_with_data($parameter_get_cuti);
+                                                $hasil_cuti=!empty($hasil_cuti_tmp['hasil_data']) ? $hasil_cuti_tmp['hasil_data'] : [];
+                                                $total_cuti+=!empty($hasil_cuti_tmp['jml_hari']) ? $hasil_cuti_tmp['jml_hari'] : 0;
+                                                $list_cuti_karyawan=array_merge($list_cuti_karyawan,$hasil_cuti);
+                                            }
+                                        }
+                                    }
+                                }
+
+                                $list_dinasluar_karyawan=[];
+                                $total_dinasluar=0;
+                                if(!empty($list_dinasluar[$item->id_karyawan])){
+                                    $data_dinasluar=(object)$list_dinasluar[$item->id_karyawan];
+                                    if(!empty($data_dinasluar->waktu)){
+                                        foreach($data_dinasluar->waktu as $wc){
+                                            if(!empty($wc[0])){
+                                                $parameter_get_dinasluar=[
+                                                    'tgl_awal'=>!empty($wc[0]) ? $wc[0] : '',
+                                                    'tgl_akhir'=>!empty($wc[1]) ? $wc[1] : '',
+                                                    'data_sent'=>!empty($wc[3]) ? $wc[3] : '',
+                                                    'list_libur_kerja'=>!empty($get_hari_minggu) ? $get_hari_minggu : '',
+                                                    'list_libur_nasional'=>!empty($list_hari_libur) ? $list_hari_libur : '',
+                                                ];
+                                                $hasil_dinasluar_tmp=(new \App\Http\Traits\AbsensiFunction)->get_tgl_khusus_with_data($parameter_get_dinasluar);
+                                                $hasil_dinasluar=!empty($hasil_dinasluar_tmp['hasil_data']) ? $hasil_dinasluar_tmp['hasil_data'] : [];
+                                                $total_dinasluar+=!empty($hasil_dinasluar_tmp['jml_hari']) ? $hasil_dinasluar_tmp['jml_hari'] : 0;
+                                                $list_dinasluar_karyawan=array_merge($list_dinasluar_karyawan,$hasil_dinasluar);
+                                            }
+                                        }
+                                    }
+                                }
                             ?>
                             @if(empty($list_departemen[$item->id_departemen]))
                                 <?php $list_departemen[$item->id_departemen]=1; ?>
@@ -422,6 +468,36 @@
                                         $tgl_now = new DateTime($tgl_now->format('Y-m-d'));
 
                                         $class_hari='hari_default';
+
+                                        if(!empty($list_cuti_karyawan[$item_tgl])){
+                                            $class_hari='hari_blue_sky';
+                                            $presensi_user_text=$list_cuti_karyawan[$item_tgl];
+                                            if(!empty($data_jadwal_rutin->total_waktu_kerja_sec)){
+                                                $grand_twjk_user_sec+=$data_jadwal_rutin->total_waktu_kerja_sec;
+                                                $status_kerja_alias='';
+                                                if(!empty($get_hari_minggu[$item_tgl])){
+                                                    $grand_twjk_user_sec-=$data_jadwal_rutin->total_waktu_kerja_sec;
+                                                    $total_wjku_perhari_sec='';
+                                                    $presensi_user_text='';
+                                                }
+
+                                                if(!empty($list_hari_libur[$item_tgl])){
+                                                    $grand_twjk_user_sec-=$data_jadwal_rutin->total_waktu_kerja_sec;
+                                                    $total_wjku_perhari_sec='';
+                                                    $presensi_user_text='';
+                                                }
+                                            }
+                                        }
+
+                                        if(!empty($list_dinasluar_karyawan[$item_tgl])){
+                                            $class_hari='hari_green_sky';
+                                            $presensi_user_text=$list_dinasluar_karyawan[$item_tgl];
+                                            if(!empty($data_jadwal_rutin->total_waktu_kerja_sec)){
+                                                $grand_twjk_user_sec+=$data_jadwal_rutin->total_waktu_kerja_sec;
+                                                $status_kerja_alias='';
+                                            }
+                                        }
+
                                         if(!empty($get_hari_minggu[$item_tgl])){
                                             $class_hari='hari_red';
                                             if(empty($presensi_user_text)){
@@ -441,6 +517,8 @@
                                         if($tgl_data>$tgl_now){
                                             $status_kerja_alias='';
                                         }
+
+                                        $total_wjku_perhari_sec_text=!empty($total_wjku_perhari_sec) ? (new \App\Http\Traits\AbsensiFunction)->change_format_waktu_indo($total_wjku_perhari_sec,':') : '';
                                     ?>
                                     <td class='{{ $class_hari }}' style='vertical-align: middle;'>
                                         @if(!empty($presensi_user_text))
@@ -456,6 +534,10 @@
                                     $selisih_grand_twjk=$grand_twjk_sistem_sec-$grand_twjk_user_sec; 
                                     $tanda_selisih_grand_twjk=($selisih_grand_twjk<0) ? '+' : '-';
                                     $class_tanda_selisih_grand_twjk=($selisih_grand_twjk<0) ? 'hasil_positif' : 'hasil_negatif';
+                                    if($selisih_grand_twjk==0){
+                                        $tanda_selisih_grand_twjk='';
+                                        $class_tanda_selisih_grand_twjk='hasil_positif';
+                                    }
 
                                     $selisih_grand_twjk_text=$tanda_selisih_grand_twjk.' '.(new \App\Http\Traits\AbsensiFunction)->change_format_waktu_indo(abs($selisih_grand_twjk),':');
                                 ?>
