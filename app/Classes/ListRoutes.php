@@ -803,13 +803,20 @@ class ListRoutes
                         'name' => '',
                         'middleware' => '',
                     ],
-
                     [
                         'type' => 'Report Absensi Karyawan',
                         'method' => 'get',
                         'url' => '/report-absensi-karyawan',
                         'controller' => 'ReportAbsensiKaryawanController@actionIndex',
                         'name' => 'report_absensi_karyawan',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'Cetak Report Absensi Karyawan',
+                        'method' => 'get',
+                        'url' => '/report-absensi-karyawan/cetak',
+                        'controller' => 'ReportAbsensiKaryawanController@actionCetak',
+                        'name' => '',
                         'middleware' => '',
                     ],
                 ]

@@ -295,7 +295,7 @@
                 </div>
             </div>
         </div>
-        
+
 
         @if( (new \App\Http\Traits\AuthFunction)->checkAkses($router_name->uri.'/cetak') )
             @if(!empty($list_data->total()))
@@ -335,9 +335,9 @@
                             $list_status_karyawan=[];
                         ?>
                         @foreach($list_data as $key => $item)
-                            <?php 
+                            <?php
                                 $data_presensi=!empty($item->presensi) ? (array)json_decode($item->presensi) : [];
-                                
+
                                 $list_cuti_karyawan=[];
                                 $total_cuti=0;
                                 if(!empty($list_cuti[$item->id_karyawan])){
@@ -412,19 +412,19 @@
                                     <div>( {{ !empty($item->id_user) ? $item->id_user : '' }} )</div>
                                     <div>{{ !empty($item->nm_karyawan) ? $item->nm_karyawan : '' }}</div>
                                 </td>
-                                <?php 
+                                <?php
                                     $grand_twjk_user_sec=0;
                                     $grand_twjk_sistem_sec=0;
                                 ?>
                                 @foreach($list_tgl as $key_tgl => $item_tgl)
-                                    <?php 
+                                    <?php
                                         $presensi_user_text='';
                                         $status_kerja_alias='';
                                         $total_wjk_user_perhari_sec=0;
 
                                         $get_presensi_user=!empty($data_presensi[$item_tgl]) ? $data_presensi[$item_tgl] : '';
                                         if(!empty($get_presensi_user)){
-                                            
+
                                             if($item->jadwal_rutin==1){
                                                 $data_proses=[
                                                     'list_presensi'=>!empty($get_presensi_user->presensi) ? implode(',',$get_presensi_user->presensi) : '',
@@ -439,8 +439,8 @@
                                                     $presensi_user_text=implode('<br>',$presensi_filter_tmp);
                                                 }
 
-                                                $status_kerja_alias=!empty($hasil_proses->status_kerja) ? $hasil_proses->status_kerja->alias : ''; 
-                                                
+                                                $status_kerja_alias=!empty($hasil_proses->status_kerja) ? $hasil_proses->status_kerja->alias : '';
+
                                                 if($status_kerja_alias=='A'){
                                                     $presensi_user_text='';
                                                 }
@@ -451,7 +451,7 @@
                                         $total_wjk_user_perhari_sec=!empty($total_wjk_user_perhari_sec) ? $total_wjk_user_perhari_sec : 0;
 
                                         $total_wjku_perhari_sec=$total_wjk_user_perhari_sec;
-                                        
+
                                         $grand_twjk_user_sec+=$total_wjku_perhari_sec;
                                         $grand_twjk_sistem_sec+=$total_wjk_sistem_perhari_sec;
 
@@ -463,9 +463,9 @@
                                             $status_kerja_alias="(".$status_kerja_alias.")";
                                         }
 
-                                        $tgl_data = new DateTime($item_tgl);
-                                        $tgl_now = new DateTime("now");
-                                        $tgl_now = new DateTime($tgl_now->format('Y-m-d'));
+                                        $tgl_data = new \DateTime($item_tgl);
+                                        $tgl_now = new \DateTime("now");
+                                        $tgl_now = new \DateTime($tgl_now->format('Y-m-d'));
 
                                         $class_hari='hari_default';
 
@@ -505,7 +505,7 @@
                                             }
                                             $grand_twjk_sistem_sec-=$total_wjk_sistem_perhari_sec;
                                         }
-                                        
+
                                         if(!empty($list_hari_libur[$item_tgl])){
                                             $class_hari='hari_yellow';
                                             if(empty($presensi_user_text)){
@@ -531,7 +531,7 @@
                                     $grand_twjk_user_sec_text=(new \App\Http\Traits\AbsensiFunction)->change_format_waktu_indo($grand_twjk_user_sec,':');
                                     $grand_twjk_sistem_sec_text=(new \App\Http\Traits\AbsensiFunction)->change_format_waktu_indo($grand_twjk_sistem_sec,':');
 
-                                    $selisih_grand_twjk=$grand_twjk_sistem_sec-$grand_twjk_user_sec; 
+                                    $selisih_grand_twjk=$grand_twjk_sistem_sec-$grand_twjk_user_sec;
                                     $tanda_selisih_grand_twjk=($selisih_grand_twjk<0) ? '+' : '-';
                                     $class_tanda_selisih_grand_twjk=($selisih_grand_twjk<0) ? 'hasil_positif' : 'hasil_negatif';
                                     if($selisih_grand_twjk==0){
@@ -541,8 +541,8 @@
 
                                     $selisih_grand_twjk_text=$tanda_selisih_grand_twjk.' '.(new \App\Http\Traits\AbsensiFunction)->change_format_waktu_indo(abs($selisih_grand_twjk),':');
                                 ?>
-                                <td style='vertical-align: middle;'>{{ $grand_twjk_user_sec_text }}</td>
-                                <td style='vertical-align: middle;' class="{{ $class_tanda_selisih_grand_twjk }}">{{ $selisih_grand_twjk_text }}</td>
+                                <td style='vertical-align: middle;font-weight:700;'>{{ $grand_twjk_user_sec_text }}</td>
+                                <td style='vertical-align: middle;font-weight:700;' class="{{ $class_tanda_selisih_grand_twjk }}">{{ $selisih_grand_twjk_text }}</td>
                             </tr>
                         @endforeach
                     @endif

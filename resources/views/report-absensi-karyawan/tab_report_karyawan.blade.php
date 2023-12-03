@@ -6,6 +6,11 @@ $item = [
         'key' => 'report-absensi-karyawan',
         'type_link'=>1
     ],
+    // 2 => (object) [
+    //     'nama' => 'Data Shift',
+    //     'key' => 'report-absensi-karyawan',
+    //     'type_link'=>2
+    // ],
 ];
 
 $item = (new \App\Http\Traits\AuthFunction())->checkMenuAkses($item);
