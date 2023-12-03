@@ -64,22 +64,23 @@ function get_terpilih(){
 
         $parent=$(document).find('#data-terpilih');
         $tabel=$parent.find('table');
-        if($tabel.find('tbody').length){
-            $.each( $item, function( key, value ) {
-                if(value.data){
-                    $tamplate+='<tr data-kode="'+key+'">';
-                        $.each( value.data, function( key1, value1 ) {
-                            $tamplate+="<td>"+decode_html_raw(value1)+"</td>";
-                        });
-                        $tamplate+="<td> <a href='#' class='btn btn-kecil btn-danger del_item'> <i class='fa-solid fa-trash'></i> </a> </td>";
-                    $tamplate+='</tr>';
+        if ($tabel.find('tbody').length) {
+            $.each($item, function (key, value) {
+                if (value.data) {
+                    $tamplate += '<tr data-kode="' + key + '">';
+                    $.each(value.data, function (key1, value1) {
+                        if (key1 == 0) {
+                            value1 = "<input class='form-check-input' type='checkbox' disabled checked value=" + value[1] + ">";
+                        }
+                        $tamplate += "<td>" + decode_html_raw(value1) + "</td>";
+                    });
+                    $tamplate += "<td> <a href='#' class='btn btn-kecil btn-danger del_item'> <i class='fa-solid fa-trash'></i> </a> </td>";
+                    $tamplate += '</tr>';
                 }
             });
 
             $tabel.find('tbody').html('');
             $tabel.find('tbody').html($tamplate);
-
-            $(document).find(".money").inputmask({ alias : "money" });
         }
 
 

@@ -38,7 +38,6 @@
                     <thead>
                         <tr>
                             <th class="py-3" style="width: 1%">Pil</th>
-                            <th class="py-3" style="width: 5%">Kode Ruangan</th>
                             <th class="py-3" style="width: 20%">Nama Ruangan</th>
                         </tr>
                     </thead>

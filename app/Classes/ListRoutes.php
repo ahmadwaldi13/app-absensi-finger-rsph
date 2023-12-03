@@ -691,6 +691,35 @@ class ListRoutes
                 ]
             ],
             [
+                'title' => 'Data Karyawan | List Kepala Ruangan',
+                'item' => [
+                    [
+                        'type' => 'index',
+                        'method' => 'get',
+                        'url' => '/list-kepala-ruangan',
+                        'controller' => 'ListKepalaRuanganController@actionIndex',
+                        'name' => 'list_kepala_ruangan',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'Setting Karu',
+                        'method' => ['get', 'post', 'delete'],
+                        'url' => '/list-kepala-ruangan/setting',
+                        'controller' => 'ListKepalaRuanganController@actionSetting',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'system',
+                        'method' => 'get',
+                        'url' => '/list-kepala-ruangan/ajax',
+                        'controller' => 'ListKepalaRuanganController@ajax',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                ]
+            ],
+            [
                 'title' => 'Manajemen Absensi | Tarik Log Absensi Karyawan',
                 'item' => [
                     [

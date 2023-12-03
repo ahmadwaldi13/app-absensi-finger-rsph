@@ -10,7 +10,7 @@
     <div class="row justify-content-start mb-3">
         <div class="col-lg-12">
             <div class="row justify-content-left">
-                <div class="col-lg-2 mb-3">
+                <div class="col-lg-6 mb-3">
                     <div class='bagan_form'>
                     <label for="nip" class="form-label">NIP <span class="text-danger">*</span></label>
                         <input type="text" class="form-control" id="nip" name='nip' readonly required value="{{ !empty($model->nip) ? $model->nip : '' }}">
@@ -18,7 +18,7 @@
                     </div>
                 </div>
 
-                <div class="col-lg-4 mb-3">
+                <div class="col-lg-6 mb-3">
                     <div class='bagan_form'>
                         <label for="nm_karyawan" class="form-label">Pilih Karyawan <span class="text-danger">*</span></label>
                         <div class="button-icon-inside">
@@ -33,23 +33,6 @@
                         <div class="message"></div>
                     </div>
                 </div>
-
-                <div class="col-lg-2 mb-3">
-                    <div class='bagan_form'>
-                    <label for="nm_departemen" class="form-label">Departemen</label>
-                        <input type="text" class="form-control" id="nm_departemen" readonly disabled value="{{ !empty($model->nm_departemen) ? $model->nm_departemen : '' }}">
-                        <div class="message"></div>
-                    </div>
-                </div>
-
-                <div class="col-lg-3 mb-3">
-                    <div class='bagan_form'>
-                        <label for="nm_ruangan" class="form-label">Ruangan </label>
-                        <input type="text" class="form-control" id="nm_ruangan" value="{{ !empty($model->nm_ruangan) ? $model->nm_ruangan : '' }}">
-                        <div class="message"></div>
-                    </div>
-                </div>
-        
             </div>
         </div>
     </div>
@@ -63,9 +46,9 @@
                 <table class="table border table-responsive-tablet">
                     <thead>
                         <tr>
-                            <th class="py-3" style="width: 5%">Kode Ruangan</th>
+                            <th class="py-3" style="width: 5%">Aksi</th>
                             <th class="py-3" style="width: 20%">Nama Ruangan</th>
-                            <th class="py-3" style="width: 1%">action</th>
+                            <th class="py-3" style="width: 1%">Opsi</th>
                         </tr>
                     </thead>
                     <tbody></tbody>
@@ -91,5 +74,5 @@
 
 
 @push('script-end-2')
-    <script src="{{ asset('js/master-departemen/form.js') }}"></script>
+    <script src="{{ asset('js/list-kabid/form.js') }}"></script>
 @endpush
