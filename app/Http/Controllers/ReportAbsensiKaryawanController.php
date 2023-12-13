@@ -166,8 +166,6 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
             ->orderBy('id_status_karyawan','ASC')
             ->orderBy('nm_karyawan','ASC')
             ->get();
-
-            dd($list_data);
         }
 
         $page = isset($request->page) ? $request->page : 1;
@@ -197,6 +195,8 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
             'title' => $this->title,
             'breadcrumbs' => $this->breadcrumbs,
             'list_tgl'=>$list_tgl,
+            'list_data'=>$list_data,
+            'get_tamplate_default'=>$get_tamplate_default
         ];
 
         return view($this->part_view . '.index_shift', $parameter_view);

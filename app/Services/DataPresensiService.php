@@ -591,7 +591,8 @@ class DataPresensiService extends BaseService
                     nm_status_karyawan,
                     karyawan.id_jabatan,
                     nm_jabatan,
-                    id_template_jadwal_shift,
+                    jadwal_shift.id_template_jadwal_shift,
+                    nm_shift,
                     presensi,list_data_detail
                 from(
                     select 
@@ -601,6 +602,7 @@ class DataPresensiService extends BaseService
                 )list_user
                 inner join ref_karyawan karyawan on karyawan.id_karyawan=list_user.id_karyawan
                 inner join ref_karyawan_jadwal_shift jadwal_shift on jadwal_shift.id_karyawan=karyawan.id_karyawan
+                left join ref_template_jadwal_shift rtjs on rtjs.id_template_jadwal_shift=jadwal_shift.id_template_jadwal_shift
                 left join ref_jabatan rj on rj.id_jabatan=karyawan.id_jabatan
                 left join ref_departemen rd on rd.id_departemen=karyawan.id_departemen
                 left join ref_ruangan rr on rr.id_ruangan=karyawan.id_ruangan

@@ -28,6 +28,11 @@
         color: #8f1300 !important;
         font-weight: 700;
     }
+
+    .penanda_jadwal{
+        margin-top:5px;
+        height: 20px;
+    }
 </style>
 
 <?php
@@ -48,7 +53,7 @@
     }
 
     $jml_hari_kerja=count($hari_kerja);
-    
+
 
     foreach($list_tgl as $key_tgl => $item_tgl){
         $tgl_format_tmp = new \DateTime($item_tgl);
@@ -75,7 +80,7 @@
                 <div class="row justify-content-start align-items-end mb-3">
                     <div class="col-lg-12 col-md-12">
                         <div class="row justify-content-start align-items-end mb-3">
-                            
+
                             <div class="col-lg-3">
                                 <div class='bagan_form'>
                                     <div class='input-month-year-bagan'>
@@ -179,7 +184,22 @@
             </div>
         </div>
 
-
+        @if( (new \App\Http\Traits\AuthFunction)->checkAkses($router_name->uri.'/cetak') )
+            @if(!empty($list_data->total()))
+                <?php
+                    $params_filter=Request::all();
+                    $parameter_sent=[
+                        'data_sent'=>json_encode($params_filter)
+                    ];
+                    $url_cetak=(new \App\Http\Traits\GlobalFunction)->set_paramter_url($router_name->uri.'/cetak',$parameter_sent);
+                ?>
+                <div class="row">
+                    <div class="col-md-12 text-end">
+                        <a href="{{ url($url_cetak) }}" class="btn" style='color:#fff;background-color:#7912e0;'><i class="fa-solid fa-file-excel"></i> Print</a>
+                    </div>
+                </div>
+            @endif
+        @endif
         <div style="overflow-x: auto; max-width: auto;">
             <table class="table table-bordered table-responsive-tablet">
                 <thead>
@@ -195,7 +215,99 @@
                     </tr>
                 </thead>
                 <tbody>
-                    
+                    @if(!empty($list_data))
+                        <?php
+                            $list_departemen=[];
+                            $list_ruangan=[];
+                            $list_status_karyawan=[];
+                        ?>
+                        @foreach($list_data as $key => $item)
+                        <?php 
+                            $data_presensi=!empty($item->presensi) ? (array)json_decode($item->presensi) : [];
+                        ?>
+                        @if(empty($list_departemen[$item->id_departemen]))
+                            <?php $list_departemen[$item->id_departemen]=1; ?>
+                            <tr style='background: #a7a7a7;'>
+                                <td colspan="50" style='vertical-align: middle;'>{{ !empty($item->nm_departemen) ? $item->nm_departemen : '' }}</td>
+                            </tr>
+                        @endif
+
+                        @if(empty($list_ruangan[$item->id_ruangan]))
+                            <?php $list_ruangan[$item->id_ruangan]=1; ?>
+                            <tr style='background: #c8c7c7;'>
+                                <td>-</td>
+                                <td colspan="50" style='vertical-align: middle;'>{{ !empty($item->nm_ruangan) ? $item->nm_ruangan : '' }}</td>
+                            </tr>
+                        @endif
+
+                        @if(empty($list_status_karyawan[$item->id_ruangan][$item->id_status_karyawan]))
+                            <?php $list_status_karyawan[$item->id_ruangan][$item->id_status_karyawan]=1; ?>
+                            <tr style='background: #eaeaea;'>
+                                <td>--</td>
+                                <td colspan="50" style='vertical-align: middle;'>{{ !empty($item->nm_status_karyawan) ? $item->nm_status_karyawan : '' }}</td>
+                            </tr>
+                        @endif
+                        <tr>
+                            <td style='vertical-align: middle;'>{{ $key+1 }}</td>
+                            <td style='vertical-align: middle;'>
+                                <div>( {{ !empty($item->id_user) ? $item->id_user : '' }} )</div>
+                                <div>{{ !empty($item->nm_karyawan) ? $item->nm_karyawan : '' }}</div>
+                                @if(!empty($item->nm_shift))
+                                    <div style='border-top:1px solid'>{{ $item->nm_shift }}</div>
+                                @endif
+                            </td>
+                            @foreach($list_tgl as $key_tgl => $item_tgl)
+                                <?php 
+                                    $get_presensi_user=!empty($data_presensi[$item_tgl]) ? $data_presensi[$item_tgl] : '';
+                                    $list_nm_shift_tmp=[];
+                                    $list_color_shift_tmp=[];
+                                    $list_libur_tmp_style=[];
+                                    $id_template_jadwal_shift=$item->id_template_jadwal_shift;
+                                    if(!empty($get_tamplate_default[$id_template_jadwal_shift])){
+                                        $tamplate_default=$get_tamplate_default[$id_template_jadwal_shift];
+                                        if(!empty($tamplate_default[$item_tgl])){
+                                            foreach($tamplate_default[$item_tgl] as $item_jadwal){
+                                                $item_jadwal=(object)$item_jadwal;
+                                                $list_nm_shift_tmp[]=$item_jadwal->nm_jenis_jadwal;
+                                                if($item_jadwal->type_jadwal==1){
+                                                    $list_color_shift_tmp[]="<div class='penanda_jadwal' style='background:".$item_jadwal->bg_color.";'></div>";
+                                                }
+                                                if($item_jadwal->type_jadwal==2){
+                                                    $list_libur_tmp_style[$item_tgl]=[
+                                                        'bg_color'=>$item_jadwal->bg_color,
+                                                        'title'=>$item_jadwal->nm_jenis_jadwal
+                                                    ];
+                                                }
+
+                                                if(!empty($item_jadwal->pulang_kerja_next_day)){
+                                                    // dd($item_jadwal);
+                                                }
+                                                
+                                            }
+                                        }
+                                    }
+
+                                    $list_nm_shift=!empty($list_nm_shift_tmp) ? implode(',',$list_nm_shift_tmp) : '';
+                                    $list_color_shift=!empty($list_color_shift_tmp) ? implode('',$list_color_shift_tmp) : '';
+                                ?>
+                                <?php
+                                    $td_color='transparent';
+                                    if(!empty($list_libur_tmp_style[$item_tgl])){
+                                        $data_libur_jadwal=(object)$list_libur_tmp_style[$item_tgl];
+                                        $td_color=$data_libur_jadwal->bg_color;
+                                        $list_color_shift=!empty($list_color_shift) ? $list_color_shift : $data_libur_jadwal->title;
+                                    }
+                                ?>
+                                @if(!empty($list_libur_tmp_style[$item_tgl]))
+                                    <td style='vertical-align: middle; background:{{ $td_color }}; '>{!! $list_color_shift !!}</td>
+                                @else
+                                    <td style='background:{{ $td_color }}; '>{!! $list_color_shift !!}</td>
+                                @endif
+                                
+                            @endforeach
+                        </tr>
+                        @endforeach
+                    @endif
                 </tbody>
             </table>
         </div>
