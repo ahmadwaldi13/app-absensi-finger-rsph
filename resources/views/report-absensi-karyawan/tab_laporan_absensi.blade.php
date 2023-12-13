@@ -12,11 +12,7 @@ $item = [
     3 => (object) [
         'nama' => 'Report Absensi karyawan',
         'key' => 'report-absensi-karyawan',
-    ],
-    4 => (object) [
-        'nama' => 'Laporan Absensi Rutin',
-        'key' => 'laporan-absensi-karyawan',
-    ],
+    ]
 ];
 
 $item = (new \App\Http\Traits\AuthFunction())->checkMenuAkses($item);

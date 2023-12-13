@@ -815,23 +815,6 @@ class ListRoutes
                         'name' => '',
                         'middleware' => '',
                     ],
-
-                    [
-                        'type' => 'Report Absensi Rutin',
-                        'method' => 'get',
-                        'url' => '/laporan-absensi-karyawan',
-                        'controller' => 'LaporanAbsensiKaryawanController@actionIndex',
-                        'name' => 'laporan_absensi_karyawan',
-                        'middleware' => '',
-                    ],
-                    [
-                        'type' => 'Cetak Report Absensi Rutin',
-                        'method' => 'get',
-                        'url' => '/laporan-absensi-karyawan/cetak',
-                        'controller' => 'LaporanAbsensiKaryawanController@actionCetak',
-                        'name' => '',
-                        'middleware' => '',
-                    ],
                     [
                         'type' => 'Report Absensi Karyawan',
                         'method' => 'get',
