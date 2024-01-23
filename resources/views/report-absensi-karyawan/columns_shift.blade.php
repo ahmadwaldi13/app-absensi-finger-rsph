@@ -222,90 +222,161 @@
                             $list_status_karyawan=[];
                         ?>
                         @foreach($list_data as $key => $item)
-                        <?php 
-                            $data_presensi=!empty($item->presensi) ? (array)json_decode($item->presensi) : [];
-                        ?>
-                        @if(empty($list_departemen[$item->id_departemen]))
-                            <?php $list_departemen[$item->id_departemen]=1; ?>
-                            <tr style='background: #a7a7a7;'>
-                                <td colspan="50" style='vertical-align: middle;'>{{ !empty($item->nm_departemen) ? $item->nm_departemen : '' }}</td>
-                            </tr>
-                        @endif
+                            <?php 
+                                $data_presensi=!empty($item->presensi) ? (array)json_decode($item->presensi) : [];
+                                $get_tamplate_user=!empty($list_tamplate_user[$item->id_karyawan]) ? $list_tamplate_user[$item->id_karyawan] : '';
+                            ?>
+                            @if(empty($list_departemen[$item->id_departemen]))
+                                <?php $list_departemen[$item->id_departemen]=1; ?>
+                                <tr style='background: #a7a7a7;'>
+                                    <td colspan="50" style='vertical-align: middle;'>{{ !empty($item->nm_departemen) ? $item->nm_departemen : '' }}</td>
+                                </tr>
+                            @endif
 
-                        @if(empty($list_ruangan[$item->id_ruangan]))
-                            <?php $list_ruangan[$item->id_ruangan]=1; ?>
-                            <tr style='background: #c8c7c7;'>
-                                <td>-</td>
-                                <td colspan="50" style='vertical-align: middle;'>{{ !empty($item->nm_ruangan) ? $item->nm_ruangan : '' }}</td>
-                            </tr>
-                        @endif
+                            @if(empty($list_ruangan[$item->id_ruangan]))
+                                <?php $list_ruangan[$item->id_ruangan]=1; ?>
+                                <tr style='background: #c8c7c7;'>
+                                    <td>-</td>
+                                    <td colspan="50" style='vertical-align: middle;'>{{ !empty($item->nm_ruangan) ? $item->nm_ruangan : '' }}</td>
+                                </tr>
+                            @endif
 
-                        @if(empty($list_status_karyawan[$item->id_ruangan][$item->id_status_karyawan]))
-                            <?php $list_status_karyawan[$item->id_ruangan][$item->id_status_karyawan]=1; ?>
-                            <tr style='background: #eaeaea;'>
-                                <td>--</td>
-                                <td colspan="50" style='vertical-align: middle;'>{{ !empty($item->nm_status_karyawan) ? $item->nm_status_karyawan : '' }}</td>
-                            </tr>
-                        @endif
-                        <tr>
-                            <td style='vertical-align: middle;'>{{ $key+1 }}</td>
-                            <td style='vertical-align: middle;'>
-                                <div>( {{ !empty($item->id_user) ? $item->id_user : '' }} )</div>
-                                <div>{{ !empty($item->nm_karyawan) ? $item->nm_karyawan : '' }}</div>
-                                @if(!empty($item->nm_shift))
-                                    <div style='border-top:1px solid'>{{ $item->nm_shift }}</div>
-                                @endif
-                            </td>
-                            @foreach($list_tgl as $key_tgl => $item_tgl)
-                                <?php 
-                                    $get_presensi_user=!empty($data_presensi[$item_tgl]) ? $data_presensi[$item_tgl] : '';
-                                    $list_nm_shift_tmp=[];
-                                    $list_color_shift_tmp=[];
-                                    $list_libur_tmp_style=[];
-                                    $id_template_jadwal_shift=$item->id_template_jadwal_shift;
-                                    if(!empty($get_tamplate_default[$id_template_jadwal_shift])){
-                                        $tamplate_default=$get_tamplate_default[$id_template_jadwal_shift];
-                                        if(!empty($tamplate_default[$item_tgl])){
-                                            foreach($tamplate_default[$item_tgl] as $item_jadwal){
-                                                $item_jadwal=(object)$item_jadwal;
-                                                $list_nm_shift_tmp[]=$item_jadwal->nm_jenis_jadwal;
-                                                if($item_jadwal->type_jadwal==1){
-                                                    $list_color_shift_tmp[]="<div class='penanda_jadwal' style='background:".$item_jadwal->bg_color.";'></div>";
-                                                }
-                                                if($item_jadwal->type_jadwal==2){
-                                                    $list_libur_tmp_style[$item_tgl]=[
-                                                        'bg_color'=>$item_jadwal->bg_color,
-                                                        'title'=>$item_jadwal->nm_jenis_jadwal
-                                                    ];
-                                                }
-
-                                                if(!empty($item_jadwal->pulang_kerja_next_day)){
-                                                    // dd($item_jadwal);
-                                                }
-                                                
+                            @if(empty($list_status_karyawan[$item->id_ruangan][$item->id_status_karyawan]))
+                                <?php $list_status_karyawan[$item->id_ruangan][$item->id_status_karyawan]=1; ?>
+                                <tr style='background: #eaeaea;'>
+                                    <td>--</td>
+                                    <td colspan="50" style='vertical-align: middle;'>{{ !empty($item->nm_status_karyawan) ? $item->nm_status_karyawan : '' }}</td>
+                                </tr>
+                            @endif
+                            <tr>
+                                <td style='vertical-align: middle;'>{{ $key+1 }}</td>
+                                <td style='vertical-align: middle;'>
+                                    <div>( {{ !empty($item->id_user) ? $item->id_user : '' }} )</div>
+                                    <div>{{ !empty($item->nm_karyawan) ? $item->nm_karyawan : '' }}</div>
+                                    @if(!empty($item->nm_shift))
+                                        <div style='border-top:1px solid'>{{ $item->nm_shift }}</div>
+                                    @endif
+                                </td>
+                                @foreach($list_tgl as $key_tgl => $item_tgl)
+                                    <?php 
+                                        $get_presensi_user=!empty($data_presensi[$item_tgl]) ? $data_presensi[$item_tgl] : '';
+                                        $list_nm_shift_tmp=[];
+                                        $list_color_shift_tmp=[];
+                                        $list_libur_tmp_style=[];
+                                        $id_template_jadwal_shift=$item->id_template_jadwal_shift;
+                                        
+                                        if(!empty($get_tamplate_default[$id_template_jadwal_shift])){
+                                            $tamplate_jadwal=$get_tamplate_default[$id_template_jadwal_shift];
+                                            if(!empty($get_tamplate_user[$id_template_jadwal_shift][$item_tgl])){
+                                                $tamplate_jadwal=$get_tamplate_user[$id_template_jadwal_shift];
                                             }
-                                        }
-                                    }
+                                            // dd($tamplate_jadwal,$get_tamplate_user);
 
-                                    $list_nm_shift=!empty($list_nm_shift_tmp) ? implode(',',$list_nm_shift_tmp) : '';
-                                    $list_color_shift=!empty($list_color_shift_tmp) ? implode('',$list_color_shift_tmp) : '';
-                                ?>
-                                <?php
-                                    $td_color='transparent';
-                                    if(!empty($list_libur_tmp_style[$item_tgl])){
-                                        $data_libur_jadwal=(object)$list_libur_tmp_style[$item_tgl];
-                                        $td_color=$data_libur_jadwal->bg_color;
-                                        $list_color_shift=!empty($list_color_shift) ? $list_color_shift : $data_libur_jadwal->title;
-                                    }
-                                ?>
-                                @if(!empty($list_libur_tmp_style[$item_tgl]))
-                                    <td style='vertical-align: middle; background:{{ $td_color }}; '>{!! $list_color_shift !!}</td>
-                                @else
-                                    <td style='background:{{ $td_color }}; '>{!! $list_color_shift !!}</td>
-                                @endif
-                                
-                            @endforeach
-                        </tr>
+                                            $data_proses=[
+                                                'tgl'=>$item_tgl,
+                                                'tamplate_jadwal'=>$get_tamplate_default[$id_template_jadwal_shift],
+                                                'tamplate_jadwal_user'=>$get_tamplate_default[$id_template_jadwal_shift],
+                                                'data_jadwal_shift_by_sistem'=>!empty($get_tamplate_user[$id_template_jadwal_shift]) ? $get_tamplate_user[$id_template_jadwal_shift] : [],
+                                                'data_presensi_user'=>$data_presensi,
+                                            ];
+
+                                            $hasil_proses=(new \App\Http\Traits\PresensiHitungShiftFunction)->getHitung($data_proses);
+
+                                            if(!empty($tamplate_jadwal[$item_tgl])){
+                                                foreach($tamplate_jadwal[$item_tgl] as $item_jadwal){
+                                                    $item_jadwal=(object)$item_jadwal;
+                                                    
+                                                    $list_nm_shift_tmp[]=$item_jadwal->nm_jenis_jadwal;
+                                                    if($item_jadwal->type_jadwal==1){
+                                                        $data_tmp="<div class='penanda_jadwal' style='background:".$item_jadwal->bg_color.";'></div>";
+                                                        if(!empty($item_jadwal->pulang_kerja_next_day)){
+                                                            $data_tmp="";
+                                                        }
+                                                        $list_color_shift_tmp[]=$data_tmp;
+                                                    }
+                                                    if($item_jadwal->type_jadwal==2){
+                                                        $list_libur_tmp_style[$item_tgl]=[
+                                                            'bg_color'=>$item_jadwal->bg_color,
+                                                            'title'=>$item_jadwal->nm_jenis_jadwal
+                                                        ];
+                                                    }
+                                                }
+                                            }
+                                            
+                                            $log_user=!empty($get_presensi_user->presensi) ? implode('<br>',$get_presensi_user->presensi) : '';
+
+                                            // dd($data,$data_jadwal_shift_by_sistem);
+
+
+                                            // if(!empty($item_jadwal->pulang_kerja_next_day)){
+                                            //     dd($item_jadwal->pulang_kerja_next_day,$item_tgl);
+                                                
+                                            //     $tgl_awal=new \DateTime($tgl_awal_tmp);
+                                            //     $tgl_awal=$tgl_awal->modify('-1 day');
+                                            //     $tgl_awal=$tgl_awal->format('Y-m-d');
+                                            // }
+
+                                            // if(!empty($tamplate_default[$item_tgl])){
+                                            //     foreach($tamplate_default[$item_tgl] as $item_jadwal){
+                                            //         $item_jadwal=(object)$item_jadwal;
+                                            //         // dd($item_jadwal,$item_jadwal->pulang_kerja_next_day);
+                                                    
+                                            //         if(!empty($data_jadwal_shift_by_sistem[$item_jadwal->id_jenis_jadwal])){
+                                                        
+                                            //             $data_proses=[
+                                            //                 'nm_jenis_jadwal'=>$item_jadwal->nm_jenis_jadwal,
+                                            //                 'pulang_next_day'=>$item_jadwal->pulang_kerja_next_day,
+                                            //                 'list_presensi'=>!empty($get_presensi_user->presensi) ? $get_presensi_user->presensi : '',
+                                            //                 'data_jadwal_kerja'=>!empty($data_jadwal_shift_by_sistem[$item_jadwal->id_jenis_jadwal]) ? $data_jadwal_shift_by_sistem[$item_jadwal->id_jenis_jadwal]  : ''
+                                            //             ];
+                                            //             // dd($data_proses);
+                                            //             // $hasil_proses=(new \App\Http\Traits\PresensiHitungShiftFunction)->getHitung($data_proses);
+                                            //         }
+
+                                            //         $list_nm_shift_tmp[]=$item_jadwal->nm_jenis_jadwal;
+                                            //         if($item_jadwal->type_jadwal==1){
+                                            //             $list_color_shift_tmp[]="<div class='penanda_jadwal' style='background:".$item_jadwal->bg_color.";'></div>";
+                                            //         }
+                                            //         if($item_jadwal->type_jadwal==2){
+                                            //             $list_libur_tmp_style[$item_tgl]=[
+                                            //                 'bg_color'=>$item_jadwal->bg_color,
+                                            //                 'title'=>$item_jadwal->nm_jenis_jadwal
+                                            //             ];
+                                            //         }
+
+                                            //         if(!empty($item_jadwal->pulang_kerja_next_day)){
+                                            //             // dd($item_jadwal);
+                                            //         }
+                                                    
+                                            //     }
+                                            // }
+                                        }
+
+                                        $list_nm_shift=!empty($list_nm_shift_tmp) ? implode(',',$list_nm_shift_tmp) : '';
+                                        $list_color_shift=!empty($list_color_shift_tmp) ? implode('',$list_color_shift_tmp) : '';
+                                    ?>
+                                    <?php
+                                        $td_color='transparent';
+                                        if(!empty($list_libur_tmp_style[$item_tgl])){
+                                            $data_libur_jadwal=(object)$list_libur_tmp_style[$item_tgl];
+                                            $td_color=$data_libur_jadwal->bg_color;
+                                            $list_color_shift=!empty($list_color_shift) ? $list_color_shift : $data_libur_jadwal->title;
+                                        }
+                                    ?>
+                                    @if(!empty($list_libur_tmp_style[$item_tgl]))
+                                        <td style='vertical-align: middle; background:{{ $td_color }}; '>
+                                            <div>{!! $list_color_shift !!}</div>
+                                            <div>{!! $log_user !!}</div>
+                                        </td>
+                                    @else
+                                        <td style='background:{{ $td_color }}; '>
+                                            <div>{!! $list_color_shift !!}</div>
+                                            <div>{!! $log_user !!}</div>
+                                        </td>
+                                    @endif
+                                    
+                                @endforeach
+                            </tr>
                         @endforeach
                     @endif
                 </tbody>

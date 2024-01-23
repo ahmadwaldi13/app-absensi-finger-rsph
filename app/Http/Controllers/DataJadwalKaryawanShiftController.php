@@ -54,6 +54,7 @@ class DataJadwalKaryawanShiftController extends \App\Http\Controllers\MyAuthCont
         $url_back_index=(new \App\Http\Traits\GlobalFunction)->set_paramter_url('data-jadwal-karyawan',$params);
 
         $filter_tahun_bulan=!empty($request->filter_tahun_bulan) ? $request->filter_tahun_bulan : date('Y-m');
+        
         $export_date=new \DateTime($filter_tahun_bulan);
         $tahun_filter=$export_date->format('Y');
         $bulan_filter=$export_date->format('m');
@@ -127,6 +128,7 @@ class DataJadwalKaryawanShiftController extends \App\Http\Controllers\MyAuthCont
         $link_back_param = [
             'data_sent' => $data_sent,
             'params' => $params,
+            'filter_tahun_bulan'=>$req['filter_tahun_bulan']
         ];
 
         $message_default = [
@@ -228,11 +230,9 @@ class DataJadwalKaryawanShiftController extends \App\Http\Controllers\MyAuthCont
             DB::rollBack();
             if ($e->errorInfo[1] == '1062') {
             }
-            dd($e);
             $pesan = ['error', $message_default['error'], 3];
         } catch (\Throwable $e) {
             DB::rollBack();
-            dd($e);
             $pesan = ['error', $message_default['error'], 3];
         }
         return redirect()->route($link_back_redirect, $link_back_param)->with([$pesan[0] => $pesan[1]]);

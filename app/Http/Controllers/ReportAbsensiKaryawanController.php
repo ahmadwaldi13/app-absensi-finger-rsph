@@ -173,7 +173,6 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
         $max_page=!empty($list_data->count()) ? $list_data->count() : 2;
         $list_data = (new \App\Http\Traits\GlobalFunction)->paginate($list_data,$max_page,$page,$option);
 
-
         $get_template_id=(new \App\Models\RefTemplateJadwalShift())->get();
 
         $get_tamplate_default=[];
@@ -190,13 +189,41 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
                 $get_tamplate_default[$item->id_template_jadwal_shift]=$list_shift;
             }
         }
-        
+
+        $data_jadwal_shift_by_sistem=[];
+        $get_data_jadwal=(new \App\Services\RefJadwalService())->getListJadwal(['type_jenis'=>2,'status_jadwal'=>1],1)->orderBy('kd_jadwal','ASC')->get();
+        foreach($get_data_jadwal as $item){
+            $data_jadwal_shift_by_sistem[$item->id_jenis_jadwal][$item->kd_jadwal]=$item;
+        }
+
+        $paramter_search_karyawan=[
+            'tahun'=>$tahun_filter,
+            'bulan'=>$bulan_filter,
+            'search'=>$form_filter_text,
+        ];
+
+        if(!empty($filter_id_departemen)){
+            $paramter_search_karyawan['id_departemen']=$filter_id_departemen;
+        }
+
+        if(!empty($filter_id_ruangan)){
+            $paramter_search_karyawan['id_ruangan']=$filter_id_ruangan;
+        }
+
+        if(!empty($filter_id_status_karyawan)){
+            $paramter_search_karyawan['id_status_karyawan']=$filter_id_status_karyawan;
+        }
+
+        $list_tamplate_user=(new \App\Services\RefKaryawanJadwalShiftWaktuService())->getDataList($paramter_search_karyawan);
+
         $parameter_view = [
             'title' => $this->title,
             'breadcrumbs' => $this->breadcrumbs,
             'list_tgl'=>$list_tgl,
             'list_data'=>$list_data,
-            'get_tamplate_default'=>$get_tamplate_default
+            'get_tamplate_default'=>$get_tamplate_default,
+            'list_tamplate_user'=>$list_tamplate_user,
+            'data_jadwal_shift_by_sistem'=>$data_jadwal_shift_by_sistem
         ];
 
         return view($this->part_view . '.index_shift', $parameter_view);
