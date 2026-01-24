@@ -4,79 +4,124 @@
 
 @push('custom-style')
 <style>
-    .item_menu {
-        display: block;
-        float: left;
-        background-color: #2d75ad;
-        text-align: left;
-        padding: 13px 5px 13px 30px;
-        position: relative;
-        margin: 0 10px 0 0;
-        font-size: 20px;
+    .submenu-wrapper {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr); 
+        gap: 20px;
+    }
+
+    .submenu-card {
+        background: linear-gradient(135deg, #2d75ad, #3f8fd2);
+        border-radius: 14px;
+        padding: 24px 20px;
+        color: #fff;
         text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        min-height: 100px;
+    }
+
+    .submenu-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+        background: linear-gradient(135deg, #3f8fd2, #5aa7e3);
         color: #fff;
-        min-width: 150px;
+        text-decoration: none;
     }
 
-    .item_menu:after {
-        content: "";
-        border-top: 31px solid transparent;
-        border-bottom: 25px solid transparent;
-        border-left: 20px solid #2d75ae;
-        position: absolute;
-        right: -20px;
-        top: 0;
-        z-index: 1;
+    .submenu-icon {
+        font-size: 32px;
+        background: rgba(255,255,255,0.2);
+        width: 55px;
+        height: 55px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
     }
 
-    .item_menu:hover {
-        background-color: #5a9cd0;
-        color: #fff;
+    .submenu-title {
+        font-size: 18px;
+        font-weight: 600;
+        line-height: 1.3;
     }
 
-    .item_menu:hover:after {
-        border-left: 20px solid #5a9cd0;
+    /* Laptop / tablet landscape */
+    @media (max-width: 1199px) {
+        .submenu-wrapper {
+            grid-template-columns: repeat(3, 1fr);
+        }
     }
 
+    /* Tablet */
+    @media (max-width: 991px) {
+        .submenu-wrapper {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    /* Mobile */
+    @media (max-width: 575px) {
+        .submenu-wrapper {
+            grid-template-columns: 1fr;
+        }
+
+        .submenu-card {
+            padding: 18px 16px;
+        }
+
+        .submenu-title {
+            font-size: 16px;
+        }
+
+        .submenu-icon {
+            font-size: 26px;
+            width: 48px;
+            height: 48px;
+        }
+    }
 </style>
 @endpush
 
+
 @section('content')
-<div class="row d-flex justify-content-between">
-    <div class='bagan-data-table'>
-        <form action="" method="GET">
-            <div class="row justify-content-start align-items-end mb-3">
-                <div class="col-lg-8 col-md-10">
-                    <input type="text" class="form-control search-data-table" placeholder="Cari Menu">
-                </div>
-            </div>
+<div class="row">
+    <div class="col-12">
+
+        <form action="" method="GET" class="mb-4">
+            <input
+                type="text"
+                class="form-control search-data-table"
+                placeholder="Cari Menu Pengajuan..."
+            >
         </form>
 
-        <table class="data-table table-responsive-tablet">
-            <thead style='display:none'>
-                <tr>
-                    <th>.</th>
-                </tr>
-            </thead>
-            <tbody>
-                @if (!empty($menu))
-                @foreach ($menu as $key => $item)
-                <?php
-                            $item=(object)$item;
-                        ?>
-                <tr>
-                    <td>
-                        <a class='item_menu' href="{{ $item->url }}">{{ $item->title }}</a>
-                    </td>
-                </tr>
+        <div class="submenu-wrapper">
+            @if (!empty($menu))
+                @foreach ($menu as $item)
+                    @php $item = (object) $item; @endphp
+
+                    <a href="{{ $item->url }}" class="submenu-card">
+                        <div class="submenu-icon">
+                             {!! $item->icon !!}
+                        </div>
+                        <div class="submenu-title">
+                            {{ $item->title }}
+                        </div>
+                    </a>
+
                 @endforeach
-                @endif
-            </tbody>
-        </table>
+            @endif
+        </div>
+
     </div>
 </div>
-
 @endsection
+
 
 @push('script-end-1')
 <script type="text/javascript" src="{{ asset('libs\datatables\1.10.11\js\jquery.dataTables.min.js' )}}"></script>

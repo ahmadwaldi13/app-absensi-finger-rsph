@@ -84,4 +84,14 @@ class RefKaryawanService extends BaseService
             return $query;
         }
     }
+
+    public function getRoleKaryawan($id_user) {
+        $query = DB::table('uxui_auth_users as au')
+                ->select('ag.name')
+                ->leftJoin('uxui_auth_group as ag', 'au.alias_group', '=', 'ag.alias')
+                ->where('au.id_user', '=', $id_user)
+                ->first();
+
+        return $query;
+    }
 }

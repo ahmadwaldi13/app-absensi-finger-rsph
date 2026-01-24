@@ -95,7 +95,7 @@
                         <tr>
                             <th class="py-3" style="width: 5%">NIP</th>
                             <th class="py-3" style="width: 20%">Nama</th>
-                            <th class="py-3" style="width: 20%">ALamat</th>
+                            <th class="py-3" style="width: 20%">Alamat</th>
                             <th class="py-3" style="width: 10%">Jabatan</th>
                             <th class="py-3" style="width: 10%">Departemen</th>
                             <th class="py-3" style="width: 10%">Ruangan</th>

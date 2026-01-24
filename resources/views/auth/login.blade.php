@@ -1,87 +1,101 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@yield('title', config('app.brand') )</title>
-    <link rel="icon" type="image/jpg" sizes="16x16" href="{{ asset('public/images/favicon.png') }}">
+    <title>@yield('title', 'Presensi | RS Permata Hati')</title>
+    <link rel="icon" type="image/png" href="{{ asset('logo/logo.png') }}">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 
-    <!-- Styles Bootstrap -->
-    <link href="{{ asset('bootstrap/css/bootstrap.css') }}" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
-    <link href="{{ asset('css/sidebars.css') }}" rel="stylesheet" />
-
-    <!-- Custumize -->
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}">
-
-    <style>
-        .form-signin {
-            width: 100%;
-            max-width: 550px;
-            padding: 15px;
-            margin: auto;
-        }
-    </style>
-
+    <link rel="stylesheet" href="{{ asset('css/login.css') }}">
 </head>
 
 <body>
-
-    <div>
-        <div class="py-4 mb-5 bg-blue-light text-white d-flex flex-row justify-content-center align-items-center">
-            <span class="iconify m-0 p-0 me-3" style="font-size: 42px;" data-icon="la:hospital"></span>
-            <span style="font-size: 26px;"><?= env('NAME_APP', 'RSUD'); ?></span>
+    <div class="login-card">
+        <!-- Logo Compact Layout -->
+        <div class="logo-compact">
+            <img src="{{ asset('logo/logo.png') }}" alt="Logo RS Permata Hati" class="logo-img">
+            <div class="divider"></div>
+            <div class="text-group">
+                <span class="app-name">Presensi</span>
+                <span class="rs-name">Rumah Sakit Permata Hati</span>
+            </div>
         </div>
 
-        <div class="container-fluid">
-            <div class="form-signin">
-                <form class="needs-validation mt-5" method="POST" action="{{ url('process-login') }}">
-                    @csrf
-                    @if(Session::get('login_error_message'))
-                    <div class="row">
-                        <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
-                            <symbol id="exclamation-triangle-fill" fill="currentColor" viewBox="0 0 16 16">
-                                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5zm.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2z" />
-                            </symbol>
-                        </svg>
-                        <div class="col-md-12">
-                            <div class="alert alert-danger py-2" role="alert">
-                                <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Success:">
-                                    <use xlink:href="#exclamation-triangle-fill" />
-                                </svg>
-                                {{ Session::pull('login_error_message') }}
-                            </div>
-                        </div>
-                    </div>
-                    @endif
-                    <div class="mb-3">
-                        <label for="Username" class="form-label">ID User</label>
-                        <input type="text" class="form-control" id="username" name="id_user" placeholder="Masukkan Username" autocomplete="off" required>
-                        <div class="invalid-feedback">
-                            Area ini wajib diisi
-                        </div>
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" placeholder="Masukkan Password" required>
-                        <div class="invalid-feedback">
-                            Area ini wajib diisi
-                        </div>
-                    </div>
-                    <div class="d-grid">
-                        <button class="btn btn-primary" type="submit">Masuk</button>
-                    </div>
-                </form>
+        {{-- Alert Error --}}
+        @if(Session::get('login_error_message'))
+        <div class="alert-error">
+            <i class="bi bi-exclamation-circle"></i>
+            <span>{{ Session::pull('login_error_message') }}</span>
+        </div>
+        @endif
+
+        <!-- Form -->
+        <form method="POST" action="{{ url('process-login') }}">
+            @csrf
+            
+            <div class="form-group">
+                <label for="username">ID Pegawai</label>
+                <div class="input-field">
+                    <i class="bi bi-person"></i>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="id_user" 
+                        placeholder="Masukkan ID Pegawai"
+                        autocomplete="off"
+                        required
+                    >
+                </div>
             </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-field">
+                    <i class="bi bi-lock"></i>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password" 
+                        placeholder="Masukkan Password"
+                        required
+                    >
+                    <button type="button" class="toggle-pass" onclick="togglePassword()">
+                        <i class="bi bi-eye" id="toggleIcon"></i>
+                    </button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-login">Masuk</button>
+        </form>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>© {{ date('Y') }} RS Permata Hati</p>
         </div>
     </div>
 
-    <script src="{{ asset('bootstrap/js/bootstrap.js' )}}"></script>
-    <!-- <script src="{{ asset('libs/popper/2.9.3/popper.min.js' )}}" integrity="sha384-W8fXfP3gkOKtndU4JGtKDvXbO53Wy8SZCQHczT5FMiiqmQfUpWbYdTil/SxwZgAN" crossorigin="anonymous"></script> -->
-    <script src="{{ asset('libs/bootstrap/5.1.1/bootstrap.min.js' )}}" integrity="sha384-skAcpIdS7UcVUC05LJ9Dxay8AXcDYfBJqt1CJ85S/CFujBsIzCIv+l9liuYLaMQ/" crossorigin="anonymous"></script>
-    <!-- <script src="{{ asset('libs/iconify/2.0.3/iconify.min.js' )}}"></script> -->
+    <script>
+        function togglePassword() {
+            const input = document.getElementById('password');
+            const icon = document.getElementById('toggleIcon');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('bi-eye', 'bi-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('bi-eye-slash', 'bi-eye');
+            }
+        }
+    </script>
 </body>
 </html>

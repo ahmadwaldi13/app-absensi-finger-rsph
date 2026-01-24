@@ -26,10 +26,11 @@ trait AuthTraits {
         if($this->id_user){
             $data_user['auth']=Auth::user();
             $data_user['id_user']=$this->id_user;
-
-            $get_group = collect(UxuiAuthUsers::select('alias_group')->where('id', '=', $this->id_user)->get())->map(function ($value) {
+            
+            $get_group = collect(UxuiAuthUsers::select('alias_group')->where('id_user', '=', $this->id_user)->get())->map(function ($value) {
                 return $value->alias_group;
             });
+
             $data_user['group_user']=$get_group;
             $data_user['auth_user']=[];
 
@@ -51,11 +52,14 @@ trait AuthTraits {
                     'ref_karyawan.id_karyawan'=>$get_data_karyawan->id_karyawan,
                 ];
                 $get_karyawan=(new \App\Services\RefKaryawanService)->getListKaryawanJadwal($paramater_search, 1)->first();
+                $get_role_karyawan=(new \App\Services\RefKaryawanService)->getRoleKaryawan($this->id_user);
+                
                 $data_user_sistem=[
                     'id_karyawan'=>$get_data_karyawan->id_karyawan,
                     'nm_karyawan'=>$get_karyawan->nm_karyawan,
                     'id_jenis_jadwal'=>$get_karyawan->id_jenis_jadwal,
                     'id_user_mesin'=>$get_karyawan->id_user,
+                    'nama_role' => $get_role_karyawan->name
                 ];
                 $data_user['data_user_sistem']=(object)$data_user_sistem;
             }

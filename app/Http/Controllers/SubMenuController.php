@@ -19,20 +19,23 @@ class SubMenuController extends Controller
                 ];
             }
 
-            if($type==2){
-                $menu_permission=[
+           if ($type == 2) {
+                $menu_permission = [
                     [
-                        'title'=>'User Group',
-                        'key'=>'user-group-app',
-                        'url'=>url('/')."/user-group-app",
+                        'title' => 'User Group',
+                        'key'   => 'user-group-app',
+                        'url'   => url('/')."/user-group-app",
+                        'icon'  => "<i class='fa-solid fa-users-rectangle'></i>",
                     ],
                     [
-                        'title'=>'User Akses',
-                        'key'=>'user-akses',
-                        'url'=>url('/')."/user-akses",
+                        'title' => 'User Akses',
+                        'key'   => 'user-akses',
+                        'url'   => url('/')."/user-akses",
+                        'icon'  => "<i class='fa-solid fa-user-lock'></i>",
                     ],
                 ];
             }
+
 
             // if($type==3){
             //     $menu_permission=[
@@ -44,100 +47,143 @@ class SubMenuController extends Controller
             //     ];
             // }
 
-            if($type==4){
-                $menu_permission=[
+            if ($type == 4) {
+                $menu_permission = [
                     [
-                        'title'=>'Referensi Jabatan Karyawan',
-                        'key'=>'jabatan',
-                        'url'=>url('/')."/jabatan",
+                        'title' => 'Referensi Jabatan Karyawan',
+                        'key'   => 'jabatan',
+                        'url'   => url('/')."/jabatan",
+                        'icon'  => "<i class='fa-solid fa-briefcase'></i>",
                     ],
                     [
-                        'title'=>'Referensi Departemen/Bidang',
-                        'key'=>'departemen',
-                        'url'=>url('/')."/departemen",
+                        'title' => 'Referensi Departemen/Bidang',
+                        'key'   => 'departemen',
+                        'url'   => url('/')."/departemen",
+                        'icon'  => "<i class='fa-solid fa-sitemap'></i>",
                     ],
                     [
-                        'title'=>'Referensi Ruangan',
-                        'key'=>'data-ruangan',
-                        'url'=>url('/')."/data-ruangan",
+                        'title' => 'Referensi Ruangan',
+                        'key'   => 'data-ruangan',
+                        'url'   => url('/')."/data-ruangan",
+                        'icon'  => "<i class='fa-solid fa-building'></i>",
                     ],
                     [
-                        'title'=>'Referensi Status Karyawan',
-                        'key'=>'status-karyawan',
-                        'url'=>url('/')."/status-karyawan",
+                        'title' => 'Referensi Status Karyawan',
+                        'key'   => 'status-karyawan',
+                        'url'   => url('/')."/status-karyawan",
+                        'icon'  => "<i class='fa-solid fa-user-check'></i>",
                     ],
                     [
-                        'title'=>'Data Karyawan',
-                        'key'=>'data-karyawan',
-                        'url'=>url('/')."/data-karyawan",
+                        'title' => 'Data Karyawan',
+                        'key'   => 'data-karyawan',
+                        'url'   => url('/')."/data-karyawan",
+                        'icon'  => "<i class='fa-solid fa-users'></i>",
                     ],
                     [
-                        'title'=>'Data Jadwal Karyawan',
-                        'key'=>'data-jadwal-karyawan',
-                        'url'=>url('/')."/data-jadwal-karyawan",
+                        'title' => 'Data Jadwal Karyawan',
+                        'key'   => 'data-jadwal-karyawan',
+                        'url'   => url('/')."/data-jadwal-karyawan",
+                        'icon'  => "<i class='fa-solid fa-calendar-days'></i>",
                     ],
                     [
-                        'title'=>'List Kabid',
-                        'key'=>'list-kabid',
-                        'url'=>url('/')."/list-kabid",
+                        'title' => 'List Kabid',
+                        'key'   => 'list-kabid',
+                        'url'   => url('/')."/list-kabid",
+                        'icon'  => "<i class='fa-solid fa-user-tie'></i>",
                     ],
                     [
-                        'title'=>'List Kepala Ruangan',
-                        'key'=>'list-kepala-ruangan',
-                        'url'=>url('/')."/list-kepala-ruangan",
-                    ],
-                ];
-            }
-
-            if($type==5){
-                $menu_permission=[
-                    [
-                        'title'=>'Data Mesin Absensi',
-                        'key'=>'data-mesin-absensi',
-                        'url'=>url('/')."/data-mesin-absensi",
-                    ],
-                    [
-                        'title'=>'Data User Mesin',
-                        'key'=>'data-user-mesin',
-                        'url'=>url('/')."/data-user-mesin",
+                        'title' => 'List Kepala Ruangan',
+                        'key'   => 'list-kepala-ruangan',
+                        'url'   => url('/')."/list-kepala-ruangan",
+                        'icon'  => "<i class='fa-solid fa-user-shield'></i>",
                     ],
                 ];
             }
 
-            if($type==6){
-                $menu_permission=[
+
+            if ($type == 5) {
+                $menu_permission = [
                     [
-                        'title'=>'Data Jadwal Kerja',
-                        'key'=>'jenis-jadwal-absensi',
-                        'url'=>url('/')."/jenis-jadwal-absensi",
+                        'title' => 'Data Mesin Absensi',
+                        'key'   => 'data-mesin-absensi',
+                        'url'   => url('/')."/data-mesin-absensi",
+                        'icon'  => "<i class='fa-solid fa-server'></i>",
                     ],
                     [
-                        'title'=>'Pengaturan Jadwal Presensi',
-                        'key'=>'jadwal-absensi',
-                        'url'=>url('/')."/jadwal-absensi",
-                    ],
-                    [
-                        'title'=>'Hari Libur Umum',
-                        'key'=>'hari-libur-umum',
-                        'url'=>url('/')."/hari-libur-umum",
-                    ],
-                    [
-                        'title'=>'Cuti Karyawan',
-                        'key'=>'cuti-karyawan',
-                        'url'=>url('/')."/cuti-karyawan",
-                    ],
-                    [
-                        'title'=>'Perjalanan Dinas Karyawan',
-                        'key'=>'perjalanan-dinas',
-                        'url'=>url('/')."/perjalanan-dinas",
-                    ],
-                    [
-                        'title'=>'Absensi',
-                        'key'=>'absensi-karyawan',
-                        'url'=>url('/')."/absensi-karyawan",
+                        'title' => 'Data User Mesin',
+                        'key'   => 'data-user-mesin',
+                        'url'   => url('/')."/data-user-mesin",
+                        'icon'  => "<i class='fa-solid fa-users-gear'></i>",
                     ],
                 ];
             }
+
+
+            if ($type == 6) {
+                $menu_permission = [
+                    [
+                        'title' => 'Data Jadwal Kerja',
+                        'key'   => 'jenis-jadwal-absensi',
+                        'url'   => url('/')."/jenis-jadwal-absensi",
+                        'icon'  => "<i class='fa-solid fa-calendar-week'></i>",
+                    ],
+                    [
+                        'title' => 'Pengaturan Jadwal Presensi',
+                        'key'   => 'jadwal-absensi',
+                        'url'   => url('/')."/jadwal-absensi",
+                        'icon'  => "<i class='fa-solid fa-sliders'></i>",
+                    ],
+                    [
+                        'title' => 'Hari Libur Umum',
+                        'key'   => 'hari-libur-umum',
+                        'url'   => url('/')."/hari-libur-umum",
+                        'icon'  => "<i class='fa-solid fa-calendar-xmark'></i>",
+                    ],
+                    [
+                        'title' => 'Cuti Karyawan',
+                        'key'   => 'cuti-karyawan',
+                        'url'   => url('/')."/cuti-karyawan",
+                        'icon'  => "<i class='fa-solid fa-calendar-check'></i>",
+                    ],
+                    [
+                        'title' => 'Perjalanan Dinas Karyawan',
+                        'key'   => 'perjalanan-dinas',
+                        'url'   => url('/')."/perjalanan-dinas",
+                        'icon'  => "<i class='fa-solid fa-briefcase'></i>",
+                    ],
+                    [
+                        'title' => 'Absensi',
+                        'key'   => 'absensi-karyawan',
+                        'url'   => url('/')."/absensi-karyawan",
+                        'icon'  => "<i class='fa-solid fa-fingerprint'></i>",
+                    ],
+                ];
+            }
+
+
+            if($type==7){
+                $menu_permission=[
+                    [
+                        'title'=>'Izin',
+                        'key'=>'izin',
+                        'url'=> url('/')."/izin",
+                        'icon' => "<i class='fa-solid fa-envelope-open-text'></i>"
+                    ],
+                    [
+                        'title'=>'Cuti',
+                        'key'=>'cuti',
+                        'url'=>url('/')."/cuti",
+                        'icon' => "<i class='fa-solid fa-calendar-days'></i>"
+                    ],
+                    [
+                        'title'=>'Lembur',
+                        'key'=>'lembur',
+                        'url'=>url('/')."/lembur",
+                        'icon'  => "<i class='fa-solid fa-clock-rotate-left'></i>",
+                    ],
+                ];
+            }
+            
 
             if($menu_permission){
                 $list_menu=[];

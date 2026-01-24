@@ -1,7 +1,20 @@
 <?php
     $get_user=(new \App\Http\Traits\AuthFunction)->getUser();
-
+    
     $menu_permission=[
+        [
+            'title'=>'Presensi',
+            'key'=>'presensi',
+            'url'=>url('/')."/presensi",
+            'icon'=>"<i class='fa-solid fa-chart-pie'></i>",
+        ],
+        [
+            'title'=>'Pengajuan',
+            'key'=>'sub-menu',
+            'url'=>url('/')."/sub-menu?type=7",
+            'icon'=>"<i class='fa-solid fa-file-circle-check'></i>",
+            'key_active'=>\App::call('App\Http\Controllers\SubMenuController@listAkses',['type' => 7])->list_menu
+        ],
         [
             'title'=>'Data Karyawan',
             'key'=>'sub-menu',
@@ -55,6 +68,8 @@
         padding:20px 20px 20px 20px !important;
     }
 </style>
+
+
 <div class="sidebar bg-blue-dark1">
     <div class="
     d-flex

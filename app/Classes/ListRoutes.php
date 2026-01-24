@@ -959,6 +959,19 @@ class ListRoutes
                     ],
                 ]
             ],
+             [
+                'title' => 'Presensi',
+                'item' => [
+                    [
+                        'type' => 'index',
+                        'method' => 'get',
+                        'url' => '/presensi',
+                        'controller' => 'PresensiController@index',
+                        'name' => 'presensi',
+                        'middleware' => '',
+                    ]
+                ]
+            ],
             // [
             //     'title'=>'Setting Variabel Aplikasi',
             //     'item'=>[
@@ -996,6 +1009,196 @@ class ListRoutes
             //         ],
             //     ]
             // ],
+
+            [
+                'title' => 'Pengajuan | Izin',
+                'item' => [
+                    [
+                        'type' => 'index',
+                        'method' => 'get',
+                        'url' => '/izin',
+                        'controller' => 'IzinController@actionIndex',
+                        'name' => 'izin',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'create',
+                        'method' => 'post',
+                        'url' => '/izin/create',
+                        'controller' => 'IzinController@actionCreate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'system',
+                        'method' => 'get',
+                        'url' => '/izin/create',
+                        'controller' => 'IzinController@actionFormCreate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'update',
+                        'method' => ['get', 'post'],
+                        'url' => '/izin/update',
+                        'controller' => 'IzinController@actionUpdate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'delete',
+                        'method' => 'delete',
+                        'url' => '/izin/delete',
+                        'controller' => 'IzinController@actionDelete',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'system',
+                        'method' => 'get',
+                        'url' => '/izin/ajax',
+                        'controller' => 'IzinController@ajax',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                ]
+            ],
+
+            [
+                'title' => 'Pengajuan | Cuti',
+                'item' => [
+                    [
+                        'type' => 'index',
+                        'method' => 'get',
+                        'url' => '/cuti',
+                        'controller' => 'CutiController@actionIndex',
+                        'name' => 'cuti',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'create',
+                        'method' => ['get', 'post'],
+                        'url' => '/cuti/create',
+                        'controller' => 'CutiController@actionCreate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'update',
+                        'method' => ['get', 'post'],
+                        'url' => '/cuti/update',
+                        'controller' => 'CutiController@actionUpdate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'delete',
+                        'method' => 'delete',
+                        'url' => '/cuti/delete',
+                        'controller' => 'CutiController@actionDelete',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'system',
+                        'method' => 'get',
+                        'url' => '/cuti/ajax',
+                        'controller' => 'CutiController@ajax',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                ]
+            ],
+            [
+                'title' => 'Pengajuan | Lembur',
+                'item' => [
+                    [
+                        'type' => 'index',
+                        'method' => 'get',
+                        'url' => '/lembur',
+                        'controller' => 'lemburController@actionIndex',
+                        'name' => 'lembur',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'create',
+                        'method' => ['get', 'post'],
+                        'url' => '/lembur/create',
+                        'controller' => 'lemburController@actionCreate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'update',
+                        'method' => ['get', 'post'],
+                        'url' => '/lembur/update',
+                        'controller' => 'lemburController@actionUpdate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'delete',
+                        'method' => 'delete',
+                        'url' => '/lembur/delete',
+                        'controller' => 'lemburController@actionDelete',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'system',
+                        'method' => 'get',
+                        'url' => '/lembur/ajax',
+                        'controller' => 'lemburController@ajax',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                ]
+            ],
+            [
+                'title' => 'Pengajuan | Permohonan Izin',
+                'item' => [
+                    [
+                        'type' => 'index',
+                        'method' => 'get',
+                        'url' => '/permohonan-izin',
+                        'controller' => 'PermohonanIzinController@actionIndex',
+                        'name' => 'permohonan-izin',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'system',
+                        'method' => 'get',
+                        'url' => '/permohonan-izin/approved',
+                        'controller' => 'PermohonanIzinController@actionApproved',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'Approved',
+                        'method' => 'post',
+                        'url' => '/permohonan-izin/approved',
+                        'controller' => 'PermohonanIzinController@actionApproved',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'system',
+                        'method' => 'get',
+                        'url' => '/permohonan-izin/rejected',
+                        'controller' => 'PermohonanIzinController@actionRejected',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'Rejected',
+                        'method' => 'post',
+                        'url' => '/permohonan-izin/rejected',
+                        'controller' => 'PermohonanIzinController@actionRejected',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                ]
+            ],
         ];
 
         if (!empty($index)) {

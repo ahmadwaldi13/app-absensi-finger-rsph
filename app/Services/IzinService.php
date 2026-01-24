@@ -1,0 +1,160 @@
+<?php
+
+namespace App\Services;
+
+use App\Services\BaseService;
+use Illuminate\Support\Facades\DB;
+use App\Services\MasterPengajuanService;
+use App\Models\PengajuanIzin;
+
+
+class IzinService extends BaseService {
+    protected $masterPengajuanService;
+    public $pengajuanIzin;
+
+    public function __construct() {
+        $this->masterPengajuanService = new MasterPengajuanService;
+        $this->pengajuanIzin  = new PengajuanIzin;
+    }
+    
+    public function getKaryawan($id_karyawan) {
+        $query = DB::table('ref_karyawan as rf')
+                ->select([
+                    'rf.id_karyawan',
+                    'rf.nm_karyawan',
+                    'rf.nip',
+                    'rf.id_jabatan',
+                    'rj.nm_jabatan',
+                    'rf.id_departemen',
+                    'rd.nm_departemen',
+                    'rf.id_ruangan',
+                    'rr.nm_ruangan'
+                ])
+                ->leftJoin('ref_jabatan as rj', 'rf.id_jabatan', '=', 'rj.id_jabatan')
+                ->leftJoin('ref_departemen as rd', 'rf.id_departemen', '=', 'rd.id_departemen')
+                ->leftJoin('ref_ruangan as rr', 'rf.id_ruangan', '=', 'rr.id_ruangan')
+                ->where('rf.id_karyawan', '=', $id_karyawan)
+                ->first();
+
+        return $query;
+    }
+
+    public function getListData($params = [])
+    {
+        $query = $this->pengajuanIzin
+            ->from('pengajuan_izin as pi')
+            ->select(
+                'pi.id_karyawan',
+                'pi.keterangan',
+                'pi.tgl_mulai',
+                'pi.tgl_selesai',
+                'pi.status',
+                'pi.current_level',
+                'pi.file_pendukung',
+                'pi.created_at',
+                'k.nip',
+                'k.nm_karyawan'
+            )
+            ->leftJoin('ref_karyawan as k', 'k.id_karyawan', '=', 'pi.id_karyawan')
+            ->orderBy('pi.created_at', 'desc');
+
+        
+        if (empty($params['is_super_admin']) || $params['is_super_admin'] === false) {
+            $query->where('pi.id_karyawan', $params['id_karyawan']);
+        }
+
+        
+        if (!empty($params['search'])) {
+            $query->where(function ($q) use ($params) {
+                $q->where('k.nm_karyawan', 'like', '%'.$params['search'].'%')
+                ->orWhere('k.nip', 'like', '%'.$params['search'].'%');
+            });
+        }
+
+        return $query;
+    }
+
+
+    public function insert($data_req)
+    {
+        return DB::transaction(function () use ($data_req) {
+
+            $id_karyawan = $data_req['key_old']; 
+            $id_ruangan = $data_req['id_ruangan'];
+            $filePath = null;
+
+            if (!empty($data_req['file_pendukung'])) {
+
+                $nip = $data_req['nip'];
+                $file = $data_req['file_pendukung'];
+
+                $directory = public_path('upload/izin/' . $nip);
+
+                if (!file_exists($directory)) {
+                    mkdir($directory, 0755, true);
+                }
+
+                $filename = 'izin_' . date('Ymd_His') . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+
+                $file->move($directory, $filename);
+
+                $filePath = 'upload/izin/' . $nip . '/' . $filename;
+            }
+
+            $check_kepala_bagian = $this->checkKepalaRuangan($data_req['id_jabatan']);
+            $check_ruangan = $this->checkRuangan($data_req['id_ruangan']);
+
+            DB::table('pengajuan_izin')->insertGetId([
+                'id_karyawan'   => $id_karyawan,
+                'id_ruangan'   => $data_req['id_ruangan'],
+                'keterangan'    => $data_req['keterangan'],
+                'tgl_mulai'     => $data_req['tgl_mulai'],
+                'tgl_selesai'   => $data_req['tgl_selesai'],
+                'file_pendukung'=> $filePath ?? null,
+                'current_level' => $check_kepala_bagian || $check_ruangan ? 2 : 1,
+                'status'        => 'pending',
+                'created_at'    => now(),
+                'updated_at'    => now(),
+            ]);
+
+            $mapping = $this->masterPengajuanService->mappingApproved('izin', $id_ruangan);
+
+            if (!$mapping) {
+                throw new \Exception('Approval mapping level 1 tidak ditemukan');
+            }
+
+            $approver = $this->masterPengajuanService->getApproved($mapping);
+
+            if (!$approver) {
+                throw new \Exception('Kepala ruangan tidak ditemukan');
+            }
+
+            return true;
+        });
+    }
+
+    public function checkKepalaRuangan($id_jabatan) {
+        $query = DB::table('approval_mappings')
+            ->where('approver_value', $id_jabatan)
+            ->exists();
+
+        if($query) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public function checkRuangan($id_ruangan) {
+        $query = DB::table('ref_ruangan')
+            ->select('nm_ruangan')
+            ->where('id_ruangan', $id_ruangan)
+            ->first();
+
+        if($query->nm_ruangan == 'SDI') {
+            return true;
+        }
+
+        return false;
+    }
+}
