@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class PengajuanIzin extends Migration
+class PengajuanCuti extends Migration
 {
     /**
      * Run the migrations.
@@ -13,29 +13,30 @@ class PengajuanIzin extends Migration
      */
     public function up()
     {
-        Schema::create('pengajuan_izin', function (Blueprint $table) {
+        Schema::create('pengajuan_cuti', function (Blueprint $table){
             $table->id();
 
+            $table->date('tanggal_pengajuan');
             $table->unsignedInteger('id_karyawan');
+            $table->date('tanggal_mulai');
+            $table->date('tanggal_selesai')->nullable();
+            $table->integer('jumlah_hari')->nullable();
+            $table->unsignedBigInteger('id_jenis_cuti');
+            $table->integer('sisa_cuti');
             $table->text('keterangan')->nullable();
-
-            $table->date('tgl_mulai');
-            $table->date('tgl_selesai');
-
-            $table->string('file_pendukung')->nullable();
-            $table->string('jenis_pengajuan', 100)->nullable();
-            $table->unsignedInteger('id_ruangan');
-            $table->integer('current_level')->default(1);
-            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
-
             $table->timestamps();
-
+            
             $table->foreign('id_karyawan')
                 ->references('id_karyawan')
                 ->on('ref_karyawan')
                 ->onDelete('cascade');
-        });
 
+            $table->foreign('id_jenis_cuti')
+                ->references('id')
+                ->on('uxui_jenis_cuti')
+                ->onDelete('cascade');
+
+        });
     }
 
     /**
@@ -45,6 +46,6 @@ class PengajuanIzin extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('pengajuan_izin');
+        //
     }
 }

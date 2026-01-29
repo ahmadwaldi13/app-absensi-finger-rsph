@@ -44,9 +44,9 @@
 </style>
 
 @section('content')
-@include('pengajuan.izin.tab_pengajuan_izin', ["active"=>4])
+@include('pengajuan.izin.tab_pengajuan_izin', ["active"=>3])
 
-@include('pengajuan.izin.permohonan.columns')
+@include('pengajuan.izin.rejected.columns')
 @endsection
 
 

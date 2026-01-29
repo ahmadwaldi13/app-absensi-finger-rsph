@@ -74,9 +74,8 @@
                             <td class="text-center font-monospace">{{ $item->nip ?? '-' }}</td>
                             <td class="fw-bold">{{ $item->nm_karyawan ?? '-' }}</td>
                             <td><small>{{ $item->keterangan ?? '-' }}</small></td>
-                            <td class="text-nowrap">
-                                <div class="small"><strong>Mulai:</strong> {{ $item->tgl_mulai }}</div>
-                                <div class="small"><strong>Selesai:</strong> {{ $item->tgl_selesai }}</div>
+                            <td class="text-nowrap text-center">
+                                {{ $item->tgl_mulai }} -- {{ $item->tgl_selesai }}
                             </td>
                             <td class="text-start">
                                 

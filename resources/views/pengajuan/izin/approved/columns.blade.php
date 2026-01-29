@@ -2,7 +2,7 @@
 
 <div class="card border-2 mt-2">
     <div class="card-header bg-white py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Daftar Izin</h6>
+        <h6 class="m-0 font-weight-bold text-primary">Daftar Izin Disetujui</h6>
     </div>
     <div class="card-body">
         <div class="row justify-content-end mb-3">
@@ -103,17 +103,9 @@
                                 @endif
                             </td>
                             <td class="text-center">
-                                <div class="btn-group gap-2" role="group">
-                                    <a class="btn btn-sm btn-info modal-remote" style='color:#fff;' href="{{ $url_update }}"  data-modal-key='{{json_encode($data_modal_key)}}' data-modal-width='30%' data-modal-title='Edit Pengajuan Izin'>
-                                         <i class="fa-solid fa-pen-to-square"></i> Update
-                                    </a>
-                                </div>
-                                <div class="btn-group gap-2" role="group">
-                                    
-                                    <a class="btn btn-sm btn-danger modal-remote-delete" style='color:#fff;' href="{{ $url_delete }}"  data-modal-key={{ $item->id }} data-modal-width='30%' data-modal-title='Informasi' data-confirm-message="Hapus Pengajuan <strong>{{ $item->jenis_pengajuan }}</strong> ?">
-                                         <i class="fa-solid fa-pen-to-square"></i> Hapus
-                                    </a>
-                                </div>
+                                <span class="text-muted fst-italic">
+                                    <i class="bi bi-check-circle text-success"></i> Selesai
+                                </span>
                             </td>
                         </tr>
                         @endforeach

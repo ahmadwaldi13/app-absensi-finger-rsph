@@ -1,5 +1,5 @@
 <button type="button" style="display: none;" id="buttonModalCustome" data-bs-toggle="modal" href="#showModalCustome"></button>
-<div class="modal fade" id='showModalCustome' tabindex="-1" aria-hidden="true" data-bs-keyboard="false">
+<div class="modal fade card-modal" id='showModalCustome' tabindex="-1" aria-hidden="true" data-bs-keyboard="false">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header border-0">
@@ -16,14 +16,14 @@
 
 
 <button type="button" style="display: none;" id="buttonModalCustomeDelete" data-bs-toggle="modal" data-bs-target="#showModalCustomeDelete" data-bs-dismiss="modal"></button>
-<div class="modal fade" id='showModalCustomeDelete' tabindex="-1" aria-hidden="true" data-bs-keyboard="false">
+<div class="modal fade card-modal" id='showModalCustomeDelete' tabindex="-1" aria-hidden="true" data-bs-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header border-0">
                 <h5 class="modal-title mx-4 mt-4" id="title">Konfirmasi</h5>
                 <button type="button" class="btn-close me-4 mt-3" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="" method="POST">
+            <form action="" method="POST" class="px-4">
                 @csrf
                 @method('DELETE')
                 <div class="modal-body">
@@ -38,7 +38,7 @@
 </div>
 
 <button type="button" style="display: none;" id="buttonModalCustomeConfir" data-bs-toggle="modal" data-bs-target="#showModalCustomeConfir" data-bs-dismiss="modal"></button>
-<div class="modal fade" id='showModalCustomeConfir' tabindex="-1" aria-hidden="true" data-bs-keyboard="false">
+<div class="modal fade card-modal" id='showModalCustomeConfir' tabindex="-1" aria-hidden="true" data-bs-keyboard="false">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header border-0">
@@ -60,7 +60,7 @@
 
 
 <button type="button" style="display: none;" id="buttonModalData" data-bs-toggle="modal" href="#showModalData"></button>
-<div class="modal fade bagan-data-table-2" id='showModalData' tabindex="-1" aria-hidden="true" data-bs-keyboard="false">
+<div class="modal fade bagan-data-table-2 card-modal" id='showModalData' tabindex="-1" aria-hidden="true" data-bs-keyboard="false">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header border-0" style='padding:0px'>

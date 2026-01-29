@@ -2,8 +2,8 @@
 
 $item = [
     1 => (object) [
-        'nama' => 'Izin',
-        'key' => 'izin',
+        'nama' => 'Cuti',
+        'key' => 'cuti',
     ],
     2 => (object) [
         'nama' => 'Disetujui',
@@ -15,7 +15,7 @@ $item = [
     ],
     4 => (object) [
         'nama' => 'Permohonan',
-        'key' => 'permohonan-izin',
+        'key' => 'permohonan-cuti',
     ],
     
 

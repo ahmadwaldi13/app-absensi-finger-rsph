@@ -157,6 +157,18 @@ class SubMenuController extends Controller
                         'url'   => url('/')."/absensi-karyawan",
                         'icon'  => "<i class='fa-solid fa-fingerprint'></i>",
                     ],
+                    [
+                        'title' => 'Jenis Cuti',
+                        'key'   => 'jenis-cuti',
+                        'url'   => url('/')."/jenis-cuti",
+                        'icon'  => "<i class='fa-solid fa-calendar-days'></i>",
+                    ],
+                    [
+                        'title' => 'Data Cuti Karyawan',
+                        'key'   => 'data-cuti-karyawan',
+                        'url'   => url('/')."/data-cuti-karyawan",
+                        'icon'  => "<i class='fa-solid fa-user-clock'></i>",
+                    ],
                 ];
             }
 

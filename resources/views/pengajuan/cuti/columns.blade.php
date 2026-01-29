@@ -1,10 +1,23 @@
+<style>
+.h-auto {
+    height: auto !important;
+}
 
 
-<div class="card border-2 mt-2">
+</style>
+
+<div class="card border-2 mt-2 h-auto">
     <div class="card-header bg-white py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Daftar Izin</h6>
+        <h6 class="m-0 font-weight-bold text-primary">Daftar Cuti</h6>
     </div>
     <div class="card-body">
+        <div class="alert alert-warning d-flex align-items-center mb-3" role="alert">
+            <i class="fa-solid fa-circle-info me-2"></i>
+            <span>
+                Pengajuan cuti <strong>hanya dapat dilakukan</strong> oleh karyawan yang telah
+                memiliki masa kerja <strong>minimal 1 tahun</strong>.
+            </span>
+        </div>
         <div class="row justify-content-end mb-3">
             <div class="col-lg-4 col-md-6">
                 
@@ -25,16 +38,17 @@
         <div class="table-responsive">
             <table class="table table-bordered table-hover align-middle mb-0" style="width:100%; border: 1px solid #dee2e6;">
                 <thead class="table" style="background-color: #CEE5FF;">
-                    <tr class="text-center">
-                         <th style="width: 5%">NIP</th>
-                        <th style="width: 20%">Nama</th>
-                        <th style="width: 25%">Keterangan</th>
-                        <th style="width: 15%">Periode</th>
-                        <th style="width: 10%">Permohonan</th>
-                        <th style="width: 10%">Status</th>
-                        <th style="width: 2%">File</th>
-                        <th style="width: 15%">Aksi</th>
-                    </tr>
+                <tr>
+                    <th style="width: 15%">Jenis Cuti</th>
+                    <th style="width: 10%" class="text-center">Tgl Pengajuan</th>
+                    <th style="width: 15%" class="text-center">Tgl Cuti</th>
+                    <th style="width: 8%" class="text-center">Jumlah</th>
+                    <th style="width: 8%" class="text-center">Sisa</th>
+                    <th style="width: 19%" class="text-center">Keterangan</th>
+                    <th style="width: 10%" class="text-center">Permohonan</th>
+                    <th style="width: 8%" class="text-center">Status</th>
+                    <th style="width: 7%" class="text-center">Aksi</th>
+                </tr>
                 </thead>
                 <tbody>
                     @if(!empty($list_data) && count($list_data) > 0)
@@ -47,11 +61,19 @@
                                 ];
                             @endphp
                         <tr>
-                            <td class="text-center font-monospace">{{ $item->nip ?? '-' }}</td>
-                            <td class="fw-bold">{{ $item->nm_karyawan ?? '-' }}</td>
-                            <td><small>{{ $item->keterangan ?? '-' }}</small></td>
+                            <td class="fw-bold">{{ $item->nm_jenis_cuti ?? '-' }}</td>
+                            <td class="text-center"><small>{{ $item->tgl_pengajuan ?? '-' }}</small></td>
+                            <td class="text-center"><small>{{ $item->tgl_mulai ?? '-' }}</small></td>
                             <td class="text-nowrap text-center">
-                                {{ $item->tgl_mulai }} -- {{ $item->tgl_selesai }}
+                                {{ $item->jumlah_hari }}
+                                
+                            </td>
+                            <td class="text-nowrap text-center">
+                                {{ $item->sisa_cuti }}
+                                
+                            </td>
+                            <td class="text-nowrap text-center">
+                                {{ $item->keterangan }}
                                 
                             </td>
                             <td class="text-start">
@@ -92,34 +114,31 @@
                                 @endif
                             </td>
                             <td class="text-center">
-                                @if(!empty($item->file_pendukung))
-                                    <button type="button" class="btn btn-sm btn-primary px-3 btn-view-file d-inline-flex align-items-center gap-1"
-                                            data-file="{{ asset( $item->file_pendukung) }}"
-                                            data-name="{{ $item->file_pendukung }}">
-                                        <i class="bi bi-file-earmark-text"></i> Lihat
-                                    </button>
-                                @else
-                                    <span class="badge bg-light text-dark border">No File</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                <div class="btn-group gap-2" role="group">
-                                    <a class="btn btn-sm btn-info modal-remote" style='color:#fff;' href="{{ $url_update }}"  data-modal-key='{{json_encode($data_modal_key)}}' data-modal-width='30%' data-modal-title='Edit Pengajuan Izin'>
-                                         <i class="fa-solid fa-pen-to-square"></i> Update
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a class="btn btn-sm btn-info text-white modal-remote"
+                                    href="{{ $url_update }}"
+                                    data-modal-key='{{ json_encode($data_modal_key) }}'
+                                    data-modal-width="30%"
+                                    data-modal-title="Edit Pengajuan Cuti">
+                                        <i class="fa-solid fa-pen-to-square"></i> Update
                                     </a>
-                                </div>
-                                <div class="btn-group gap-2" role="group">
-                                    
-                                    <a class="btn btn-sm btn-danger modal-remote-delete" style='color:#fff;' href="{{ $url_delete }}"  data-modal-key={{ $item->id }} data-modal-width='30%' data-modal-title='Informasi' data-confirm-message="Hapus Pengajuan <strong>{{ $item->jenis_pengajuan }}</strong> ?">
-                                         <i class="fa-solid fa-pen-to-square"></i> Hapus
+
+                                    <a class="btn btn-sm btn-danger text-white modal-remote-delete"
+                                    href="{{ $url_delete }}"
+                                    data-modal-key="{{ $item->id }}"
+                                    data-modal-width="30%"
+                                    data-modal-title="Informasi"
+                                    data-confirm-message="Hapus Pengajuan <strong>{{ $item->nm_jenis_cuti }}</strong> ?">
+                                        <i class="fa-solid fa-trash"></i> Hapus
                                     </a>
                                 </div>
                             </td>
+
                         </tr>
                         @endforeach
                     @else
                         <tr>
-                            <td colspan="8" class="text-center py-5 text-muted">Data tidak ditemukan</td>
+                            <td colspan="9" class="text-center py-5 text-muted">Data tidak ditemukan</td>
                         </tr>
                     @endif
                 </tbody>
@@ -154,34 +173,3 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<script>
-$(document).ready(function() {
-    $(document).on('click', '.btn-view-file', function(e) {
-        e.preventDefault();
-        
-        const fileUrl = $(this).data('file');
-        const fileName = $(this).data('name');
-        const extension = fileName.split('.').pop().toLowerCase();
-        let content = "";
-
-        $('#fileContent').html('<div class="spinner-border text-primary" role="status"></div>');
-        
-        if (['jpg', 'jpeg', 'png', 'gif'].includes(extension)) {
-            content = `<img src="${fileUrl}" class="img-fluid rounded border shadow-sm">`;
-        } else if (extension === 'pdf') {
-            content = `<iframe src="${fileUrl}" width="100%" height="500px" style="border:none;"></iframe>`;
-        } else {
-            content = `
-                <div class="alert alert-warning">
-                    <i class="fas fa-exclamation-triangle"></i><br>
-                    Format file <b>${extension}</b> tidak didukung untuk pratinjau.<br>
-                    Silakan unduh file untuk melihat kontennya.
-                </div>`;
-        }
-        $('#fileContent').html(content);
-        $('#btnDownload').attr('href', fileUrl);
-        $('#modalFile').modal('show');
-    });
-});
-</script>

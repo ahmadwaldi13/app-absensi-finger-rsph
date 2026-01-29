@@ -567,9 +567,21 @@ $(document).delegate(".modal-remote,.modal-remote-delete,.modal-remote-confir", 
     let meModal = $(document).find(modal_bagan);
     if (meModal && ajax_url) {
         meModal.find('#title').html(modal_title);
+        // if (modal_width) {
+        //     meModal.find('.modal-dialog').css('max-width', modal_width);
+        // }
+
         if (modal_width) {
-            meModal.find('.modal-dialog').css('max-width', modal_width);
+            if (window.innerWidth < 768) {
+                meModal.find('.modal-dialog')
+                .addClass('mt-4') 
+                .css('max-width', '95%');
+
+            } else {
+                meModal.find('.modal-dialog').css('max-width', modal_width);
+            }
         }
+
 
         if (modal_backdrop) {
             meModal.prop('data-bs-backdrop', true);
@@ -1174,6 +1186,24 @@ function collapse_cus($me) {
         $icon_open.hide();
         $icon_closed.hide();
         if ($check == 'true') {
+            $icon_closed.show();
+        } else {
+            $icon_open.show();
+        }
+    }
+}
+
+function collapse_cus($me) {
+    let $check = $me.attr("aria-expanded");
+
+    let $icon_open = $me.find('#collapse-open, #collapse-open-semua');
+    let $icon_closed = $me.find('#collapse-closed, #collapse-closed-semua');
+
+    if ($icon_open.length && $icon_closed.length) {
+        $icon_open.hide();
+        $icon_closed.hide();
+
+        if ($check === 'true') {
             $icon_closed.show();
         } else {
             $icon_open.show();

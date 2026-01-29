@@ -1063,93 +1063,28 @@ class ListRoutes
                     ],
                 ]
             ],
-
             [
-                'title' => 'Pengajuan | Cuti',
+                'title' => 'Pengajuan | Izin Disetujui',
                 'item' => [
                     [
                         'type' => 'index',
                         'method' => 'get',
-                        'url' => '/cuti',
-                        'controller' => 'CutiController@actionIndex',
-                        'name' => 'cuti',
-                        'middleware' => '',
-                    ],
-                    [
-                        'type' => 'create',
-                        'method' => ['get', 'post'],
-                        'url' => '/cuti/create',
-                        'controller' => 'CutiController@actionCreate',
-                        'name' => '',
-                        'middleware' => '',
-                    ],
-                    [
-                        'type' => 'update',
-                        'method' => ['get', 'post'],
-                        'url' => '/cuti/update',
-                        'controller' => 'CutiController@actionUpdate',
-                        'name' => '',
-                        'middleware' => '',
-                    ],
-                    [
-                        'type' => 'delete',
-                        'method' => 'delete',
-                        'url' => '/cuti/delete',
-                        'controller' => 'CutiController@actionDelete',
-                        'name' => '',
-                        'middleware' => '',
-                    ],
-                    [
-                        'type' => 'system',
-                        'method' => 'get',
-                        'url' => '/cuti/ajax',
-                        'controller' => 'CutiController@ajax',
-                        'name' => '',
+                        'url' => '/approved',
+                        'controller' => 'IzinController@actionApproved',
+                        'name' => 'approved',
                         'middleware' => '',
                     ],
                 ]
             ],
             [
-                'title' => 'Pengajuan | Lembur',
+                'title' => 'Pengajuan | Izin Ditolak',
                 'item' => [
                     [
                         'type' => 'index',
                         'method' => 'get',
-                        'url' => '/lembur',
-                        'controller' => 'lemburController@actionIndex',
-                        'name' => 'lembur',
-                        'middleware' => '',
-                    ],
-                    [
-                        'type' => 'create',
-                        'method' => ['get', 'post'],
-                        'url' => '/lembur/create',
-                        'controller' => 'lemburController@actionCreate',
-                        'name' => '',
-                        'middleware' => '',
-                    ],
-                    [
-                        'type' => 'update',
-                        'method' => ['get', 'post'],
-                        'url' => '/lembur/update',
-                        'controller' => 'lemburController@actionUpdate',
-                        'name' => '',
-                        'middleware' => '',
-                    ],
-                    [
-                        'type' => 'delete',
-                        'method' => 'delete',
-                        'url' => '/lembur/delete',
-                        'controller' => 'lemburController@actionDelete',
-                        'name' => '',
-                        'middleware' => '',
-                    ],
-                    [
-                        'type' => 'system',
-                        'method' => 'get',
-                        'url' => '/lembur/ajax',
-                        'controller' => 'lemburController@ajax',
-                        'name' => '',
+                        'url' => '/rejected',
+                        'controller' => 'IzinController@actionRejected',
+                        'name' => 'rejected',
                         'middleware' => '',
                     ],
                 ]
@@ -1199,6 +1134,191 @@ class ListRoutes
                     ],
                 ]
             ],
+
+            [
+                'title' => 'Pengajuan | Cuti',
+                'item' => [
+                    [
+                        'type' => 'index',
+                        'method' => 'get',
+                        'url' => '/cuti',
+                        'controller' => 'CutiController@actionIndex',
+                        'name' => 'cuti',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'create',
+                        'method' => ['get', 'post'],
+                        'url' => '/cuti/create',
+                        'controller' => 'CutiController@actionCreate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'update',
+                        'method' => ['get', 'post'],
+                        'url' => '/cuti/update',
+                        'controller' => 'CutiController@actionUpdate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'delete',
+                        'method' => 'delete',
+                        'url' => '/cuti/delete',
+                        'controller' => 'CutiController@actionDelete',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'system',
+                        'method' => 'get',
+                        'url' => '/cuti/ajax',
+                        'controller' => 'CutiController@ajax',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                ]
+            ],
+            [
+                'title' => 'Manajemen Absensi | Jenis Cuti',
+                'item' => [
+                    [
+                        'type' => 'index',
+                        'method' => 'get',
+                        'url' => '/jenis-cuti',
+                        'controller' => 'JenisCutiController@actionIndex',
+                        'name' => 'jenis-cuti',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'create',
+                        'method' => ['get', 'post'],
+                        'url' => '/jenis-cuti/create',
+                        'controller' => 'JenisCutiController@actionCreate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'update',
+                        'method' => ['get', 'post'],
+                        'url' => '/jenis-cuti/update',
+                        'controller' => 'JenisCutiController@actionUpdate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'delete',
+                        'method' => 'delete',
+                        'url' => '/jenis-cuti/delete',
+                        'controller' => 'JenisCutiController@actionDelete',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'system',
+                        'method' => 'get',
+                        'url' => '/jenis-cuti/ajax',
+                        'controller' => 'JenisCutiController@ajax',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                ]
+            ],
+
+            [
+                'title' => 'Manajemen Absensi | Data Cuti Karyawan',
+                'item' => [
+                    [
+                        'type' => 'index',
+                        'method' => 'get',
+                        'url' => '/data-cuti-karyawan',
+                        'controller' => 'DataCutiKaryawanController@actionIndex',
+                        'name' => 'data-cuti-karyawan',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'create',
+                        'method' => ['get', 'post'],
+                        'url' => '/data-cuti-karyawan/create',
+                        'controller' => 'DataCutiKaryawanController@actionCreate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'create all',
+                        'method' => ['get', 'post'],
+                        'url' => '/data-cuti-karyawan/create-all',
+                        'controller' => 'DataCutiKaryawanController@actionCreateAll',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'update',
+                        'method' => ['get', 'post'],
+                        'url' => '/data-cuti-karyawan/update',
+                        'controller' => 'DataCutiKaryawanController@actionUpdate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'delete',
+                        'method' => 'delete',
+                        'url' => '/data-cuti-karyawan/delete',
+                        'controller' => 'DataCutiKaryawanController@actionDelete',
+                        'name' => '',
+                        'middleware' => '',
+                    ]
+                ]
+            ],
+
+
+            [
+                'title' => 'Pengajuan | Lembur',
+                'item' => [
+                    [
+                        'type' => 'index',
+                        'method' => 'get',
+                        'url' => '/lembur',
+                        'controller' => 'lemburController@actionIndex',
+                        'name' => 'lembur',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'create',
+                        'method' => ['get', 'post'],
+                        'url' => '/lembur/create',
+                        'controller' => 'lemburController@actionCreate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'update',
+                        'method' => ['get', 'post'],
+                        'url' => '/lembur/update',
+                        'controller' => 'lemburController@actionUpdate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'delete',
+                        'method' => 'delete',
+                        'url' => '/lembur/delete',
+                        'controller' => 'lemburController@actionDelete',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'system',
+                        'method' => 'get',
+                        'url' => '/lembur/ajax',
+                        'controller' => 'lemburController@ajax',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                ]
+            ],
+            
         ];
 
         if (!empty($index)) {

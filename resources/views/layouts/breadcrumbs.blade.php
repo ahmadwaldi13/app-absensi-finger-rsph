@@ -6,6 +6,13 @@
             text-align: left;
             min-width: auto;
         }
+        @media (max-width: 480px) {
+            .d {
+                font-size: 10px;
+                margin: 0 -15px;
+                padding: 0 15px;
+            }
+        }
     </style>
     <div>
         <div class="breadcrumbs mt-3">

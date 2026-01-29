@@ -47,33 +47,35 @@
         word-break: break-all;
     }
 </style>
-<form action="{{ url($action_form) }}" method="POST"
+<form action="{{ url('/izin/update') }}" method="POST" class="px-4"
     enctype="multipart/form-data">
 
     @csrf
-    <input type="hidden" name="key_old" value="{{ $model->id_karyawan ?? '' }}">
-    <input type="hidden" id="id_ruangan" name='id_ruangan' value="{{ !empty($model->id_ruangan) ? $model->id_ruangan : '' }}">
-    <input type="hidden" id="id_departemen" name='id_departemen' required value="{{ !empty($model->id_departemen) ? $model->id_departemen : '' }}">
-    <input type="hidden" id="id_jabatan" name='id_jabatan' required value="{{ !empty($model->id_jabatan) ? $model->id_jabatan : '' }}">
+    <input type="hidden" name="key_old" value="{{ $data->id_karyawan ?? '' }}">
+    <input type="hidden" name="id_pengajuan" value="{{ $data->id ?? '' }}">
+    <input type="hidden" id="id_ruangan" name='id_ruangan' value="{{ !empty($data->id_ruangan) ? $data->id_ruangan : '' }}">
+    <input type="hidden" id="id_departemen" name='id_departemen' required value="{{ !empty($data->id_departemen) ? $data->id_departemen : '' }}">
+    <input type="hidden" id="id_jabatan" name='id_jabatan' required value="{{ !empty($data->id_jabatan) ? $data->id_jabatan : '' }}">
+    
 
     <div class="row g-3">
 
         {{-- NIP & Nama --}}
         <div class="col-lg-6 col-md-6 col-sm-12">
             <label class="form-label">NIP</label>
-            <input type="text" class="form-control" name="nip" required value="{{ $model->nip ?? '' }}">
+            <input type="text" class="form-control" name="nip" required value="{{ $data->nip ?? '' }}">
         </div>
 
         <div class="col-lg-6 col-md-6 col-sm-12">
             <label class="form-label">Nama Karyawan</label>
             <input type="text" class="form-control" name="nm_karyawan" required
-                value="{{ $model->nm_karyawan ?? '' }}">
+                value="{{ $data->nm_karyawan ?? '' }}">
         </div>
 
         {{-- Keterangan --}}
         <div class="col-12">
             <label class="form-label">Keterangan</label>
-            <textarea class="form-control" name="keterangan" rows="2"></textarea>
+            <textarea class="form-control" name="keterangan" rows="2">{{ !empty($data->keterangan) ? $data->keterangan : '' }}</textarea>
         </div>
 
         {{-- Jenis & Tanggal --}}
@@ -81,23 +83,23 @@
             <label class="form-label">Jenis Pengajuan</label>
             <select name="jenis_izin" class="form-control" required>
                 <option value="">-- Pilih --</option>
-                <option value="izin">Izin</option>
-                <option value="sakit">Sakit</option>
+                <option value="izin" {{ !empty($data->jenis_pengajuan == 'izin') ? 'selected' : '' }}>Izin</option>
+                <option value="sakit" {{ !empty($data->jenis_pengajuan == 'sakit') ? 'selected' : '' }}>Sakit</option>
             </select>
         </div>
 
         <div class="col-lg-4 col-md-6 col-sm-12">
             <label class="form-label">Tanggal Mulai</label>
-            <input type="date" class="form-control" name="tgl_mulai" value="{{ date('Y-m-d') }}" required>
+            <input type="date" class="form-control" name="tgl_mulai" value="{{ !empty($data->tgl_mulai) ? $data->tgl_mulai : '' }}" required>
         </div>
 
         <div class="col-lg-4 col-md-6 col-sm-12">
             <label class="form-label">Tanggal Selesai</label>
-            <input type="date" class="form-control" name="tgl_selesai" value="{{ date('Y-m-d') }}" required>
+            <input type="date" class="form-control" name="tgl_selesai" value="{{ !empty($data->tgl_selesai) ? $data->tgl_selesai : '' }}" required>
         </div>
 
 
-        <div class="col-lg-12 col-md-12 col-sm-12">
+       <div class="col-lg-12 col-md-12 col-sm-12">
             <label class="form-label">File Pendukung</label>
 
             <div class="file-upload-modern">
@@ -105,20 +107,35 @@
 
                 <label for="fileUpload">
                     <i class="fa-solid fa-cloud-arrow-up"></i>
-                    <span id="uploadText">Pilih atau drop file di sini</span>
+                    <span id="uploadText">
+                        {{ !empty($data->file_pendukung) ? 'Ganti file' : 'Pilih atau drop file di sini' }}
+                    </span>
                     <small id="uploadHint">PDF / JPG / PNG (Max 2MB)</small>
                 </label>
 
-                <!-- PENANDA FILE -->
-                <div class="file-name" id="fileName"></div>
+                <div class="file-name" id="fileName"
+                    style="{{ !empty($data->file_pendukung) ? 'display:block' : '' }}">
+                    {{ !empty($data->file_pendukung) ? '✔ File terlampir: ' . basename($data->file_pendukung) : '' }}
+                </div>
             </div>
 
+            @if(!empty($data->file_pendukung))
+                <div class="mt-2">
+                    <i class="fa-solid fa-paperclip text-success"></i>
+                    <a href="{{ asset( $data->file_pendukung) }}"
+                    target="_blank"
+                    class="ms-1 text-primary text-decoration-underline">
+                        Lihat file pendukung
+                    </a>
+                </div>
+            @endif
         </div>
 
+        <hr>
         {{-- Submit --}}
-        <div class="col-12 mt-3">
+        <div class="col-12">
             <button class="btn btn-primary px-4">
-                Simpan
+                Ubah
             </button>
         </div>
 

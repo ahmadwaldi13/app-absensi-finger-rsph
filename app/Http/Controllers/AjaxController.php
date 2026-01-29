@@ -247,6 +247,78 @@ class AjaxController extends Controller
         ];
     }
 
+    function getListJenisCuti($request){
+        $list_data_tmp = (new \App\Services\JenisCutiService())->getList([], 1)->get();
+
+        $list_data=[];
+        foreach($list_data_tmp as $value){
+            $list_data[]=[
+                'kode'=>[
+                    'data-item'=>$value->id.'@'.$value->nama.'@'.$value->jumlah,
+                    'value'=>$value->nama
+                ],
+                $value->jumlah,
+            ];
+        }
+    
+        $table=[
+            'header'=>[
+               'title'=> ['Nama','Jumlah Cuti'],
+               'parameter'=>[' class="w-5" ',' class="w-5" ',' class="w-25" ',' class="w-25" ',' class="w-25" ',]
+            ],
+        ];
+    
+        $parameter_view=[
+            'table'=>$table,
+            'list_data'=>!empty($list_data) ? $list_data : ''
+        ];
+    
+        return [
+            'success' => true,
+            'html'=>view('ajax.columns_ajax',$parameter_view)->render(),
+        ];
+    }
+
+    function getListJenisCutiKaryawan($request){
+        
+        $get_user = (new \App\Http\Traits\AuthFunction())->getUser();
+
+        if(!empty($get_user->data_user_sistem)) {
+            $karyawan = $get_user->data_user_sistem;
+            $list_data_tmp = (new \App\Services\JenisCutiService())->getListJenisCutiKaryawan([], 1, $karyawan->id_karyawan )->get();
+        }else {
+            $list_data_tmp = (new \App\Services\JenisCutiService())->getList([], 1)->get();
+        }
+    
+        $list_data=[];
+        foreach($list_data_tmp as $value){
+            $list_data[]=[
+                'kode'=>[
+                    'data-item'=>$value->id.'@'.$value->nama.'@'.$value->jumlah,
+                    'value'=>$value->nama
+                ],
+                $value->jumlah,
+            ];
+        }
+    
+        $table=[
+            'header'=>[
+               'title'=> ['Nama','Jumlah Cuti'],
+               'parameter'=>[' class="w-5" ',' class="w-5" ',' class="w-25" ',' class="w-25" ',' class="w-25" ',]
+            ],
+        ];
+    
+        $parameter_view=[
+            'table'=>$table,
+            'list_data'=>!empty($list_data) ? $list_data : ''
+        ];
+    
+        return [
+            'success' => true,
+            'html'=>view('ajax.columns_ajax',$parameter_view)->render(),
+        ];
+    }
+
     function ajax(Request $request){
         $get_req = $request->all();
         $hasil='';
@@ -278,6 +350,14 @@ class AjaxController extends Controller
 
             if($get_req['action']=='get_jenis_jadwal'){
                 $hasil=$this->getJenisJadwal($request);
+            }
+
+            if($get_req['action']=='get_jenis_cuti'){
+                $hasil=$this->getListJenisCuti($request);
+            }
+
+            if($get_req['action']=='get_jenis_cuti_karyawan'){
+                $hasil=$this->getListJenisCutiKaryawan($request);
             }
 
             if($request->ajax()){
