@@ -110,7 +110,7 @@ class IzinService extends BaseService {
                 'id_karyawan'   => $id_karyawan,
                 'id_ruangan'   => $data_req['id_ruangan'],
                 'keterangan'    => $data_req['keterangan'],
-                'jenis_pengajuan' => $data_req['jenis_pengajuan'],
+                'jenis_pengajuan' => $data_req['jenis_izin'],
                 'tgl_mulai'     => $data_req['tgl_mulai'],
                 'tgl_selesai'   => $data_req['tgl_selesai'],
                 'file_pendukung'=> $filePath ?? null,
@@ -188,7 +188,7 @@ class IzinService extends BaseService {
         try {
 
             $izin = DB::table('pengajuan_izin')
-                ->where('id_karyawan', $data_req['key_old'])
+                ->where('id', $data_req['id'])
                 ->first();
 
             if (!$izin) {

@@ -294,16 +294,16 @@ class AjaxController extends Controller
         foreach($list_data_tmp as $value){
             $list_data[]=[
                 'kode'=>[
-                    'data-item'=>$value->id.'@'.$value->nama.'@'.$value->jumlah,
+                    'data-item'=>$value->id.'@'.$value->nama.'@'.$value->sisa,
                     'value'=>$value->nama
                 ],
-                $value->jumlah,
+                $value->sisa,
             ];
         }
     
         $table=[
             'header'=>[
-               'title'=> ['Nama','Jumlah Cuti'],
+               'title'=> ['Nama','Stok Cuti'],
                'parameter'=>[' class="w-5" ',' class="w-5" ',' class="w-25" ',' class="w-25" ',' class="w-25" ',]
             ],
         ];

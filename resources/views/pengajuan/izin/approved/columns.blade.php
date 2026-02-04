@@ -33,7 +33,6 @@
                         <th style="width: 10%">Permohonan</th>
                         <th style="width: 10%">Status</th>
                         <th style="width: 2%">File</th>
-                        <th style="width: 15%">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -102,11 +101,7 @@
                                     <span class="badge bg-light text-dark border">No File</span>
                                 @endif
                             </td>
-                            <td class="text-center">
-                                <span class="text-muted fst-italic">
-                                    <i class="bi bi-check-circle text-success"></i> Selesai
-                                </span>
-                            </td>
+                            
                         </tr>
                         @endforeach
                     @else

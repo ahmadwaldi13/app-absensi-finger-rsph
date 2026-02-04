@@ -30,12 +30,12 @@
 
         <div class="col-lg-4 mb-3">
             <div class='bagan_form'>
-                <label for="nama" class="form-label">Jenis Cuti <span class="text-danger">*</span></label>
+                <label for="nama_jenis_cuti" class="form-label">Jenis Cuti <span class="text-danger">*</span></label>
                 <div class="button-icon-inside">
-                    <input type="text" class="input-text" id='nama' readonly required  />
+                    <input type="text" class="input-text" id='nama_jenis_cuti' name="nama_jenis_cuti" readonly required  />
                     <input type="hidden" id="id_jenis_cuti" name='id_jenis_cuti' required>
                     <span class="modal-remote-data" data-modal-src="{{ url('ajax?action=get_jenis_cuti_karyawan') }}" data-modal-key="" data-modal-pencarian='true' data-modal-title='Jenis Cuti' data-modal-width='40%' 
-                    data-modal-action-change="function=.set-data-list-from-modal@data-target=#id_jenis_cuti|#nama|#jumlah_cuti@data-key-bagan=0@data-btn-close=#closeModalData">
+                    data-modal-action-change="function=.set-data-list-from-modal@data-target=#id_jenis_cuti|#nama_jenis_cuti|#sisa@data-key-bagan=0@data-btn-close=#closeModalData">
                         <img class="iconify hover-pointer text-primary" src="{{ asset('') }}icon/selected.png" alt="">
                     </span>
                     <a href="#" id='reset_input'><i class="fa-solid fa-square-xmark"></i></a>                            

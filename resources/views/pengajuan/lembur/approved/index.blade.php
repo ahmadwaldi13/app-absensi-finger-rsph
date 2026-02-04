@@ -44,9 +44,9 @@
 </style>
 
 @section('content')
-@include('pengajuan.izin.tab_pengajuan_izin', ["active"=>4])
+@include('pengajuan.lembur.tab_pengajuan_lembur', ["active"=>2])
 
-@include('pengajuan.izin.permohonan.columns')
+@include('pengajuan.lembur.approved.columns')
 @endsection
 
 

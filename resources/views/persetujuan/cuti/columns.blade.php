@@ -9,6 +9,10 @@
     margin-top: 8vh;
 }
 
+.btn-confirm {
+    width: 90%;
+}
+
 @media (min-width: 992px) {
     .modal-top {
         margin-top: 10vh;
@@ -33,7 +37,7 @@
 
 <div class="card border-2 mt-2">
     <div class="card-header bg-white py-3">
-        <h6 class="m-0 font-weight-bold text-primary">Permohonan</h6>
+        <h6 class="m-0 font-weight-bold text-primary">Daftar Persetujuan Cuti</h6>
     </div>
     <div class="card-body">
         <div class="row justify-content-end mb-3">
@@ -56,27 +60,32 @@
         <div class="table-responsive">
             <table class="table table-bordered table-hover align-middle mb-0" style="width:100%; border: 1px solid #dee2e6;">
                 <thead class="table-primary">
-                    <tr class="text-center">
-                        <th style="width: 5%">NIP</th>
-                        <th style="width: 20%">Nama</th>
-                        <th style="width: 25%">Keterangan</th>
-                        <th style="width: 15%">Periode</th>
+                   <tr class="text-center align-middle">
+                        <th style="width: 18%">Nama Karyawan</th>
+                        <th style="width: 13%">Jenis Cuti</th>
+                        <th style="width: 11%">Tgl Pengajuan</th>
+                        <th style="width: 11%">Tgl Cuti</th>
+                        <th style="width: 19%">Keterangan</th>
                         <th style="width: 10%">Permohonan</th>
-                        <th style="width: 10%">Status</th>
-                        <th style="width: 2%">File</th>
-                        <th style="width: 15%">Aksi</th>
+                        <th style="width: 8%">Status</th>
+                        <th style="width: 10%">Aksi</th>
                     </tr>
+
+
                 </thead>
                 <tbody>
                     @if(!empty($list_data) && count($list_data) > 0)
                         @foreach($list_data as $item)
                         <tr>
-                            <td class="text-center font-monospace">{{ $item->nip ?? '-' }}</td>
                             <td class="fw-bold">{{ $item->nm_karyawan ?? '-' }}</td>
-                            <td><small>{{ $item->keterangan ?? '-' }}</small></td>
+                            <td>{{ $item->nm_jenis_cuti ?? '-' }}</td>
                             <td class="text-nowrap text-center">
-                                {{ $item->tgl_mulai }} -- {{ $item->tgl_selesai }}
+                                {{ $item->tgl_pengajuan }}
                             </td>
+                            <td class="text-nowrap text-center">
+                                {{ $item->tgl_mulai }}
+                            </td>
+                            <td><small>{{ $item->keterangan ?? '-' }}</small></td>
                             <td class="text-start">
                                 
                                 <div class="permohonan">
@@ -115,22 +124,7 @@
                                     <span class="badge bg-warning rounded-pill">Pending</span>
                                 @endif
                             </td>
-                            
-                            <td class="text-center align-middle">
-                                @if(!empty($item->file_pendukung))
-                                    <button type="button"
-                                        class="btn btn-sm btn-primary px-3 btn-view-file d-inline-flex align-items-center gap-1"
-                                        data-file="{{ asset($item->file_pendukung) }}"
-                                        data-name="{{ basename($item->file_pendukung) }}">
-                                        <i class="bi bi-file-earmark-text"></i>
-                                        <span>File</span>
-                                    </button>
-                                @else
-                                    <span class="badge bg-secondary-subtle text-secondary px-3">
-                                        <span class="badge bg-light text-dark border">No File</span>
-                                    </span>
-                                @endif
-                            </td>
+                        
 
                             <td class="text-center">
                                 @if($item->status === 'approved')
@@ -142,39 +136,39 @@
                                         <i class="bi bi-x-circle text-danger"></i> Ditolak
                                     </span>
                                 @elseif($user_level == 1 && $item->current_level == 1)
-                                    <div class="d-flex justify-content-center gap-2">
+                                    <div class="d-flex flex-column gap-2 align-items-center">
                                         <button type="button"
-                                                class="btn btn-success btn-sm px-2 btn-persetujuan"
+                                                class="btn btn-success btn-confirm btn-sm px-2 btn-persetujuan"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#modalApprove"
                                                 data-id="{{ $item->id }}">
-                                            <i class="bi bi-check-circle me-1"></i> Approve
+                                             Approve
                                         </button>
 
                                         <button type="button"
-                                                class="btn btn-danger btn-sm px-2 btn-persetujuan"
+                                                class="btn btn-danger btn-confirm btn-sm px-2 btn-persetujuan"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#modalReject"
                                                 data-id="{{ $item->id }}">
-                                            <i class="bi bi-x-circle me-1"></i> Reject
+                                             Reject
                                         </button>
                                     </div>
                                  @elseif($user_level == 2)
-                                    <div class="d-flex justify-content-center gap-2">
+                                    <div class="d-flex flex-column gap-2 align-items-center">
                                         <button type="button"
-                                                class="btn btn-success btn-sm px-2 btn-persetujuan"
+                                                class="btn btn-success btn-confirm btn-sm px-2 btn-persetujuan"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#modalApprove"
                                                 data-id="{{ $item->id }}">
-                                            <i class="bi bi-check-circle me-1"></i> Approve
+                                             Approve
                                         </button>
 
                                         <button type="button"
-                                                class="btn btn-danger btn-sm px-2 btn-persetujuan"
+                                                class="btn btn-danger btn-confirm btn-sm px-2 btn-persetujuan"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#modalReject"
                                                 data-id="{{ $item->id }}">
-                                            <i class="bi bi-x-circle me-1"></i> Reject
+                                             Reject
                                         </button>
                                     </div>
                                 @else
@@ -221,40 +215,13 @@
     </div>
 </div>
 
-@include('pengajuan.izin.permohonan.modal.approved')
-@include('pengajuan.izin.permohonan.modal.rejected')
+@include('persetujuan.cuti.approved')
+@include('persetujuan.cuti.rejected')
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        $(document).on('click', '.btn-view-file', function (e) {
-            e.preventDefault();
-
-            const fileUrl = $(this).data('file');
-            const fileName = $(this).data('name');
-            const extension = fileName.split('.').pop().toLowerCase();
-            let content = "";
-
-            $('#fileContent').html('<div class="spinner-border text-primary" role="status"></div>');
-
-            if (['jpg', 'jpeg', 'png', 'gif'].includes(extension)) {
-                content = `<img src="${fileUrl}" class="img-fluid rounded border shadow-sm">`;
-            } else if (extension === 'pdf') {
-                content = `<iframe src="${fileUrl}" width="100%" height="500px" style="border:none;"></iframe>`;
-            } else {
-                content = `
-                    <div class="alert alert-warning">
-                        Format file <b>${extension}</b> tidak didukung.<br>
-                        Silakan download file.
-                    </div>`;
-            }
-
-            $('#fileContent').html(content);
-            $('#btnDownload').attr('href', fileUrl);
-            $('#modalFile').modal('show');
-        });
-
         const modalApprove = document.getElementById('modalApprove');
         modalApprove.addEventListener('show.bs.modal', function (event) {
             const button = event.relatedTarget;

@@ -69,7 +69,8 @@ class CutiService extends BaseService {
         if (!empty($params['search'])) {
             $query->where(function ($q) use ($params) {
                 $q->where('k.nm_karyawan', 'like', '%'.$params['search'].'%')
-                ->orWhere('k.nip', 'like', '%'.$params['search'].'%');
+                ->orWhere('k.nip', 'like', '%'.$params['search'].'%')
+                ->orWhere('jc.nama', 'like', '%'.$params['search'].'%');
             });
         }
 
@@ -248,5 +249,85 @@ class CutiService extends BaseService {
         } catch (\Throwable $e) {
             throw $e;
         }
+    }
+
+    public function getListDataApprove($params = [])
+    {
+        $query = DB::table('uxui_cuti as c')
+            ->select(
+                'c.id_karyawan',
+                'c.id',
+                'c.keterangan',
+                'c.tgl_pengajuan',
+                'c.tgl_mulai',
+                'c.tgl_selesai',
+                'c.jumlah_hari',
+                'c.sisa_cuti',
+                'c.status',
+                'c.current_level',
+                'jc.nama as nm_jenis_cuti',
+                'c.created_at',
+                'k.nip',
+                'k.nm_karyawan'
+            )
+            ->leftJoin('ref_karyawan as k', 'k.id_karyawan', '=', 'c.id_karyawan')
+            ->leftJoin('uxui_jenis_cuti as jc', 'c.id_jenis_cuti', '=', 'jc.id')
+            ->where('c.status', '=', 'approved')
+            ->orderBy('c.created_at', 'desc');
+
+        
+        if (empty($params['is_super_admin']) || $params['is_super_admin'] === false) {
+            $query->where('c.id_karyawan', $params['id_karyawan']);
+        }
+
+        
+        if (!empty($params['search'])) {
+            $query->where(function ($q) use ($params) {
+                $q->where('k.nm_karyawan', 'like', '%'.$params['search'].'%')
+                ->orWhere('k.nip', 'like', '%'.$params['search'].'%');
+            });
+        }
+
+        return $query;
+    }
+
+    public function getListDataReject($params = [])
+    {
+        $query = DB::table('uxui_cuti as c')
+            ->select(
+                'c.id_karyawan',
+                'c.id',
+                'c.keterangan',
+                'c.tgl_pengajuan',
+                'c.tgl_mulai',
+                'c.tgl_selesai',
+                'c.jumlah_hari',
+                'c.sisa_cuti',
+                'c.status',
+                'c.current_level',
+                'jc.nama as nm_jenis_cuti',
+                'c.created_at',
+                'k.nip',
+                'k.nm_karyawan'
+            )
+            ->leftJoin('ref_karyawan as k', 'k.id_karyawan', '=', 'c.id_karyawan')
+            ->leftJoin('uxui_jenis_cuti as jc', 'c.id_jenis_cuti', '=', 'jc.id')
+            ->where('c.status', '=', 'rejected')
+            ->orderBy('c.created_at', 'desc');
+
+        
+        if (empty($params['is_super_admin']) || $params['is_super_admin'] === false) {
+            $query->where('c.id_karyawan', $params['id_karyawan']);
+        }
+
+        
+        if (!empty($params['search'])) {
+            $query->where(function ($q) use ($params) {
+                $q->where('k.nm_karyawan', 'like', '%'.$params['search'].'%')
+                ->orWhere('k.nip', 'like', '%'.$params['search'].'%');
+            });
+        }
+
+        return $query;
     }
 }

@@ -53,9 +53,7 @@
     @csrf
     <input type="hidden" name="key_old" value="{{ $data->id_karyawan ?? '' }}">
     <input type="hidden" name="id_pengajuan" value="{{ $data->id ?? '' }}">
-    <input type="hidden" id="id_ruangan" name='id_ruangan' value="{{ !empty($data->id_ruangan) ? $data->id_ruangan : '' }}">
-    <input type="hidden" id="id_departemen" name='id_departemen' required value="{{ !empty($data->id_departemen) ? $data->id_departemen : '' }}">
-    <input type="hidden" id="id_jabatan" name='id_jabatan' required value="{{ !empty($data->id_jabatan) ? $data->id_jabatan : '' }}">
+
     
 
     <div class="row g-3">

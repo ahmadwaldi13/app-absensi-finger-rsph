@@ -16,7 +16,7 @@
                         data-bs-dismiss="modal"></button>
             </div>
 
-            <form method="POST" action="{{ url('/permohonan-izin/approved') }}">
+            <form method="POST" action="{{ url('/approver-izin/approved') }}">
                 @csrf
                 <input type="hidden" name="pengajuan_id" id="approve_pengajuan_id">
 

@@ -196,5 +196,81 @@ class CutiController extends Controller
         }
     }
 
+    public function actionIndexApproved(Request $request) {
 
+        $user_auth = (new \App\Http\Traits\AuthFunction)->getUser();
+        $role = $user_auth->group_user[0] ?? null;
+
+        $form_filter_text = $request->form_filter_text ?? '';
+
+        $paramater = [
+            'search' => $form_filter_text,
+            'is_super_admin' => false
+        ];
+
+        if ($role === 'group_super_admin') {
+
+            $paramater['is_super_admin'] = true;
+
+        } else {
+
+            $get_karyawan = $this->masterPengajuanService
+                ->getKaryawan($user_auth->id_user);
+
+            $paramater['id_karyawan'] = $get_karyawan->id_karyawan;
+            $paramater['id_ruangan']  = $get_karyawan->id_ruangan;
+            $paramater['id_jabatan']  = $get_karyawan->id_jabatan;
+        }
+
+        $list_data = $this->cutiService
+            ->getListDataApprove($paramater)
+            ->paginate($request->per_page ?? 10);
+    
+        $parameter_view = [
+            'title' => $this->title,
+            'breadcrumbs' => $this->breadcrumbs,
+            'list_data' => $list_data
+        ];
+
+        return view('pengajuan.cuti.approved.index', $parameter_view);
+    }
+
+    public function actionIndexRejected(Request $request) {
+
+        $user_auth = (new \App\Http\Traits\AuthFunction)->getUser();
+        $role = $user_auth->group_user[0] ?? null;
+
+        $form_filter_text = $request->form_filter_text ?? '';
+
+        $paramater = [
+            'search' => $form_filter_text,
+            'is_super_admin' => false
+        ];
+
+        if ($role === 'group_super_admin') {
+
+            $paramater['is_super_admin'] = true;
+
+        } else {
+
+            $get_karyawan = $this->masterPengajuanService
+                ->getKaryawan($user_auth->id_user);
+
+            $paramater['id_karyawan'] = $get_karyawan->id_karyawan;
+            $paramater['id_ruangan']  = $get_karyawan->id_ruangan;
+            $paramater['id_jabatan']  = $get_karyawan->id_jabatan;
+        }
+
+        $list_data = $this->cutiService
+            ->getListDataReject($paramater)
+            ->paginate($request->per_page ?? 10);
+    
+        $parameter_view = [
+            'title' => $this->title,
+            'breadcrumbs' => $this->breadcrumbs,
+            'list_data' => $list_data
+        ];
+
+        return view('pengajuan.cuti.rejected.index', $parameter_view);
+    }
 }

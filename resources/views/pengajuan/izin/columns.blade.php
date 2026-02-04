@@ -102,16 +102,26 @@
                                     <span class="badge bg-light text-dark border">No File</span>
                                 @endif
                             </td>
+
                             <td class="text-center">
-                                <div class="btn-group gap-2" role="group">
-                                    <a class="btn btn-sm btn-info modal-remote" style='color:#fff;' href="{{ $url_update }}"  data-modal-key='{{json_encode($data_modal_key)}}' data-modal-width='30%' data-modal-title='Edit Pengajuan Izin'>
-                                         <i class="fa-solid fa-pen-to-square"></i> Update
+                                <div class="d-flex flex-column gap-2 align-items-center">
+                                    <a class="btn btn-sm btn-info modal-remote text-white"
+                                    style="width: 80px;"
+                                    href="{{ $url_update }}"
+                                    data-modal-key='{{ json_encode($data_modal_key) }}'
+                                    data-modal-width="30%"
+                                    data-modal-title="Edit Pengajuan Izin">
+                                        Update
                                     </a>
-                                </div>
-                                <div class="btn-group gap-2" role="group">
-                                    
-                                    <a class="btn btn-sm btn-danger modal-remote-delete" style='color:#fff;' href="{{ $url_delete }}"  data-modal-key={{ $item->id }} data-modal-width='30%' data-modal-title='Informasi' data-confirm-message="Hapus Pengajuan <strong>{{ $item->jenis_pengajuan }}</strong> ?">
-                                         <i class="fa-solid fa-pen-to-square"></i> Hapus
+
+                                    <a class="btn btn-sm btn-danger modal-remote-delete text-white"
+                                    style="width: 80px;"
+                                    href="{{ $url_delete }}"
+                                    data-modal-key="{{ $item->id }}"
+                                    data-modal-width="30%"
+                                    data-modal-title="Informasi"
+                                    data-confirm-message="Hapus Pengajuan <strong>{{ $item->jenis_pengajuan }}</strong> ?">
+                                        Hapus
                                     </a>
                                 </div>
                             </td>

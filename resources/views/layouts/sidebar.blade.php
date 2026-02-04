@@ -16,6 +16,13 @@
             'key_active'=>\App::call('App\Http\Controllers\SubMenuController@listAkses',['type' => 7])->list_menu
         ],
         [
+            'title'=>'Persetujuan',
+            'key'=>'sub-menu',
+            'url'=>url('/')."/sub-menu?type=8",
+            'icon'=>"<i class='fa-solid fa-file-circle-check'></i>",
+            'key_active'=>\App::call('App\Http\Controllers\SubMenuController@listAkses',['type' => 8])->list_menu
+        ],
+        [
             'title'=>'Data Karyawan',
             'key'=>'sub-menu',
             'url'=>url('/')."/sub-menu?type=4",

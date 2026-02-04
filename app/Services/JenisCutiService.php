@@ -134,13 +134,13 @@ class JenisCutiService extends BaseService {
             ->select(
                 'jc.id',
                 'jc.nama',
-                DB::raw('COALESCE(sc.jumlah, 0) as jumlah')
+                DB::raw('COALESCE(sc.sisa, 0) as sisa')
             );
 
         if (!empty($params['search'])) {
             $query->where(function ($q) use ($params) {
                 $q->where('jc.nama', 'like', '%'.$params['search'].'%')
-                ->orWhere('sc.jumlah', 'like', '%'.$params['search'].'%');
+                ->orWhere('sc.sisa', 'like', '%'.$params['search'].'%');
             });
         }
 

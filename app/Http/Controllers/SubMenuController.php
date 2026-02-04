@@ -196,6 +196,31 @@ class SubMenuController extends Controller
                 ];
             }
             
+            if($type==8){
+                $menu_permission=[
+                    [
+                        'title'=>'Izin',
+                        'key'=>'approver-izin',
+                        'url'=> url('/')."/approver-izin",
+                        'icon' => "<i class='fa-solid fa-clipboard-check'></i>"
+
+                    ],
+                    [
+                        'title'=>'Cuti',
+                        'key'=>'approver-cuti',
+                        'url'=>url('/')."/approver-cuti",
+                        'icon' => "<i class='fa-solid fa-calendar-check'></i>"
+
+                    ],
+                    [
+                        'title'=>'Lembur',
+                        'key'=>'approver-lembur',
+                        'url'=>url('/')."/approver-lembur",
+                        'icon' => "<i class='fa-solid fa-clock'></i>"
+
+                    ],
+                ];
+            }
 
             if($menu_permission){
                 $list_menu=[];

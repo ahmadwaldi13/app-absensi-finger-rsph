@@ -186,7 +186,7 @@ class IzinController extends Controller
         return redirect()->route($link_back_redirect, $link_back_param)->with([$pesan[0] => $pesan[1]]);
     }
 
-    public function actionApproved(Request $request) {
+    public function actionIndexApproved(Request $request) {
 
         $user_auth = (new \App\Http\Traits\AuthFunction)->getUser();
         $role = $user_auth->group_user[0] ?? null;
@@ -225,7 +225,7 @@ class IzinController extends Controller
         return view('pengajuan.izin.approved.index', $parameter_view);
     }
 
-    public function actionRejected(Request $request) {
+    public function actionIndexRejected(Request $request) {
 
         $user_auth = (new \App\Http\Traits\AuthFunction)->getUser();
         $role = $user_auth->group_user[0] ?? null;
@@ -263,4 +263,5 @@ class IzinController extends Controller
 
         return view('pengajuan.izin.rejected.index', $parameter_view);
     }
+    
 }

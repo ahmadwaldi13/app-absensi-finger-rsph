@@ -30,8 +30,7 @@
                         <th style="width: 15%">Periode</th>
                         <th style="width: 10%">Permohonan</th>
                         <th style="width: 10%">Status</th>
-                        <th style="width: 2%">File</th>
-                        <th style="width: 15%">Aksi</th>
+                        <th style="width: 2%">File</th>                        
                     </tr>
                 </thead>
                 <tbody>
@@ -100,11 +99,7 @@
                                     <span class="badge bg-light text-dark border">No File</span>
                                 @endif
                             </td>
-                            <td class="text-center">
-                                <span class="text-muted fst-italic">
-                                        <i class="bi bi-x-circle text-danger"></i> Ditolak
-                                    </span>
-                            </td>
+                           
                         </tr>
                         @endforeach
                     @else

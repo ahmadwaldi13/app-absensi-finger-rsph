@@ -7,15 +7,11 @@ $item = [
     ],
     2 => (object) [
         'nama' => 'Disetujui',
-        'key' => 'approved',
+        'key' => 'izin/izin-disetujui',
     ],
     3 => (object) [
         'nama' => 'Ditolak',
-        'key' => 'rejected',
-    ],
-    4 => (object) [
-        'nama' => 'Permohonan',
-        'key' => 'permohonan-izin',
+        'key' => 'izin/izin-ditolak',
     ],
     
 

@@ -62,8 +62,8 @@
                             @endphp
                         <tr>
                             <td class="fw-bold">{{ $item->nm_jenis_cuti ?? '-' }}</td>
-                            <td class="text-center"><small>{{ $item->tgl_pengajuan ?? '-' }}</small></td>
-                            <td class="text-center"><small>{{ $item->tgl_mulai ?? '-' }}</small></td>
+                            <td class="text-center">{{ $item->tgl_pengajuan ?? '-' }}</td>
+                            <td class="text-center">{{ $item->tgl_mulai ?? '-' }}</td>
                             <td class="text-nowrap text-center">
                                 {{ $item->jumlah_hari }}
                                 
@@ -114,22 +114,24 @@
                                 @endif
                             </td>
                             <td class="text-center">
-                                <div class="d-flex justify-content-center gap-2">
+                                <div class="d-flex flex-column gap-2 align-items-center">
                                     <a class="btn btn-sm btn-info text-white modal-remote"
+                                    style='width: 80px;'
                                     href="{{ $url_update }}"
                                     data-modal-key='{{ json_encode($data_modal_key) }}'
                                     data-modal-width="30%"
                                     data-modal-title="Edit Pengajuan Cuti">
-                                        <i class="fa-solid fa-pen-to-square"></i> Update
+                                         Update
                                     </a>
 
                                     <a class="btn btn-sm btn-danger text-white modal-remote-delete"
+                                    style='width: 80px;'
                                     href="{{ $url_delete }}"
                                     data-modal-key="{{ $item->id }}"
                                     data-modal-width="30%"
                                     data-modal-title="Informasi"
                                     data-confirm-message="Hapus Pengajuan <strong>{{ $item->nm_jenis_cuti }}</strong> ?">
-                                        <i class="fa-solid fa-trash"></i> Hapus
+                                         Hapus
                                     </a>
                                 </div>
                             </td>

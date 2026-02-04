@@ -1061,79 +1061,25 @@ class ListRoutes
                         'name' => '',
                         'middleware' => '',
                     ],
-                ]
-            ],
-            [
-                'title' => 'Pengajuan | Izin Disetujui',
-                'item' => [
                     [
-                        'type' => 'index',
+                        'type' => 'Disetujui',
                         'method' => 'get',
-                        'url' => '/approved',
-                        'controller' => 'IzinController@actionApproved',
-                        'name' => 'approved',
-                        'middleware' => '',
-                    ],
-                ]
-            ],
-            [
-                'title' => 'Pengajuan | Izin Ditolak',
-                'item' => [
-                    [
-                        'type' => 'index',
-                        'method' => 'get',
-                        'url' => '/rejected',
-                        'controller' => 'IzinController@actionRejected',
-                        'name' => 'rejected',
-                        'middleware' => '',
-                    ],
-                ]
-            ],
-            [
-                'title' => 'Pengajuan | Permohonan Izin',
-                'item' => [
-                    [
-                        'type' => 'index',
-                        'method' => 'get',
-                        'url' => '/permohonan-izin',
-                        'controller' => 'PermohonanIzinController@actionIndex',
-                        'name' => 'permohonan-izin',
-                        'middleware' => '',
-                    ],
-                    [
-                        'type' => 'system',
-                        'method' => 'get',
-                        'url' => '/permohonan-izin/approved',
-                        'controller' => 'PermohonanIzinController@actionApproved',
+                        'url' => '/izin/izin-disetujui',
+                        'controller' => 'IzinController@actionIndexApproved',
                         'name' => '',
                         'middleware' => '',
                     ],
                     [
-                        'type' => 'Approved',
-                        'method' => 'post',
-                        'url' => '/permohonan-izin/approved',
-                        'controller' => 'PermohonanIzinController@actionApproved',
-                        'name' => '',
-                        'middleware' => '',
-                    ],
-                    [
-                        'type' => 'system',
+                        'type' => 'Ditolak',
                         'method' => 'get',
-                        'url' => '/permohonan-izin/rejected',
-                        'controller' => 'PermohonanIzinController@actionRejected',
-                        'name' => '',
-                        'middleware' => '',
-                    ],
-                    [
-                        'type' => 'Rejected',
-                        'method' => 'post',
-                        'url' => '/permohonan-izin/rejected',
-                        'controller' => 'PermohonanIzinController@actionRejected',
+                        'url' => '/izin/izin-ditolak',
+                        'controller' => 'IzinController@actionIndexRejected',
                         'name' => '',
                         'middleware' => '',
                     ],
                 ]
             ],
+            
 
             [
                 'title' => 'Pengajuan | Cuti',
@@ -1175,6 +1121,22 @@ class ListRoutes
                         'method' => 'get',
                         'url' => '/cuti/ajax',
                         'controller' => 'CutiController@ajax',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'Disetujui',
+                        'method' => 'get',
+                        'url' => '/cuti/cuti-disetujui',
+                        'controller' => 'CutiController@actionIndexApproved',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'Ditolak',
+                        'method' => 'get',
+                        'url' => '/cuti/cuti-ditolak',
+                        'controller' => 'CutiController@actionIndexRejected',
                         'name' => '',
                         'middleware' => '',
                     ],
@@ -1272,7 +1234,6 @@ class ListRoutes
                 ]
             ],
 
-
             [
                 'title' => 'Pengajuan | Lembur',
                 'item' => [
@@ -1280,7 +1241,7 @@ class ListRoutes
                         'type' => 'index',
                         'method' => 'get',
                         'url' => '/lembur',
-                        'controller' => 'lemburController@actionIndex',
+                        'controller' => 'LemburController@actionIndex',
                         'name' => 'lembur',
                         'middleware' => '',
                     ],
@@ -1288,7 +1249,7 @@ class ListRoutes
                         'type' => 'create',
                         'method' => ['get', 'post'],
                         'url' => '/lembur/create',
-                        'controller' => 'lemburController@actionCreate',
+                        'controller' => 'LemburController@actionCreate',
                         'name' => '',
                         'middleware' => '',
                     ],
@@ -1296,7 +1257,7 @@ class ListRoutes
                         'type' => 'update',
                         'method' => ['get', 'post'],
                         'url' => '/lembur/update',
-                        'controller' => 'lemburController@actionUpdate',
+                        'controller' => 'LemburController@actionUpdate',
                         'name' => '',
                         'middleware' => '',
                     ],
@@ -1304,7 +1265,7 @@ class ListRoutes
                         'type' => 'delete',
                         'method' => 'delete',
                         'url' => '/lembur/delete',
-                        'controller' => 'lemburController@actionDelete',
+                        'controller' => 'LemburController@actionDelete',
                         'name' => '',
                         'middleware' => '',
                     ],
@@ -1312,12 +1273,214 @@ class ListRoutes
                         'type' => 'system',
                         'method' => 'get',
                         'url' => '/lembur/ajax',
-                        'controller' => 'lemburController@ajax',
+                        'controller' => 'LemburController@ajax',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'Disetujui',
+                        'method' => 'get',
+                        'url' => '/lembur/lembur-disetujui',
+                        'controller' => 'LemburController@actionIndexApproved',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'Ditolak',
+                        'method' => 'get',
+                        'url' => '/lembur/lembur-ditolak',
+                        'controller' => 'LemburController@actionIndexRejected',
                         'name' => '',
                         'middleware' => '',
                     ],
                 ]
             ],
+
+            [
+                'title' => 'Persetujuan | Izin',
+                'item' => [
+                    [
+                        'type' => 'index',
+                        'method' => 'get',
+                        'url' => '/approver-izin',
+                        'controller' => 'ApproverIzinController@actionIndex',
+                        'name' => 'approver-izin',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'system',
+                        'method' => 'get',
+                        'url' => '/approver-izin/approved',
+                        'controller' => 'ApproverIzinController@actionApproved',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'Approved',
+                        'method' => 'post',
+                        'url' => '/approver-izin/approved',
+                        'controller' => 'ApproverIzinController@actionApproved',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'system',
+                        'method' => 'get',
+                        'url' => '/approver-izin/rejected',
+                        'controller' => 'ApproverIzinController@actionRejected',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'Rejected',
+                        'method' => 'post',
+                        'url' => '/approver-izin/rejected',
+                        'controller' => 'ApproverIzinController@actionRejected',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'Disetujui',
+                        'method' => 'get',
+                        'url' => '/approver-izin/izin-disetujui',
+                        'controller' => 'ApproverIzinController@actionIndexApproved',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'Ditolak',
+                        'method' => 'get',
+                        'url' => '/approver-izin/izin-ditolak',
+                        'controller' => 'ApproverIzinController@actionIndexRejected',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                ]
+            ],
+            
+            [
+                'title' => 'Persetujuan | Cuti',
+                'item' => [
+                    [
+                        'type' => 'index',
+                        'method' => 'get',
+                        'url' => '/approver-cuti',
+                        'controller' => 'ApproverCutiController@actionIndex',
+                        'name' => 'approver-cuti',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'system',
+                        'method' => 'get',
+                        'url' => '/approver-cuti/approved',
+                        'controller' => 'ApproverCutiController@actionApproved',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'Approved',
+                        'method' => 'post',
+                        'url' => '/approver-cuti/approved',
+                        'controller' => 'ApproverCutiController@actionApproved',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'system',
+                        'method' => 'get',
+                        'url' => '/approver-cuti/rejected',
+                        'controller' => 'ApproverCutiController@actionRejected',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'Rejected',
+                        'method' => 'post',
+                        'url' => '/approver-cuti/rejected',
+                        'controller' => 'ApproverCutiController@actionRejected',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'Disetujui',
+                        'method' => 'get',
+                        'url' => '/approver-cuti/cuti-disetujui',
+                        'controller' => 'ApproverCutiController@actionIndexApproved',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'Ditolak',
+                        'method' => 'get',
+                        'url' => '/approver-cuti/cuti-ditolak',
+                        'controller' => 'ApproverCutiController@actionIndexRejected',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                ]
+            ],
+            [
+                'title' => 'Persetujuan | Lembur',
+                'item' => [
+                    [
+                        'type' => 'index',
+                        'method' => 'get',
+                        'url' => '/approver-lembur',
+                        'controller' => 'ApproverLemburController@actionIndex',
+                        'name' => 'approver-cuti',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'system',
+                        'method' => 'get',
+                        'url' => '/approver-lembur/approved',
+                        'controller' => 'ApproverLemburController@actionApproved',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'Approved',
+                        'method' => 'post',
+                        'url' => '/approver-lembur/approved',
+                        'controller' => 'ApproverLemburController@actionApproved',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'system',
+                        'method' => 'get',
+                        'url' => '/approver-lembur/rejected',
+                        'controller' => 'ApproverLemburController@actionRejected',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'Rejected',
+                        'method' => 'post',
+                        'url' => '/approver-lembur/rejected',
+                        'controller' => 'ApproverLemburController@actionRejected',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'Disetujui',
+                        'method' => 'get',
+                        'url' => '/approver-lembur/lembur-disetujui',
+                        'controller' => 'ApproverLemburController@actionIndexApproved',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'Ditolak',
+                        'method' => 'get',
+                        'url' => '/approver-lembur/lembur-ditolak',
+                        'controller' => 'ApproverLemburController@actionIndexRejected',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                ]
+            ],
+             
             
         ];
 
