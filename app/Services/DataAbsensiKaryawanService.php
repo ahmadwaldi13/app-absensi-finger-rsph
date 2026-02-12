@@ -49,7 +49,8 @@ class DataAbsensiKaryawanService extends BaseService
             'list_id_user'=>!empty($list_data_karyawan_rutin->id_user) ? $list_data_karyawan_rutin->id_user : '',
         ];
 
-        $list_absensi=(new \App\Services\RefDataAbsensiTmpService)->getAbsensiRutin($parameter_first,1)->get();
+        // $list_absensi=(new \App\Services\RefDataAbsensiTmpService)->getAbsensiRutin($parameter_first,1)->get();
+        $list_absensi=[];
         
 
         $data_jadwal_rutin=[];
@@ -62,7 +63,8 @@ class DataAbsensiKaryawanService extends BaseService
 
         $data_absensi=[];
         foreach($list_absensi as $value){
-            $hasil=(new \App\Http\Traits\AbsensiFunction)->proses_absensi_rutin($get_jadwal_rutin,$value);
+            // $hasil=(new \App\Http\Traits\AbsensiFunction)->proses_absensi_rutin($get_jadwal_rutin,$value);
+            $hasil=[];
             $tgl_filter=trim($value->tanggal);
 
             if(empty($data_absensi[$tgl_filter]['tgl'])){

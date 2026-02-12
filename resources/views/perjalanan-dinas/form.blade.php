@@ -34,20 +34,20 @@
                             class="text-danger">*</span></label>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input mt-2" type="radio" name="jenis_dinas" id="1"
-                            value="1" {{ $model['jenis_dinas'] == '1' ? 'checked' : '1' }}>
+                            value="1" {{ !empty($model['jenis_dinas']) && $model['jenis_dinas'] == '1' ? 'checked' : '' }}>
                         <label class="form-check-label mt-2" style="margin-left: 10px" for="1">Dinas Dalam
                             Kota</label>
                     </div>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input mt-2" type="radio" name="jenis_dinas" id="2"
-                            value="2" {{ $model['jenis_dinas'] == '2' ? 'checked' : '2' }}>
+                            value="2" {{ !empty($model['jenis_dinas']) && $model['jenis_dinas'] == '2' ? 'checked' : '' }}>
                         <label class="form-check-label mt-2" style="margin-left: 10px" for="2">Dinas Luar
                             Kota</label>
                     </div>
                 </div>
 
                 <div class="col-lg-2" id="tanggalDalamKota"
-                    style="display: {{ $model['jenis_dinas'] == '1' ? 'block' : 'none' }};">
+                    style="display: {{ !empty($model['jenis_dinas']) && $model['jenis_dinas'] == '1' ? 'block' : 'none' }};">
                     <div class='bagan_form'>
                         <label for="tanggal" class="form-label">Tanggal <span class="text-danger">*</span></label>
                         <div class="input-group input-date-bagan">
@@ -61,7 +61,7 @@
                     </div>
                 </div>
                 <div class="col-lg-3" id="tanggalLuarKota"
-                    style="display: {{ $model['jenis_dinas'] == '2' ? 'block' : 'none' }};">
+                    style="display: {{ !empty($model['jenis_dinas']) && $model['jenis_dinas'] == '2' ? 'block' : 'none' }};">
                     <div class='bagan_form'>
                         <label for="tanggal_data" class="form-label">Tanggal <span class="text-danger">*</span></label>
                         <div class="input-group input-date-range-bagan">

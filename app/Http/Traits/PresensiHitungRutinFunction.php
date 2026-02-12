@@ -14,36 +14,63 @@ trait PresensiHitungRutinTraits {
         $this->absensif = new AbsensiFunction;
     }
 
-    public function getWaktuKerja($params){
-        DB::statement("SET GLOBAL group_concat_max_len = 15000;");
-        $query=DB::table(DB::raw(
-            '(
-                SELECT
-                    utama.*,
-                    JSON_OBJECTAGG(
-                        kd_jadwal,
-                        JSON_ARRAY(
-                            kd_jadwal,
-                            uraian,
-                            alias,
-                            TIME_FORMAT(jam_awal,"%H:%i:%s"),
-                            TIME_FORMAT(jam_akhir,"%H:%i:%s"),
-                            status_toren_jam_cepat,
-                            TIME_FORMAT(toren_jam_cepat,"%H:%i:%s"),
-                            status_toren_jam_telat,
-                            TIME_FORMAT(toren_jam_telat,"%H:%i:%s"),
-                            status_jadwal
-                        )
-                    ) AS data_jadwal
-                FROM
-                    ( SELECT * FROM ref_jenis_jadwal WHERE id_jenis_jadwal = '.$params['id_jenis_jadwal'].' ) utama
-                    INNER JOIN ref_jadwal jadwal ON jadwal.id_jenis_jadwal = utama.id_jenis_jadwal
-                GROUP BY
-                    utama.id_jenis_jadwal
-                ) utama'
-        ));
+    public function getWaktuKerja($params)
+    {
+        DB::statement("SET SESSION group_concat_max_len = 15000;");
 
-        return $query;
+        $id_jenis_jadwal = !empty($params['id_jenis_jadwal']) ? $params['id_jenis_jadwal'] : 0;
+
+        // Step 1: Get data jenis jadwal
+        $jenisJadwal = DB::table('ref_jenis_jadwal')
+            ->where('id_jenis_jadwal', $id_jenis_jadwal)
+            ->first();
+
+        if (!$jenisJadwal) {
+            return collect();
+        }
+
+        // Step 2: Get data jadwal
+        $jadwalData = DB::table('ref_jadwal')
+            ->where('id_jenis_jadwal', $id_jenis_jadwal)
+            ->select([
+                'kd_jadwal',
+                'uraian',
+                'alias',
+                DB::raw('TIME_FORMAT(jam_awal, "%H:%i:%s") as jam_awal'),
+                DB::raw('TIME_FORMAT(jam_akhir, "%H:%i:%s") as jam_akhir'),
+                'status_toren_jam_cepat',
+                DB::raw('TIME_FORMAT(toren_jam_cepat, "%H:%i:%s") as toren_jam_cepat'),
+                'status_toren_jam_telat',
+                DB::raw('TIME_FORMAT(toren_jam_telat, "%H:%i:%s") as toren_jam_telat'),
+                'status_jadwal',
+            ])
+            ->get();
+
+        // Step 3: Build data_jadwal sebagai JSON object
+        $data_jadwal = [];
+        foreach ($jadwalData as $jadwal) {
+            $data_jadwal[$jadwal->kd_jadwal] = [
+                $jadwal->kd_jadwal,
+                $jadwal->uraian,
+                $jadwal->alias,
+                $jadwal->jam_awal,
+                $jadwal->jam_akhir,
+                $jadwal->status_toren_jam_cepat,
+                $jadwal->toren_jam_cepat,
+                $jadwal->status_toren_jam_telat,
+                $jadwal->toren_jam_telat,
+                $jadwal->status_jadwal,
+            ];
+        }
+
+        // Step 4: Gabungkan hasil
+        $result = (object) array_merge(
+            (array) $jenisJadwal,
+            ['data_jadwal' => json_encode($data_jadwal)]
+        );
+
+        // Return sebagai collection agar konsisten dengan query builder
+        return collect([$result]);
     }
 
     public function get_jadwal_rutin(){

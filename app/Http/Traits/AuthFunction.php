@@ -105,7 +105,7 @@ trait AuthTraits {
     }
 
     public function checkMenuAkses($menus){
-
+        
         if(!empty($menus)){
             foreach($menus as $key => $menu){
                 $menu=(array)$menu;

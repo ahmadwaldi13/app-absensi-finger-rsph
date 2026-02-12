@@ -32,13 +32,21 @@ class ListRoutes
                 'title' => 'Halaman Awal',
                 'item' => [
                     [
-                        'type' => ' index ',
+                        'type' => 'index',
                         'method' => 'get',
                         'url' => '/',
                         'controller' => 'DashboardController@index',
-                        'name' => 'dashboard',
+                        'name' => 'dashboard_utama',
                         'middleware' => '',
-                    ]
+                    ],
+                    [
+                        'type' => 'index',
+                        'method' => 'get',
+                        'url' => '/dashboard',
+                        'controller' => 'DashboardController@index',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
                 ]
             ],
             [
@@ -1478,7 +1486,96 @@ class ListRoutes
                         'name' => '',
                         'middleware' => '',
                     ],
+                ]  
+            ],
+             [
+                'title' => 'Manajemen Absensi | Rekap Lembur',
+                'item' => [
+                    [
+                        'type' => 'index',
+                        'method' => 'get',
+                        'url' => '/rekap-lembur',
+                        'controller' => 'RekapLemburController@actionIndex',
+                        'name' => 'rekap-lembur',
+                        'middleware' => '',
+                    ],
                 ]
+            ],
+            [
+                'title' => 'Approval Setting | Level 1',
+                'item' => [
+                    [
+                        'type' => 'index',
+                        'method' => 'get',
+                        'url' => '/approval-setting-level1',
+                        'controller' => 'ApprovalSettingLevel1Controller@actionIndex',
+                        'name' => 'approval-setting-level1',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'create',
+                        'method' => ['get', 'post'],
+                        'url' => '/approval-setting-level1/create',
+                        'controller' => 'ApprovalSettingLevel1Controller@actionCreate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'update',
+                        'method' => ['get', 'post'],
+                        'url' => '/approval-setting-level1/update',
+                        'controller' => 'ApprovalSettingLevel1Controller@actionUpdate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'delete',
+                        'method' => 'delete',
+                        'url' => '/approval-setting-level1/delete',
+                        'controller' => 'ApprovalSettingLevel1Controller@actionDelete',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    
+                ]  
+            ],
+            [
+                'title' => 'Approval Setting | Level 2',
+                'item' => [
+                    [
+                        'type' => 'index',
+                        'method' => 'get',
+                        'url' => '/approval-setting-level2',
+                        'controller' => 'ApprovalSettingLevel2Controller@actionIndex',
+                        'name' => 'approval-setting-level2',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'create',
+                        'method' => ['get', 'post'],
+                        'url' => '/approval-setting-level2/create',
+                        'controller' => 'ApprovalSettingLevel2Controller@actionCreate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'update',
+                        'method' => ['get', 'post'],
+                        'url' => '/approval-setting-level2/update',
+                        'controller' => 'ApprovalSettingLevel2Controller@actionUpdate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'delete',
+                        'method' => 'delete',
+                        'url' => '/approval-setting-level2/delete',
+                        'controller' => 'ApprovalSettingLevel2Controller@actionDelete',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    
+                ]  
             ],
              
             

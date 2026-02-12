@@ -38,66 +38,92 @@ class PerjalananDinasService extends BaseService
         }
     }
 
-    public function getDataPerjalanDinas($params=[],$type){
-        ini_set("memory_limit","800M");
-        DB::statement("SET GLOBAL group_concat_max_len = 15000;");
+   public function getDataPerjalanDinas($params = [], $type)
+    {
+        ini_set("memory_limit", "800M");
+        DB::statement("SET SESSION group_concat_max_len = 15000;");
 
-        $tgl_awal=!empty($params['tanggal'][0]) ? $params['tanggal'][0] : date('Y-m-d');
-        $tgl_akhir=!empty($params['tanggal'][1]) ? $params['tanggal'][1] : date('Y-m-d');
+        $tgl_awal = !empty($params['tanggal'][0]) ? $params['tanggal'][0] : date('Y-m-d');
+        $tgl_akhir = !empty($params['tanggal'][1]) ? $params['tanggal'][1] : date('Y-m-d');
+
+        $search = !empty($params['search']) ? $params['search'] : '';
 
         unset($params['tanggal']);
-        
-        $query=DB::table(DB::raw(
-            '(
-                select
-                    JSON_OBJECTAGG(
-                        id_karyawan,data_pd
-                    ) hasil
-                from(
-                    select
-                        utama.*,
-                        json_object(
-                            "waktu",
-                            JSON_ARRAYAGG(
-                                JSON_array(
-                                    tgl_mulai,tgl_selesai,jml,uraian,jenis_dinas
-                                )
-                            ),
-                            "nm_karyawan",
-                            nm_karyawan
-                        ) as data_pd
-                    from
-                    (
-                        select utama.*,nm_karyawan,rd.id_departemen,nm_departemen,rr.id_ruangan,nm_ruangan
-                        from
-                        (
-                            select
-                                id_karyawan,uraian,tgl_mulai,tgl_selesai,if(tgl_selesai>=tgl_mulai,(DATEDIFF(tgl_selesai,tgl_mulai)),0) jml,jenis_dinas
-                            from ref_perjalanan_dinas
-                            where
-                                ( tgl_mulai between "'.$tgl_awal.'" and "'.$tgl_akhir.'" ) or
-                                ( tgl_selesai between "'.$tgl_awal.'" and "'.$tgl_akhir.'" )
-                        ) utama
-                        inner join ref_karyawan rk on rk.id_karyawan=utama.id_karyawan
-                        left join ref_departemen rd on rd.id_departemen=rk.id_departemen
-                        left join ref_ruangan rr on rr.id_ruangan=rk.id_ruangan
-                        '.(!empty($params['search']) ? "where nm_karyawan like '%".$params['search']."%'" : '' ).'
-                    )utama
-                    group by id_karyawan
-                )utama
-            ) utama'
-        ));
+        unset($params['search']);
 
-        $list_search=[];
+        // Step 1: Get raw data perjalanan dinas
+        $query = DB::table('ref_perjalanan_dinas as utama')
+            ->join('ref_karyawan as rk', 'rk.id_karyawan', '=', 'utama.id_karyawan')
+            ->leftJoin('ref_departemen as rd', 'rd.id_departemen', '=', 'rk.id_departemen')
+            ->leftJoin('ref_ruangan as rr', 'rr.id_ruangan', '=', 'rk.id_ruangan')
+            ->where(function ($q) use ($tgl_awal, $tgl_akhir) {
+                $q->whereBetween('tgl_mulai', [$tgl_awal, $tgl_akhir])
+                ->orWhereBetween('tgl_selesai', [$tgl_awal, $tgl_akhir]);
+            })
+            ->select([
+                'utama.id_karyawan',
+                'rk.nm_karyawan',
+                'rk.id_departemen',
+                'rd.nm_departemen',
+                'rk.id_ruangan',
+                'rr.nm_ruangan',
+                'utama.uraian',
+                'utama.tgl_mulai',
+                'utama.tgl_selesai',
+                DB::raw('IF(tgl_selesai >= tgl_mulai, DATEDIFF(tgl_selesai, tgl_mulai), 0) as jml'),
+                'utama.jenis_dinas',
+            ])
+            ->orderBy('utama.id_karyawan')
+            ->orderBy('utama.tgl_mulai');
 
-        if($params){
-            $query=(new \App\Models\MyModel)->set_where($query,$params,$list_search);
+        // Apply search filter
+        if (!empty($search)) {
+            $query->where('rk.nm_karyawan', 'like', '%' . $search . '%');
         }
 
-        if(empty($type)){
-            return $query->get();
-        }else{
+        // Jika butuh query builder
+        if (!empty($type)) {
+            if ($params) {
+                $list_search = [];
+                $query = (new \App\Models\MyModel)->set_where($query, $params, $list_search);
+            }
             return $query;
         }
+
+        // Step 2: Get data dan process di PHP
+        $rawData = $query->get();
+
+        // Step 3: Group by id_karyawan dan build JSON structure
+        $hasil = [];
+
+        $groupedByKaryawan = $rawData->groupBy('id_karyawan');
+
+        foreach ($groupedByKaryawan as $id_karyawan => $karyawanData) {
+            $first = $karyawanData->first();
+
+            // Build waktu array
+            $waktu = [];
+            foreach ($karyawanData as $row) {
+                $waktu[] = [
+                    $row->tgl_mulai,
+                    $row->tgl_selesai,
+                    (int)$row->jml,
+                    $row->uraian,
+                    $row->jenis_dinas,
+                ];
+            }
+
+            $hasil[$id_karyawan] = [
+                'waktu'       => $waktu,
+                'nm_karyawan' => $first->nm_karyawan,
+            ];
+        }
+
+        // Step 4: Return dalam format yang sama dengan query lama
+        $result = (object) [
+            'hasil' => json_encode($hasil)
+        ];
+
+        return collect([$result]);
     }
 }

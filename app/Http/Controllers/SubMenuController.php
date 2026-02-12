@@ -36,7 +36,6 @@ class SubMenuController extends Controller
                 ];
             }
 
-
             // if($type==3){
             //     $menu_permission=[
             //         [
@@ -96,6 +95,18 @@ class SubMenuController extends Controller
                         'key'   => 'list-kepala-ruangan',
                         'url'   => url('/')."/list-kepala-ruangan",
                         'icon'  => "<i class='fa-solid fa-user-shield'></i>",
+                    ],
+                    [
+                        'title' => 'Approval Setting Level 1',
+                        'key'   => 'approval-setting-level1',
+                        'url'   => url('/')."/approval-setting-level1",
+                        'icon' => "<i class='fa-solid fa-list-check'></i>",
+                    ],
+                    [
+                        'title' => 'Approval Setting Level 2',
+                        'key'   => 'approval-setting-level2',
+                        'url'   => url('/')."/approval-setting-level2",
+                        'icon' => "<i class='fa-solid fa-list-check'></i>",
                     ],
                 ];
             }
@@ -168,6 +179,12 @@ class SubMenuController extends Controller
                         'key'   => 'data-cuti-karyawan',
                         'url'   => url('/')."/data-cuti-karyawan",
                         'icon'  => "<i class='fa-solid fa-user-clock'></i>",
+                    ],
+                    [
+                        'title' => 'Rekap Lembur',
+                        'key'   => 'rekap-lembur',
+                        'url'   => url('/')."/rekap-lembur",
+                        'icon' => "<i class='fa-solid fa-clock'></i>",
                     ],
                 ];
             }

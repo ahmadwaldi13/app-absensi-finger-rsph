@@ -18,6 +18,10 @@ class DashboardController extends Controller
 
     function index(Request $request){
 
-        return view('dashboard/index',[]);
+        if( (new \App\Http\Traits\AuthFunction)->checkAkses('/dashboard') ) {
+            return view('dashboard/index',[]);
+        }else {
+            return redirect('/presensi');
+        }   
     }
 }

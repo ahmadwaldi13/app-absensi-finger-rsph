@@ -15,7 +15,7 @@ class ApprovalMapping extends Migration
     {
         Schema::create('approval_mappings', function (Blueprint $table) {
             $table->id();
-
+            $table->unsignedInteger('id_karyawan');
             $table->enum('jenis_pengajuan', ['izin', 'cuti', 'lembur']);
             $table->integer('level'); 
 
@@ -27,6 +27,11 @@ class ApprovalMapping extends Migration
 
             $table->boolean('aktif')->default(true);
             $table->timestamps();
+
+            $table->foreign('id_karyawan')
+                ->references('id_karyawan')
+                ->on('ref_karyawan')
+                ->onDelete('cascade');
         });
     }
 

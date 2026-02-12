@@ -1,7 +1,7 @@
 <?php
     $get_user=(new \App\Http\Traits\AuthFunction)->getUser();
-    
-    $menu_permission=[
+    $menu_permission=[ 
+     
         [
             'title'=>'Presensi',
             'key'=>'presensi',
@@ -86,9 +86,9 @@
     text-white text-decoration-none
     " data-bs-scroll="true" data-bs-backdrop="false">
         @php
-            $sidebar_header_1='Aplikasi';
+            $sidebar_header_1='Permata Hati';
             $sidebar_header_2='Absensi';
-            $sidebar_header_3='AB';
+            $sidebar_header_3='PA';
         @endphp
         <span id="title" class="fs-4 fw-semibold text-center md-show">{{ $sidebar_header_1  }} <br> {{ $sidebar_header_2 }}</span>
         <span id="title" class="fs-4 mt-3 fw-semibold text-center sm-show">{{ $sidebar_header_3 }}</span>
@@ -96,12 +96,14 @@
     <hr class="mx-4 line" />
     <div style="height: 80vh;" classd="d-flex justify-content-center">
         <ul class="nav flex-column mt-5 mb-auto">
-            <li class="nav-item nav-item-custom">
-                <a href="{{ url('/') }}" onclick="removeLocalStrg()" class="nav-link menu {{ Request::is('/') ? 'active' : '' }} text-white p-4 list-menu-custom fw-semibold" aria-current="page">
-                    <i class="fa-solid fa-house"></i>
-                    <span class="title">Dashboard</span>
-                </a>
-            </li>
+                 @if( (new \App\Http\Traits\AuthFunction)->checkAkses('/dashboard') )
+                <li class="nav-item nav-item-custom">
+                    <a href="{{ url('/') }}" onclick="removeLocalStrg()" class="nav-link menu {{ Request::is('/') ? 'active' : '' }} text-white p-4 list-menu-custom fw-semibold" aria-current="page">
+                        <i class="fa-solid fa-house"></i>
+                        <span class="title">Dashboard</span>
+                    </a>
+                </li>
+                @endif
             <?php foreach($menu as $value){  $value=(object)$value; ?>
                 <?php
                     $rw='';
