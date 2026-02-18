@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 use App\Services\GlobalService;
 use App\Services\UserMesinTmpService;
@@ -49,120 +50,293 @@ class DataUserMesinCopyController extends \App\Http\Controllers\MyAuthController
         return view($this->part_view . '.index', $parameter_view);
     }
 
-    private function proses($request){
-        $req = $request->all();
-        $id_mesin_tujuan = !empty($req['id_mesin_tujuan']) ? $req['id_mesin_tujuan'] : '';
+    // private function proses($request){
+    //     $req = $request->all();
+    //     dd($req);
+    //     $id_mesin_tujuan = !empty($req['id_mesin_tujuan']) ? $req['id_mesin_tujuan'] : '';
         
-        $pesan = [];
-        $link_back_param = [];
-        $message_default = [
-            'success' => 'Data berhasil disinkronisasi',
-            'error' => 'Maaf Data tidak berhasil disinkronisasi'
-        ];
+    //     $pesan = [];
+    //     $link_back_param = [];
+    //     $message_default = [
+    //         'success' => 'Data berhasil disinkronisasi',
+    //         'error' => 'Maaf Data tidak berhasil disinkronisasi'
+    //     ];
 
-        try {
+    //     try {
 
-            $item_list_user=!empty($req['item_list_terpilih']) ? $req['item_list_terpilih'] : '';
-            $item_list_user=!empty($item_list_user) ? json_decode($item_list_user,true) : [];
+    //         $item_list_user=!empty($req['item_list_terpilih']) ? $req['item_list_terpilih'] : '';
+    //         $item_list_user=!empty($item_list_user) ? json_decode($item_list_user,true) : [];
 
-            if(empty($item_list_user)){
-                return redirect()->route($this->url_name, $link_back_param)->with(['error'=>'List User Tidak ada']);
-            }
+    //         if(empty($item_list_user)){
+    //             return redirect()->route($this->url_name, $link_back_param)->with(['error'=>'List User Tidak ada']);
+    //         }
 
-            $data_mesin_tujuan=(new \App\Models\RefMesinAbsensi)->where(['id_mesin_absensi'=>$id_mesin_tujuan])->first();
-            if(empty($data_mesin_tujuan)){
-                return redirect()->route($this->url_name, $link_back_param)->with(['error'=>'Data Mesin Tujuan Tidak ditemukan']);
-            }
+    //         $data_mesin_tujuan=(new \App\Models\RefMesinAbsensi)->where(['id_mesin_absensi'=>$id_mesin_tujuan])->first();
+    //         if(empty($data_mesin_tujuan)){
+    //             return redirect()->route($this->url_name, $link_back_param)->with(['error'=>'Data Mesin Tujuan Tidak ditemukan']);
+    //         }
 
-            $model_mesin_tujuan=(new \App\Services\MesinFinger($data_mesin_tujuan->ip_address));
-            $connect_tujuan=$model_mesin_tujuan->connect();
-            $connect_tujuan=!empty($connect_tujuan[2]) ? $connect_tujuan[2] : '';
-            if($connect_tujuan==2){
-                return redirect()->route($this->url_name, [])->with(['error' => 'Maaf Mesin tujuan tidak connect']);
-            }
+    //         $model_mesin_tujuan=(new \App\Services\MesinFinger($data_mesin_tujuan->ip_address));
+    //         $connect_tujuan=$model_mesin_tujuan->connect();
+    //         $connect_tujuan=!empty($connect_tujuan[2]) ? $connect_tujuan[2] : '';
+    //         if($connect_tujuan==2){
+    //             return redirect()->route($this->url_name, [])->with(['error' => 'Maaf Mesin tujuan tidak connect']);
+    //         }
 
-            // $set_waktu=$model_mesin_tujuan->set_waktu_mesin();
-            // $check_hasil=!empty($set_waktu[1]) ? $set_waktu[1] : '';
-            // if($check_hasil==2){
-            //     return redirect()->route($this->url_name, [])->with(['error' => 'Maaf Mesin tidak dapat di set waktu']);
-            // }
+    //         // $set_waktu=$model_mesin_tujuan->set_waktu_mesin();
+    //         // $check_hasil=!empty($set_waktu[1]) ? $set_waktu[1] : '';
+    //         // if($check_hasil==2){
+    //         //     return redirect()->route($this->url_name, [])->with(['error' => 'Maaf Mesin tidak dapat di set waktu']);
+    //         // }
 
-            // $get_user_mesin_tujuan=$model_mesin_tujuan->get_user();
-            // $check_hasil=!empty($get_user_mesin_tujuan[0]) ? $get_user_mesin_tujuan[0] : '';
-            // if($check_hasil!='error'){
-            //     $get_user_mesin_tujuan=json_decode($get_user_mesin_tujuan);
-            //     foreach($get_user_mesin_tujuan as $value){
-            //         $model_mesin_tujuan->delete_finger_to_mesin($value);
-            //         $model_mesin_tujuan->delete_user_to_mesin($value);
-            //     }
-            // }
+    //         // $get_user_mesin_tujuan=$model_mesin_tujuan->get_user();
+    //         // $check_hasil=!empty($get_user_mesin_tujuan[0]) ? $get_user_mesin_tujuan[0] : '';
+    //         // if($check_hasil!='error'){
+    //         //     $get_user_mesin_tujuan=json_decode($get_user_mesin_tujuan);
+    //         //     foreach($get_user_mesin_tujuan as $value){
+    //         //         $model_mesin_tujuan->delete_finger_to_mesin($value);
+    //         //         $model_mesin_tujuan->delete_user_to_mesin($value);
+    //         //     }
+    //         // }
             
-            $jml_user=0;
-            $jml_user_detail=0;
-            $jml_user_exist=0;
-            foreach($item_list_user as $key_u => $user){
-                $user['id_user']=$key_u;
+    //         $jml_user=0;
+    //         $jml_user_detail=0;
+    //         $jml_user_exist=0;
+    //         foreach($item_list_user as $key_u => $user){
+    //             $user['id_user']=$key_u;
 
-                $get_user_exist=$model_mesin_tujuan->get_user($key_u);
+    //             $get_user_exist=$model_mesin_tujuan->get_user($key_u);
                 
-                $check_get_user_exist=0;
-                if(!empty($get_user_exist)){
-                    if(strtolower( $get_user_exist[0] )==strtolower( 'error') ){
-                        $check_get_user_exist=1;
-                    }
-                }
+    //             $check_get_user_exist=0;
+    //             if(!empty($get_user_exist)){
+    //                 if(strtolower( $get_user_exist[0] )==strtolower( 'error') ){
+    //                     $check_get_user_exist=1;
+    //                 }
+    //             }
                 
-                if(!empty($check_get_user_exist)){
+    //             if(!empty($check_get_user_exist)){
 
-                    $get_user=( new \App\Models\RefUserInfo() )->where('id_user','=', $key_u)->first();
-                    $user=(object)$get_user->getAttributes();
+    //                 $get_user=( new \App\Models\RefUserInfo() )->where('id_user','=', $key_u)->first();
+    //                 $user=(object)$get_user->getAttributes();
 
-                    $hasil_user=$model_mesin_tujuan->upload_user_to_mesin($user);
-                    $check_hasil=!empty($hasil_user[1]) ? $hasil_user[1] : '';
-                    if($check_hasil==1){
-                        $jml_user++;
+    //                 $hasil_user=$model_mesin_tujuan->upload_user_to_mesin($user);
+    //                 $check_hasil=!empty($hasil_user[1]) ? $hasil_user[1] : '';
+    //                 if($check_hasil==1){
+    //                     $jml_user++;
 
-                        $get_user_detail=( new \App\Models\RefUserInfoDetail() )->where('id_user','=', $user->id_user)->orderBy('id_user','ASC')->get();
-                        if(!empty($get_user_detail[0])){
-                            foreach($get_user_detail as $user_detail){
-                                $hasil_user=$model_mesin_tujuan->upload_user_finger_to_mesin($user_detail);
-                                $check_hasil=!empty($hasil_user[1]) ? $hasil_user[1] : '';
-                                if($check_hasil==1){
-                                    $model_mesin_tujuan->refresh_db_mesin();
-                                    $jml_user_detail++;
-                                }
-                            }
-                        }
-                    }
-                }else{
-                    $jml_user_exist++;
-                }
-            }
+    //                     $get_user_detail=( new \App\Models\RefUserInfoDetail() )->where('id_user','=', $user->id_user)->orderBy('id_user','ASC')->get();
+    //                     if(!empty($get_user_detail[0])){
+    //                         foreach($get_user_detail as $user_detail){
+    //                             $hasil_user=$model_mesin_tujuan->upload_user_finger_to_mesin($user_detail);
+    //                             $check_hasil=!empty($hasil_user[1]) ? $hasil_user[1] : '';
+    //                             if($check_hasil==1){
+    //                                 $model_mesin_tujuan->refresh_db_mesin();
+    //                                 $jml_user_detail++;
+    //                             }
+    //                         }
+    //                     }
+    //                 }
+    //             }else{
+    //                 $jml_user_exist++;
+    //             }
+    //         }
             
-            $is_save = 0;
-            if(!empty($jml_user)){
-                $is_save=1;
-            }
+    //         $is_save = 0;
+    //         if(!empty($jml_user)){
+    //             $is_save=1;
+    //         }
 
-            if ($is_save) {
-                $link_back_param = $this->clear_request($link_back_param, $request);
-                if(!empty($jml_user_exist)){
-                    $message_default['success']=$message_default['success'].' ada '.$jml_user_exist.' memiliki ID USER yang sama dan '.$jml_user.' user berhasil di proses';
-                }
-                $pesan = ['success', $message_default['success'], 2];
-            } else {
-                $pesan = ['error', $message_default['error'], 3];
-            }
-        } catch (\Illuminate\Database\QueryException $e) {
-            if ($e->errorInfo[1] == '1062') {
-            }
-            $pesan = ['error', $message_default['error'], 3];
-        } catch (\Throwable $e) {
-            $pesan = ['error', $message_default['error'], 3];
+    //         if ($is_save) {
+    //             $link_back_param = $this->clear_request($link_back_param, $request);
+    //             if(!empty($jml_user_exist)){
+    //                 $message_default['success']=$message_default['success'].' ada '.$jml_user_exist.' memiliki ID USER yang sama dan '.$jml_user.' user berhasil di proses';
+    //             }
+    //             $pesan = ['success', $message_default['success'], 2];
+    //         } else {
+    //             $pesan = ['error', $message_default['error'], 3];
+    //         }
+    //     } catch (\Illuminate\Database\QueryException $e) {
+    //         if ($e->errorInfo[1] == '1062') {
+    //         }
+    //         $pesan = ['error', $message_default['error'], 3];
+    //     } catch (\Throwable $e) {
+    //         $pesan = ['error', $message_default['error'], 3];
+    //     }
+
+    //     return redirect()->route($this->url_name, $link_back_param)->with([$pesan[0] => $pesan[1]]);
+    // }
+
+    private function proses($request){
+
+    $req = $request->all();
+
+    Log::info('=== START PROSES SINKRON KE MESIN TUJUAN ===', [
+        'request' => $req,
+        'time' => now()
+    ]);
+
+    $id_mesin_tujuan = $request->input('id_mesin_tujuan');
+
+    if(empty($id_mesin_tujuan)){
+        Log::warning('ID mesin tujuan kosong');
+        return back()->with(['error'=>'ID Mesin tujuan kosong']);
+    }
+
+    try {
+
+        $item_list_user = $request->input('item_list_terpilih');
+        $item_list_user = !empty($item_list_user) ? json_decode($item_list_user,true) : [];
+
+        if(empty($item_list_user)){
+            Log::warning('List user kosong');
+            return redirect()->route($this->url_name)->with(['error'=>'List User Tidak ada']);
         }
 
-        return redirect()->route($this->url_name, $link_back_param)->with([$pesan[0] => $pesan[1]]);
+        Log::info('Total user diproses', [
+            'total' => count($item_list_user)
+        ]);
+
+        $data_mesin_tujuan = (new \App\Models\RefMesinAbsensi)
+                                ->where(['id_mesin_absensi'=>$id_mesin_tujuan])
+                                ->first();
+
+        if(empty($data_mesin_tujuan)){
+            Log::error('Mesin tujuan tidak ditemukan', [
+                'id_mesin_tujuan'=>$id_mesin_tujuan
+            ]);
+            return redirect()->route($this->url_name)->with(['error'=>'Data Mesin Tujuan Tidak ditemukan']);
+        }
+
+        Log::info('Koneksi ke mesin tujuan', [
+            'ip'=>$data_mesin_tujuan->ip_address
+        ]);
+
+        $model_mesin_tujuan = new \App\Services\MesinFinger($data_mesin_tujuan->ip_address);
+
+        $connect_tujuan = $model_mesin_tujuan->connect();
+
+        if(is_array($connect_tujuan) && isset($connect_tujuan[2]) && $connect_tujuan[2]==2){
+            Log::error('Mesin tujuan tidak connect');
+            return redirect()->route($this->url_name)->with(['error' => 'Maaf Mesin tujuan tidak connect']);
+        }
+
+        $jml_user=0;
+        $jml_user_detail=0;
+        $jml_user_exist=0;
+
+        foreach($item_list_user as $key_u => $user){
+
+            Log::info('Proses upload user', [
+                'id_user'=>$key_u
+            ]);
+
+            $get_user_exist = $model_mesin_tujuan->get_user($key_u);
+
+            $check_get_user_exist=0;
+            if(!empty($get_user_exist)){
+                if(strtolower($get_user_exist[0]) == 'error'){
+                    $check_get_user_exist=1;
+                }
+            }
+
+            if(!empty($check_get_user_exist)){
+
+                $get_user = (new \App\Models\RefUserInfo())
+                                ->where('id_user','=', $key_u)
+                                ->first();
+
+                if(empty($get_user)){
+                    Log::warning('User tidak ditemukan di DB lokal', [
+                        'id_user'=>$key_u
+                    ]);
+                    continue;
+                }
+
+                $user=(object)$get_user->getAttributes();
+
+                $hasil_user = $model_mesin_tujuan->upload_user_to_mesin($user);
+
+                $check_hasil = $hasil_user[1] ?? '';
+
+                if($check_hasil==1){
+
+                    $jml_user++;
+
+                    Log::info('User berhasil diupload', [
+                        'id_user'=>$key_u
+                    ]);
+
+                    $get_user_detail = (new \App\Models\RefUserInfoDetail())
+                                            ->where('id_user','=', $user->id_user)
+                                            ->orderBy('id_user','ASC')
+                                            ->get();
+
+                    foreach($get_user_detail as $user_detail){
+
+                        $hasil_finger = $model_mesin_tujuan->upload_user_finger_to_mesin($user_detail);
+
+                        $check_hasil = $hasil_finger[1] ?? '';
+
+                        if($check_hasil==1){
+                            $jml_user_detail++;
+                        }else{
+                            Log::error('Gagal upload finger', [
+                                'id_user'=>$key_u,
+                                'finger_id'=>$user_detail->finger_id ?? null
+                            ]);
+                        }
+                    }
+
+                }else{
+                    Log::error('Gagal upload user ke mesin', [
+                        'id_user'=>$key_u,
+                        'response'=>$hasil_user
+                    ]);
+                }
+
+            }else{
+                $jml_user_exist++;
+                Log::warning('User sudah ada di mesin tujuan', [
+                    'id_user'=>$key_u
+                ]);
+            }
+        }
+
+        Log::info('=== SUMMARY PROSES ===', [
+            'user_berhasil'=>$jml_user,
+            'finger_berhasil'=>$jml_user_detail,
+            'user_exist'=>$jml_user_exist
+        ]);
+
+        if($jml_user > 0){
+
+            $message = 'Data berhasil disinkronisasi';
+
+            if($jml_user_exist > 0){
+                $message .= ' ada '.$jml_user_exist.' memiliki ID USER yang sama dan '.$jml_user.' user berhasil di proses';
+            }
+
+            return redirect()->route($this->url_name)
+                ->with(['success'=>$message]);
+        }
+
+        return redirect()->route($this->url_name)
+            ->with(['error'=>'Maaf Data tidak berhasil disinkronisasi']);
+
+    } catch (\Throwable $e) {
+
+        Log::error('ERROR PROSES SINKRON KE MESIN TUJUAN', [
+            'message'=>$e->getMessage(),
+            'line'=>$e->getLine(),
+            'file'=>$e->getFile(),
+            'trace'=>$e->getTraceAsString()
+        ]);
+
+        return redirect()->route($this->url_name)
+            ->with(['error'=>'Terjadi kesalahan sistem']);
     }
+}
+
 
     function getListUser(Request $request){
 

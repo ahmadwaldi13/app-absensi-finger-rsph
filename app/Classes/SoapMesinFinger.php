@@ -4,6 +4,7 @@ namespace App\Classes;
 
 use TADPHP\TAD;
 use TADPHP\TADFactory;
+use Illuminate\Support\Facades\DB;
 
 class SoapMesinFinger
 {
@@ -24,24 +25,71 @@ class SoapMesinFinger
         }
     }
 
-    function connect_sock($ip = null,$port=null){
+    // function connect_sock($ip = null,$port=null){
+    //     if ($ip != null) {
+    //         $this->ip = $ip;
+    //     }
+    //     if ($port != null) {
+    //         $this->port = $port;
+    //     }
+    //     if ($this->ip == null || $this->port == null) {
+    //         return ['error','error code',3];
+    //     }
+
+    //     try {
+    //         return fsockopen($this->ip, $this->port, $errno, $errstr, 1);
+    //     } catch (\Throwable $e) {
+    //         return ['error','error code',3];
+    //     }
+    // }
+
+    function connect_sock($ip = null, $port = null)
+    {
         if ($ip != null) {
             $this->ip = $ip;
         }
+
         if ($port != null) {
             $this->port = $port;
         }
+
         if ($this->ip == null || $this->port == null) {
-            return ['error','error code',3];
+            return [
+                'status' => false,
+                'code' => 3,
+                'message' => 'IP atau Port tidak valid'
+            ];
         }
 
         try {
-            return fsockopen($this->ip, $this->port, $errno, $errstr, 1);
+
+            $socket = @fsockopen($this->ip, $this->port, $errno, $errstr, 3);
+
+            if (!$socket) {
+                return [
+                    'status' => false,
+                    'code' => 3,
+                    'message' => $errstr ?: 'Tidak terkoneksi'
+                ];
+            }
+
+            $this->socket = $socket;
+
+            return [
+                'status' => true,
+                'code' => 1,
+                'message' => 'Terkoneksi'
+            ];
+
         } catch (\Throwable $e) {
-            return ['error','error code',3];
+
+            return [
+                'status' => false,
+                'code' => 3,
+                'message' => $e->getMessage()
+            ];
         }
     }
-
     function connect($ip = null,$port=null){
         $connect_ip=[];
         $connect='';
