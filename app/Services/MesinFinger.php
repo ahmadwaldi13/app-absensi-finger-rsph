@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Services;
+use Illuminate\Support\Facades\Log;
 
 class MesinFinger extends \App\Classes\SoapMesinFinger
 {
@@ -102,54 +103,109 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
 
     }
 
-    function get_user($id_user=''){
-        $connect_ip=$this->connect_sock();
+    // function get_user($id_user=''){
+    //     $connect_ip=$this->connect_sock();
 
-        if(empty($connect_ip[2]==3)){
-            $pin_x='';
-            if($id_user){
-                $pin_x=$this->lib($id_user)->pin;
-            }
-            $soap_request='';
-            $soap_request.=$this->lib($this->comm_key)->arg_com_key;
-            $soap_request.="<Arg>".$pin_x."</Arg>";
-            $soap_request="<GetUserInfo>".$soap_request."</GetUserInfo>";
-            $buffer=$this->set_fputs($connect_ip,$soap_request);
-            $buffer = $this->parse_data($buffer, "<GetUserInfoResponse>", "</GetUserInfoResponse>");
-            $buffer = explode("\r\n", $buffer);
-            $jml=0;
-            $data_tmp=[];
-            for($a = 0; $a < count($buffer); $a++) {
-                $data = $this->parse_data($buffer[$a], "<Row>", "</Row>");
-                if($data){
-                    $jml++;
-                    $data_tmp[]=[
-                        'id'=>$this->parse_data($data, "<PIN2>", "</PIN2>"),
-                        'name'=>$this->parse_data($data, "<Name>", "</Name>"),
-                        'password'=>$this->parse_data($data, "<Password>", "</Password>"),
-                        'group'=>$this->parse_data($data, "<Group>", "</Group>"),
-                        'privilege'=>$this->parse_data($data, "<Privilege>", "</Privilege>"),
-                        'card'=>$this->parse_data($data, "<Card>", "</Card>"),
-                        'pin'=>$this->parse_data($data, "<PIN>", "</PIN>"),
-                        'pin2'=>$this->parse_data($data, "<PIN2>", "</PIN2>"),
-                        'tz1'=>$this->parse_data($data, "<TZ1>", "</TZ1>"),
-                        'tz2'=>$this->parse_data($data, "<TZ2>", "</TZ2>"),
-                        'tz3'=>$this->parse_data($data, "<TZ3>", "</TZ3>"),
-                    ];
-                }
-            }
-            if(empty($jml)){
-                return ['error','com key anda salah/tidak ada data'];
-            }
-        }else{
+    //     if(empty($connect_ip[2]==3)){
+    //         $pin_x='';
+    //         if($id_user){
+    //             $pin_x=$this->lib($id_user)->pin;
+    //         }
+    //         $soap_request='';
+    //         $soap_request.=$this->lib($this->comm_key)->arg_com_key;
+    //         $soap_request.="<Arg>".$pin_x."</Arg>";
+    //         $soap_request="<GetUserInfo>".$soap_request."</GetUserInfo>";
+    //         $buffer=$this->set_fputs($connect_ip,$soap_request);
+    //         $buffer = $this->parse_data($buffer, "<GetUserInfoResponse>", "</GetUserInfoResponse>");
+    //         $buffer = explode("\r\n", $buffer);
+    //         $jml=0;
+    //         $data_tmp=[];
+    //         for($a = 0; $a < count($buffer); $a++) {
+    //             $data = $this->parse_data($buffer[$a], "<Row>", "</Row>");
+    //             if($data){
+    //                 $jml++;
+    //                 $data_tmp[]=[
+    //                     'id'=>$this->parse_data($data, "<PIN2>", "</PIN2>"),
+    //                     'name'=>$this->parse_data($data, "<Name>", "</Name>"),
+    //                     'password'=>$this->parse_data($data, "<Password>", "</Password>"),
+    //                     'group'=>$this->parse_data($data, "<Group>", "</Group>"),
+    //                     'privilege'=>$this->parse_data($data, "<Privilege>", "</Privilege>"),
+    //                     'card'=>$this->parse_data($data, "<Card>", "</Card>"),
+    //                     'pin'=>$this->parse_data($data, "<PIN>", "</PIN>"),
+    //                     'pin2'=>$this->parse_data($data, "<PIN2>", "</PIN2>"),
+    //                     'tz1'=>$this->parse_data($data, "<TZ1>", "</TZ1>"),
+    //                     'tz2'=>$this->parse_data($data, "<TZ2>", "</TZ2>"),
+    //                     'tz3'=>$this->parse_data($data, "<TZ3>", "</TZ3>"),
+    //                 ];
+    //             }
+    //         }
+    //         if(empty($jml)){
+    //             return ['error','com key anda salah/tidak ada data'];
+    //         }
+    //     }else{
+    //         return ['error','Tidak Terkoneksi'];
+    //     }
+
+    //     if($data_tmp){
+    //         return json_encode($data_tmp);
+    //     }
+    //     return '';
+    // }
+
+    function get_user($id_user='')
+    {
+        $connect_ip = $this->connect_sock();
+
+        if(is_array($connect_ip)){
             return ['error','Tidak Terkoneksi'];
         }
 
-        if($data_tmp){
-            return json_encode($data_tmp);
+        $pin_x = '';
+        if($id_user){
+            $pin_x = $this->lib($id_user)->pin;
         }
-        return '';
+
+        $soap_request  = '';
+        $soap_request .= $this->lib($this->comm_key)->arg_com_key;
+        $soap_request .= "<Arg>".$pin_x."</Arg>";
+        $soap_request  = "<GetUserInfo>".$soap_request."</GetUserInfo>";
+
+        $buffer = $this->set_fputs($connect_ip,$soap_request);
+
+        $buffer = $this->parse_data($buffer, "<GetUserInfoResponse>", "</GetUserInfoResponse>");
+        $buffer = explode("\r\n", $buffer);
+
+        $data_tmp = [];
+
+        foreach($buffer as $row){
+
+            $data = $this->parse_data($row, "<Row>", "</Row>");
+
+            if($data){
+
+                $data_tmp[]=[
+                    'id'=>$this->parse_data($data, "<PIN2>", "</PIN2>"),
+                    'name'=>$this->parse_data($data, "<Name>", "</Name>"),
+                    'password'=>$this->parse_data($data, "<Password>", "</Password>"),
+                    'group'=>$this->parse_data($data, "<Group>", "</Group>"),
+                    'privilege'=>$this->parse_data($data, "<Privilege>", "</Privilege>"),
+                    'card'=>$this->parse_data($data, "<Card>", "</Card>"),
+                    'pin'=>$this->parse_data($data, "<PIN>", "</PIN>"),
+                    'pin2'=>$this->parse_data($data, "<PIN2>", "</PIN2>"),
+                    'tz1'=>$this->parse_data($data, "<TZ1>", "</TZ1>"),
+                    'tz2'=>$this->parse_data($data, "<TZ2>", "</TZ2>"),
+                    'tz3'=>$this->parse_data($data, "<TZ3>", "</TZ3>"),
+                ];
+            }
+        }
+
+        if(empty($data_tmp)){
+            return ['error','Com key salah / tidak ada data'];
+        }
+
+        return json_encode($data_tmp);
     }
+
 
     function get_user_tamplate($pin){
         $connect_ip=$this->connect_sock();
@@ -302,7 +358,7 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
     function upload_user_to_mesin($data_user){
         $connect_ip=$this->connect_sock();
 
-        if(empty($connect_ip[2]==3)){
+        if(empty($connect_ip['code']==1)){
             if($data_user->id_user){
 
                 $soap_request = "
@@ -445,66 +501,162 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
         }
     }
 
-    function get_user_tad($id_user=''){
+    // function get_user_tad($id_user=''){
+    //     ini_set("memory_limit","800M");
+    //     set_time_limit(0);
+
+    //     $connect_ip=$this->connect_sock();
+
+    //     if(empty($connect_ip[2]==3)){
+    //         $tad=$this->connect_tad();
+
+    //         $get_data_tmp='';
+    //         if(!empty($id_user)){
+    //             $get_data_tmp = $tad->get_user_info(['pin'=>$id_user]);
+    //         }else{
+    //             $get_data_tmp = $tad->get_all_user_info();
+    //         }
+
+    //         $data=[];
+    //         if($get_data_tmp->is_empty_response()==false){
+    //             $data=$get_data_tmp->get_response(['format'=>'json']);
+
+    //             $data=json_decode($data,true);
+    //             if(!empty($data['Row'])){
+    //                 $data=$data['Row'];
+    //             }else{
+    //                 $data=[];
+    //             }
+    //         }
+
+    //         return json_encode($data);
+    //     }else{
+    //         return ['error','Tidak Terkoneksi'];
+    //     }
+    // }
+
+    function get_user_tad($id_user='')
+    {
         ini_set("memory_limit","800M");
         set_time_limit(0);
 
-        $connect_ip=$this->connect_sock();
+        $connect_ip = $this->connect_sock();
 
-        if(empty($connect_ip[2]==3)){
-            $tad=$this->connect_tad();
+        if (!is_array($connect_ip)) {
+            Log::error('connect_sock gagal', [
+                'return_type' => gettype($connect_ip)
+            ]);
+            return ['error','Gagal koneksi socket'];
+        }
 
-            $get_data_tmp='';
+        if (!isset($connect_ip[2]) || $connect_ip[2] != 3) {
+
+            $tad = $this->connect_tad();
+
+            if (!$tad) {
+                Log::error('connect_tad gagal');
+                return ['error','Tidak bisa koneksi TAD'];
+            }
+
             if(!empty($id_user)){
                 $get_data_tmp = $tad->get_user_info(['pin'=>$id_user]);
             }else{
                 $get_data_tmp = $tad->get_all_user_info();
             }
 
-            $data=[];
-            if($get_data_tmp->is_empty_response()==false){
-                $data=$get_data_tmp->get_response(['format'=>'json']);
+            $data = [];
 
-                $data=json_decode($data,true);
+            if ($get_data_tmp && method_exists($get_data_tmp,'is_empty_response') 
+                && $get_data_tmp->is_empty_response() == false) {
+
+                $response = $get_data_tmp->get_response(['format'=>'json']);
+
+                $data = json_decode($response, true);
+
+                if (json_last_error() !== JSON_ERROR_NONE) {
+                    Log::error('JSON decode error get_user_tad', [
+                        'error' => json_last_error_msg()
+                    ]);
+                    return ['error','Format response tidak valid'];
+                }
+
                 if(!empty($data['Row'])){
-                    $data=$data['Row'];
+                    $data = $data['Row'];
                 }else{
-                    $data=[];
+                    $data = [];
                 }
             }
 
             return json_encode($data);
-        }else{
+
+        } else {
+
+            Log::warning('Mesin tidak terkoneksi', [
+                'connect_ip' => $connect_ip
+            ]);
+
             return ['error','Tidak Terkoneksi'];
         }
     }
 
+
+    // function get_user_tamplate_tad($id_user){
+    //     ini_set("memory_limit","800M");
+    //     set_time_limit(0);
+
+    //     $connect_ip=$this->connect_sock();
+
+    //     if(empty($connect_ip[2]==3)){
+    //         $tad=$this->connect_tad();
+
+    //         $get_data_tmp = $tad->get_user_template(['pin'=>$id_user]);
+
+    //         $data=[];
+    //         if($get_data_tmp->is_empty_response()==false){
+    //             $data=$get_data_tmp->get_response(['format'=>'json']);
+
+    //             $data=json_decode($data,true);
+    //             if(!empty($data['Row'])){
+    //                 $data=$data['Row'];
+    //             }else{
+    //                 $data=[];
+    //             }
+    //         }
+
+    //         return json_encode($data);
+    //     }else{
+    //         return ['error','Tidak Terkoneksi'];
+    //     }
+    // }
     function get_user_tamplate_tad($id_user){
         ini_set("memory_limit","800M");
         set_time_limit(0);
 
-        $connect_ip=$this->connect_sock();
+        $connect_ip = $this->connect_sock();
 
-        if(empty($connect_ip[2]==3)){
-            $tad=$this->connect_tad();
-
-            $get_data_tmp = $tad->get_user_template(['pin'=>$id_user]);
-
-            $data=[];
-            if($get_data_tmp->is_empty_response()==false){
-                $data=$get_data_tmp->get_response(['format'=>'json']);
-
-                $data=json_decode($data,true);
-                if(!empty($data['Row'])){
-                    $data=$data['Row'];
-                }else{
-                    $data=[];
-                }
-            }
-
-            return json_encode($data);
-        }else{
-            return ['error','Tidak Terkoneksi'];
+        if(is_array($connect_ip)){
+            return json_encode([]);
         }
+
+        $tad = $this->connect_tad();
+
+        $get_data_tmp = $tad->get_user_template(['pin'=>$id_user]);
+
+        $data = [];
+
+        if($get_data_tmp->is_empty_response() == false){
+
+            $data = $get_data_tmp->get_response(['format'=>'json']);
+            $data = json_decode($data, true);
+
+            if(!empty($data['Row'])){
+                $data = $data['Row'];
+            }else{
+                $data = [];
+            }
+        }
+
+        return json_encode($data);
     }
+
 }

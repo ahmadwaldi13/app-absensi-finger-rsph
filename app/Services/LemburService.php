@@ -66,7 +66,8 @@ class LemburService extends BaseService {
 
         
         if (empty($params['is_super_admin']) || $params['is_super_admin'] === false) {
-            $query->where('l.id_karyawan', $params['id_karyawan']);
+            $query->where('l.id_ruangan', $params['id_ruangan'])
+                    ->where('l.status', 'pending');
         }
 
         
@@ -86,8 +87,9 @@ class LemburService extends BaseService {
     {
         return DB::transaction(function () use ($data_req) {
 
-            $id_karyawan = $data_req['key_old']; 
-            $id_ruangan = $data_req['id_ruangan'];
+            $id_karyawan = $data_req['id_karyawan']; 
+            $karyawan = $this->getKaryawan($id_karyawan);
+            $id_ruangan = $karyawan->id_ruangan;
             $filePath = null;
 
             $jam_mulai   = Carbon::parse($data_req['jam_mulai']);
@@ -122,12 +124,9 @@ class LemburService extends BaseService {
                 $filePath = 'upload/lembur/' . $nip . '/' . $filename;
             }
 
-            $check_kepala_bagian = $this->checkKepalaRuangan($data_req['id_jabatan']);
-            $check_ruangan = $this->checkRuangan($data_req['id_ruangan']);
-
             DB::table('uxui_lembur')->insertGetId([
                 'id_karyawan'   => $id_karyawan,
-                'id_ruangan'   => $data_req['id_ruangan'],
+                'id_ruangan'   => $id_ruangan,
                 'keterangan'    => $data_req['keterangan'],
                 'tgl_pengajuan' => now()->toDateString(),
                 'tgl_lembur' => $data_req['tgl_lembur'],
@@ -140,7 +139,7 @@ class LemburService extends BaseService {
                 'redeemed'   => 0,
                 'deposit_jam'   => $data_req['jenis_lembur'] == 'Deposit' ? $total_jam : 0,
                 'file_dokumen'=> $filePath ?? null,
-                'current_level' => $check_kepala_bagian || $check_ruangan ? 2 : 1,
+                'current_level' => 2,
                 'status'        => 'pending',
                 'created_at'    => now(),
                 'updated_at'    => now(),
@@ -348,7 +347,7 @@ class LemburService extends BaseService {
 
         
         if (empty($params['is_super_admin']) || $params['is_super_admin'] === false) {
-            $query->where('l.id_karyawan', $params['id_karyawan']);
+            $query->where('l.id_ruangan', $params['id_ruangan']);
         }
         
         if (!empty($params['search'])) {
@@ -392,7 +391,7 @@ class LemburService extends BaseService {
 
         
         if (empty($params['is_super_admin']) || $params['is_super_admin'] === false) {
-            $query->where('l.id_karyawan', $params['id_karyawan']);
+            $query->where('l.id_ruangan', $params['id_ruangan']);
         }
 
         
