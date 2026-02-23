@@ -307,35 +307,65 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
         }
         return '';
     }
-
     function get_log_data_absensi_tad($params=[]){
         ini_set("memory_limit","800M");
         set_time_limit(0);
 
-        $connect_ip=$this->connect_sock();
+        $connect_ip = $this->connect_sock();
 
-        if(empty($connect_ip[2]==3)){
-            $tgl_start=!empty($params['tgl_start']) ? $params['tgl_start'] : date('Y-m-d');
-            $tgl_end=!empty($params['tgl_end']) ? $params['tgl_end'] : date('Y-m-d');
-
-            $tad=$this->connect_tad();
-            $logs = $tad->get_att_log();
-
-            $logs=$logs->filter_by_date(['start' => $tgl_start,'end' =>$tgl_end]);
-            $data = $logs->to_json();
-
-            $data=json_decode($data,true);
-            if(!empty($data['Row'])){
-                $data=$data['Row'];
-            }else{
-                $data=[];
-            }
-
-            return ['data',$data];
-        }else{
+        if(empty($connect_ip['status'])){
             return ['error','Tidak Terkoneksi'];
         }
+
+
+        $tgl_start = $params['tgl_start'] ?? date('Y-m-d');
+        $tgl_end   = $params['tgl_end'] ?? date('Y-m-d');
+
+        $tad = $this->connect_tad();
+        $logs = $tad->get_att_log();
+
+        $logs = $logs->filter_by_date([
+            'start' => $tgl_start,
+            'end'   => $tgl_end
+        ]);
+
+
+        $data = json_decode($logs->to_json(), true);
+
+        $data = $data['Row'] ?? [];
+        
+        return ['data', $data];
+
     }
+
+    // function get_log_data_absensi_tad($params=[]){
+    //     ini_set("memory_limit","800M");
+    //     set_time_limit(0);
+
+    //     $connect_ip=$this->connect_sock();
+
+    //     if(empty($connect_ip[2]==3)){
+    //         $tgl_start=!empty($params['tgl_start']) ? $params['tgl_start'] : date('Y-m-d');
+    //         $tgl_end=!empty($params['tgl_end']) ? $params['tgl_end'] : date('Y-m-d');
+
+    //         $tad=$this->connect_tad();
+    //         $logs = $tad->get_att_log();
+
+    //         $logs=$logs->filter_by_date(['start' => $tgl_start,'end' =>$tgl_end]);
+    //         $data = $logs->to_json();
+
+    //         $data=json_decode($data,true);
+    //         if(!empty($data['Row'])){
+    //             $data=$data['Row'];
+    //         }else{
+    //             $data=[];
+    //         }
+
+    //         return ['data',$data];
+    //     }else{
+    //         return ['error','Tidak Terkoneksi'];
+    //     }
+    // }
 
     // function get_user_with_tamplate($id_user=''){
     //     $data_tmp=[];

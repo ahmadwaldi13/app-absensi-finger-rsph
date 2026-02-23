@@ -39,7 +39,9 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
         $get_tgl_per_bulan=(new \App\Http\Traits\AbsensiFunction)->get_tgl_per_bulan($filter_tahun_bulan);
         $list_tgl=!empty($get_tgl_per_bulan->list_tgl) ? $get_tgl_per_bulan->list_tgl : [];
 
+        
         $filter_tgl=!empty($get_tgl_per_bulan->tgl_start_end) ? $get_tgl_per_bulan->tgl_start_end : [];
+
         $filter_tgl[0]=!empty($filter_tgl[0]) ? $filter_tgl[0] : date('Y-m-d');
         $filter_tgl[1]=!empty($filter_tgl[1]) ? $filter_tgl[1] : date('Y-m-d');
 
@@ -47,7 +49,7 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
         $filter_id_ruangan=!empty($request->filter_id_ruangan) ? $request->filter_id_ruangan : '';
         
         $list_data=$collection = collect([]);
-        if(!empty($request->cari_data)){
+        if($request->isMethod('get')){
 
             $paramter_search=[
                 'tanggal'=>$filter_tgl,
@@ -66,12 +68,10 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
                 $paramter_search['id_status_karyawan']=$filter_id_status_karyawan;
             }
 
-            $list_data=(new \App\Services\DataPresensiService)->get_data_karyawan_absensi_rutin($paramter_search,1)
-            ->orderBy('id_departemen','ASC')
-            ->orderBy('id_ruangan','ASC')
-            ->orderBy('id_status_karyawan','ASC')
-            ->orderBy('nm_karyawan','ASC')
-            ->get();
+            // $list_data=(new \App\Services\DataPresensiService)->get_data_karyawan_absensi_rutin($paramter_search,1)
+            // ->get();
+
+            $list_data=(new \App\Services\DataPresensiService)->get_data_karyawan_absensi_rutin($paramter_search,1);
 
             $parameter_cuti=$paramter_search;
             unset($parameter_cuti['id_jenis_jadwal']);
@@ -79,6 +79,7 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
             unset($parameter_cuti['id_ruangan']);
 
             $list_cuti=(new \App\Services\CutiKaryawanService)->getDataCuti($parameter_cuti,1)->first();
+            
             $list_cuti=!empty($list_cuti->hasil) ? json_decode($list_cuti->hasil,true) : [];
 
             $parameter_pd=$paramter_search;
@@ -104,7 +105,7 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
         $data_jadwal_rutin=(new \App\Http\Traits\PresensiHitungRutinFunction)->get_jadwal_rutin();
 
         $list_simbol_text=(new \App\Http\Traits\AbsensiFunction)->get_list_simbol_text();
-
+        
         $parameter_view = [
             'title' => $this->title,
             'breadcrumbs' => $this->breadcrumbs,
@@ -141,7 +142,7 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
 
 
         $list_data=$collection = collect([]);
-        if(!empty($request->cari_data)){
+        if(!empty($request->isMethod('get'))){
 
             $paramter_search=[
                 'tanggal'=>$filter_tgl,
@@ -160,12 +161,11 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
                 $paramter_search['id_status_karyawan']=$filter_id_status_karyawan;
             }
 
-            $list_data=(new \App\Services\DataPresensiService)->get_data_karyawan_absensi_shift($paramter_search,1)
-            ->orderBy('id_departemen','ASC')
-            ->orderBy('id_ruangan','ASC')
-            ->orderBy('id_status_karyawan','ASC')
-            ->orderBy('nm_karyawan','ASC')
-            ->get();
+            $list_data=(new \App\Services\DataPresensiService)->get_data_karyawan_absensi_shift($paramter_search,1);
+            // ->orderBy('id_departemen','ASC')
+            // ->orderBy('id_ruangan','ASC')
+            // ->orderBy('id_status_karyawan','ASC')
+            // ->orderBy('nm_karyawan','ASC')
         }
 
         $page = isset($request->page) ? $request->page : 1;
@@ -283,12 +283,7 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
             $get_nm_ruangan=!empty($get_nm_ruangan->nm_ruangan) ? $get_nm_ruangan->nm_ruangan : '';
         }
 
-        $list_data=(new \App\Services\DataPresensiService)->get_data_karyawan_absensi_rutin($paramter_search,1)
-        ->orderBy('id_departemen','ASC')
-        ->orderBy('id_ruangan','ASC')
-        ->orderBy('id_status_karyawan','ASC')
-        ->orderBy('nm_karyawan','ASC')
-        ->get();
+        $list_data=(new \App\Services\DataPresensiService)->get_data_karyawan_absensi_rutin($paramter_search,1);
 
         $parameter_cuti=$paramter_search;
         unset($parameter_cuti['id_jenis_jadwal']);

@@ -137,4 +137,139 @@ class RefDataAbsensiTmpService extends BaseService
 
         return $query;
     }
+
+    public function getAbsensiRutin($params = [], $type = 0) {
+        $list_id_karyawan = !empty($params['list_id_karyawan']) 
+            ? explode(',', $params['list_id_karyawan']) 
+            : [];
+
+        $list_id_user = !empty($params['list_id_user']) 
+            ? explode(',', $params['list_id_user']) 
+            : [];
+
+        // dd($list_id_karyawan, $list_id_user);
+
+         $query = DB::table('ref_karyawan_user as rku')
+            ->join('ref_karyawan as karyawan', 'karyawan.id_karyawan', '=', 'rku.id_karyawan')
+            ->join('ref_karyawan_jadwal as jadwal_rutin', 'jadwal_rutin.id_karyawan', '=', 'karyawan.id_karyawan')
+            ->leftJoin('ref_departemen as rd', 'rd.id_departemen', '=', 'karyawan.id_departemen')
+            ->leftJoin('ref_ruangan as rr', 'rr.id_ruangan', '=', 'karyawan.id_ruangan')
+            ->select([
+                'rku.id_user',
+                'karyawan.id_karyawan',
+                'karyawan.id_ruangan',
+                'karyawan.id_status_karyawan',
+                'karyawan.nm_karyawan',
+                'karyawan.id_departemen',
+                'rd.nm_departemen',
+            ]);
+
+        // Filter id_user jika ada
+        if (!empty($list_id_user)) {
+            $query->whereIn('rku.id_user', $list_id_user);
+        }
+
+        // Filter id_karyawan jika ada
+        if (!empty($list_id_karyawan)) {
+            $query->whereIn('karyawan.id_karyawan', $list_id_karyawan);
+        }
+
+        // Search
+        if (!empty($params['search'])) {
+            $query->where(function ($q) use ($params) {
+                $q->where('karyawan.nm_karyawan', 'like', '%' . $params['search'] . '%')
+                ->orWhere('rku.id_user', 'like', '%' . $params['search'] . '%');
+            });
+        }
+
+        // Order (hindari ambiguous)
+        $query->orderBy('karyawan.id_departemen', 'ASC')
+            ->orderBy('karyawan.id_ruangan', 'ASC')
+            ->orderBy('karyawan.id_status_karyawan', 'ASC')
+            ->orderBy('karyawan.nm_karyawan', 'ASC');
+
+        // Kalau perlu groupBy, harus lengkap (strict mode safe)
+        $query->groupBy([
+            'rku.id_user',
+            'karyawan.id_karyawan',
+            'karyawan.id_ruangan',
+            'karyawan.id_status_karyawan',
+            'karyawan.nm_karyawan',
+            'karyawan.id_departemen',
+            'rd.nm_departemen'
+        ]);
+
+        if ($type == 0) {
+            return $query->get();
+        }
+
+        return $query;
+    }
+
+    public function get_data_karyawan_absensi_rutin_query($params = [], $type = 0)
+    {
+        $list_id_karyawan = !empty($params['list_id_karyawan']) 
+            ? explode(',', $params['list_id_karyawan']) 
+            : [];
+
+        $list_id_user = !empty($params['list_id_user']) 
+            ? explode(',', $params['list_id_user']) 
+            : [];
+
+        $query = DB::table('ref_karyawan_user as rku')
+            ->join('ref_karyawan as karyawan', 'karyawan.id_karyawan', '=', 'rku.id_karyawan')
+            ->join('ref_karyawan_jadwal as jadwal_rutin', 'jadwal_rutin.id_karyawan', '=', 'karyawan.id_karyawan')
+            ->leftJoin('ref_departemen as rd', 'rd.id_departemen', '=', 'karyawan.id_departemen')
+            ->leftJoin('ref_ruangan as rr', 'rr.id_ruangan', '=', 'karyawan.id_ruangan')
+            ->select([
+                'rku.id_user',
+                'karyawan.id_karyawan',
+                'karyawan.id_ruangan',
+                'karyawan.id_status_karyawan',
+                'karyawan.nm_karyawan',
+                'karyawan.id_departemen',
+                'rd.nm_departemen',
+            ]);
+
+        // Filter id_user jika ada
+        if (!empty($list_id_user)) {
+            $query->whereIn('rku.id_user', $list_id_user);
+        }
+
+        // Filter id_karyawan jika ada
+        if (!empty($list_id_karyawan)) {
+            $query->whereIn('karyawan.id_karyawan', $list_id_karyawan);
+        }
+
+        // Search
+        if (!empty($params['search'])) {
+            $query->where(function ($q) use ($params) {
+                $q->where('karyawan.nm_karyawan', 'like', '%' . $params['search'] . '%')
+                ->orWhere('rku.id_user', 'like', '%' . $params['search'] . '%');
+            });
+        }
+
+        // Order (hindari ambiguous)
+        $query->orderBy('karyawan.id_departemen', 'ASC')
+            ->orderBy('karyawan.id_ruangan', 'ASC')
+            ->orderBy('karyawan.id_status_karyawan', 'ASC')
+            ->orderBy('karyawan.nm_karyawan', 'ASC');
+
+        // Kalau perlu groupBy, harus lengkap (strict mode safe)
+        $query->groupBy([
+            'rku.id_user',
+            'karyawan.id_karyawan',
+            'karyawan.id_ruangan',
+            'karyawan.id_status_karyawan',
+            'karyawan.nm_karyawan',
+            'karyawan.id_departemen',
+            'rd.nm_departemen'
+        ]);
+
+        if ($type == 0) {
+            return $query->get();
+        }
+
+        return $query;
+    }
 }
