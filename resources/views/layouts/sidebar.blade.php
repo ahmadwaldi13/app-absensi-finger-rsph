@@ -16,6 +16,12 @@
             'key_active'=>\App::call('App\Http\Controllers\SubMenuController@listAkses',['type' => 7])->list_menu
         ],
         [
+            'title'=>'Kalender Kerja',
+            'key'=>'kalender-kerja-karyawan',
+            'url'=>url('/')."/kalender-kerja-karyawan",
+            'icon'  => "<i class='fa-solid fa-calendar-days'></i>",
+        ],
+        [
             'title'=>'Persetujuan',
             'key'=>'sub-menu',
             'url'=>url('/')."/sub-menu?type=8",

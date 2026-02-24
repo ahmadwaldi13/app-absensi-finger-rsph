@@ -67,6 +67,7 @@
                                 <select class="form-select" id="form_jenis_jadwal" name="form_jenis_jadwal"  aria-label="Default select ">
                                     <option value="" {{ (Request::get('form_jenis_jadwal')=='') ? 'selected' : '' }}>Semua</option>
                                     <option value="non" {{ (Request::get('form_jenis_jadwal')=='non') ? 'selected' : '' }}>Tidak ada jadwal</option>
+                                    
                                     @if(!empty($data_jadwal))
                                         @foreach($data_jadwal as $key => $item)
                                             <?php

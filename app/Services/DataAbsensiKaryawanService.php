@@ -42,7 +42,7 @@ class DataAbsensiKaryawanService extends BaseService
         }
 
         $list_data_karyawan_rutin = (new \App\Services\DataPresensiRutinService)->getListKaryawan($paramater_data_karyawan_rutin, 1)->select(DB::raw('group_concat(id_karyawan) as id_karyawan'),DB::raw('group_concat(id_user) as id_user'))->first();
-
+        
         $parameter_first=[
             'tanggal'=>[$filter_date_start,$filter_date_end],
             'list_id_karyawan'=>!empty($list_data_karyawan_rutin->id_karyawan) ? $list_data_karyawan_rutin->id_karyawan : '',
@@ -50,11 +50,14 @@ class DataAbsensiKaryawanService extends BaseService
         ];
 
         // $list_absensi=(new \App\Services\RefDataAbsensiTmpService)->getAbsensiRutin($parameter_first,1)->get();
+        // $list_absensi=(new \App\Services\RefDataAbsensiTmpService)->get_data_karyawan_absensi_rutin_query($parameter_first,1)->get();
+        
         $list_absensi=[];
         
 
         $data_jadwal_rutin=[];
         $get_jadwal_rutin = $this->refJadwalService->getList(['ref_jadwal.id_jenis_jadwal'=>1], 1)->orderBy('kd_jadwal','ASC')->get();
+
         if(!empty($get_jadwal_rutin)){
             foreach($get_jadwal_rutin as $val){
                 $data_jadwal_rutin[$val->id_jadwal]=(object)$val->getAttributes();
@@ -63,8 +66,9 @@ class DataAbsensiKaryawanService extends BaseService
 
         $data_absensi=[];
         foreach($list_absensi as $value){
-            // $hasil=(new \App\Http\Traits\AbsensiFunction)->proses_absensi_rutin($get_jadwal_rutin,$value);
+            $hasil=(new \App\Http\Traits\AbsensiFunction)->proses_absensi_rutin($get_jadwal_rutin,$value);
             $hasil=[];
+            
             $tgl_filter=trim($value->tanggal);
 
             if(empty($data_absensi[$tgl_filter]['tgl'])){
@@ -104,7 +108,7 @@ class DataAbsensiKaryawanService extends BaseService
             $data_absensi[$tgl_filter]['data'][$value->id_user]['absensi_log'][]=!empty($hasil->jam_absensi) ? $hasil->jam_absensi : '';
 
         }
-
+        
         return $data_absensi;
     }
 }

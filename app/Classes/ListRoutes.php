@@ -1577,7 +1577,51 @@ class ListRoutes
                     
                 ]  
             ],
-             
+             [
+                'title' => 'Manajemen Absensi | Kalender Kerja',
+                'item' => [
+                    [
+                        'type' => 'index',
+                        'method' => 'get',
+                        'url' => '/kalender-kerja',
+                        'controller' => 'KalenderKerjaController@actionIndex',
+                        'name' => 'kalender-kerja',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'post',
+                        'method' => ['get', 'post'],
+                        'url' => '/kalender-kerja/create',
+                        'controller' => 'KalenderKerjaController@actionCreate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'update',
+                        'method' => ['get', 'post'],
+                        'url' => '/kalender-kerja/update',
+                        'controller' => 'KalenderKerjaController@actionUpdate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+
+                ]
+            ],
+            [
+                'title' => 'Kalender Kerja Karyawan',
+                'item' => [
+                    [
+                        'type' => 'index',
+                        'method' => 'get',
+                        'url' => '/kalender-kerja-karyawan',
+                        'controller' => 'KalenderKerjaKaryawanController@actionIndex',
+                        'name' => 'kalender-kerja-karyawan',
+                        'middleware' => '',
+                    ],
+                    
+
+                ]
+            ],
             
         ];
 

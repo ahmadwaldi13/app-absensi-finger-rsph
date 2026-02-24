@@ -48,7 +48,7 @@ class ReportLogMesinController extends \App\Http\Controllers\MyAuthController
         $filter_id_ruangan=!empty($request->filter_id_ruangan) ? $request->filter_id_ruangan : '';
 
         $list_data=$collection = collect([]);
-        if(!empty($request->cari_data)){
+        if($request->isMethod('get')){
 
             $paramter_search=[
                 'tanggal'=>$filter_tgl,
@@ -67,12 +67,13 @@ class ReportLogMesinController extends \App\Http\Controllers\MyAuthController
                 $paramter_search['id_status_karyawan']=$filter_id_status_karyawan;
             }
             
-            $list_data=(new \App\Services\DataPresensiService)->get_log_mesin_by_histori($paramter_search,1)
-            ->orderBy('id_departemen','ASC')
-            ->orderBy('id_ruangan','ASC')
-            ->orderBy('id_status_karyawan','ASC')
-            ->orderBy('nm_karyawan','ASC')
-            ->get();
+            $list_data=(new \App\Services\DataPresensiService)->get_log_mesin_by_histori($paramter_search,1);
+            // ->orderBy('id_departemen','ASC')
+            // ->orderBy('id_ruangan','ASC')
+            // ->orderBy('id_status_karyawan','ASC')
+            // ->orderBy('nm_karyawan','ASC')
+            // ->get();
+
         }
 
         $page = isset($request->page) ? $request->page : 1;

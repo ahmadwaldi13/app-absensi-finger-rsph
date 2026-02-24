@@ -9,7 +9,7 @@ use App\Services\GlobalService;
 use PhpOffice\PhpSpreadsheet\Calculation\Web\Service;
 use Log;
 
-class AbsensiKaryawanController extends \App\Http\Controllers\MyAuthController
+class AbsensiKaryawanShiftController extends \App\Http\Controllers\MyAuthController
 {
 
     public $part_view, $url_index, $url_name, $title, $breadcrumbs, $globalService;
@@ -21,7 +21,7 @@ class AbsensiKaryawanController extends \App\Http\Controllers\MyAuthController
         $this->url_index = $router_name->uri;
         $this->url_name = $router_name->router_name;
 
-        $this->title = 'Data Absensi';
+        $this->title = 'Data Absensi Shift';
         $this->breadcrumbs = [
             ['title' => 'Manajemen Absensi', 'url' => url('/') . "/sub-menu?type=5"],
             ['title' => $this->title, 'url' => url('/') . "/" . $this->url_index],
@@ -40,7 +40,7 @@ class AbsensiKaryawanController extends \App\Http\Controllers\MyAuthController
 
         $paramter_search=$request->all();
         
-        $list_data_tmp=(new \App\Services\DataPresensiRutinService)->getDataRumus3($paramter_search);
+        $list_data_tmp=(new \App\Services\DataPresensiShiftService)->getDataRumus3($paramter_search);
         $list_data=!empty($list_data_tmp->list_data) ? $list_data_tmp->list_data : [];
         $hasil_data=json_encode($list_data);
         

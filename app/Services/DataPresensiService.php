@@ -85,7 +85,7 @@ class DataPresensiService extends BaseService
         $rawData = DB::table('ref_data_absensi_tmp as utama')
             ->leftJoin('ref_mesin_absensi as rma', 'rma.id_mesin_absensi', '=', 'utama.id_mesin_absensi')
             ->leftJoin('ref_karyawan_user as rku', 'rku.id_user', '=', 'utama.id_user')
-            ->leftJoin('ref_karyawan as karyawan', 'karyawan.id_karyawan', '=', 'rku.id_karyawan')
+            ->join('ref_karyawan as karyawan', 'karyawan.id_karyawan', '=', 'rku.id_karyawan')
             ->leftJoin('ref_jabatan as rj', 'rj.id_jabatan', '=', 'karyawan.id_jabatan')
             ->leftJoin('ref_departemen as rd', 'rd.id_departemen', '=', 'karyawan.id_departemen')
             ->leftJoin('ref_ruangan as rr', 'rr.id_ruangan', '=', 'karyawan.id_ruangan')
@@ -96,6 +96,7 @@ class DataPresensiService extends BaseService
             ->select([
                 'utama.id_user',
                 'karyawan.id_karyawan',
+                'karyawan.id_ruangan',
                 'karyawan.nm_karyawan',
                 'karyawan.id_departemen',
                 'rd.nm_departemen',
@@ -185,12 +186,13 @@ class DataPresensiService extends BaseService
             $results = $results->slice($offset, $length)->values();
         }
 
-        if (empty($type)) {
-            return $results;
-        } else {
-            // Jika butuh query builder, return raw query (tapi tanpa JSON functions)
-            return $this->get_log_mesin_by_histori_query($tgl_awal, $tgl_akhir, $params);
-        }
+        return $results;
+        // if (empty($type)) {
+        //     return $results;
+        // } else {
+        //     // Jika butuh query builder, return raw query (tapi tanpa JSON functions)
+        //     return $this->get_log_mesin_by_histori_query($tgl_awal, $tgl_akhir, $params);
+        // }
     }
 
     /**
@@ -230,7 +232,7 @@ class DataPresensiService extends BaseService
     {
         $query = DB::table('ref_data_absensi_tmp as utama')
             ->leftJoin('ref_karyawan_user as rku', 'rku.id_user', '=', 'utama.id_user')
-            ->leftJoin('ref_karyawan as karyawan', 'karyawan.id_karyawan', '=', 'rku.id_karyawan')
+            ->join('ref_karyawan as karyawan', 'karyawan.id_karyawan', '=', 'rku.id_karyawan')
             ->leftJoin('ref_jabatan as rj', 'rj.id_jabatan', '=', 'karyawan.id_jabatan')
             ->leftJoin('ref_departemen as rd', 'rd.id_departemen', '=', 'karyawan.id_departemen')
             ->leftJoin('ref_ruangan as rr', 'rr.id_ruangan', '=', 'karyawan.id_ruangan')
@@ -239,8 +241,10 @@ class DataPresensiService extends BaseService
             ->select([
                 'utama.id_user',
                 'karyawan.id_karyawan',
+                'karyawan.id_ruangan',
                 'karyawan.nm_karyawan',
                 'karyawan.id_departemen',
+                'karyawan.id_status_karyawan',
                 'rd.nm_departemen',
             ])
             ->groupBy('utama.id_user');
@@ -411,13 +415,13 @@ class DataPresensiService extends BaseService
             $length = isset($limit_data[1]) ? (int)$limit_data[1] : null;
             $results = $results->slice($offset, $length)->values();
         }
-
-        if (empty($type)) {
-            return $results;
-        } else {
-            // Return query builder untuk pagination dll
-            return $this->get_log_mesin_by_karyawan_query($listIdUser, $tgl_awal, $tgl_akhir, $params);
-        }
+        return $results;
+        // if (empty($type)) {
+        //     return $results;
+        // } else {
+        //     // Return query builder untuk pagination dll
+        //     return $this->get_log_mesin_by_karyawan_query($listIdUser, $tgl_awal, $tgl_akhir, $params);
+        // }
     }
 
     /**
@@ -455,6 +459,8 @@ class DataPresensiService extends BaseService
             ->select([
                 'rku.id_user',
                 'karyawan.id_karyawan',
+                'karyawan.id_ruangan',
+                'karyawan.id_status_karyawan',
                 'karyawan.nm_karyawan',
                 'karyawan.id_departemen',
                 'rd.nm_departemen',
@@ -623,11 +629,13 @@ class DataPresensiService extends BaseService
             $results = $results->slice($offset, $length)->values();
         }
 
-        if (empty($type)) {
-            return $results;
-        } else {
-            return $this->get_data_karyawan_absensi_rutin_query($listIdUser, $params);
-        }
+        return $results;
+        
+        // if (empty($type)) {
+        //     return $results;
+        // } else {
+        //     return $this->get_data_karyawan_absensi_rutin_query($listIdUser, $params);
+        // }
     }
 
     /**
@@ -644,11 +652,17 @@ class DataPresensiService extends BaseService
             ->select([
                 'rku.id_user',
                 'karyawan.id_karyawan',
+                'karyawan.id_ruangan',
+                'karyawan.id_status_karyawan',
                 'karyawan.nm_karyawan',
                 'karyawan.id_departemen',
                 'rd.nm_departemen',
             ])
-            ->groupBy('rku.id_user');
+            ->groupBy('rku.id_user')
+            ->orderBy('id_departemen','ASC')
+            ->orderBy('id_ruangan','ASC')
+            ->orderBy('id_status_karyawan','ASC')
+            ->orderBy('nm_karyawan','ASC');
 
         $list_search = [
             'where_or' => ['id_user', 'nm_karyawan'],
@@ -694,7 +708,7 @@ class DataPresensiService extends BaseService
         }
 
         $listIdUser = $karyawanQuery->pluck('rku.id_user')->filter()->unique()->toArray();
-
+        
         // Jika tidak ada user, return empty
         if (empty($listIdUser)) {
             return empty($type) ? collect() : DB::table(DB::raw('(SELECT 1) as empty'))->whereRaw('1=0');
@@ -795,7 +809,6 @@ class DataPresensiService extends BaseService
                 'list_data_detail'        => json_encode($list_data_detail),
             ]);
         }
-
         // Step 5: Apply search filter
         if (!empty($params['search'])) {
             $search = $params['search'];
@@ -820,11 +833,13 @@ class DataPresensiService extends BaseService
             $results = $results->slice($offset, $length)->values();
         }
 
-        if (empty($type)) {
-            return $results;
-        } else {
-            return $this->get_data_karyawan_absensi_shift_query($listIdUser, $params);
-        }
+
+        return $results;
+        // if (empty($type)) {
+        //     return $results;
+        // } else {
+        //     return $this->get_data_karyawan_absensi_shift_query($listIdUser, $params);
+        // }
     }
 
     /**
@@ -842,10 +857,11 @@ class DataPresensiService extends BaseService
             ->select([
                 'rku.id_user',
                 'karyawan.id_karyawan',
+                'karyawan.id_ruangan',
+                'karyawan.id_status_karyawan',
                 'karyawan.nm_karyawan',
                 'karyawan.id_departemen',
                 'rd.nm_departemen',
-                'rtjs.nm_shift',
             ])
             ->groupBy('rku.id_user');
 

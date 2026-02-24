@@ -124,11 +124,11 @@ class DataJadwalKaryawanShiftController extends \App\Http\Controllers\MyAuthCont
         $data_sent=!empty($req['data_sent']) ? $req['data_sent'] : '';
         $params=!empty($req['params']) ? $req['params'] : '';
         $link_back_redirect = $this->url_name;
-
+        
         $link_back_param = [
             'data_sent' => $data_sent,
             'params' => $params,
-            'filter_tahun_bulan'=>$req['filter_tahun_bulan']
+            // 'filter_tahun_bulan'=>$req['filter_tahun_bulan']
         ];
 
         $message_default = [

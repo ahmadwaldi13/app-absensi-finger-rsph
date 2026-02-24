@@ -15,7 +15,6 @@ class RefJadwalService extends BaseService
     }
 
     function getList($params=[],$type=''){
-
         $query = $this->refJadwal
             ->select('ref_jadwal.*','nm_jenis_jadwal','type_jenis','bg_color')
             ->Leftjoin('ref_jenis_jadwal','ref_jadwal.id_jenis_jadwal','=','ref_jenis_jadwal.id_jenis_jadwal')
@@ -26,7 +25,7 @@ class RefJadwalService extends BaseService
         $list_search=[
             'where_or'=>['id_jadwal','uraian'],
         ];
-
+    
         if($params){
             $query=(new \App\Models\MyModel)->set_where($query,$params,$list_search);
         }

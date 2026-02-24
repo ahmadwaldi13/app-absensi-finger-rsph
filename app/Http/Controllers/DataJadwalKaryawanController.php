@@ -90,6 +90,7 @@ class DataJadwalKaryawanController extends \App\Http\Controllers\MyAuthControlle
 
         $data_jadwal=[];
         $data_jadwal_rutin=( new \App\Models\RefJenisJadwal() )->where('id_jenis_jadwal','=',1)->first();
+        
         if(!empty($data_jadwal_rutin)){
             $data_jadwal[]=[
                 'key'=>$data_jadwal_rutin->id_jenis_jadwal,

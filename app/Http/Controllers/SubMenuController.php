@@ -186,6 +186,12 @@ class SubMenuController extends Controller
                         'url'   => url('/')."/rekap-lembur",
                         'icon' => "<i class='fa-solid fa-clock'></i>",
                     ],
+                    [
+                        'title' => 'Pengaturan Kalander Kerja',
+                        'key'   => 'kalender-kerja',
+                        'url'   => url('/')."/kalender-kerja",
+                        'icon'  => "<i class='fa-solid fa-calendar-days'></i>",
+                    ],
                 ];
             }
 

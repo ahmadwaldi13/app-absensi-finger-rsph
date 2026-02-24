@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 use App\Services\GlobalService;
 use App\Services\UserMesinTmpService;
@@ -113,18 +114,21 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
             
             if($urut_proses==1){
                 $data_mesin=(new \App\Models\RefMesinAbsensi)->where(['id_mesin_absensi'=>$id_mesin])->first();
+
                 if(empty($data_mesin)){
                     return $this->sent_error('proses'.$urut_proses.' 1');
                     die;
                 }
 
                 $mesin=(new \App\Services\MesinFinger($data_mesin->ip_address));
+                
                 // $get_data_log=$mesin->get_log_data_absensi();
                 $paramter=[
                     'tgl_start'=>$tanggal_proses_start,
                     'tgl_end'=>$tanggal_proses_start,
                 ];
                 $get_data_log=$mesin->get_log_data_absensi_tad($paramter);
+                
                 $check_hasil=!empty($get_data_log[0]) ? $get_data_log[0] : '';
                 $proses_gagal=0;
                 if($check_hasil=='error'){
