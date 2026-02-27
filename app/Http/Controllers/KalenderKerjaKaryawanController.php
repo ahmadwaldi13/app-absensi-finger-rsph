@@ -118,6 +118,13 @@ class KalenderKerjaKaryawanController extends Controller
             $paramter_search_karyawan['id_status_karyawan']=$filter_id_status_karyawan;
         }
 
+        $parameter_cuti = [
+            'tanggal' => $filter_tgl
+        ];
+
+        $list_cuti = (new \App\Services\CutiService)
+            ->getDataCutiApproved($parameter_cuti);
+
         $list_tamplate_user=(new \App\Services\RefKaryawanJadwalShiftWaktuService())->getDataList($paramter_search_karyawan);
         $jenis_jadwal = $this->kalenderKerjaKaryawanService->getJenisJadwal();
         
@@ -126,6 +133,7 @@ class KalenderKerjaKaryawanController extends Controller
             'breadcrumbs' => $this->breadcrumbs,
             'list_tgl'=>$list_tgl,
             'list_data'=>$list_data,
+            'list_cuti' => $list_cuti,
             'list_shift' => $jenis_jadwal,
             'get_tamplate_default'=>$get_tamplate_default,
             'list_tamplate_user'=>$list_tamplate_user,

@@ -41,6 +41,7 @@ class AbsensiKaryawanController extends \App\Http\Controllers\MyAuthController
         $paramter_search=$request->all();
         
         $list_data_tmp=(new \App\Services\DataPresensiRutinService)->getDataRumus3($paramter_search);
+        
         $list_data=!empty($list_data_tmp->list_data) ? $list_data_tmp->list_data : [];
         $hasil_data=json_encode($list_data);
         

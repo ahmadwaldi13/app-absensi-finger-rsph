@@ -84,11 +84,14 @@
 
         $nm_hari=!empty($data_hari_indo[$key_tgl]) ? $data_hari_indo[$key_tgl] : '';
 
+//        if(!empty($hari_kerja[$hari_format])){
+//            $jml_hari_kerja_bulan++;
+//        }else{
+//            $get_hari_minggu[$item_tgl]=1;
+//            $hari_minggu[(new \App\Http\Traits\GlobalFunction)->hari($hari_format)]=(new \App\Http\Traits\GlobalFunction)->hari($hari_format);
+//        }
         if(!empty($hari_kerja[$hari_format])){
             $jml_hari_kerja_bulan++;
-        }else{
-            $get_hari_minggu[$item_tgl]=1;
-            $hari_minggu[(new \App\Http\Traits\GlobalFunction)->hari($hari_format)]=(new \App\Http\Traits\GlobalFunction)->hari($hari_format);
         }
 
         if(!empty($list_hari_libur[$item_tgl])){
@@ -336,8 +339,9 @@
                         ?>
                         @foreach($list_data as $key => $item)
                             <?php
-                                $data_presensi=!empty($item->presensi) ? (array)json_decode($item->presensi) : [];
 
+                                $data_presensi=!empty($item->presensi) ? (array)json_decode($item->presensi) : [];
+                                
                                 $list_cuti_karyawan=[];
                                 $total_cuti=0;
                                 if(!empty($list_cuti[$item->id_karyawan])){
@@ -418,32 +422,54 @@
                                 ?>
                                 @foreach($list_tgl as $key_tgl => $item_tgl)
                                     <?php
+                                    
                                         $presensi_user_text='';
                                         $status_kerja_alias='';
                                         $total_wjk_user_perhari_sec=0;
 
-                                        $get_presensi_user=!empty($data_presensi[$item_tgl]) ? $data_presensi[$item_tgl] : '';
-                                        if(!empty($get_presensi_user)){
+                                        $get_presensi_user = !empty($data_presensi[$item_tgl])
+                                            ? $data_presensi[$item_tgl]
+                                            : null;
 
-                                            if($item->jadwal_rutin==1){
-                                                $data_proses=[
-                                                    'list_presensi'=>!empty($get_presensi_user->presensi) ? implode(',',$get_presensi_user->presensi) : '',
-                                                    'data_jadwal_kerja'=>!empty($data_jadwal_rutin->data_jadwal_presensi) ? $data_jadwal_rutin->data_jadwal_presensi  : ''
-                                                ];
-                                                $hasil_proses=(object)(new \App\Http\Traits\PresensiHitungRutinFunction)->getHitungRutin($data_proses);
-                                                $total_wjk_user_perhari_sec=!empty($hasil_proses->total_waktu_kerja_user_sec) ? $hasil_proses->total_waktu_kerja_user_sec : 0;
+                                        $jadwal_hari_ini = !empty($get_presensi_user->jadwal) 
+                                            ? $get_presensi_user->jadwal 
+                                            : null;
 
-                                                $presensi_filter=!empty($hasil_proses->presensi_user) ? $hasil_proses->presensi_user : '';
-                                                $presensi_filter_tmp=!empty($presensi_filter) ? explode(',',$presensi_filter) : [];
-                                                if($presensi_filter_tmp){
-                                                    $presensi_user_text=implode('<br>',$presensi_filter_tmp);
-                                                }
+                                        if(!empty($jadwal_hari_ini)){
 
-                                                $status_kerja_alias=!empty($hasil_proses->status_kerja) ? $hasil_proses->status_kerja->alias : '';
+                                            $data_proses = [
+                                                'list_presensi' => !empty($get_presensi_user->presensi) 
+                                                    ? implode(',', $get_presensi_user->presensi) 
+                                                    : '',
 
-                                                if($status_kerja_alias=='A'){
-                                                    $presensi_user_text='';
-                                                }
+                                                'data_jadwal_kerja' => $jadwal_hari_ini
+                                            ];
+
+                                            $hasil_proses = (object)(new \App\Http\Traits\PresensiHitungRutinFunction)
+                                                ->getHitungRutin($data_proses);
+
+                                            $total_wjk_user_perhari_sec = !empty($hasil_proses->total_waktu_kerja_user_sec) 
+                                                ? $hasil_proses->total_waktu_kerja_user_sec 
+                                                : 0;
+
+                                            $presensi_filter = !empty($hasil_proses->presensi_user) 
+                                                ? $hasil_proses->presensi_user 
+                                                : '';
+
+                                            $presensi_filter_tmp = !empty($presensi_filter) 
+                                                ? explode(',', $presensi_filter) 
+                                                : [];
+
+                                            if($presensi_filter_tmp){
+                                                $presensi_user_text = implode('<br>', $presensi_filter_tmp);
+                                            }
+
+                                            $status_kerja_alias = !empty($hasil_proses->status_kerja) 
+                                                ? $hasil_proses->status_kerja->alias 
+                                                : '';
+
+                                            if($status_kerja_alias=='A'){
+                                                $presensi_user_text='';
                                             }
                                         }
 
@@ -469,49 +495,86 @@
 
                                         $class_hari='hari_default';
 
-                                        if(!empty($list_cuti_karyawan[$item_tgl])){
+                                        if(!empty($jadwal_hari_ini) && strtoupper($jadwal_hari_ini->nm_jenis_jadwal) == 'OFF'){
+                                            $class_hari = 'hari_red';
+                                            $status_kerja_alias = '';
+                                            $presensi_user_text = '';
+                                            $grand_twjk_sistem_sec -= $total_wjk_sistem_perhari_sec;
+                                        }
+
+////                                        if(!empty($list_cuti_karyawan[$item_tgl])){
+////                                            $class_hari='hari_blue_sky';
+////                                            $presensi_user_text=$list_cuti_karyawan[$item_tgl];
+////                                            if(!empty($data_jadwal_rutin->total_waktu_kerja_sec)){
+////                                                $grand_twjk_user_sec+=$data_jadwal_rutin->total_waktu_kerja_sec;
+////                                                $status_kerja_alias='';
+////                                                if(!empty($get_hari_minggu[$item_tgl])){
+////                                                    $grand_twjk_user_sec-=$data_jadwal_rutin->total_waktu_kerja_sec;
+////                                                    $total_wjku_perhari_sec='';
+////                                                    $presensi_user_text='';
+////                                                }
+////
+////                                                if(!empty($list_hari_libur[$item_tgl])){
+////                                                    $grand_twjk_user_sec-=$data_jadwal_rutin->total_waktu_kerja_sec;
+////                                                    $total_wjku_perhari_sec='';
+////                                                    $presensi_user_text='';
+////                                                }
+////                                            }
+////                                        }
+//
+//                                        if(!empty($list_dinasluar_karyawan[$item_tgl])){
+//                                            $class_hari='hari_green_sky';
+//                                            $presensi_user_text=$list_dinasluar_karyawan[$item_tgl];
+//                                            if(!empty($data_jadwal_rutin->total_waktu_kerja_sec)){
+//                                                $grand_twjk_user_sec+=$data_jadwal_rutin->total_waktu_kerja_sec;
+//                                                $status_kerja_alias='';
+//                                            }
+//                                        }
+//
+//                                        if(!empty($get_hari_minggu[$item_tgl])){
+//                                            $class_hari='hari_red';
+//                                            if(empty($presensi_user_text)){
+//                                                $status_kerja_alias='';
+//                                            }
+//                                            $grand_twjk_sistem_sec-=$total_wjk_sistem_perhari_sec;
+//                                        }
+//
+//                                        if(!empty($list_hari_libur[$item_tgl])){
+//                                            $class_hari='hari_yellow';
+//                                            if(empty($presensi_user_text)){
+//                                                $status_kerja_alias='';
+//                                            }
+//                                            $grand_twjk_sistem_sec-=$total_wjk_sistem_perhari_sec;
+//                                        }
+
+                                        if(isset($list_cuti_karyawan[$item_tgl])){
+
                                             $class_hari='hari_blue_sky';
                                             $presensi_user_text=$list_cuti_karyawan[$item_tgl];
+                                            $status_kerja_alias='';
+
                                             if(!empty($data_jadwal_rutin->total_waktu_kerja_sec)){
                                                 $grand_twjk_user_sec+=$data_jadwal_rutin->total_waktu_kerja_sec;
-                                                $status_kerja_alias='';
-                                                if(!empty($get_hari_minggu[$item_tgl])){
-                                                    $grand_twjk_user_sec-=$data_jadwal_rutin->total_waktu_kerja_sec;
-                                                    $total_wjku_perhari_sec='';
-                                                    $presensi_user_text='';
-                                                }
-
-                                                if(!empty($list_hari_libur[$item_tgl])){
-                                                    $grand_twjk_user_sec-=$data_jadwal_rutin->total_waktu_kerja_sec;
-                                                    $total_wjku_perhari_sec='';
-                                                    $presensi_user_text='';
-                                                }
                                             }
-                                        }
 
-                                        if(!empty($list_dinasluar_karyawan[$item_tgl])){
+                                        }elseif(!empty($list_dinasluar_karyawan[$item_tgl])){
+
                                             $class_hari='hari_green_sky';
                                             $presensi_user_text=$list_dinasluar_karyawan[$item_tgl];
-                                            if(!empty($data_jadwal_rutin->total_waktu_kerja_sec)){
-                                                $grand_twjk_user_sec+=$data_jadwal_rutin->total_waktu_kerja_sec;
-                                                $status_kerja_alias='';
-                                            }
-                                        }
+                                            $status_kerja_alias='';
 
-                                        if(!empty($get_hari_minggu[$item_tgl])){
+                                        }elseif(!empty($get_hari_minggu[$item_tgl])){
+
                                             $class_hari='hari_red';
-                                            if(empty($presensi_user_text)){
-                                                $status_kerja_alias='';
-                                            }
+                                            $status_kerja_alias='';
                                             $grand_twjk_sistem_sec-=$total_wjk_sistem_perhari_sec;
-                                        }
 
-                                        if(!empty($list_hari_libur[$item_tgl])){
+                                        }elseif(!empty($list_hari_libur[$item_tgl])){
+
                                             $class_hari='hari_yellow';
-                                            if(empty($presensi_user_text)){
-                                                $status_kerja_alias='';
-                                            }
+                                            $status_kerja_alias='';
                                             $grand_twjk_sistem_sec-=$total_wjk_sistem_perhari_sec;
+
                                         }
 
                                         if($tgl_data>$tgl_now){

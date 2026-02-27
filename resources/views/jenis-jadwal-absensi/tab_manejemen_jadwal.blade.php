@@ -9,10 +9,10 @@ $item = [
         'nama' => 'Pengaturan Jadwal Presensi',
         'key' => 'jadwal-absensi',
     ],
-    3 => (object) [
-        'nama' => 'Template Jadwal Shift',
-        'key' => 'template-jadwal-shift',
-    ]
+//    3 => (object) [
+//        'nama' => 'Template Jadwal Shift',
+//        'key' => 'template-jadwal-shift',
+//    ]
 ];
 
 $item = (new \App\Http\Traits\AuthFunction())->checkMenuAkses($item);

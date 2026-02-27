@@ -73,6 +73,78 @@ trait PresensiHitungRutinTraits {
         return collect([$result]);
     }
 
+    public function getWaktuKerjaByTanggal($params)
+    {
+        DB::statement("SET SESSION group_concat_max_len = 15000;");
+
+        $id_karyawan = !empty($params['id_karyawan']) ? $params['id_karyawan'] : 0;
+        $tanggal     = !empty($params['tanggal']) ? $params['tanggal'] : null;
+
+        if (!$id_karyawan || !$tanggal) {
+            return collect();
+        }
+
+
+        $kalender = DB::table('uxui_kalender_kerja')
+            ->where('id_karyawan', $id_karyawan)
+            ->where('tanggal', $tanggal)
+            ->first();
+
+        if (!$kalender) {
+            return collect();
+        }
+
+        $id_jenis_jadwal = $kalender->id_jenis_jadwal;
+
+        $jenisJadwal = DB::table('ref_jenis_jadwal')
+            ->where('id_jenis_jadwal', $id_jenis_jadwal)
+            ->first();
+
+        if (!$jenisJadwal) {
+            return collect();
+        }
+
+        $jadwalData = DB::table('ref_jadwal')
+            ->where('id_jenis_jadwal', $id_jenis_jadwal)
+            ->select([
+                'kd_jadwal',
+                'uraian',
+                'alias',
+                DB::raw('TIME_FORMAT(jam_awal, "%H:%i:%s") as jam_awal'),
+                DB::raw('TIME_FORMAT(jam_akhir, "%H:%i:%s") as jam_akhir'),
+                'status_toren_jam_cepat',
+                DB::raw('TIME_FORMAT(toren_jam_cepat, "%H:%i:%s") as toren_jam_cepat'),
+                'status_toren_jam_telat',
+                DB::raw('TIME_FORMAT(toren_jam_telat, "%H:%i:%s") as toren_jam_telat'),
+                'status_jadwal',
+            ])
+            ->get();
+
+        $data_jadwal = [];
+
+        foreach ($jadwalData as $jadwal) {
+            $data_jadwal[$jadwal->kd_jadwal] = [
+                $jadwal->kd_jadwal,
+                $jadwal->uraian,
+                $jadwal->alias,
+                $jadwal->jam_awal,
+                $jadwal->jam_akhir,
+                $jadwal->status_toren_jam_cepat,
+                $jadwal->toren_jam_cepat,
+                $jadwal->status_toren_jam_telat,
+                $jadwal->toren_jam_telat,
+                $jadwal->status_jadwal,
+            ];
+        }
+
+        $result = (object) array_merge(
+            (array) $jenisJadwal,
+            ['data_jadwal' => json_encode($data_jadwal)]
+        );
+
+        return collect([$result]);
+    }
+
     public function get_jadwal_rutin(){
         $data_jadwal_kerja_tmp=(new \App\Http\Traits\PresensiHitungRutinFunction)->getWaktuKerja(['id_jenis_jadwal'=>1])->first();
 
@@ -347,6 +419,7 @@ trait PresensiHitungRutinTraits {
         $data_jadwal_mesin=!empty($data_jadwal_kerja->data_jadwal) ? $data_jadwal_kerja->data_jadwal : '';
 
         $hasil_presensi_by_mesin=$this->absensif->get_presensi_by_jadwal_mesin($data_jadwal_mesin,$list_presensi);
+        
         $hasil_presensi_user=!empty($hasil_presensi_by_mesin->hasil_presensi) ? $hasil_presensi_by_mesin->hasil_presensi : '';
 
         $hasil_hitung=$this->rumus_3_jadwal($hasil_presensi_user,$data_jadwal_kerja);
@@ -417,7 +490,7 @@ trait PresensiHitungRutinTraits {
 
         return [
             'jadwal_kerja'=>$data_jadwal_kerja_tmp,
-            'jadwal_open_mesin'=>$jadwal_open_mesin,
+            'jadwal_open_mesin'=>$jadwal_open_mesin ?? [],
             'hasil_hitung_kerja'=>$hasil_hitung
         ];
     }
@@ -425,13 +498,22 @@ trait PresensiHitungRutinTraits {
     public function getHitungRutin($data=[]){
         $hasil_proses=(new \App\Http\Traits\PresensiHitungRutinFunction)->getProses($data);
         
+        
         $get_data_presensi_user=!empty($hasil_proses) ? (object)$hasil_proses : '';
         $get_open_mesin=!empty($get_data_presensi_user->jadwal_open_mesin) ? $get_data_presensi_user->jadwal_open_mesin : '';
         $presensi_jadwal=[];
-        foreach($get_open_mesin as $gom){
-            $get_gom_presensi=!empty($gom->user_presensi) ? (object)$gom->user_presensi : '';
-            if(!empty($get_gom_presensi->user_presensi)){
-                $presensi_jadwal[]=$get_gom_presensi->user_presensi;
+        $presensi_jadwal = [];
+
+        if(is_array($get_open_mesin) && !empty($get_open_mesin)){
+            foreach($get_open_mesin as $gom){
+
+                $get_gom_presensi = !empty($gom->user_presensi) 
+                    ? (object)$gom->user_presensi 
+                    : null;
+
+                if(!empty($get_gom_presensi->user_presensi)){
+                    $presensi_jadwal[] = $get_gom_presensi->user_presensi;
+                }
             }
         }
         $presensi_jadwal=!empty($presensi_jadwal) ? implode(',',$presensi_jadwal) : '';

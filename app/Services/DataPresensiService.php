@@ -491,7 +491,6 @@ class DataPresensiService extends BaseService
         $limit_data = (new \App\Http\Traits\GlobalFunction)->limit_mysql_manual($limit_data);
         unset($params['limit']);
 
-        // Step 1: Get list id_user yang punya jadwal RUTIN
         $karyawanQuery = DB::table('ref_karyawan as karyawan')
             ->join('ref_karyawan_user as rku', 'rku.id_karyawan', '=', 'karyawan.id_karyawan')
             ->join('ref_karyawan_jadwal as jadwal', 'jadwal.id_karyawan', '=', 'karyawan.id_karyawan')
@@ -507,12 +506,10 @@ class DataPresensiService extends BaseService
 
         $listIdUser = $karyawanQuery->pluck('rku.id_user')->filter()->unique()->toArray();
 
-        // Jika tidak ada user, return empty
         if (empty($listIdUser)) {
             return empty($type) ? collect() : DB::table(DB::raw('(SELECT 1) as empty'))->whereRaw('1=0');
         }
 
-        // Step 2: Get data karyawan lengkap (yang punya jadwal rutin)
         $karyawanData = DB::table('ref_karyawan_user as rku')
             ->join('ref_karyawan as karyawan', 'karyawan.id_karyawan', '=', 'rku.id_karyawan')
             ->join('ref_karyawan_jadwal as jadwal_rutin', 'jadwal_rutin.id_karyawan', '=', 'karyawan.id_karyawan')
@@ -539,7 +536,22 @@ class DataPresensiService extends BaseService
             ->unique('id_user')
             ->keyBy('id_user');
 
-        // Step 3: Get data presensi
+        
+        $kalenderKerja = DB::table('uxui_kalender_kerja as kk')
+                ->join('ref_jenis_jadwal as rjj', 'rjj.id_jenis_jadwal', '=', 'kk.id_jenis_jadwal')
+                ->whereIn('kk.id_karyawan', $karyawanData->pluck('id_karyawan'))
+                ->whereBetween('kk.tanggal', [$tgl_awal, $tgl_akhir])
+                ->select([
+                    'kk.id_karyawan',
+                    'kk.tanggal',
+                    'kk.id_jenis_jadwal',
+                    'rjj.masuk_kerja as jam_masuk',
+                    'rjj.pulang_kerja as jam_pulang',
+                    'rjj.nm_jenis_jadwal'
+                ])
+                ->get()
+                ->groupBy('id_karyawan');
+
         $presensiData = DB::table('ref_data_absensi_tmp as utama')
             ->leftJoin('ref_mesin_absensi as rma', 'rma.id_mesin_absensi', '=', 'utama.id_mesin_absensi')
             ->whereIn('utama.id_user', $listIdUser)
@@ -559,31 +571,75 @@ class DataPresensiService extends BaseService
             ->get()
             ->groupBy('id_user');
 
-        // Step 4: Build hasil akhir
         $results = collect();
 
         foreach ($karyawanData as $id_user => $karyawan) {
             $presensi = [];
             $list_data_detail = [];
 
-            // Jika ada data presensi untuk user ini
+            $jadwalPerTanggal = [];
+
+            if (isset($kalenderKerja[$karyawan->id_karyawan])) {
+                foreach ($kalenderKerja[$karyawan->id_karyawan] as $kk) {
+
+                    $data_jadwal = (new \App\Http\Traits\PresensiHitungRutinFunction)
+                        ->getWaktuKerjaByTanggal([
+                            'id_karyawan' => $kk->id_karyawan,
+                            'tanggal'     => $kk->tanggal
+                        ])
+                        ->first();
+
+                    $jadwalPerTanggal[$kk->tanggal] = $data_jadwal;
+                }
+            }
+
             if (isset($presensiData[$id_user])) {
                 $userPresensi = $presensiData[$id_user]->groupBy('tgl');
 
-                foreach ($userPresensi as $tgl => $tglData) {
-                    // Presensi per tanggal
+//                foreach ($userPresensi as $tgl => $tglData) {
+//                    $presensi[$tgl] = [
+//                        'presensi' => $tglData->pluck('jam')->toArray(),
+//                        'jadwal'   => $jadwalPerTanggal[$tgl] ?? null
+//                    ];
+//                    $list_data_detail[$tgl] = [
+//                        'id_mesin'     => $tglData->pluck('id_mesin_absensi')->toArray(),
+//                        'nm_mesin'     => $tglData->pluck('nm_mesin')->toArray(),
+//                        'lokasi_mesin' => $tglData->pluck('lokasi_mesin')->toArray(),
+//                        'verif'        => $tglData->pluck('verified')->toArray(),
+//                        'sts'          => $tglData->pluck('status')->toArray(),
+//                    ];
+//                }
+
+                foreach ($jadwalPerTanggal as $tgl => $jadwalTanggal) {
+
+                    $presensiJam = [];
+                    $detailData  = [];
+
+                    if (isset($presensiData[$id_user])) {
+
+                        $userPresensi = $presensiData[$id_user]->groupBy('tgl');
+
+                        if (isset($userPresensi[$tgl])) {
+                            $tglData = $userPresensi[$tgl];
+
+                            $presensiJam = $tglData->pluck('jam')->toArray();
+
+                            $detailData = [
+                                'id_mesin'     => $tglData->pluck('id_mesin_absensi')->toArray(),
+                                'nm_mesin'     => $tglData->pluck('nm_mesin')->toArray(),
+                                'lokasi_mesin' => $tglData->pluck('lokasi_mesin')->toArray(),
+                                'verif'        => $tglData->pluck('verified')->toArray(),
+                                'sts'          => $tglData->pluck('status')->toArray(),
+                            ];
+                        }
+                    }
+
                     $presensi[$tgl] = [
-                        'presensi' => $tglData->pluck('jam')->toArray()
+                        'presensi' => $presensiJam,
+                        'jadwal'   => $jadwalTanggal
                     ];
 
-                    // Detail data per tanggal
-                    $list_data_detail[$tgl] = [
-                        'id_mesin'     => $tglData->pluck('id_mesin_absensi')->toArray(),
-                        'nm_mesin'     => $tglData->pluck('nm_mesin')->toArray(),
-                        'lokasi_mesin' => $tglData->pluck('lokasi_mesin')->toArray(),
-                        'verif'        => $tglData->pluck('verified')->toArray(),
-                        'sts'          => $tglData->pluck('status')->toArray(),
-                    ];
+                    $list_data_detail[$tgl] = $detailData;
                 }
             }
 
@@ -605,7 +661,6 @@ class DataPresensiService extends BaseService
             ]);
         }
 
-        // Step 5: Apply search filter
         if (!empty($params['search'])) {
             $search = $params['search'];
             $results = $results->filter(function ($item) use ($search) {
@@ -614,15 +669,12 @@ class DataPresensiService extends BaseService
             })->values();
         }
 
-        // Unset filter yang sudah dipakai
         unset($params['id_departemen'], $params['id_ruangan'], $params['search']);
 
-        // Apply remaining filters
         if ($params) {
             $results = $this->applyCollectionFilters($results, $params);
         }
 
-        // Step 6: Apply limit
         if (!empty($limit_data)) {
             $offset = isset($limit_data[0]) ? (int)$limit_data[0] : 0;
             $length = isset($limit_data[1]) ? (int)$limit_data[1] : null;

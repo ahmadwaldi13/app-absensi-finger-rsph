@@ -78,9 +78,9 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
             unset($parameter_cuti['id_departemen']);
             unset($parameter_cuti['id_ruangan']);
 
-            $list_cuti=(new \App\Services\CutiKaryawanService)->getDataCuti($parameter_cuti,1)->first();
-            
-            $list_cuti=!empty($list_cuti->hasil) ? json_decode($list_cuti->hasil,true) : [];
+//            $list_cuti=(new \App\Services\CutiKaryawanService)->getDataCuti($parameter_cuti,1)->first();
+//            $list_cuti=!empty($list_cuti->hasil) ? json_decode($list_cuti->hasil,true) : [];
+            $list_cuti=(new \App\Services\CutiService)->getCutiApprovedByRange($parameter_cuti);
 
             $parameter_pd=$paramter_search;
             unset($parameter_pd['id_jenis_jadwal']);
@@ -103,7 +103,7 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
         $list_hari_libur=(new \App\Services\DataPresensiService)->get_data_hari_libur($paramater_where);
 
         $data_jadwal_rutin=(new \App\Http\Traits\PresensiHitungRutinFunction)->get_jadwal_rutin();
-
+        
         $list_simbol_text=(new \App\Http\Traits\AbsensiFunction)->get_list_simbol_text();
         
         $parameter_view = [

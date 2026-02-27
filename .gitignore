@@ -16,3 +16,4 @@ yarn-error.log
 public/upload/
 /storage/fonts/
 /storage/fonts/dompdf_font_family_cache.php
+.idea

@@ -118,63 +118,16 @@
                             </div>
 
                         </div>
-                    </div>
-
-                    <div class="col-lg-12 col-md-12">
-                        <div class="row justify-content-start align-items-end mb-3">
-
-                            <div class="col-lg-3 col-md-10">
-                                <div class='bagan_form'>
-                                    <label for="filter_nm_jabatan" class="form-label">Jabatan </label>
-                                    <div class="button-icon-inside">
-                                        <input type="text" class="input-text" id='filter_nm_jabatan' name="filter_nm_jabatan" readonly value="{{ Request::get('filter_nm_jabatan') }}" />
-                                        <input type="hidden" id="filter_id_jabatan" name='filter_id_jabatan' readonly required value="{{ Request::get('filter_id_jabatan') }}">
-                                        <span class="modal-remote-data" data-modal-src="{{ url('ajax?action=get_list_jabatan') }}" data-modal-key="" data-modal-pencarian='true' data-modal-title='Jabatan' data-modal-width='30%' data-modal-action-change="function=.set-data-list-from-modal@data-target=#filter_id_jabatan|#filter_nm_jabatan@data-key-bagan=0@data-btn-close=#closeModalData">
-                                            <img class="iconify hover-pointer text-primary" src="{{ asset('') }}icon/selected.png" alt="">
-                                        </span>
-                                        <a href="#" id='reset_input'><i class="fa-solid fa-square-xmark"></i></a>
-                                    </div>
-                                    <div class="message"></div>
-                                </div>
+                        <div class="col-lg-1 col-md-1">
+                            <div class="d-grid grap-2">
+                                <button type="submit" class="btn btn-primary validasi_submit" name='cari_data' value=1>
+                                    <i class="fa-sharp fa-solid fa-magnifying-glass"></i>
+                                </button>
                             </div>
-
-                            <div class="col-lg-3 col-md-10">
-                                <div class='bagan_form'>
-                                    <label for="filter_nm_departemen" class="form-label">Departemen <span class="text-danger">*</span></label>
-                                    <div class="button-icon-inside">
-                                        <input type="text" class="input-text" id='filter_nm_departemen' name="filter_nm_departemen" value="{{ Request::get('filter_nm_departemen') }}" />
-                                        <input type="hidden" id="filter_id_departemen" name='filter_id_departemen' value="{{ Request::get('filter_id_departemen') }}">
-                                        <span class="modal-remote-data" data-modal-src="{{ url('ajax?action=get_list_departemen') }}" data-modal-key="" data-modal-pencarian='true' data-modal-title='Departemen' data-modal-width='50%' data-modal-action-change="function=.set-data-list-from-modal@data-target=#filter_id_departemen|#filter_nm_departemen@data-key-bagan=0@data-btn-close=#closeModalData">
-                                            <img class="iconify hover-pointer text-primary" src="{{ asset('') }}icon/selected.png" alt="">
-                                        </span>
-                                        <a href="#" id='reset_input'><i class="fa-solid fa-square-xmark"></i></a>
-                                    </div>
-                                    <div class="message"></div>
-                                </div>
-                            </div>
-
-                            <div class="col-lg-3 col-md-10">
-                                <div class='bagan_form'>
-                                    <label for="filter_nm_ruangan" class="form-label">Ruangan <span class="text-danger">*</span></label>
-                                    <div class="button-icon-inside">
-                                        <input type="text" class="input-text" id='filter_nm_ruangan' name="filter_nm_ruangan"  value="{{ Request::get('filter_nm_ruangan') }}" />
-                                        <input type="hidden" id="filter_id_ruangan" name='filter_id_ruangan'  value="{{ Request::get('filter_id_ruangan') }}">
-                                        <span class="modal-remote-data" data-modal-src="{{ url('ajax?action=get_list_ruangan') }}" data-modal-key-with-form="#filter_id_departemen" data-modal-pencarian='true' data-modal-title='Ruangan' data-modal-width='70%' data-modal-action-change="function=.set-data-list-from-modal@data-target=#filter_id_ruangan|#filter_nm_ruangan@data-key-bagan=0@data-btn-close=#closeModalData">
-                                            <img class="iconify hover-pointer text-primary" src="{{ asset('') }}icon/selected.png" alt="">
-                                        </span>
-                                        <a href="#" id='reset_input'><i class="fa-solid fa-square-xmark"></i></a>
-                                    </div>
-                                    <div class="message"></div>
-                                </div>
-                            </div>
-                             <div class="col-lg-1 col-md-1">
-                        <div class="d-grid grap-2">
-                            <button type="submit" class="btn btn-primary validasi_submit" name='cari_data' value=1>
-                                <i class="fa-sharp fa-solid fa-magnifying-glass"></i>
-                            </button>
                         </div>
                     </div>
-                        </div>
+
+                    
                     </div>
                 </div>
             </form>
@@ -257,27 +210,34 @@
                                     @endif
                                 </td>
                                 @foreach($list_tgl as $key_tgl => $item_tgl)
-                                        
-                                        @php
-                                            $tgl_key = date('Y-m-d', strtotime($item_tgl));
-                                            $jadwal_tgl = $item->jadwal[$tgl_key] ?? null;
 
-                                            $class_td = '';
+                                    @php
+                                        $tgl_key = date('Y-m-d', strtotime($item_tgl));
+                                        $jadwal_tgl = $item->jadwal[$tgl_key] ?? null;
+                                        $cuti_tgl = $list_cuti[$item->id_karyawan][$tgl_key] ?? null;
 
-                                            if($jadwal_tgl){
-                                            
-                                                if(isset($jadwal_tgl['nm_jenis_jadwal']) && $jadwal_tgl['nm_jenis_jadwal'] == 'OFF'){
-                                                    $class_td = 'hari_red';
-                                                }
+                                        $class_td = '';
+
+                                        if($jadwal_tgl){
+
+                                            if($cuti_tgl){
+                                                $class_td = 'hari_blue_sky';
                                             }
+                                            else if($jadwal_tgl && isset($jadwal_tgl['nm_jenis_jadwal']) && $jadwal_tgl['nm_jenis_jadwal'] == 'OFF'){
+                                                $class_td = 'hari_red';
+                                            }
+                                        }
 
-                                        @endphp
+                                    @endphp
 
-                                       <td class="{{ $class_td }} jadwal-cell">
+                                    <td class="{{ $class_td }} jadwal-cell" style="cursor:pointer;">
 
-                                        
+
                                         <div class="jadwal-display">
-                                            @if($jadwal_tgl)
+                                            @if($cuti_tgl)
+                                                <div><b>CUTI</b></div>
+                                                <div>{{ $cuti_tgl }}</div>
+                                            @elseif($jadwal_tgl)
                                                 <div><b>{{ $jadwal_tgl['nm_jenis_jadwal'] }}</b></div>
 
                                                 @if($jadwal_tgl['jam_masuk'] != '00:00:00')
@@ -288,8 +248,9 @@
                                             @endif
                                         </div>
 
-                                        
-                                       
+
+
+
 
                                     </td>
 

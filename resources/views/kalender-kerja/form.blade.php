@@ -5,7 +5,11 @@
 .table-wrapper {
     overflow-x: auto;
 }
-
+.bg-cuti {
+    background-color: #0dcaf0 !important;
+    color: white;
+    font-weight: 600;
+}
 .table-jadwal {
     border-collapse: collapse;
     min-width: max-content;
@@ -76,21 +80,42 @@
             </td>
 
             @foreach($list_tgl as $tgl)
-            <td>
-                <select 
-                    name="jadwal[{{ $kar->id_karyawan }}][{{ $tgl }}]" 
-                    class="form-control shift-select"
-                >
-                    <option value="">-</option>
 
-                    @foreach($list_shift as $shift)
-                        <option value="{{ $shift->id_jenis_jadwal }}">
-                            {{ $shift->nm_jenis_jadwal. "($shift->jam_masuk - $shift->jam_pulang)" }}
-                        </option>
-                    @endforeach
+                @php
+                    $isCuti = $list_cuti[$kar->id_karyawan][$tgl] ?? null;
+                @endphp
 
-                </select>
-            </td>
+                <td class="{{ $isCuti ? 'bg-cuti' : '' }}">
+
+                    @if($isCuti)
+
+                        <div>
+                            <strong>CUTI</strong>
+                        </div>
+                        <div style="font-size:12px">
+                            {{ $isCuti }}
+                        </div>
+
+                    @else
+
+                        <select
+                                name="jadwal[{{ $kar->id_karyawan }}][{{ $tgl }}]"
+                                class="form-control shift-select"
+                        >
+                            <option value="">-</option>
+
+                            @foreach($list_shift as $shift)
+                                <option value="{{ $shift->id_jenis_jadwal }}">
+                                    {{ $shift->nm_jenis_jadwal }}
+                                    ({{ $shift->jam_masuk }} - {{ $shift->jam_pulang }})
+                                </option>
+                            @endforeach
+
+                        </select>
+
+                    @endif
+
+                </td>
             @endforeach
 
         </tr>

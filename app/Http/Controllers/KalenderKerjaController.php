@@ -119,6 +119,15 @@ class KalenderKerjaController extends Controller
             $paramter_search_karyawan['id_status_karyawan']=$filter_id_status_karyawan;
         }
 
+        $parameter_cuti = [
+            'tanggal' => $filter_tgl
+        ];
+
+        $list_cuti = (new \App\Services\CutiService)
+            ->getDataCutiApproved($parameter_cuti);
+
+
+
         $list_tamplate_user=(new \App\Services\RefKaryawanJadwalShiftWaktuService())->getDataList($paramter_search_karyawan);
         $jenis_jadwal = $this->kalenderJadwalService->getJenisJadwal();
         
@@ -126,6 +135,7 @@ class KalenderKerjaController extends Controller
             'title' => $this->title,
             'breadcrumbs' => $this->breadcrumbs,
             'list_tgl'=>$list_tgl,
+            'list_cuti' => $list_cuti,
             'list_data'=>$list_data,
             'list_shift' => $jenis_jadwal,
             'get_tamplate_default'=>$get_tamplate_default,
@@ -146,6 +156,16 @@ class KalenderKerjaController extends Controller
 
         $get_tgl_per_bulan=(new \App\Http\Traits\AbsensiFunction)->get_tgl_per_bulan($filter_tahun_bulan);
         $list_tgl=!empty($get_tgl_per_bulan->list_tgl) ? $get_tgl_per_bulan->list_tgl : [];
+
+        $tgl_awal  = $list_tgl[0] ?? date('Y-m-d');
+        $tgl_akhir = end($list_tgl) ?? date('Y-m-d');
+
+        $parameter_cuti = [
+            'tanggal' => [$tgl_awal, $tgl_akhir]
+        ];
+
+        $list_cuti = (new \App\Services\CutiService)
+            ->getDataCutiApproved($parameter_cuti);
         
         $jenis_jadwal = $this->kalenderJadwalService->getJenisJadwal();
         $karyawan = $this->kalenderJadwalService->getKaryawanPerunit($id_ruangan);
@@ -154,6 +174,7 @@ class KalenderKerjaController extends Controller
             'action_form' => $this->part_view . '/create',
             'list_shift' => $jenis_jadwal,
             'list_tgl' => $list_tgl,
+            'list_cuti' => $list_cuti,
             'karyawan' => $karyawan,
             'id_ruangan' => $id_ruangan
         ];

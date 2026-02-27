@@ -330,4 +330,94 @@ class CutiService extends BaseService {
 
         return $query;
     }
+
+    public function getCutiApprovedByRange($params = [])
+    {
+        $tgl_awal  = $params['tanggal'][0] ?? date('Y-m-01');
+        $tgl_akhir = $params['tanggal'][1] ?? date('Y-m-t');
+
+        $query = DB::table('uxui_cuti as c')
+            ->select(
+                'c.id_karyawan',
+                'c.tgl_mulai',
+                'c.tgl_selesai',
+                'c.jumlah_hari',
+                'c.keterangan',
+                'k.nm_karyawan',
+                'jc.nama as nm_jenis_cuti',
+            )
+            ->leftJoin('ref_karyawan as k', 'k.id_karyawan', '=', 'c.id_karyawan')
+            ->leftJoin('uxui_jenis_cuti as jc', 'c.id_jenis_cuti', '=', 'jc.id')
+
+            ->where('c.status', 'APPROVED')
+
+            ->where(function ($q) use ($tgl_awal, $tgl_akhir) {
+                $q->where('c.tgl_mulai', '<=', $tgl_akhir)
+                    ->where('c.tgl_selesai', '>=', $tgl_awal);
+            });
+
+        $data = $query->get()->groupBy('id_karyawan');
+
+        $result = [];
+
+        foreach ($data as $id => $rows) {
+
+            $first = $rows->first();
+
+            $result[$id] = [
+                'nm_karyawan' => $first->nm_karyawan,
+                'waktu' => $rows->map(function ($r) {
+                    return [
+                        $r->tgl_mulai,
+                        $r->tgl_selesai,
+                        $r->jumlah_hari,
+                        $r->nm_jenis_cuti,
+                    ];
+                })->values()
+            ];
+        }
+
+        return $result;
+    }
+
+    public function getDataCutiApproved($params = [])
+    {
+        $tgl_awal  = $params['tanggal'][0] ?? date('Y-m-d');
+        $tgl_akhir = $params['tanggal'][1] ?? date('Y-m-d');
+
+        $query = DB::table('uxui_cuti as c')
+            ->select(
+                'c.id_karyawan',
+                'c.tgl_mulai',
+                'c.tgl_selesai',
+                'jc.nama as nm_jenis_cuti'
+            )
+            ->leftJoin('uxui_jenis_cuti as jc', 'c.id_jenis_cuti', '=', 'jc.id')
+            ->where('c.status', 'APPROVED') // penting
+            ->where(function ($q) use ($tgl_awal, $tgl_akhir) {
+                $q->whereBetween('c.tgl_mulai', [$tgl_awal, $tgl_akhir])
+                    ->orWhereBetween('c.tgl_selesai', [$tgl_awal, $tgl_akhir]);
+            });
+
+        $data = $query->get();
+
+        $result = [];
+
+        foreach ($data as $row) {
+
+            $start = new \DateTime($row->tgl_mulai);
+            $end   = new \DateTime($row->tgl_selesai);
+
+            while ($start <= $end) {
+
+                $tgl = $start->format('Y-m-d');
+
+                $result[$row->id_karyawan][$tgl] = $row->nm_jenis_cuti;
+
+                $start->modify('+1 day');
+            }
+        }
+
+        return $result;
+    }
 }

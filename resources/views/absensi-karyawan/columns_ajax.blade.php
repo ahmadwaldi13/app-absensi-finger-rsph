@@ -322,7 +322,7 @@
                                                                         $get_user_presensi=!empty($val_oj->user_presensi) ? (object)$val_oj->user_presensi : '';
                                                                         $presensi_user=!empty($get_user_presensi->user_presensi) ? $get_user_presensi->user_presensi : '00:00:00';
                                                                         $presensi_user_detail=!empty($get_log_presensi_user[$presensi_user]) ? $get_log_presensi_user[$presensi_user] : [];
-
+                
                                                                         $user_type_verif=!empty($presensi_user_detail->verif) ? $presensi_user_detail->verif : '';
                                                                         $get_type_verif=(new \App\Services\DataPresensiService)->get_type_verified($user_type_verif);
 

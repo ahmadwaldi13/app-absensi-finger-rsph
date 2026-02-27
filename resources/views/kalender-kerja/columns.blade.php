@@ -295,12 +295,16 @@
                                         @php
                                             $tgl_key = date('Y-m-d', strtotime($item_tgl));
                                             $jadwal_tgl = $item->jadwal[$tgl_key] ?? null;
+                                            $cuti_tgl = $list_cuti[$item->id_karyawan][$tgl_key] ?? null;
 
                                             $class_td = '';
 
                                             if($jadwal_tgl){
                                             
-                                                if(isset($jadwal_tgl['nm_jenis_jadwal']) && $jadwal_tgl['nm_jenis_jadwal'] == 'OFF'){
+                                                if($cuti_tgl){
+                                                    $class_td = 'hari_blue_sky';
+                                                }
+                                                else if($jadwal_tgl && isset($jadwal_tgl['nm_jenis_jadwal']) && $jadwal_tgl['nm_jenis_jadwal'] == 'OFF'){
                                                     $class_td = 'hari_red';
                                                 }
                                             }
@@ -311,7 +315,10 @@
 
                                         
                                         <div class="jadwal-display">
-                                            @if($jadwal_tgl)
+                                            @if($cuti_tgl)
+                                                <div><b>CUTI</b></div>
+                                                <div>{{ $cuti_tgl }}</div>
+                                            @elseif($jadwal_tgl)
                                                 <div><b>{{ $jadwal_tgl['nm_jenis_jadwal'] }}</b></div>
 
                                                 @if($jadwal_tgl['jam_masuk'] != '00:00:00')
@@ -322,8 +329,8 @@
                                             @endif
                                         </div>
 
-                                        
-                                        @if($jadwal_tgl)
+
+                                           @if($jadwal_tgl && !$cuti_tgl)
                                             <form method="POST"
                                                 action="{{ url('kalender-kerja/update') }}"
                                                 class="jadwal-form d-none">
