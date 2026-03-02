@@ -323,17 +323,15 @@ class MesinFinger extends \App\Classes\SoapMesinFinger
 
         $tad = $this->connect_tad();
         $logs = $tad->get_att_log();
-
         $logs = $logs->filter_by_date([
             'start' => $tgl_start,
             'end'   => $tgl_end
         ]);
 
-
         $data = json_decode($logs->to_json(), true);
 
         $data = $data['Row'] ?? [];
-        
+
         return ['data', $data];
 
     }

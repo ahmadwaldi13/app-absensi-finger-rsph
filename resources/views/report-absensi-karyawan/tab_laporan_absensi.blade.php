@@ -1,10 +1,10 @@
 <?php
 
 $item = [
-    1 => (object) [
-        'nama' => 'Report Absensi Histori Dari Mesin',
-        'key' => 'report-log-mesin',
-    ],
+//    1 => (object) [
+//        'nama' => 'Report Absensi Histori Dari Mesin',
+//        'key' => 'report-log-mesin',
+//    ],
     2 => (object) [
         'nama' => 'Report Absensi Histori Dari Karyawan',
         'key' => 'report-log-mesin-by-karyawan',

@@ -49,12 +49,12 @@
             'icon'=>"<i class='fa-solid fa-clock'></i>",
             'key_active'=>\App::call('App\Http\Controllers\SubMenuController@listAkses',['type' => 6])->list_menu
         ],
-        [
-            'title'=>'Absensi',
-            'key'=>'absensi-per-karyawan',
-            'url'=>url('/')."/absensi-per-karyawan",
-            'icon'=>"<i class='fa-solid fa-clock'></i>",
-        ],
+//        [
+//            'title'=>'Absensi',
+//            'key'=>'absensi-per-karyawan',
+//            'url'=>url('/')."/absensi-per-karyawan",
+//            'icon'=>"<i class='fa-solid fa-clock'></i>",
+//        ],
         [
             'title'=>'Manajemen User',
             'key'=>'sub-menu',

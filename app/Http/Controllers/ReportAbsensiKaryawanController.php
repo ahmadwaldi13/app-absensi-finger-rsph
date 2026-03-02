@@ -105,6 +105,8 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
         $data_jadwal_rutin=(new \App\Http\Traits\PresensiHitungRutinFunction)->get_jadwal_rutin();
         
         $list_simbol_text=(new \App\Http\Traits\AbsensiFunction)->get_list_simbol_text();
+
+
         
         $parameter_view = [
             'title' => $this->title,

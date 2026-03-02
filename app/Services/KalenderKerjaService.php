@@ -3,6 +3,7 @@
 namespace App\Services;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class KalenderKerjaService extends BaseService {
 
@@ -260,5 +261,60 @@ class KalenderKerjaService extends BaseService {
             DB::rollBack();
             throw new \Exception($e->getMessage());
         }
+    }
+
+    public function import($file, $list_tgl, $id_ruangan)
+    {
+        $spreadsheet = IOFactory::load($file->getPathname());
+        $sheet = $spreadsheet->getActiveSheet();
+        $rows = $sheet->toArray();
+
+        $listShift = DB::table('ref_jenis_jadwal')
+            ->pluck('id_jenis_jadwal', 'nm_jenis_jadwal')
+            ->toArray();
+
+        $insertData = [];
+
+        foreach ($rows as $index => $row) {
+
+            if ($index == 0) continue;
+
+            $id_karyawan = $row[1] ?? null;
+
+            if (!$id_karyawan) continue;
+
+            foreach ($list_tgl as $key => $tanggal) {
+
+                $excelColumnIndex = $key + 3;
+
+                $shiftName = trim($row[$excelColumnIndex] ?? '');
+
+                if (!$shiftName) continue;
+
+                $id_shift = $listShift[$shiftName] ?? null;
+
+                if (!$id_shift) continue;
+
+                $insertData[] = [
+                    'id_karyawan'     => $id_karyawan,
+                    'tanggal'         => $tanggal,
+                    'id_jenis_jadwal' => $id_shift,
+                    'id_ruangan' => $id_ruangan,
+                    'created_at'      => now(),
+                    'updated_at'      => now(),
+                ];
+            }
+        }
+
+        if (!empty($insertData)) {
+
+            DB::table('uxui_kalender_kerja')
+                ->whereIn('tanggal', $list_tgl)
+                ->delete();
+
+            DB::table('uxui_kalender_kerja')->insert($insertData);
+        }
+
+        return count($insertData);
     }
 }

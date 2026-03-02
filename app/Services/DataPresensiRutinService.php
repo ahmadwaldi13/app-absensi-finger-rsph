@@ -246,14 +246,18 @@ class DataPresensiRutinService extends BaseService
                     
                     $presensi_jadwal = [];
 
-                    foreach($get_open_mesin as $gom){
-                        $get_gom_presensi=!empty($gom->user_presensi) ? (object)$gom->user_presensi : '';
-                        if(!empty($get_gom_presensi->user_presensi)){
-                            $presensi_jadwal[]=$get_gom_presensi->user_presensi;
+                    if(!empty($get_open_mesin)) {
+                        foreach($get_open_mesin as $gom){
+                            $get_gom_presensi=!empty($gom->user_presensi) ? (object)$gom->user_presensi : '';
+                            if(!empty($get_gom_presensi->user_presensi)){
+                                $presensi_jadwal[]=$get_gom_presensi->user_presensi;
+                            }
                         }
+
+                        $presensi_jadwal=!empty($presensi_jadwal) ? implode(',',$presensi_jadwal) : '';
+                        $get_jadwal_kerja=!empty($get_data_presensi_user->jadwal_kerja) ? $get_data_presensi_user->jadwal_kerja : '';
                     }
-                    $presensi_jadwal=!empty($presensi_jadwal) ? implode(',',$presensi_jadwal) : '';
-                    $get_jadwal_kerja=!empty($get_data_presensi_user->jadwal_kerja) ? $get_data_presensi_user->jadwal_kerja : '';
+
                     $total_waktu_kerja_sec=!empty($get_jadwal_kerja->total_kerja_sec) ? $get_jadwal_kerja->total_kerja_sec : 0;
 
                     $get_kerja_user=!empty($get_data_presensi_user->hasil_hitung_kerja) ? $get_data_presensi_user->hasil_hitung_kerja : '';

@@ -842,27 +842,27 @@ class ListRoutes
                 ]
             ],
 
-            [
-                'title' => 'Absensi | Data Absensi Perkaryawan ',
-                'item' => [
-                    [
-                        'type' => 'index',
-                        'method' => 'get',
-                        'url' => '/absensi-per-karyawan',
-                        'controller' => 'AbsensiPerKaryawanController@actionIndex',
-                        'name' => 'absensi_per_karyawan',
-                        'middleware' => '',
-                    ],
-                    [
-                        'type' => 'view',
-                        'method' => 'get',
-                        'url' => '/absensi-per-karyawan/view',
-                        'controller' => 'AbsensiPerKaryawanController@actionView',
-                        'name' => '',
-                        'middleware' => '',
-                    ],
-                ]
-            ],
+//            [
+//                'title' => 'Absensi | Data Absensi Perkaryawan ',
+//                'item' => [
+//                    [
+//                        'type' => 'index',
+//                        'method' => 'get',
+//                        'url' => '/absensi-per-karyawan',
+//                        'controller' => 'AbsensiPerKaryawanController@actionIndex',
+//                        'name' => 'absensi_per_karyawan',
+//                        'middleware' => '',
+//                    ],
+//                    [
+//                        'type' => 'view',
+//                        'method' => 'get',
+//                        'url' => '/absensi-per-karyawan/view',
+//                        'controller' => 'AbsensiPerKaryawanController@actionView',
+//                        'name' => '',
+//                        'middleware' => '',
+//                    ],
+//                ]
+//            ],
 
             [
                 'title' => 'Manajemen User | Group User',
@@ -1601,6 +1601,14 @@ class ListRoutes
                         'method' => ['get', 'post'],
                         'url' => '/kalender-kerja/update',
                         'controller' => 'KalenderKerjaController@actionUpdate',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'import excel',
+                        'method' => 'post',
+                        'url' => '/kalender-kerja/import-excel',
+                        'controller' => 'KalenderKerjaController@importExcel',
                         'name' => '',
                         'middleware' => '',
                     ],

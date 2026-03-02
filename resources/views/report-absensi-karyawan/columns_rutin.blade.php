@@ -11,6 +11,10 @@
         background-color: #f7d44e !important;
     }
 
+    .hari_cuti {
+        background-color: #79F6EB;
+    }
+
     .hari_blue_sky{
         background-color: #79f6eb !important;
     }
@@ -215,7 +219,7 @@
                                     <td style='width: 5%; vertical-align: middle;'>
                                         <div class='hari_red' style='width:40px; height:40px'></div>
                                     </td>
-                                    <td style='width: 69%; vertical-align: middle;'>{{ $hari_minggu }}</td>
+                                    <td style='width: 69%; vertical-align: middle;'>Libur</td>
                                 </tr>
                                 <tr>
                                     <td style='width: 1%; vertical-align: middle;'>:</td>
@@ -240,6 +244,16 @@
                                             @endforeach
                                         @endif
 
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td rowspan="1" style='width: 20%; vertical-align: middle;'>Cuti</td>
+                                    <td style='width: 1%; vertical-align: middle;'>:</td>
+                                    <td style='width: 5%; vertical-align: middle;'>
+                                        <div class='hari_cuti' style='width:40px; height:40px'></div>
+                                    </td>
+                                    <td style='width: 69%; vertical-align: middle;'>
+                                        Cuti Karyawan
                                     </td>
                                 </tr>
                             </tbody>

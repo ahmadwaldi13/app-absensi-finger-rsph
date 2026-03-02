@@ -373,6 +373,39 @@
             </div>
         @endif
     </div>
+    <hr>
+
+    <div class="card mt-3">
+        <div class="card-body" style="background:#f8f9fa;">
+            <h5 class="mb-3"><i class="fa-solid fa-file-excel text-success"></i> Upload Jadwal</h5>
+
+            <form action="{{ url('kalender-kerja/import-excel') }}"
+                  method="POST"
+                  enctype="multipart/form-data">
+
+                @csrf
+
+                <div class="row align-items-end">
+
+                    <div class="col-md-6">
+                        <input type="file"
+                               name="file_excel"
+                               class="form-control"
+                               accept=".xlsx,.xls"
+                               required>
+                    </div>
+
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fa-solid fa-upload"></i> Upload
+                        </button>
+                    </div>
+
+                </div>
+
+            </form>
+        </div>
+    </div>
 </div>
 
 <script>

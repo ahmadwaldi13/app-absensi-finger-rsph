@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 
 use App\Services\GlobalService;
 use App\Services\RefUserInfoService;
+use Illuminate\Support\Facades\Log;
 
 class DataUserMesinController extends \App\Http\Controllers\MyAuthController
 {
@@ -177,6 +178,21 @@ class DataUserMesinController extends \App\Http\Controllers\MyAuthController
             }
         
             if ($is_save) {
+//                DB::commit();
+//                $pesan = ['success', $message_default['success'], 2];
+
+                DB::table('ref_karyawan_jadwal')
+                    ->where('id_karyawan', $id_karyawan)
+                    ->delete();
+
+                if (!empty($id_karyawan)) {
+
+                    DB::table('ref_karyawan_jadwal')->insert([
+                        'id_karyawan'     => $id_karyawan,
+                        'id_jenis_jadwal' => 1,
+                    ]);
+                }
+
                 DB::commit();
                 $pesan = ['success', $message_default['success'], 2];
             } else {
@@ -185,6 +201,7 @@ class DataUserMesinController extends \App\Http\Controllers\MyAuthController
             }
         } catch (\Illuminate\Database\QueryException $e) {
             DB::rollBack();
+            Log::info($e->getMessage());
             if ($e->errorInfo[1] == '1062') {
             }
             $pesan = ['error', $message_default['error'], 3];

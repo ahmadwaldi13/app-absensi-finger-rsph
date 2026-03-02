@@ -215,7 +215,7 @@
                         <th rowspan="2" class="py-3" style="width: 1%; vertical-align: middle;">No</th>
                         <th rowspan="2" class="py-3" style="width: 40%; vertical-align: middle;">Nama</th>
                         {!! $header_tgl !!}
-                        <th rowspan="2" class="py-3" style="width: 30%; vertical-align: middle;">Type Jadwal</th>
+
                     </tr>
                     <tr>
                         {!! $header_hari !!}
@@ -229,8 +229,11 @@
                             $list_status_karyawan=[];
                         ?>
                         @foreach($list_data as $key => $item)
-                            <?php 
-                                $data_presensi=!empty($item->presensi) ? (array)json_decode($item->presensi) : [];
+                            <?php
+
+                                $data_presensi = !empty($item->presensi) ? (array)json_decode($item->presensi) : [];
+                                $data_jadwal   = !empty($item->jadwal_per_tanggal) ? (array)json_decode($item->jadwal_per_tanggal) : [];
+
 
                                 $type_jadwal_text='';
                                 if(!empty($item->ada_jadwal)){
@@ -280,9 +283,43 @@
                                             $presensi_user_text=implode('<br>',$presensi_user);
                                         }
                                     ?>
-                                    <td style='vertical-align: middle;'>{!! $presensi_user_text !!}</td>
+                                        <?php
+                                        $presensi_user_text = '';
+                                        $class_hari = '';
+
+                                        $get_presensi_user = !empty($data_presensi[$item_tgl]) ? $data_presensi[$item_tgl] : null;
+                                        $get_jadwal_user   = !empty($data_jadwal[$item_tgl]) ? $data_jadwal[$item_tgl] : null;
+
+                                        if (!empty($get_jadwal_user)) {
+
+                                            $nama_jadwal = $get_jadwal_user->nama_jadwal ?? '';
+
+                                            if (!empty($get_presensi_user)) {
+
+                                                $presensi_user = $get_presensi_user->presensi ?? [];
+                                                $presensi_user_text = implode('<br>', $presensi_user);
+
+                                            }
+
+                                            else {
+
+                                                if ($nama_jadwal == 'OFF') {
+
+                                                    $presensi_user_text = "";
+                                                    $class_hari = 'hari_red'; // merah
+
+                                                } else {
+
+                                                    $presensi_user_text = "";
+                                                }
+                                            }
+                                        }
+                                        ?>
+                                    <td class="{{ $class_hari }}" style="vertical-align: middle;">
+                                        {!! $presensi_user_text !!}
+                                    </td>
                                 @endforeach
-                                <td style='vertical-align: middle;'>{{ $type_jadwal_text }}</td>
+
                             </tr>
                         @endforeach
                     @endif

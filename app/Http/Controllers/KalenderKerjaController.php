@@ -241,4 +241,42 @@ class KalenderKerjaController extends Controller
         }
     }
 
+    public function importExcel(Request $request)
+    {
+        $user_auth = (new \App\Http\Traits\AuthFunction)->getUser();
+
+        $get_karyawan = $this->kalenderJadwalService->getKaryawan($user_auth->id_user);
+        $id_ruangan = $get_karyawan->id_ruangan ?? '';
+
+        $filter_tahun_bulan = !empty($request->filter_tahun_bulan)
+            ? $request->filter_tahun_bulan
+            : date('Y-m');
+
+        $get_tgl_per_bulan = (new \App\Http\Traits\AbsensiFunction)
+            ->get_tgl_per_bulan($filter_tahun_bulan);
+
+        $list_tgl = !empty($get_tgl_per_bulan->list_tgl)
+            ? $get_tgl_per_bulan->list_tgl
+            : [];
+
+
+        try {
+
+            $file = $request->file('file_excel');
+
+            $total = $this->kalenderJadwalService
+                ->import($file, $list_tgl, $id_ruangan);
+
+            return redirect()
+                ->route($this->url_name)
+                ->with('success', "Import Jadwal Kerja berhasil");
+
+        } catch (\Exception $e) {
+
+            return redirect()
+                ->route($this->url_name)
+                ->with('error', $e->getMessage());
+        }
+    }
+
 }

@@ -319,6 +319,7 @@
                         labels: dataBulanan.map(function(item) {
                             return item.bulan;
                         }),
+
                         datasets: [{
                                 label: 'Tepat Waktu',
                                 data: dataBulanan.map(function(item) {

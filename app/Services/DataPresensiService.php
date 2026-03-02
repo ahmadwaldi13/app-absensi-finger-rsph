@@ -120,7 +120,6 @@ class DataPresensiService extends BaseService
             ->orderBy(DB::raw('TIME(waktu)'))
             ->get();
 
-        // Group by id_user
         $groupedByUser = $rawData->groupBy('id_user');
 
         $results = collect();
@@ -128,14 +127,12 @@ class DataPresensiService extends BaseService
         foreach ($groupedByUser as $id_user => $userData) {
             $first = $userData->first();
 
-            // Group by tanggal untuk user ini
             $groupedByTgl = $userData->groupBy('tgl');
 
             $presensi = [];
             $list_data_detail = [];
 
             foreach ($groupedByTgl as $tgl => $tglData) {
-                // Presensi: array jam per tanggal
                 $jamList = $tglData->pluck('jam')->toArray();
                 $presensi[$tgl] = [
                     'presensi' => $jamList
@@ -341,24 +338,58 @@ class DataPresensiService extends BaseService
             ->get()
             ->groupBy('id_user');
 
-        // Step 4: Build hasil akhir
+        $listIdKaryawan = $karyawanData->pluck('id_karyawan')->toArray();
+
+        $kalenderKerja = DB::table('uxui_kalender_kerja as ukk')
+            ->leftJoin('ref_jenis_jadwal as rjj', 'rjj.id_jenis_jadwal', '=', 'ukk.id_jenis_jadwal')
+            ->whereIn('ukk.id_karyawan', $listIdKaryawan)
+            ->whereBetween('ukk.tanggal', [$tgl_awal, $tgl_akhir])
+            ->select([
+                'ukk.id_karyawan',
+                'ukk.tanggal',
+                'ukk.id_ruangan',
+                'ukk.id_jenis_jadwal',
+
+                'rjj.nm_jenis_jadwal',
+                'rjj.masuk_kerja as jam_masuk',
+                'rjj.pulang_kerja as jam_pulang',
+            ])
+            ->orderBy('ukk.tanggal')
+            ->get()
+            ->groupBy('id_karyawan');
+
         $results = collect();
 
         foreach ($karyawanData as $id_user => $karyawan) {
             $presensi = [];
             $list_data_detail = [];
+            $jadwal_per_tanggal = [];
 
-            // Jika ada data presensi untuk user ini
+            if (isset($kalenderKerja[$karyawan->id_karyawan])) {
+
+                foreach ($kalenderKerja[$karyawan->id_karyawan] as $jadwal) {
+
+                    $tgl = $jadwal->tanggal;
+
+                    $jadwal_per_tanggal[$tgl] = [
+                        'id_jenis_jadwal' => $jadwal->id_jenis_jadwal,
+                        'nama_jadwal'     => $jadwal->nm_jenis_jadwal,
+                        'jam_masuk'       => $jadwal->jam_masuk,
+                        'jam_pulang'      => $jadwal->jam_pulang,
+                        'id_ruangan'      => $jadwal->id_ruangan,
+                    ];
+                }
+            }
             if (isset($presensiData[$id_user])) {
+
                 $userPresensi = $presensiData[$id_user]->groupBy('tgl');
 
                 foreach ($userPresensi as $tgl => $tglData) {
-                    // Presensi per tanggal
+
                     $presensi[$tgl] = [
                         'presensi' => $tglData->pluck('jam')->toArray()
                     ];
 
-                    // Detail data per tanggal
                     $list_data_detail[$tgl] = [
                         'id_mesin'     => $tglData->pluck('id_mesin_absensi')->toArray(),
                         'nm_mesin'     => $tglData->pluck('nm_mesin')->toArray(),
@@ -384,8 +415,9 @@ class DataPresensiService extends BaseService
                 'nm_status_karyawan' => $karyawan->nm_status_karyawan,
                 'id_jabatan'         => $karyawan->id_jabatan,
                 'nm_jabatan'         => $karyawan->nm_jabatan,
-                'jadwal_rutin'       => $jadwal_rutin,
-                'jadwal_shift'       => $jadwal_shift,
+//                'jadwal_rutin'       => $jadwal_rutin,
+//                'jadwal_shift'       => $jadwal_shift,
+                'jadwal_per_tanggal' => json_encode($jadwal_per_tanggal),
                 'ada_jadwal'         => ($jadwal_rutin || $jadwal_shift) ? 1 : 0,
                 'presensi'           => json_encode($presensi),
                 'list_data_detail'   => json_encode($list_data_detail),
@@ -593,8 +625,12 @@ class DataPresensiService extends BaseService
                 }
             }
 
+            $userPresensi = collect();
+
             if (isset($presensiData[$id_user])) {
                 $userPresensi = $presensiData[$id_user]->groupBy('tgl');
+            }
+
 
 //                foreach ($userPresensi as $tgl => $tglData) {
 //                    $presensi[$tgl] = [
@@ -641,7 +677,6 @@ class DataPresensiService extends BaseService
 
                     $list_data_detail[$tgl] = $detailData;
                 }
-            }
 
             $results->push((object) [
                 'id_user'            => $id_user,

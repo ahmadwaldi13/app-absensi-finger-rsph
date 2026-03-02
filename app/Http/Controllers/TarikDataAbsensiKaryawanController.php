@@ -108,6 +108,7 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
             $get_diff = $tgl2->diff($tgl1);
             $get_diff=$get_diff->d;
             $calcu=100;
+
             if(!empty($get_diff)){
                 $calcu=floor(100/$get_diff);
             }
@@ -128,50 +129,47 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
                     'tgl_end'=>$tanggal_proses_start,
                 ];
                 $get_data_log=$mesin->get_log_data_absensi_tad($paramter);
-                
+
                 $check_hasil=!empty($get_data_log[0]) ? $get_data_log[0] : '';
                 $proses_gagal=0;
+
                 if($check_hasil=='error'){
                     $proses_gagal++;
                     $message=$get_data_log[1];
                 }else{
                     DB::beginTransaction();
-                    if(!empty($get_data_log[1])){
-                        $jml_save=0;
-                        $get_data_item=$get_data_log[1];
-                        $jml_hasil_data_log=count($get_data_item);
-                        
-                        $data_save=[];
-                        foreach($get_data_item as $key_item => $value_item){
-                            $value_item=(object)$value_item;
-                            $data_save[]=[
-                                'id_mesin_absensi'=>$id_mesin,
-                                'id_user'=>$value_item->PIN,
+                    $data = $get_data_log[1] ?? [];
+
+                    $data = isset($data['PIN']) ? [$data] : $data;
+
+                    if (empty($data)) {
+                        $proses_gagal++;
+                    } else {
+
+                        $jml_save = 0;
+                        $data_save = [];
+
+                        foreach ($data as $value_item) {
+                            $value_item = (object) $value_item;
+
+                            $data_save[] = [
+                                'id_mesin_absensi' => $id_mesin,
+                                'id_user' => $value_item->PIN,
                                 'waktu' => $value_item->DateTime,
                                 'verified' => $value_item->Verified,
                                 'status' => $value_item->Status,
                             ];
                         }
-                        if(!empty($data_save)){
-                            $model_save = (new \App\Models\RefDataAbsensiTmp);
-                            if($model_save::insertOrIgnore($data_save)){
-                                $jml_save++;
-                            }
 
-                            if(!empty($jml_save)){
+                        if (!empty($data_save)) {
+                            $model_save = new \App\Models\RefDataAbsensiTmp;
+
+                            if ($model_save::insertOrIgnore($data_save)) {
                                 DB::commit();
-                                $proses_gagal=0;
-                            }else{
+                            } else {
                                 DB::rollBack();
-                                $proses_gagal++;
-                                $message='Data Tidak Ada';
-                                if(!empty($jml_hasil_data_log)){
-                                    $message='Semua Data Sudah Tersimpan';
-                                }
                             }
                         }
-                    }else{
-                        $proses_gagal++;
                     }
                 }
 
@@ -226,7 +224,7 @@ class TarikDataAbsensiKaryawanController extends \App\Http\Controllers\MyAuthCon
             return $this->sent_error('proses'.$urut_proses.' 6');
             die;
         }
-        
+
         return [
             'hasil'=>$hasil,
             'proses_selesai'=>$proses_selesai,
