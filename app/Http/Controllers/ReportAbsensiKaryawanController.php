@@ -292,8 +292,10 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
         unset($parameter_cuti['id_departemen']);
         unset($parameter_cuti['id_ruangan']);
 
-        $list_cuti=(new \App\Services\CutiKaryawanService)->getDataCuti($parameter_cuti,1)->first();
-        $list_cuti=!empty($list_cuti->hasil) ? json_decode($list_cuti->hasil,true) : [];
+//        $list_cuti=(new \App\Services\CutiKaryawanService)->getDataCuti($parameter_cuti,1)->first();
+//        $list_cuti=!empty($list_cuti->hasil) ? json_decode($list_cuti->hasil,true) : [];
+
+        $list_cuti=(new \App\Services\CutiService)->getCutiApprovedByRange($parameter_cuti);
 
         $parameter_pd=$paramter_search;
         unset($parameter_pd['id_jenis_jadwal']);
@@ -309,7 +311,7 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
 
         $list_hari_libur=(new \App\Services\DataPresensiService)->get_data_hari_libur($paramater_where);
 
-        $data_jadwal_rutin=(new \App\Http\Traits\AbsensiFunction)->getJadwalRutin();
+//        $data_jadwal_rutin=(new \App\Http\Traits\AbsensiFunction)->getJadwalRutin();
 
         $list_simbol_text=(new \App\Http\Traits\AbsensiFunction)->get_list_simbol_text();
 
@@ -331,19 +333,19 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
             
             $fill_solid=\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID;
 
-            $hari_kerja_tmp=!empty($data_jadwal_rutin->data_jadwal_presensi->hari_kerja) ? $data_jadwal_rutin->data_jadwal_presensi->hari_kerja : '';
+//            $hari_kerja_tmp=!empty($data_jadwal_rutin->data_jadwal_presensi->hari_kerja) ? $data_jadwal_rutin->data_jadwal_presensi->hari_kerja : '';
             $hari_kerja=[];
             $get_hari_minggu=[];
             $data_tgl=[];
             $data_hari_e=[];
             $data_hari_indo=[];
-            $jml_hari_kerja=0;
+//            $jml_hari_kerja=0;
             $jml_hari_kerja_bulan=0;
             $jml_hari_libur=0;
             $hari_minggu=[];
 
             $column_awal_tgl='E';
-            $position_awal_tgl=7;
+            $position_awal_tgl=9;
 
             if(!empty($hari_kerja_tmp)){
                 $hari_kerja_t=explode(',',$hari_kerja_tmp);
@@ -355,7 +357,7 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
             }
 
             $jml_hari_kerja=count($hari_kerja);
-            $total_kerja_sec_sistem_sec=!empty($data_jadwal_rutin->total_waktu_kerja_sec) ? $data_jadwal_rutin->total_waktu_kerja_sec : 0;
+//            $total_kerja_sec_sistem_sec=!empty($data_jadwal_rutin->total_waktu_kerja_sec) ? $data_jadwal_rutin->total_waktu_kerja_sec : 0;
             $total_kerja_sec_sistem=!empty($total_kerja_sec_sistem_sec) ? (new \App\Http\Traits\AbsensiFunction)->change_format_waktu_indo($total_kerja_sec_sistem_sec,":") : '00::00:00';
 
             $data_libur_format=[];
@@ -380,6 +382,27 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
             foreach($list_tgl as $key_tgl => $item_tgl){
                 $column_index_tgl[$item_tgl]=$column_awal_tgl;
 
+                $total_waktu_hari_ini = 0;
+                $is_off = false;
+                foreach($list_data as $item){
+
+                    $data_presensi = json_decode($item->presensi, true);
+
+                    $get_presensi_user = $data_presensi[$item_tgl] ?? null;
+
+                    if(!empty($get_presensi_user['jadwal'])){
+
+                        $jadwal_per_tanggal = $get_presensi_user['jadwal'];
+
+                        $alias = strtoupper($jadwal_per_tanggal['nm_jenis_jadwal'] ?? '');
+
+                        if($alias == 'OFF'){
+                            $is_off = true;
+                        }
+                    }
+                }
+
+
                 $tgl_format_tmp = new \DateTime($item_tgl);
                 $tgl_format=$tgl_format_tmp->format('d/m');
                 $hari_format=$tgl_format_tmp->format('D');
@@ -392,12 +415,8 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
         
                 if(!empty($hari_kerja[$hari_format])){
                     $jml_hari_kerja_bulan++;
-                }else{
-                    $get_hari_minggu[$item_tgl]=1;
-                    $hari_minggu[(new \App\Http\Traits\GlobalFunction)->hari($hari_format)]=(new \App\Http\Traits\GlobalFunction)->hari($hari_format);
-                    $column_index_hari_libur_kerja[$column_awal_tgl]=$column_awal_tgl;
                 }
-        
+
                 if(!empty($list_hari_libur[$item_tgl])){
                     $jml_hari_libur++;
                     $column_index_hari_libur_nasional[$column_awal_tgl]=$column_awal_tgl;
@@ -435,7 +454,33 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
 
             $total_jml_hari_kerja_bulan=$jml_hari_kerja_bulan-$jml_hari_libur;
 
-            $total_kerja_bulan_sec=$total_kerja_sec_sistem_sec * $total_jml_hari_kerja_bulan;
+//            $total_kerja_bulan_sec=$total_kerja_sec_sistem_sec * $total_jml_hari_kerja_bulan;
+
+            $total_kerja_bulan_sec = 0;
+
+            if(!empty($list_data)){
+                $sample = $list_data[0];
+                $data_presensi_sample = json_decode($sample->presensi, true);
+
+                foreach($list_tgl as $item_tgl){
+
+                    $get_presensi_user = $data_presensi_sample[$item_tgl] ?? null;
+
+                    if(!empty($get_presensi_user['jadwal'])){
+
+                        $jadwal = $get_presensi_user['jadwal'];
+
+                        $alias = strtoupper($jadwal['nm_jenis_jadwal'] ?? '');
+
+                        if($alias != 'OFF'){
+
+                            $total_kerja_bulan_sec +=
+                                $jadwal['total_waktu_kerja_sec'] ?? 0;
+                        }
+                    }
+                }
+            }
+
 
             $hari_minggu=!empty($hari_minggu) ? implode(',',$hari_minggu) : '';
 
@@ -453,7 +498,7 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
             $objPHPExcel->setActiveSheetIndex(0)->setCellValue($header_1_index.$header_1_posi,$header_1 );
             $objPHPExcel->getActiveSheet()->mergeCells($header_1_index.$header_1_posi.':'.$set_end_column_index.$header_1_posi );
 
-            $position_=9;
+            $position_= 10;
             $position_awal_=$position_;
 
             $list_departemen=[];
@@ -470,11 +515,12 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
             $column_total_data=[];
             $color_selisih_positif="358f00";
             $color_selisih_negatif="8f1300";
+
             foreach($list_data as $key => $item){
                 $jml_item=$key+1;
-
                 $data_presensi=!empty($item->presensi) ? (array)json_decode($item->presensi) : [];
-                
+
+
                 $list_cuti_karyawan=[];
                 $total_cuti=0;
                 if(!empty($list_cuti[$item->id_karyawan])){
@@ -577,7 +623,7 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
                 $objPHPExcel->setActiveSheetIndex(0)->setCellValue('B'.$position_,$nm_id_karyawan);
                 $set_merge_='B'.$position_.':'.'D'.$position_;
                 $objPHPExcel->getActiveSheet()->mergeCells($set_merge_);
-                
+
                 $grand_twjk_user_sec=0;
                 $grand_twjk_sistem_sec=0;
                 foreach($list_tgl as $key_tgl => $item_tgl){
@@ -587,63 +633,116 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
                         $presensi_user_text='';
                         $status_kerja_alias='';
                         $total_wjk_user_perhari_sec=0;
-                        
+
+                        $jadwal_per_tanggal = null;
+
+//                        $get_presensi_user=!empty($data_presensi[$item_tgl]) ? $data_presensi[$item_tgl] : '';
+//                        if(!empty($get_presensi_user)){
+//
+//                            if($item->jadwal_rutin==1){
+//                                $data_proses=[
+//                                    'list_presensi'=>!empty($get_presensi_user->presensi) ? implode(',',$get_presensi_user->presensi) : '',
+//                                    'data_jadwal_kerja'=>!empty($data_jadwal_rutin->data_jadwal_presensi) ? $data_jadwal_rutin->data_jadwal_presensi  : ''
+//                                ];
+//                                $hasil_proses=(object)(new \App\Http\Traits\PresensiHitungRutinFunction)->getHitungRutin($data_proses);
+//                                $total_wjk_user_perhari_sec=!empty($hasil_proses->total_waktu_kerja_user_sec) ? $hasil_proses->total_waktu_kerja_user_sec : 0;
+//
+//                                $presensi_filter=!empty($hasil_proses->presensi_user) ? $hasil_proses->presensi_user : '';
+//                                $presensi_filter_tmp=!empty($presensi_filter) ? explode(',',$presensi_filter) : [];
+//                                if($presensi_filter_tmp){
+//                                    $presensi_user_text=implode(',',$presensi_filter_tmp);
+//                                    $presensi_user_text=str_replace(',',','.PHP_EOL,$presensi_user_text);
+//                                }
+//
+//                                $status_kerja_alias=!empty($hasil_proses->status_kerja) ? $hasil_proses->status_kerja->alias : '';
+//
+//                                if($status_kerja_alias=='A'){
+//                                    $presensi_user_text='';
+//                                }
+//                            }
+//                        }
                         $get_presensi_user=!empty($data_presensi[$item_tgl]) ? $data_presensi[$item_tgl] : '';
+
                         if(!empty($get_presensi_user)){
-                            
-                            if($item->jadwal_rutin==1){
+
+                            $jadwal_per_tanggal = !empty($get_presensi_user->jadwal)
+                                ? $get_presensi_user->jadwal
+                                : null;
+
+                            if(!empty($jadwal_per_tanggal)){
+
                                 $data_proses=[
-                                    'list_presensi'=>!empty($get_presensi_user->presensi) ? implode(',',$get_presensi_user->presensi) : '',
-                                    'data_jadwal_kerja'=>!empty($data_jadwal_rutin->data_jadwal_presensi) ? $data_jadwal_rutin->data_jadwal_presensi  : ''
+                                    'list_presensi'=>!empty($get_presensi_user->presensi)
+                                        ? implode(',',$get_presensi_user->presensi)
+                                        : '',
+                                    'data_jadwal_kerja'=>$jadwal_per_tanggal
                                 ];
-                                $hasil_proses=(object)(new \App\Http\Traits\PresensiHitungRutinFunction)->getHitungRutin($data_proses);
-                                $total_wjk_user_perhari_sec=!empty($hasil_proses->total_waktu_kerja_user_sec) ? $hasil_proses->total_waktu_kerja_user_sec : 0;
-                                
-                                $presensi_filter=!empty($hasil_proses->presensi_user) ? $hasil_proses->presensi_user : '';
-                                $presensi_filter_tmp=!empty($presensi_filter) ? explode(',',$presensi_filter) : [];
+
+
+                                $hasil_proses=(object)(new \App\Http\Traits\PresensiHitungRutinFunction)
+                                    ->getHitungRutin($data_proses);
+
+                                $total_wjk_user_perhari_sec=
+                                    !empty($hasil_proses->total_waktu_kerja_user_sec)
+                                        ? $hasil_proses->total_waktu_kerja_user_sec
+                                        : 0;
+
+                                $presensi_filter=
+                                    !empty($hasil_proses->presensi_user)
+                                        ? $hasil_proses->presensi_user
+                                        : '';
+
+                                $presensi_filter_tmp=
+                                    !empty($presensi_filter)
+                                        ? explode(',',$presensi_filter)
+                                        : [];
+
                                 if($presensi_filter_tmp){
                                     $presensi_user_text=implode(',',$presensi_filter_tmp);
                                     $presensi_user_text=str_replace(',',','.PHP_EOL,$presensi_user_text);
                                 }
 
-                                $status_kerja_alias=!empty($hasil_proses->status_kerja) ? $hasil_proses->status_kerja->alias : '';
-
-                                if($status_kerja_alias=='A'){
-                                    $presensi_user_text='';
-                                }
+                                $status_kerja_alias=
+                                    !empty($hasil_proses->status_kerja)
+                                        ? $hasil_proses->status_kerja->alias
+                                        : '';
                             }
                         }
 
-                        $total_wjk_sistem_perhari_sec=!empty($data_jadwal_rutin->total_waktu_kerja_sec) ? $data_jadwal_rutin->total_waktu_kerja_sec : 0;
+//                        $total_wjk_sistem_perhari_sec=!empty($data_jadwal_rutin->total_waktu_kerja_sec) ? $data_jadwal_rutin->total_waktu_kerja_sec : 0;
+                        $total_wjk_sistem_perhari_sec =
+                            (!empty($jadwal_per_tanggal) && !empty($jadwal_per_tanggal->total_waktu_kerja_sec))
+                                ? $jadwal_per_tanggal->total_waktu_kerja_sec
+                                : 0;
                         $total_wjk_user_perhari_sec=!empty($total_wjk_user_perhari_sec) ? $total_wjk_user_perhari_sec : 0;
 
                         $total_wjku_perhari_sec=$total_wjk_user_perhari_sec;
 
                         $grand_twjk_user_sec+=$total_wjku_perhari_sec;
                         $grand_twjk_sistem_sec+=$total_wjk_sistem_perhari_sec;
-
-                        if(empty($status_kerja_alias)){
-                            $status_kerja_alias='A';
-                        }
-
-                        if(!empty($status_kerja_alias)){
-                            $status_kerja_alias="(".$status_kerja_alias.")";
-                        }
+//
+//                        if(empty($status_kerja_alias)){
+//                            $status_kerja_alias='A';
+//                        }
+//
+//                        if(!empty($status_kerja_alias)){
+//                            $status_kerja_alias="(".$status_kerja_alias.")";
+//                        }
 
                         if(!empty($list_cuti_karyawan[$item_tgl])){
                             $presensi_user_text=$list_cuti_karyawan[$item_tgl];
                             $get_column_cuti[]=$column_me.$position_;
-                            if(!empty($data_jadwal_rutin->total_waktu_kerja_sec)){
-                                $grand_twjk_user_sec+=$data_jadwal_rutin->total_waktu_kerja_sec;
+                            if(!empty($jadwal_per_tanggal->total_waktu_kerja_sec)){
+                                $grand_twjk_user_sec+=$jadwal_per_tanggal->total_waktu_kerja_sec;
                                 $status_kerja_alias='';
                                 if(!empty($get_hari_minggu[$item_tgl])){
-                                    $grand_twjk_user_sec-=$data_jadwal_rutin->total_waktu_kerja_sec;
+                                    $grand_twjk_user_sec-=$jadwal_per_tanggal->total_waktu_kerja_sec;
                                     $total_wjku_perhari_sec='';
                                     $presensi_user_text='';
                                 }
 
                                 if(!empty($list_hari_libur[$item_tgl])){
-                                    $grand_twjk_user_sec-=$data_jadwal_rutin->total_waktu_kerja_sec;
+                                    $grand_twjk_user_sec-=$jadwal_per_tanggal->total_waktu_kerja_sec;
                                     $total_wjku_perhari_sec='';
                                     $presensi_user_text='';
                                 }
@@ -653,9 +752,26 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
                         if(!empty($list_dinasluar_karyawan[$item_tgl])){
                             $presensi_user_text=$list_dinasluar_karyawan[$item_tgl];
                             $get_column_dinasluar[]=$column_me.$position_;
-                            if(!empty($data_jadwal_rutin->total_waktu_kerja_sec)){
-                                $grand_twjk_user_sec+=$data_jadwal_rutin->total_waktu_kerja_sec;
+                            if(!empty($jadwal_per_tanggal->total_waktu_kerja_sec)){
+                                $grand_twjk_user_sec+=$jadwal_per_tanggal->total_waktu_kerja_sec;
                                 $status_kerja_alias='';
+                            }
+                        }
+
+                        if(!empty($jadwal_per_tanggal)){
+                            $alias_jadwal = strtoupper($jadwal_per_tanggal->nm_jenis_jadwal ?? '');
+
+                            if($alias_jadwal == 'OFF'){
+                                $objPHPExcel->getActiveSheet()
+                                    ->getStyle($column_me.$position_)
+                                    ->applyFromArray([
+                                        'fill' => [
+                                            'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID,
+                                            'startColor' => [
+                                                'rgb' => 'F39791'
+                                            ]
+                                        ]
+                                    ]);
                             }
                         }
 
@@ -679,6 +795,39 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
 
                         if($tgl_data>$tgl_now){
                             $status_kerja_alias='';
+                        }
+
+                        $is_off = false;
+
+                        if(!empty($jadwal_per_tanggal)){
+                            $alias_jadwal = strtoupper($jadwal_per_tanggal->nm_jenis_jadwal ?? '');
+                            if($alias_jadwal == 'OFF'){
+                                $is_off = true;
+                            }
+                        }
+
+                        $is_minggu = !empty($get_hari_minggu[$item_tgl]);
+                        $is_libur_nasional = !empty($list_hari_libur[$item_tgl]);
+                        $is_cuti = !empty($list_cuti_karyawan[$item_tgl]);
+                        $is_dinasluar = !empty($list_dinasluar_karyawan[$item_tgl]);
+
+                        if(
+                            empty($status_kerja_alias)
+                            && !$is_off
+                            && !$is_minggu
+                            && !$is_libur_nasional
+                            && !$is_cuti
+                            && !$is_dinasluar
+                        ){
+                            $status_kerja_alias = 'A';
+                        }
+
+                        if($is_off || $is_minggu || $is_libur_nasional){
+                            $status_kerja_alias = '';
+                        }
+
+                        if(!empty($status_kerja_alias)){
+                            $status_kerja_alias = "($status_kerja_alias)";
                         }
 
                         $presensi_user_text=$presensi_user_text.PHP_EOL.$status_kerja_alias;
@@ -740,32 +889,33 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
                 }
             }
 
+
             $cell_t=4;
-            $check_array_first=[];
-            foreach($column_index_hari_libur_kerja as $item){
-                if(empty($check_array_first)){
-                    $check_array_first[]=[$item,$position_awal_tgl,$end_position];
-                    $objPHPExcel->getActiveSheet()->getStyle($item.$position_awal_tgl.':'.$item.$end_position)
-                    ->getFill()
-                    ->setFillType($fill_solid)
-                    ->getStartColor()
-                    ->setARGB('F39791');
-                }else{
-                    $plus_=1;
-                    $header_=$check_array_first[0][0].$check_array_first[0][1].":".$check_array_first[0][0].($check_array_first[0][1]+$plus_);
-                    $data_=$check_array_first[0][0].($check_array_first[0][1]+$cell_t).":".$check_array_first[0][0].$check_array_first[0][2];
-
-                    $header_item_=$item.$check_array_first[0][1].':'.$item.($check_array_first[0][1]+$plus_);
-                    $data_item_=$item.$position_awal_tgl.':'.$item.$end_position;
-                    $data_item_=$item.($check_array_first[0][1]+$cell_t).":".$item.$check_array_first[0][2];
-
-                    $this_style=$objPHPExcel->getActiveSheet()->getStyle($header_);
-                    $objPHPExcel->getActiveSheet()->duplicateStyle($this_style,$header_item_);
-
-                    $this_style=$objPHPExcel->getActiveSheet()->getStyle($data_);
-                    $objPHPExcel->getActiveSheet()->duplicateStyle($this_style,$data_item_);
-                }
-            }
+//            $check_array_first=[];
+//            foreach($column_index_hari_libur_kerja as $item){
+//                if(empty($check_array_first)){
+//                    $check_array_first[]=[$item,$position_awal_tgl,$end_position];
+//                    $objPHPExcel->getActiveSheet()->getStyle($item.$position_awal_tgl.':'.$item.$end_position)
+//                    ->getFill()
+//                    ->setFillType($fill_solid)
+//                    ->getStartColor()
+//                    ->setARGB('F39791');
+//                }else{
+//                    $plus_=1;
+//                    $header_=$check_array_first[0][0].$check_array_first[0][1].":".$check_array_first[0][0].($check_array_first[0][1]+$plus_);
+//                    $data_=$check_array_first[0][0].($check_array_first[0][1]+$cell_t).":".$check_array_first[0][0].$check_array_first[0][2];
+//
+//                    $header_item_=$item.$check_array_first[0][1].':'.$item.($check_array_first[0][1]+$plus_);
+//                    $data_item_=$item.$position_awal_tgl.':'.$item.$end_position;
+//                    $data_item_=$item.($check_array_first[0][1]+$cell_t).":".$item.$check_array_first[0][2];
+//
+//                    $this_style=$objPHPExcel->getActiveSheet()->getStyle($header_);
+//                    $objPHPExcel->getActiveSheet()->duplicateStyle($this_style,$header_item_);
+//
+//                    $this_style=$objPHPExcel->getActiveSheet()->getStyle($data_);
+//                    $objPHPExcel->getActiveSheet()->duplicateStyle($this_style,$data_item_);
+//                }
+//            }
 
             $check_array_first=[];
             foreach($column_index_hari_libur_nasional as $item){
@@ -792,7 +942,6 @@ class ReportAbsensiKaryawanController extends \App\Http\Controllers\MyAuthContro
                     $objPHPExcel->getActiveSheet()->duplicateStyle($this_style,$data_item_);
                 }
             }
-            
 
             if(!empty($column_ada_data)){
                 $a_tmp=array_values($column_ada_data);
