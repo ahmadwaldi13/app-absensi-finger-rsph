@@ -5,10 +5,10 @@ $item = [
         'nama' => 'Data Karyawan',
         'key' => 'data-karyawan',
     ],
-    2 => (object) [
-        'nama' => 'Jadwal Karyawan',
-        'key' => 'data-jadwal-karyawan',
-    ]
+//    2 => (object) [
+//        'nama' => 'Jadwal Karyawan',
+//        'key' => 'data-jadwal-karyawan',
+//    ]
 ];
 
 $item = (new \App\Http\Traits\AuthFunction())->checkMenuAkses($item);

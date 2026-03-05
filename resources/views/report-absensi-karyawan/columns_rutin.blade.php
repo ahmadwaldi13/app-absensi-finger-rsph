@@ -324,7 +324,7 @@
                     $url_cetak=(new \App\Http\Traits\GlobalFunction)->set_paramter_url($router_name->uri.'/cetak',$parameter_sent);
                 ?>
                 <div class="row">
-                    <div class="col-md-12 text-end">
+                    <div class="col-md-12 mb-2 text-end">
                         <a href="{{ url($url_cetak) }}" class="btn" style='color:#fff;background-color:#7912e0;'><i class="fa-solid fa-file-excel"></i> Print</a>
                     </div>
                 </div>

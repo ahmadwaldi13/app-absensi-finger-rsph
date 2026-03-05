@@ -8,6 +8,7 @@ use App\Services\UserManagement\UserGroupAppService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 
 class UserAksesController extends Controller
 {
@@ -110,9 +111,10 @@ class UserAksesController extends Controller
 
     private function proses($request)
     {
-        DB::statement("ALTER TABLE " . (new \App\Models\UserManagement\UxuiUsers)->table . " AUTO_INCREMENT = 1");
-        DB::statement("ALTER TABLE " . (new \App\Models\UxuiUsersKaryawan)->table . " AUTO_INCREMENT = 1");
+//        DB::statement("ALTER TABLE " . (new \App\Models\UserManagement\UxuiUsers)->table . " AUTO_INCREMENT = 1");
+//        DB::statement("ALTER TABLE " . (new \App\Models\UxuiUsersKaryawan)->table . " AUTO_INCREMENT = 1");
         $req = $request->all();
+
         $id_karyawan = !empty($req['id_karyawan']) ? $req['id_karyawan'] : '';
         $id_uxui_users = !empty($req['id_uxui_users']) ? $req['id_uxui_users'] : '';
         $link_back_redirect = $this->url_name . '/update';
@@ -250,11 +252,13 @@ class UserAksesController extends Controller
             }
         } catch (\Illuminate\Database\QueryException $e) {
             DB::rollBack();
+            \Log::info($e->getMessage());
             if ($e->errorInfo[1] == '1062') {
             }
             $pesan = ['error', $message_default['error'], 3];
         } catch (\Throwable $e) {
             DB::rollBack();
+            \Log::info($e->getMessage());
             $pesan = ['error', $message_default['error'], 3];
         }
         return redirect()->route($link_back_redirect, $link_back_param)->with([$pesan[0] => $pesan[1]]);

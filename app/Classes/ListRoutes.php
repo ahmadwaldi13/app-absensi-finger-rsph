@@ -1630,6 +1630,27 @@ class ListRoutes
 
                 ]
             ],
+            [
+                'title' => 'Edit Password',
+                'item' => [
+                    [
+                        'type' => 'index',
+                        'method' => 'get',
+                        'url' => '/edit-password',
+                        'controller' => 'PasswordController@actionIndex',
+                        'name' => 'edit-password',
+                        'middleware' => '',
+                    ],
+                    [
+                        'type' => 'update',
+                        'method' =>  'post',
+                        'url' => '/edit-password/update',
+                        'controller' => 'PasswordController@actionUpdate',
+                        'name' => '',
+                        'middleware' => '',
+                    ]
+                ]
+            ],
             
         ];
 

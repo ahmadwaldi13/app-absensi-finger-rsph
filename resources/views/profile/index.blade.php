@@ -12,11 +12,8 @@
                 <p class="text-muted small">{{ $user->nama_role ?? 'Super Admin' }}</p>
                 <hr>
                 <div class="d-grid gap-2">
-                    <a href="/profile/settings" class="btn btn-outline-secondary btn-sm">Edit Profil</a>
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="btn btn-danger btn-sm w-100">Keluar</button>
-                    </form>
+                    <a href="/edit-password" class="btn btn-outline-secondary btn-sm">Edit Password</a>
+                    <a href="{{ url('/') }}/logout" class="btn btn-danger btn-sm">Keluar</a>
                 </div>
             </div>
         </div>
