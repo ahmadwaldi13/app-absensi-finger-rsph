@@ -150,12 +150,12 @@ class SubMenuController extends Controller
                         'url'   => url('/')."/hari-libur-umum",
                         'icon'  => "<i class='fa-solid fa-calendar-xmark'></i>",
                     ],
-                    [
-                        'title' => 'Cuti Karyawan',
-                        'key'   => 'cuti-karyawan',
-                        'url'   => url('/')."/cuti-karyawan",
-                        'icon'  => "<i class='fa-solid fa-calendar-check'></i>",
-                    ],
+//                    [
+//                        'title' => 'Cuti Karyawan',
+//                        'key'   => 'cuti-karyawan',
+//                        'url'   => url('/')."/cuti-karyawan",
+//                        'icon'  => "<i class='fa-solid fa-calendar-check'></i>",
+//                    ],
                     [
                         'title' => 'Perjalanan Dinas Karyawan',
                         'key'   => 'perjalanan-dinas',

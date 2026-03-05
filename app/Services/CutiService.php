@@ -62,7 +62,8 @@ class CutiService extends BaseService {
 
         
         if (empty($params['is_super_admin']) || $params['is_super_admin'] === false) {
-            $query->where('c.id_karyawan', $params['id_karyawan']);
+            $query->where('c.id_karyawan', $params['id_karyawan'])
+                ->where('c.status', 'pending');
         }
 
         
