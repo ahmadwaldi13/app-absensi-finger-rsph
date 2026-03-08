@@ -1612,6 +1612,14 @@ class ListRoutes
                         'name' => '',
                         'middleware' => '',
                     ],
+                    [
+                        'type' => 'Download Template Kerja',
+                        'method' => 'post',
+                        'url' => '/kalender-kerja/download-template',
+                        'controller' => 'KalenderKerjaController@downloadTemplateKerja',
+                        'name' => '',
+                        'middleware' => '',
+                    ],
 
                 ]
             ],

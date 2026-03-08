@@ -190,30 +190,58 @@
 
         <hr>
         @if( (new \App\Http\Traits\AuthFunction)->checkAkses($router_name->uri.'/create') )
-        <div class="collapse mb-2" id="bagan-form-tambah-collapse">
-            <div class="card card-body" style='background:#f2f2f2'>
-                <?php
-                    $parameter=[
-                        'id_template_jadwal_shift_detail' => '',
-                    ];
+            <div class="collapse mb-2" id="bagan-form-tambah-collapse">
+                <div class="card card-body" style='background:#f2f2f2'>
+                    <?php
+                        $parameter=[
+                            'id_template_jadwal_shift_detail' => '',
+                        ];
 
-                    $bagan_form=\App::call($router_name->base_controller.'@actionCreate',[
-                        'request' => request()->merge($parameter)
-                    ]);
-                ?>
-                @if(!empty($bagan_form))
-                    {!! $bagan_form !!}
-                @endif
+                        $bagan_form=\App::call($router_name->base_controller.'@actionCreate',[
+                            'request' => request()->merge($parameter)
+                        ]);
+                    ?>
+                    @if(!empty($bagan_form))
+                        {!! $bagan_form !!}
+                    @endif
+                </div>
             </div>
+            <div class="d-flex justify-content-end mb-3">
+                <a class="btn btn-info collapse-cus" style='color:#fff' data-bs-toggle="collapse" href="#bagan-form-tambah-collapse"
+                    role="button" aria-expanded="false" aria-controls="bagan-form-tambah-collapse">
+                    <span id='collapse-open'><i class="fa-solid fa-angles-down"></i> Buka Form Tambah Jadwal</span>
+                    <span id='collapse-closed'><i class="fa-solid fa-angles-up"></i> Tutup Form Tambah Jadwal</span>
+                </a>
+            </div>
+       @endif
+        <div class="mb-3">
+            <form action="{{ url('/kalender-kerja/download-template') }}" method="POST">
+                @csrf
+
+                <input type="hidden" name="id_ruangan" value="{{ !empty($id_ruangan) ? $id_ruangan : '' }}">
+
+                <div class="row align-items-end">
+
+                    <div class="col-md-3">
+                        <label for="filter_tahun_bulan" class="form-label">Pilih Bulan</label>
+                        <input
+                                type="month"
+                                class="form-control"
+                                name="filter_tahun_bulan"
+                                value="{{ date('Y-m') }}"
+                                required
+                        >
+                    </div>
+
+                    <div class="col-md-3">
+                        <button class="btn btn-primary">
+                            Download Template Jadwal
+                        </button>
+                    </div>
+
+                </div>
+            </form>
         </div>
-        <div class="d-flex justify-content-end mb-3">
-            <a class="btn btn-info collapse-cus" style='color:#fff' data-bs-toggle="collapse" href="#bagan-form-tambah-collapse"
-                role="button" aria-expanded="false" aria-controls="bagan-form-tambah-collapse">
-                <span id='collapse-open'><i class="fa-solid fa-angles-down"></i> Buka Form Tambah Jadwal</span>
-                <span id='collapse-closed'><i class="fa-solid fa-angles-up"></i> Tutup Form Tambah Jadwal</span>
-            </a>
-        </div>
-    @endif
 
 
         @if( (new \App\Http\Traits\AuthFunction)->checkAkses($router_name->uri.'/cetak') )

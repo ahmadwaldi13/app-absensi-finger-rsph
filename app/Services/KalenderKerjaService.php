@@ -4,6 +4,7 @@ namespace App\Services;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
 class KalenderKerjaService extends BaseService {
 
@@ -316,5 +317,67 @@ class KalenderKerjaService extends BaseService {
         }
 
         return count($insertData);
+    }
+
+    public function generateTemplateExcel($karyawan, $list_tgl)
+    {
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $col = 1;
+
+        $sheet->setCellValueByColumnAndRow($col++,1,'No');
+        $sheet->setCellValueByColumnAndRow($col++,1,'ID');
+        $sheet->setCellValueByColumnAndRow($col++,1,'Nama');
+        foreach ($list_tgl as $tgl) {
+
+            $day = date('d', strtotime($tgl));
+
+            $sheet->setCellValueByColumnAndRow(
+                $col++,
+                1,
+                'tanggal_'.$day
+            );
+        }
+
+        $row = 2;
+        $no = 1;
+
+        foreach ($karyawan as $k) {
+            $col = 1;
+
+            $sheet->setCellValueByColumnAndRow($col++,$row,$no);
+            $sheet->setCellValueByColumnAndRow($col++,$row,$k->id_karyawan);
+            $sheet->setCellValueByColumnAndRow($col++,$row,$k->nm_karyawan);
+
+            foreach ($list_tgl as $tgl) {
+                $sheet->setCellValueByColumnAndRow($col++,$row,'');
+            }
+
+            $row++;
+            $no++;
+        }
+
+        $lastColumn = $sheet->getHighestColumn();
+        $sheet->getStyle("A1:{$lastColumn}1")->getFont()->setBold(true);
+
+        // AUTO WIDTH
+        foreach(range('A',$lastColumn) as $column){
+            $sheet->getColumnDimension($column)->setAutoSize(true);
+        }
+
+        return $spreadsheet;
+    }
+
+    public function downloadExcel($spreadsheet, $fileName)
+    {
+        $writer = IOFactory::createWriter($spreadsheet, 'Xlsx');
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header("Content-Disposition: attachment;filename=\"$fileName\"");
+        header('Cache-Control: max-age=0');
+
+        $writer->save('php://output');
+        exit;
     }
 }

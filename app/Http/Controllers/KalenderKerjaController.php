@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Services\GlobalService;
 use App\Services\DataLaporanPresensiService;
 use App\Services\KalenderKerjaService;
+use App\Models\RefKaryawan;
 use DateTime;
 
 class KalenderKerjaController extends Controller
@@ -140,7 +141,8 @@ class KalenderKerjaController extends Controller
             'list_shift' => $jenis_jadwal,
             'get_tamplate_default'=>$get_tamplate_default,
             'list_tamplate_user'=>$list_tamplate_user,
-            'data_jadwal_shift_by_sistem'=>$data_jadwal_shift_by_sistem
+            'data_jadwal_shift_by_sistem'=>$data_jadwal_shift_by_sistem,
+            'id_ruangan' => $id_ruangan
         ];
 
         return view($this->part_view . '.index', $parameter_view);
@@ -270,6 +272,41 @@ class KalenderKerjaController extends Controller
             return redirect()
                 ->route($this->url_name)
                 ->with('success', "Import Jadwal Kerja berhasil");
+
+        } catch (\Exception $e) {
+
+            return redirect()
+                ->route($this->url_name)
+                ->with('error', $e->getMessage());
+        }
+    }
+
+    public function downloadTemplateKerja(Request $request)
+    {
+        $id_ruangan = $request->id_ruangan;
+
+        $filter_tahun_bulan = !empty($request->filter_tahun_bulan)
+            ? $request->filter_tahun_bulan
+            : date('Y-m');
+
+
+        $get_tgl_per_bulan = (new \App\Http\Traits\AbsensiFunction)
+            ->get_tgl_per_bulan($filter_tahun_bulan);
+
+        $list_tgl = !empty($get_tgl_per_bulan->list_tgl)
+            ? $get_tgl_per_bulan->list_tgl
+            : [];
+
+        try {
+
+            $karyawan = RefKaryawan::where('id_ruangan', $id_ruangan)->get();
+
+            $spreadsheet = $this->kalenderJadwalService->generateTemplateExcel($karyawan, $list_tgl);
+
+            return $this->kalenderJadwalService->downloadExcel(
+                $spreadsheet,
+                'template_jadwal_kerja.xlsx'
+            );
 
         } catch (\Exception $e) {
 
