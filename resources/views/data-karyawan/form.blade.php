@@ -10,7 +10,7 @@
         <div class="col-lg-12">
             <div class="row justify-content-start align-items-end">
 
-                <div class="col-lg-6">
+                <div class="col-lg-3">
                     <div class='bagan_form'>
                         <label for="nip" class="form-label">NIP</label>
                         <input type="text" class="form-control" id="nip" name='nip' required
@@ -27,21 +27,35 @@
                         <div class="message"></div>
                     </div>
                 </div>
-
-            </div>
-        </div>
-
-        <div class="col-lg-12">
-            <div class="row justify-content-start align-items-end">
-                <div class="col-lg-12 mb-3">
+                <div class="col-lg-3">
                     <div class='bagan_form'>
-                        <label for="alamat" class="form-label">Alamat</label>
-                        <textarea class="form-control" id="alamat" name="alamat" rows="2">{{ !empty($model->alamat) ? $model->alamat : '' }}</textarea>
+                        <label for="tgl_masuk" class="form-label">Tanggal Masuk</label>
+                        <input
+                                type="date"
+                                class="form-control"
+                                id="tgl_masuk"
+                                name="tgl_masuk"
+                                required
+                                value="{{ !empty($model->tgl_masuk) ? $model->tgl_masuk : '' }}"
+                        >
                         <div class="message"></div>
                     </div>
                 </div>
+
             </div>
         </div>
+
+{{--        <div class="col-lg-12">--}}
+{{--            <div class="row justify-content-start align-items-end">--}}
+{{--                <div class="col-lg-12 mb-3">--}}
+{{--                    <div class='bagan_form'>--}}
+{{--                        <label for="alamat" class="form-label">Alamat</label>--}}
+{{--                        <textarea class="form-control" id="alamat" name="alamat" rows="2">{{ !empty($model->alamat) ? $model->alamat : '' }}</textarea>--}}
+{{--                        <div class="message"></div>--}}
+{{--                    </div>--}}
+{{--                </div>--}}
+{{--            </div>--}}
+{{--        </div>--}}
 
         <div class="col-lg-12">
             <div class="row justify-content-start align-items-end">

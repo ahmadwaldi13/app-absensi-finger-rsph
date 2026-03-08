@@ -95,7 +95,8 @@
                         <tr>
                             <th class="py-3" style="width: 5%">NIP</th>
                             <th class="py-3" style="width: 20%">Nama</th>
-                            <th class="py-3" style="width: 20%">Alamat</th>
+                            <th class="py-3" style="width: 13%">Alamat</th>
+                            <th class="py-3" style="width: 7%">Tgl Masuk</th>
                             <th class="py-3" style="width: 10%">Jabatan</th>
                             <th class="py-3" style="width: 10%">Departemen</th>
                             <th class="py-3" style="width: 10%">Ruangan</th>
@@ -115,6 +116,7 @@
                                 <td>{{ !empty($item->nip) ? $item->nip : ''  }}</td>
                                 <td>{{ !empty($item->nm_karyawan) ? $item->nm_karyawan : ''  }}</td>
                                 <td>{{ !empty($item->alamat) ? $item->alamat : ''  }}</td>
+                                <td>{{ !empty($item->tgl_masuk) ? $item->tgl_masuk : ''  }}</td>
                                 <td>{{ !empty($item->nm_jabatan) ? $item->nm_jabatan : ''  }}</td>
                                 <td>{{ !empty($item->nm_departemen) ? $item->nm_departemen : ''  }}</td>
                                 <td>{{ !empty($item->nm_ruangan) ? $item->nm_ruangan : ''  }}</td>
