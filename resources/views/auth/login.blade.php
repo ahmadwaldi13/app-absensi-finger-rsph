@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Presensi | RS Permata Hati')</title>
-    <link rel="icon" type="image/png" href="{{ asset('logo/logo.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('public/logo/logo.png') }}">
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,7 +23,7 @@
     <div class="login-card">
         <!-- Logo Compact Layout -->
         <div class="logo-compact">
-            <img src="{{ asset('logo/logo.png') }}" alt="Logo RS Permata Hati" class="logo-img">
+            <img src="{{ asset('public/logo/logo.png') }}" alt="Logo RS Permata Hati" class="logo-img">
             <div class="divider"></div>
             <div class="text-group">
                 <span class="app-name">Presensi</span>
