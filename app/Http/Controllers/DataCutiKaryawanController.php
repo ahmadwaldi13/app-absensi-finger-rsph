@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Services\GlobalService;
 use App\Services\RefKaryawanService;
-use App\Services\DataCutikaryawanService;
+use App\Services\DataCutiKaryawanService;
 
 class DataCutiKaryawanController extends Controller
 {
