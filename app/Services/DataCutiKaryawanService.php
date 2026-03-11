@@ -4,7 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Facades\DB;
 
-class DataCutikaryawanService extends BaseService {
+class DataCutiKaryawanService extends BaseService {
 
     public function getListData($params = []) {
        $query = DB::table('uxui_stok_cuti as sc')
