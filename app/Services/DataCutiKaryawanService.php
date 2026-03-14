@@ -26,8 +26,9 @@ class DataCutiKaryawanService extends BaseService {
             
          if (!empty($params['search'])) {
             $query->where(function ($q) use ($params) {
-                $q->where('nama', 'like', '%'.$params['search'].'%')
-                ->orWhere('jumlah', 'like', '%'.$params['search'].'%');
+                $q->where('jc.nama', 'like', '%'.$params['search'].'%')
+                ->orWhere('sc.jumlah', 'like', '%'.$params['search'].'%')
+                    ->orWhere('rk.nm_karyawan', 'like', '%'.$params['search'].'%');
             });
         }
             
