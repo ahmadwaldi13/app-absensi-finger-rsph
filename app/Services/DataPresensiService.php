@@ -710,6 +710,11 @@ class DataPresensiService extends BaseService
             $results = $this->applyCollectionFilters($results, $params);
         }
 
+        $results = $results->sort(function ($a, $b) {
+            return [$a->id_departemen, $a->id_ruangan, $a->id_status_karyawan, $a->nm_karyawan]
+                <=> [$b->id_departemen, $b->id_ruangan, $b->id_status_karyawan, $b->nm_karyawan];
+        })->values();
+
         if (!empty($limit_data)) {
             $offset = isset($limit_data[0]) ? (int)$limit_data[0] : 0;
             $length = isset($limit_data[1]) ? (int)$limit_data[1] : null;
