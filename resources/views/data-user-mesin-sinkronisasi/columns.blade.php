@@ -12,7 +12,7 @@
                             placeholder="Masukkan Kata">
                     </div>
 
-                    <div class="col-lg-2 col-md-10">
+                    <div class="col-lg-3 col-md-10">
                         <div class='bagan_form'>
                             <label for="filter_ip_mesin_asal" class="form-label">Pilih Asal Mesin </label>
                             <div class="button-icon-inside">
@@ -61,6 +61,12 @@
                 </div>
             </form>
 
+            <div class="d-flex justify-content-between mb-2">
+                <div>
+                    Menampilkan {{ $list_data->firstItem() }} - {{ $list_data->lastItem() }}
+                    dari {{ $list_data->total() }} data
+                </div>
+            </div>
 
             <div style="overflow-x: auto; max-width: auto;">
                 <table class="table border table-responsive-tablet">
@@ -114,7 +120,7 @@
                                 $kode_change=$id_mesin_absensi.'@'.$id_user_mesin;
                             ?>
                             <tr>
-                                <td>{{ ($key+1)  }}</td>
+                                <td>{{ $list_data->firstItem() + $loop->index }}</td>
                                 <td>
                                     <div>{{ !empty($item->nm_mesin) ? $item->nm_mesin : ''  }}</div>
                                     <div>IP : {{ !empty($item->ip_address) ? $item->ip_address : ''  }}</div>

@@ -51,12 +51,18 @@
                 </div>
             </form>
 
-
+            <div class="d-flex justify-content-between mb-2">
+                <div>
+                    Menampilkan {{ $list_data->firstItem() }} - {{ $list_data->lastItem() }}
+                    dari {{ $list_data->total() }} data
+                </div>
+            </div>
             <div style="overflow-x: auto; max-width: auto;">
                 <table class="table border table-responsive-tablet">
                     <thead>
                         <tr>
-                            <th class="py-3" style="width: 3%">Id User Mesin</th>
+                            <th class="py-3" style="width: 3%">No</th>
+                            <th class="py-3" style="width: 5%">Id User Mesin</th>
                             <th class="py-3" style="width: 15%">Name User Mesin</th>
                             <th class="py-3" style="width: 3%">Group</th>
                             <th class="py-3" style="width: 15%">Privilege</th>
@@ -82,6 +88,7 @@
                                 $get_privil=(new \App\Models\RefUserInfo())->get_privilege($item->privilege);
                             ?>
                             <tr>
+                                <td>{{ $list_data->firstItem() + $loop->index }}</td>
                                 <td>{{ !empty($item->id_user) ? $item->id_user : ''  }}</td>
                                 <td>{{ !empty($item->name) ? $item->name : ''  }}</td>
                                 <td>{{ !empty($item->group) ? $item->group : ''  }}</td>
