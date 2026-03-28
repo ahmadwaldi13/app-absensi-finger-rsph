@@ -264,7 +264,7 @@ class KalenderKerjaService extends BaseService {
         }
     }
 
-    public function import($file, $list_tgl, $id_ruangan)
+    public function import($file, $list_tgl, $id_ruangan, $filter_tahun_bulan)
     {
         $spreadsheet = IOFactory::load($file->getPathname());
         $sheet = $spreadsheet->getActiveSheet();
@@ -296,6 +296,10 @@ class KalenderKerjaService extends BaseService {
 
                 if (!$id_shift) continue;
 
+                if (date('Y-m', strtotime($tanggal)) !== $filter_tahun_bulan) {
+                    throw new \Exception("Tanggal tidak sesuai dengan bulan yang dipilih!");
+                }
+
                 $insertData[] = [
                     'id_karyawan'     => $id_karyawan,
                     'tanggal'         => $tanggal,
@@ -310,7 +314,9 @@ class KalenderKerjaService extends BaseService {
         if (!empty($insertData)) {
 
             DB::table('uxui_kalender_kerja')
-                ->whereIn('tanggal', $list_tgl)
+                ->whereMonth('tanggal', date('m', strtotime($filter_tahun_bulan)))
+                ->whereYear('tanggal', date('Y', strtotime($filter_tahun_bulan)))
+                ->where('id_ruangan', $id_ruangan)
                 ->delete();
 
             DB::table('uxui_kalender_kerja')->insert($insertData);

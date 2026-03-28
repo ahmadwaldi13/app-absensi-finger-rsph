@@ -414,6 +414,12 @@
                 @csrf
 
                 <div class="row align-items-end">
+                    <div class="col-md-3">
+                        <input type="month"
+                               name="filter_tahun_bulan"
+                               class="form-control"
+                               required>
+                    </div>
 
                     <div class="col-md-6">
                         <input type="file"
@@ -430,6 +436,7 @@
                     </div>
 
                 </div>
+
 
             </form>
         </div>

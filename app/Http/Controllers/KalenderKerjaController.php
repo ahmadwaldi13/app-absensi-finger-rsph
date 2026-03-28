@@ -249,6 +249,7 @@ class KalenderKerjaController extends Controller
 
         $get_karyawan = $this->kalenderJadwalService->getKaryawan($user_auth->id_user);
         $id_ruangan = $get_karyawan->id_ruangan ?? '';
+        $filter_tahun_bulan = $request->filter_tahun_bulan ?? date('Y-m');
 
         $filter_tahun_bulan = !empty($request->filter_tahun_bulan)
             ? $request->filter_tahun_bulan
@@ -267,7 +268,7 @@ class KalenderKerjaController extends Controller
             $file = $request->file('file_excel');
 
             $total = $this->kalenderJadwalService
-                ->import($file, $list_tgl, $id_ruangan);
+                ->import($file, $list_tgl, $id_ruangan, $filter_tahun_bulan);
 
             return redirect()
                 ->route($this->url_name)
